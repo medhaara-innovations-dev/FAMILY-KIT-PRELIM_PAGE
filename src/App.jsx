@@ -60,16 +60,6 @@ import earlyAccessPhone from "./assets/images/iPhone 16 Pro.png";
 import familyKitLogo from "./assets/images/6be23a39-2441-4cce-a9c9-073707f549ff.png";
 import familyImage from "./assets/images/Smiling Family with Purple Tablet.png";
 import problemImage from "./assets/images/Problem.png";
-import whyDocumentsImage from "./assets/images/why-documents.png";
-import whyDatesImage from "./assets/images/why-dates.png";
-import whyWhereImage from "./assets/images/why-where.png";
-import whyResponsibilitiesImage from "./assets/images/why-responsibilities.png";
-import whyAppsImage from "./assets/images/why-apps.png";
-import whyEmergencyImage from "./assets/images/why-emergency.png";
-import howScanUploadImage from "./assets/images/Aadharr.png";
-import howAiUnderstandsImage from "./assets/images/LAP.png";
-import howReviewVerifyImage from "./assets/images/HC.png";
-import howOrganizedReadyImage from "./assets/images/FAM.png";
 
 // Features wheel image assets — added without removing existing imports
 import educationImage from "./assets/images/Education.png";
@@ -105,43 +95,31 @@ const whyFamilyKitProblems = [
   {
     title: "Documents scattered everywhere",
     description: "Important certificates, policies, property papers and bills are stored in different places.",
-    image: whyDocumentsImage,
-    imageAlt: "Family reviewing paper documents and files",
     icon: FileText,
   },
   {
     title: "Important dates are easily forgotten",
     description: "Insurance renewals, EMIs, bills, warranties and other deadlines can slip through the cracks.",
-    image: whyDatesImage,
-    imageAlt: "Calendar showing important dates and reminders",
     icon: CalendarDays,
   },
   {
     title: "Nobody knows where everything is",
     description: "One person may know where documents are kept, while other family members struggle to find them.",
-    image: whyWhereImage,
-    imageAlt: "Family members trying to locate important information",
     icon: Users,
   },
   {
     title: "Family responsibilities become difficult to manage",
     description: "Managing parents' needs, children's requirements, household expenses and family commitments becomes overwhelming.",
-    image: whyResponsibilitiesImage,
-    imageAlt: "Parent managing household and family responsibilities",
     icon: ListChecks,
   },
   {
     title: "Too many apps, no single picture",
     description: "Family information and everyday activities are spread across multiple applications and services.",
-    image: whyAppsImage,
-    imageAlt: "Phone showing multiple family and household applications",
     icon: Smartphone,
   },
   {
     title: "What happens during an emergency?",
     description: "When something unexpected happens, family members may not know where important information, documents or contacts are available.",
-    image: whyEmergencyImage,
-    imageAlt: "Adult child assisting an elderly parent during a stressful situation",
     icon: Siren,
   },
 ];
@@ -175,12 +153,6 @@ function WhyFamilyKitSection({ mobile = false }) {
             const Icon = problem.icon;
             return (
               <article className="why-problem-card" key={problem.title}>
-                <img
-                  className="why-problem-photo"
-                  src={problem.image}
-                  alt={problem.imageAlt}
-                  loading="lazy"
-                />
                 <div className="why-problem-copy">
                   <div className="why-problem-title-row">
                     <span className="why-problem-icon" aria-hidden="true">
@@ -218,16 +190,12 @@ const howItWorksSteps = [
     number: "01",
     title: "Scan or Upload",
     description: "Upload documents, bills, policies, certificates and other family information.",
-    image: howScanUploadImage,
-    imageAlt: "Person scanning a paper document using a smartphone",
     icon: Camera,
   },
   {
     number: "02",
     title: "AI Understands",
     description: "AI reads the information, identifies its type, extracts details and links it to the relevant family member.",
-    image: howAiUnderstandsImage,
-    imageAlt: "Laptop showing AI document processing and extracted information",
     icon: aiOrganizesIcon,
     customIcon: true,
   },
@@ -235,16 +203,12 @@ const howItWorksSteps = [
     number: "03",
     title: "Review & Verify",
     description: "Review extracted information against the original document and correct anything that needs attention.",
-    image: howReviewVerifyImage,
-    imageAlt: "Smartphone showing extracted document details for review",
     icon: BadgeCheck,
   },
   {
     number: "04",
     title: "Organized & Ready",
     description: "Your confirmed information is organized and available to authorized family members, with reminders where applicable.",
-    image: howOrganizedReadyImage,
-    imageAlt: "Family reviewing organized information together",
     icon: Layers,
   },
 ];
@@ -271,7 +235,6 @@ function FamilyKitHowItWorks({ mobile = false }) {
             const Icon = step.icon;
             return (
               <article className="fk-how-step-card" key={step.number}>
-                <img className="fk-how-step-photo" src={step.image} alt={step.imageAlt} loading="lazy" />
                 <div className="fk-how-step-content">
                   <div className="fk-how-step-meta">
                     <span className="fk-how-step-icon">

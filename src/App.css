@@ -8999,3 +8999,284 @@ body {
     display: initial;
   }
 }
+
+
+/* ============================================================
+   RESPONSIVE SPACING & ALIGNMENT REFINEMENT — NOV 2026
+   Layout-only: no typography, colours, imagery, content, or
+   interaction changes. FAQ button typography/wrapping untouched.
+   ============================================================ */
+:where(.familykit-app, .fk-mobile-app) {
+  --fk-space-1: clamp(8px, 1vw, 12px);
+  --fk-space-2: clamp(12px, 1.5vw, 18px);
+  --fk-space-3: clamp(16px, 2vw, 24px);
+  --fk-space-4: clamp(24px, 3vw, 36px);
+  --fk-space-section: clamp(44px, 5vw, 76px);
+}
+
+/* Maintain consistent horizontal content edges without disturbing
+   positioned hero illustrations or existing desktop feature wheel. */
+:where(.familykit-app, .fk-mobile-app) :is(
+  .why-familykit-inner, .fk-how-workflow-inner, .fk-privacy-inner,
+  .fk-social-inner, .fk-price-inner, .fk-new-faq-inner
+) {
+  box-sizing: border-box;
+  max-width: min(100%, 1200px);
+  margin-inline: auto;
+}
+:where(.familykit-app, .fk-mobile-app) :is(
+  .why-familykit-inner, .fk-how-workflow-inner, .fk-privacy-inner,
+  .fk-social-inner, .fk-price-inner, .fk-new-faq-inner
+) > :is(h2, p) { max-width: 100%; }
+
+/* Consistent readable spacing between text and actions. */
+:where(.familykit-app, .fk-mobile-app) :is(
+  .why-problem-copy, .fk-how-step-content, .fk-price-benefit,
+  .fk-privacy-commitment, .fk-social-copy
+) { min-width: 0; }
+:where(.familykit-app, .fk-mobile-app) :is(
+  .why-problem-copy, .fk-how-step-content, .fk-price-benefit,
+  .fk-privacy-commitment
+) > :is(h3, h4) { margin-bottom: var(--fk-space-1); }
+:where(.familykit-app, .fk-mobile-app) :is(
+  .fk-price-layout, .fk-price-benefits
+) { column-gap: var(--fk-space-3); row-gap: var(--fk-space-3); }
+:where(.familykit-app, .fk-mobile-app) .fk-price-plan { min-width: 0; }
+:where(.familykit-app, .fk-mobile-app) .fk-price-amount { min-width: 0; }
+
+/* Footer navigation can wrap gracefully rather than squeezing links. */
+:where(.familykit-app, .fk-mobile-app) .fk-end-footer-nav { min-width: 0; }
+:where(.familykit-app, .fk-mobile-app) .fk-end-footer-nav > * { min-width: 0; }
+
+@media (min-width: 901px) {
+  .familykit-app .fk-price-layout { align-items: center; }
+  .familykit-app .fk-end-cta-content { padding-inline: clamp(28px, 3.5vw, 52px); }
+}
+
+/* Tablet: preserve the established design, give content room to breathe. */
+@media (min-width: 701px) and (max-width: 1024px) {
+  .familykit-app :is(.fk-price-inner, .fk-new-faq-inner) {
+    padding-inline: clamp(20px, 3vw, 34px);
+  }
+  .familykit-app .fk-price-layout { gap: clamp(18px, 2.5vw, 28px); }
+  .familykit-app .fk-end-footer-main { gap: clamp(18px, 3vw, 34px); }
+  .familykit-app .fk-end-footer-nav { gap: clamp(12px, 2vw, 24px); }
+}
+
+/* Mobile: balanced gutters, flexible columns, no FAQ position changes. */
+@media (max-width: 700px) {
+  .fk-mobile-app :is(.why-familykit-inner, .fk-how-workflow-inner,
+    .fk-privacy-inner, .fk-social-inner, .fk-price-inner,
+    .fk-new-faq-inner) { width: 100%; min-width: 0; }
+  .fk-mobile-app .fk-price-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(18px, 5vw, 26px);
+    align-items: stretch;
+  }
+  .fk-mobile-app .fk-price-plan { width: 100%; max-width: 100%; }
+  .fk-mobile-app .fk-price-benefits { width: 100%; min-width: 0; }
+  .fk-mobile-app .fk-price-device { max-width: min(100%, 350px); }
+  .fk-mobile-app .fk-price-benefit { min-width: 0; }
+  .fk-mobile-app .fk-end-cta-content { gap: 0; }
+  .fk-mobile-app .fk-end-footer-nav { row-gap: clamp(18px, 5vw, 28px); }
+}
+
+/* How It Works: match the proven Why FamilyKit mobile image/card technique.
+   Only the four workflow cards are affected; desktop and other sections stay intact. */
+@media (max-width: 700px) {
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-card {
+    display: grid !important;
+    grid-template-columns: 44% minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 14px;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-photo {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: stretch !important;
+    border-radius: 0 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: none !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-content {
+    min-width: 0 !important;
+    padding: 9px !important;
+    align-self: center !important;
+  }
+}
+@media (max-width: 375px) {
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-card {
+    grid-template-columns: 42% minmax(0, 1fr) !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-content {
+    padding: 8px 7px !important;
+  }
+}
+
+
+/* Desktop Why FamilyKit: give photos a definite rendered height.
+   A percentage image height inside an auto-sized grid row can create
+   circular intrinsic sizing and visually oversized/distorted cards.
+   Mobile rules are intentionally untouched. */
+@media (min-width: 701px) {
+  .familykit-app .why-familykit-section:not(.why-familykit-section-mobile) .why-problem-card {
+    min-height: 190px;
+    grid-template-rows: minmax(190px, auto);
+    align-items: stretch;
+  }
+  .familykit-app .why-familykit-section:not(.why-familykit-section-mobile) .why-problem-photo {
+    display: block;
+    width: 100%;
+    height: 190px;
+    min-height: 0;
+    max-height: 190px;
+    object-fit: cover;
+    object-position: center;
+    align-self: center;
+  }
+}
+
+/* Mobile How It Works — restore the compact, side-by-side cards shown in
+   the approved reference screenshot. Desktop and Why FamilyKit untouched.
+   An absolutely positioned photo prevents its intrinsic dimensions from
+   stretching the card or forcing the text into a narrow column. */
+@media (max-width: 700px) {
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-card {
+    display: block !important;
+    position: relative !important;
+    min-height: 106px !important;
+    height: auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 13px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-photo {
+    position: absolute !important;
+    inset: 0 auto 0 0 !important;
+    width: 35% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    border-radius: 12px 0 0 12px !important;
+    transform: none !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-content {
+    display: block !important;
+    width: 65% !important;
+    min-width: 0 !important;
+    margin: 0 0 0 35% !important;
+    padding: 9px 10px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-meta {
+    gap: 5px !important;
+    margin-bottom: 3px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-icon {
+    width: 21px !important;
+    height: 21px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-icon svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-number {
+    padding: 3px 6px !important;
+    font-size: 8px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-card h3 {
+    margin: 0 0 3px !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+  }
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-card p {
+    margin: 0 !important;
+    font-size: 9px !important;
+    line-height: 13px !important;
+    font-weight: 500 !important;
+  }
+}
+@media (max-width: 360px) {
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-content {
+    padding: 8px !important;
+  }
+}
+
+
+/* Image-free Why FamilyKit and How It Works cards — desktop and mobile.
+   Keep existing icons, text, typography and section structure. */
+.familykit-app .why-familykit-section .why-problem-card,
+.fk-mobile-app .why-familykit-section .why-problem-card {
+  display: block !important;
+  min-height: 0 !important;
+  height: auto !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+}
+.familykit-app .why-familykit-section .why-problem-copy,
+.fk-mobile-app .why-familykit-section .why-problem-copy {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 18px !important;
+}
+.familykit-app .fk-how-workflow .fk-how-step-grid .fk-how-step-card,
+.fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-card {
+  display: block !important;
+  min-height: 0 !important;
+  height: auto !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+}
+.familykit-app .fk-how-workflow .fk-how-step-grid .fk-how-step-content,
+.fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-content {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 18px !important;
+}
+@media (max-width: 700px) {
+  .fk-mobile-app .why-familykit-section .why-problem-copy,
+  .fk-mobile-app .fk-how-workflow .fk-how-step-grid .fk-how-step-content {
+    padding: 13px 14px !important;
+  }
+}
+
+
+/* Why FamilyKit: readable mobile card typography only.
+   Keep the approved typefaces, colors, icon layout and desktop styling. */
+@media (max-width: 700px) {
+  .fk-mobile-app .why-familykit-section-mobile .why-problem-card h3 {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.15px;
+  }
+  .fk-mobile-app .why-familykit-section-mobile .why-problem-card p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    font-weight: 400 !important;
+  }
+}
