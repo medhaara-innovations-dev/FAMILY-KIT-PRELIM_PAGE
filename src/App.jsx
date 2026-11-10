@@ -6,9 +6,8 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import howItWorksIcon from "./assets/images/ai-brain-02.png";
-import dashboardIcon from "./assets/images/analytics-01.png";
 import familyTasksImage from "./assets/images/to do task icon.png";
-
+import aiOrganizesIcon from "./assets/images/3ca7fdb8-353a-4640-a705-6fc448310ed1.png";
 import {
   Menu,
   X,
@@ -43,12 +42,34 @@ import {
   School,
   BookOpen,
   NotebookPen,
+  CircleHelp,
+  ListChecks,
+  Smartphone,
+  Siren,
+  Layers,
+  Camera,
+  MapPin,
+  CloudUpload,
+  MessageCircleMore,
+  Megaphone,
+  Tags,
+  Crown,
 } from "lucide-react";
 import earlyAccessPhone from "./assets/images/iPhone 16 Pro.png";
 
-import familyKitLogo from "./assets/images/Family kit Logo.png";
+import familyKitLogo from "./assets/images/6be23a39-2441-4cce-a9c9-073707f549ff.png";
 import familyImage from "./assets/images/Smiling Family with Purple Tablet.png";
 import problemImage from "./assets/images/Problem.png";
+import whyDocumentsImage from "./assets/images/why-documents.png";
+import whyDatesImage from "./assets/images/why-dates.png";
+import whyWhereImage from "./assets/images/why-where.png";
+import whyResponsibilitiesImage from "./assets/images/why-responsibilities.png";
+import whyAppsImage from "./assets/images/why-apps.png";
+import whyEmergencyImage from "./assets/images/why-emergency.png";
+import howScanUploadImage from "./assets/images/Aadharr.png";
+import howAiUnderstandsImage from "./assets/images/LAP.png";
+import howReviewVerifyImage from "./assets/images/HC.png";
+import howOrganizedReadyImage from "./assets/images/FAM.png";
 
 // Features wheel image assets — added without removing existing imports
 import educationImage from "./assets/images/Education.png";
@@ -62,6 +83,8 @@ import financeImage from "./assets/images/Vector.png";
 import diaryImage from "./assets/images/Diary.png";
 import notesImage from "./assets/images/Notes.png";
 import centerFamilyImage from "./assets/images/Family Gathered Around Purple Folder.png";
+import featuresTreeImage from "./assets/images/Tree1.png";
+import featuresAiBanner from "./assets/images/AI.png";
 import mobileIcon from "./assets/images/MobileICON.png";
 import notificationsMockup from "./assets/images/Transparent Notifications App Mockup.png";
 import heroShieldImage from "./assets/images/4db75485-c10a-4574-b017-11775affeb6e.png";
@@ -77,6 +100,547 @@ import ideaIcon from "./assets/images/idea.png";
 import "./App.css";
 
 
+
+const whyFamilyKitProblems = [
+  {
+    title: "Documents scattered everywhere",
+    description: "Important certificates, policies, property papers and bills are stored in different places.",
+    image: whyDocumentsImage,
+    imageAlt: "Family reviewing paper documents and files",
+    icon: FileText,
+  },
+  {
+    title: "Important dates are easily forgotten",
+    description: "Insurance renewals, EMIs, bills, warranties and other deadlines can slip through the cracks.",
+    image: whyDatesImage,
+    imageAlt: "Calendar showing important dates and reminders",
+    icon: CalendarDays,
+  },
+  {
+    title: "Nobody knows where everything is",
+    description: "One person may know where documents are kept, while other family members struggle to find them.",
+    image: whyWhereImage,
+    imageAlt: "Family members trying to locate important information",
+    icon: Users,
+  },
+  {
+    title: "Family responsibilities become difficult to manage",
+    description: "Managing parents' needs, children's requirements, household expenses and family commitments becomes overwhelming.",
+    image: whyResponsibilitiesImage,
+    imageAlt: "Parent managing household and family responsibilities",
+    icon: ListChecks,
+  },
+  {
+    title: "Too many apps, no single picture",
+    description: "Family information and everyday activities are spread across multiple applications and services.",
+    image: whyAppsImage,
+    imageAlt: "Phone showing multiple family and household applications",
+    icon: Smartphone,
+  },
+  {
+    title: "What happens during an emergency?",
+    description: "When something unexpected happens, family members may not know where important information, documents or contacts are available.",
+    image: whyEmergencyImage,
+    imageAlt: "Adult child assisting an elderly parent during a stressful situation",
+    icon: Siren,
+  },
+];
+
+function WhyFamilyKitSection({ mobile = false }) {
+  return (
+    <section
+      className={`why-familykit-section${mobile ? " why-familykit-section-mobile" : ""}`}
+      id={mobile ? "m-why-familykit" : "why-familykit"}
+    >
+      <div className="why-familykit-inner">
+        <div className="why-familykit-pill">
+          <CircleHelp aria-hidden="true" />
+          <span>Why FamilyKit</span>
+        </div>
+
+        <h2 className="why-familykit-heading">
+          Your family&apos;s life is connected.
+          <br />
+          But its <span>information is scattered.</span>
+        </h2>
+
+        <p className="why-familykit-intro">
+          Important family information is spread across phones, WhatsApp messages, emails,
+          paper files, different apps and people&apos;s memories. Finding the right information
+          at the right time becomes difficult.
+        </p>
+
+        <div className="why-familykit-grid">
+          {whyFamilyKitProblems.map((problem) => {
+            const Icon = problem.icon;
+            return (
+              <article className="why-problem-card" key={problem.title}>
+                <img
+                  className="why-problem-photo"
+                  src={problem.image}
+                  alt={problem.imageAlt}
+                  loading="lazy"
+                />
+                <div className="why-problem-copy">
+                  <div className="why-problem-title-row">
+                    <span className="why-problem-icon" aria-hidden="true">
+                      <Icon />
+                    </span>
+                    <h3>{problem.title}</h3>
+                  </div>
+                  <p>{problem.description}</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <aside className="why-familykit-closing">
+          <span className="why-familykit-closing-icon" aria-hidden="true">
+            <Users />
+          </span>
+          <div>
+            <h3>Your family shouldn&apos;t have to search everywhere for what matters.</h3>
+            <p>
+              It&apos;s time to bring your family&apos;s scattered information and everyday
+              responsibilities together.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
+
+const howItWorksSteps = [
+  {
+    number: "01",
+    title: "Scan or Upload",
+    description: "Upload documents, bills, policies, certificates and other family information.",
+    image: howScanUploadImage,
+    imageAlt: "Person scanning a paper document using a smartphone",
+    icon: Camera,
+  },
+  {
+    number: "02",
+    title: "AI Understands",
+    description: "AI reads the information, identifies its type, extracts details and links it to the relevant family member.",
+    image: howAiUnderstandsImage,
+    imageAlt: "Laptop showing AI document processing and extracted information",
+    icon: aiOrganizesIcon,
+    customIcon: true,
+  },
+  {
+    number: "03",
+    title: "Review & Verify",
+    description: "Review extracted information against the original document and correct anything that needs attention.",
+    image: howReviewVerifyImage,
+    imageAlt: "Smartphone showing extracted document details for review",
+    icon: BadgeCheck,
+  },
+  {
+    number: "04",
+    title: "Organized & Ready",
+    description: "Your confirmed information is organized and available to authorized family members, with reminders where applicable.",
+    image: howOrganizedReadyImage,
+    imageAlt: "Family reviewing organized information together",
+    icon: Layers,
+  },
+];
+
+function FamilyKitHowItWorks({ mobile = false }) {
+  return (
+    <section
+      className={`fk-how-workflow${mobile ? " fk-how-workflow-mobile" : ""}`}
+      id={mobile ? "m-how" : "how"}
+    >
+      <div className="fk-how-workflow-inner">
+        <div className="fk-how-label">
+          <img src={howItWorksIcon} alt="" aria-hidden="true" />
+          <span>How It Works</span>
+        </div>
+
+        <h2>Simple for Your Family. <span>Smart with AI.</span></h2>
+        <p className="fk-how-subtitle">
+          Getting your family&apos;s information organized is easier than you think.
+        </p>
+
+        <div className="fk-how-step-grid">
+          {howItWorksSteps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <article className="fk-how-step-card" key={step.number}>
+                <img className="fk-how-step-photo" src={step.image} alt={step.imageAlt} loading="lazy" />
+                <div className="fk-how-step-content">
+                  <div className="fk-how-step-meta">
+                    <span className="fk-how-step-icon">
+                      {step.customIcon ? (
+                        <img
+                          src={step.icon}
+                          alt=""
+                          aria-hidden="true"
+                          className="fk-how-step-custom-icon"
+                        />
+                      ) : (
+                        <Icon aria-hidden="true" />
+                      )}
+                    </span>
+                    <span className="fk-how-step-number">Step {step.number}</span>
+                  </div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </div>
+              
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="fk-how-summary" aria-label="FamilyKit workflow summary">
+          <div className="fk-how-summary-step">
+            <Camera />
+            <strong>Scan</strong>
+          </div>
+
+          <span className="fk-how-flow-arrow" aria-hidden="true">→</span>
+
+          <div className="fk-how-summary-step">
+            <img
+              src={aiOrganizesIcon}
+              alt=""
+              aria-hidden="true"
+              className="fk-how-ai-organizes-icon"
+            />
+            <strong>AI Organizes</strong>
+          </div>
+
+          <span className="fk-how-flow-arrow" aria-hidden="true">→</span>
+
+          <div className="fk-how-summary-step">
+            <BadgeCheck />
+            <strong>Verify</strong>
+          </div>
+
+          <span className="fk-how-flow-arrow" aria-hidden="true">→</span>
+
+          <div className="fk-how-summary-step">
+            <Layers />
+            <strong>Confirm</strong>
+          </div>
+
+          <p>Your family does not have to organize everything manually. FamilyKit helps do the work.</p>
+        </div>
+
+        <div className="fk-how-ai-demo">
+          <div className="fk-how-ai-intro">
+            <span className="fk-how-ai-mark"><Sparkles /></span>
+            <div>
+              <h3>Ask FamilyKit AI</h3>
+              <p>Get instant answers from your own family information.</p>
+            </div>
+          </div>
+
+          <div className="fk-how-conversation">
+            <div className="fk-how-question">
+              <Users />
+              <span>When does my father&apos;s health insurance expire?</span>
+            </div>
+            <div className="fk-how-answer">
+              <span className="fk-how-answer-logo"><img src={familyKitLogo} alt="" /></span>
+              <div>
+                <strong>FamilyKit AI</strong>
+                <p>Your father&apos;s policy is recorded as expiring on 18 March 2027.</p>
+                <small>Source: Uploaded policy document</small>
+              </div>
+            </div>
+            <p className="fk-how-example-note">
+              Illustrative example. Actual answers come from your uploaded and verified information.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="fk-how-closing">That&apos;s how simple managing family life can be.</h3>
+      </div>
+    </section>
+  );
+}
+
+const mobileFeatureItems = [
+  { title: "Documents", detail: "IDs, certificates, policies and records", icon: FileText, tone: "documents" },
+  { title: "Insurance", detail: "Policies, renewals and claims", icon: ShieldCheck, tone: "insurance" },
+  { title: "Finance", detail: "Bank accounts, investments, EMIs and due dates", icon: HandCoins, tone: "finance" },
+  { title: "Property", detail: "Home, land and other valuable assets", icon: House, tone: "property" },
+  { title: "Health", detail: "Medical records, reports and prescriptions", icon: HeartPulse, tone: "health" },
+  { title: "Household", detail: "Bills, groceries, warranties and maintenance", icon: House, tone: "household" },
+  { title: "Education", detail: "School, college and other education records", icon: GraduationCap, tone: "education" },
+  { title: "To-do Lists", detail: "Family tasks, responsibilities and follow-ups", icon: ClipboardList, tone: "todo" },
+];
+
+
+// Security commitments must be verified against the deployed infrastructure and
+// AI-provider agreements before this section is published.
+function FamilyKitSecurity({ mobile = false }) {
+  const commitments = [
+    { Icon: LockKeyhole, title: "Bank-Grade AES-256 Encryption", detail: "Your family's personal information and important documents are protected using AES-256 encryption.", tone: "purple" },
+    { Icon: BrainCircuit, title: "Your Data Is Never Used to Train AI Models", detail: "Your family information is processed by AI only to provide the services you request. It is not used by our AI providers to train or improve their general AI models.", tone: "green" },
+    { Icon: MapPin, title: "Your Data Stays in India", detail: "Your family's information is stored on secure servers located in India and is not stored outside India.", tone: "gold" },
+  ];
+  const extras = [
+    { Icon: Users, title: "You Control Access", detail: "You decide who can view or share your family information." },
+    { Icon: Share2, title: "Secure Family Sharing", detail: "Share selected documents and information only with authorized family members." },
+    { Icon: CloudUpload, title: "Safe & Reliable Backup", detail: "Protect important family information against accidental data loss." },
+    { Icon: ShieldCheck, title: "Account Recovery", detail: "Regain access to your account through secure recovery options." },
+  ];
+  return (
+    <section className={`fk-privacy-section${mobile ? " fk-privacy-mobile" : ""}`} id={mobile ? "m-security" : "security"} aria-labelledby={mobile ? "fk-privacy-heading-mobile" : "fk-privacy-heading"}>
+      <div className="fk-privacy-inner">
+        <div className="fk-privacy-hero">
+          <div className="fk-privacy-intro">
+            <span className="fk-privacy-pill"><ShieldCheck aria-hidden="true" /> Security &amp; Privacy</span>
+            <h2 id={mobile ? "fk-privacy-heading-mobile" : "fk-privacy-heading"}>Your Family&apos;s Information.<br />Your Control. Your Trust.</h2>
+            <p>Your family&apos;s personal information deserves the highest level of care. FamilyKit is designed with security, privacy and control in mind.</p>
+          </div>
+          <div className="fk-privacy-hero-art" aria-label="FamilyKit family security illustration">
+            <img src={familyImage} alt="Family using FamilyKit together" loading="lazy" />
+            <span className="fk-privacy-shield" aria-hidden="true"><ShieldCheck /></span>
+          </div>
+        </div>
+        <div className="fk-privacy-divider"><span /> <h3>Our Key Security Guarantees</h3> <span /></div>
+        <div className="fk-privacy-commitments">
+          {commitments.map(({ Icon, title, detail, tone }) => (
+            <article className={`fk-privacy-commitment fk-privacy-${tone}`} key={title}>
+              <div className="fk-privacy-commitment-head"><span className="fk-privacy-main-icon"><Icon aria-hidden="true" /></span><h4>{title}</h4></div>
+              <p>{detail}</p>
+            </article>
+          ))}
+        </div>
+        <div className="fk-privacy-extras">
+          {extras.map(({ Icon, title, detail }) => (
+            <article className="fk-privacy-extra" key={title}><Icon aria-hidden="true" /><h4>{title}</h4><p>{detail}</p></article>
+          ))}
+        </div>
+        <div className="fk-privacy-banner">
+          <span className="fk-privacy-banner-icon" aria-hidden="true"><ShieldCheck /></span>
+          <div><h3>Your Privacy Is Our Commitment</h3><p>FamilyKit is designed to keep your family&apos;s information secure, private and under your control.</p></div>
+          {/* TODO: Replace with a real privacy policy link once the policy route exists. */}
+          <button type="button" disabled title="Privacy policy coming soon">Read Our Privacy Policy <ChevronRight aria-hidden="true" /></button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+// Testimonials and Pricing are shared between desktop and mobile.
+function FamilyKitTestimonials({ mobile = false }) {
+  return (
+    <section className="fk-social-section" id={mobile ? "m-testimonials" : "testimonials"}>
+      <div className="fk-social-inner">
+        <div className="fk-social-copy">
+          <span className="fk-social-pill"><MessageCircleMore aria-hidden="true" /> Testimonials</span>
+          <h2>Real Families. Real Experiences.</h2>
+          <h3>We are just getting started.</h3>
+          <p>Be among the first families to experience FamilyKit.<br className="fk-social-desktop-break" /> Your experience could inspire thousands of families.</p>
+          <span className="fk-social-coming"><Megaphone aria-hidden="true" /> Testimonials Coming Soon</span>
+        </div>
+        <img className="fk-social-family" src={familyImage} alt="Smiling family together" loading="lazy" />
+      </div>
+    </section>
+  );
+}
+
+function FamilyKitPricing({ mobile = false }) {
+  const benefits = [
+    { Icon: FolderOpen, title: "Organize Family Documents", detail: "Keep all important records in one place." },
+    { Icon: Sparkles, title: "AI-Powered Assistance", detail: "Find, understand and manage your information easily." },
+    { Icon: Bell, title: "Important Reminders", detail: "Never miss policy dates, renewals or family events." },
+    { Icon: ShieldCheck, title: "Secure & Private", detail: "Your family's data is protected and under your control." },
+  ];
+  return (
+    <section className="fk-price-section" id={mobile ? "m-pricing" : "pricing"}>
+      <div className="fk-price-inner">
+        <span className="fk-price-pill"><Tags aria-hidden="true" /> Pricing</span>
+        <h2>Simple &amp; Affordable for Every Family</h2>
+        <p className="fk-price-subtitle">Choose a plan that keeps your family’s important information organized, secure and always accessible.</p>
+        <div className="fk-price-layout">
+          <div className="fk-price-device" aria-label="FamilyKit on laptop and mobile">
+            <div className="fk-price-laptop"><div className="fk-price-screen"><img src={familyKitLogo} alt="FamilyKit" /><strong>FamilyKit</strong><small>Everything in Place.</small></div></div>
+            <div className="fk-price-phone"><img src={familyKitLogo} alt="" /></div>
+          </div>
+          <article className="fk-price-plan">
+            <div className="fk-price-offer"><Crown aria-hidden="true" /> Early Access Offer</div>
+            <h3>Family Plan</h3>
+            <p className="fk-price-amount"><strong>₹999</strong><span>/ year</span></p>
+            <div className="fk-price-family"><Users aria-hidden="true" /><div><strong>For Your Family</strong><span>Up to 2 Adults + 2 Children</span></div></div>
+            <button type="button" className="fk-price-join" disabled title="Early access registration is not yet connected">Join Early Access <ChevronRight aria-hidden="true" /></button>
+          </article>
+          <div className="fk-price-benefits">
+            {benefits.map(({ Icon, title, detail }) => (
+              <div className="fk-price-benefit" key={title}><span><Icon aria-hidden="true" /></span><div><h3>{title}</h3><p>{detail}</p></div></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// FAQ wording follows the supplied FamilyKit FAQ draft.
+const familyKitFaqItems = [
+  { question: "What is FamilyKit?", answer: "FamilyKit is an AI-powered family life management platform that helps organize important family information, documents and everyday responsibilities in one place." },
+  { question: "What kind of information can I store in FamilyKit?", answer: "You can organize family documents and records related to identity, insurance, finance, property, health, education and household matters. Available categories will depend on the features released in your plan." },
+  { question: "How does FamilyKit AI work?", answer: "FamilyKit AI helps understand and organize information you provide. It can answer questions based on records available in your FamilyKit account and that you are authorized to access. Answers should reference the relevant source record where supported." },
+  { question: "Can my family members access the information?", answer: "You can add family members and manage access to shared information. Each member should only be able to view information permitted by the account's sharing and access settings." },
+  { question: "Is my information secure and private?", answer: "FamilyKit is being designed with data protection, encryption and access controls in mind. Specific security measures and data-location commitments will be described once they are implemented and verified." },
+  { question: "What happens if I forget my password?", answer: "FamilyKit will provide a secure account-recovery process. The available recovery options will be confirmed when account access features are finalized." },
+  { question: "Can I access FamilyKit on my mobile phone?", answer: "FamilyKit is being designed for convenient use across supported devices, including mobile phones. Device and browser support will be confirmed at launch." },
+  { question: "How much does FamilyKit cost?", answer: "The proposed Early Access Family Plan is ₹999 per year for up to 2 adults and 2 children. This is a proposed introductory price and is subject to final confirmation before launch." },
+];
+
+function FamilyKitFaq({ mobile = false }) {
+  const [expanded, setExpanded] = useState(null);
+  const sectionId = mobile ? "m-faq" : "faq";
+  return (
+    <section className="fk-new-faq" id={sectionId} aria-labelledby={`${sectionId}-title`}>
+      <div className="fk-new-faq-inner">
+        <span className="fk-new-faq-pill"><CircleHelp aria-hidden="true" /> Frequently Asked Questions</span>
+        <h2 id={`${sectionId}-title`}>Everything you need to know about FamilyKit</h2>
+        <p className="fk-new-faq-subtitle">Find answers to common questions about your family information, privacy and early access.</p>
+        <div className="fk-new-faq-list">
+          {familyKitFaqItems.map((item, index) => {
+            const isOpen = expanded === index;
+            const answerId = `${sectionId}-answer-${index}`;
+            return (
+              <article className={`fk-new-faq-item${isOpen ? " is-open" : ""}`} key={item.question}>
+                <h3>
+                  <button type="button" aria-expanded={isOpen} aria-controls={answerId} onClick={() => setExpanded(isOpen ? null : index)}>
+                    <span>{mobile && index === 1 ? <>What kind of information can I store in<br className="fk-faq-mobile-break" />FamilyKit?</> : mobile && index === 3 ? <>Can my family members access the<br className="fk-faq-mobile-break" />information?</> : item.question}</span><ChevronDown aria-hidden="true" />
+                  </button>
+                </h3>
+                <div id={answerId} className="fk-new-faq-answer" hidden={!isOpen}><p>{item.answer}</p></div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+// Shared end-of-page design. Connect the CTA and legal destinations when available.
+const fkFooterGroups = [
+  { title: "Explore", links: [["Home", "home"], ["Why FamilyKit", "why-familykit"], ["How It Works", "how"], ["Features", "features"], ["Pricing", "pricing"]] },
+  { title: "Company", links: [["About Us", null], ["Contact Us", null], ["Testimonials", "testimonials"]] },
+  { title: "Support", links: [["FAQ", "faq"], ["Contact Support", null]] },
+  { title: "Legal", links: [["Privacy Policy", null], ["Terms & Conditions", null], ["Data Security", "security"], ["Refund Policy", null]] },
+];
+
+function FamilyKitEarlyAccess({ mobile = false }) {
+  return (
+    <section className={`fk-end-cta${mobile ? " fk-end-cta-mobile" : ""}`} aria-labelledby={mobile ? "fk-end-cta-m-title" : "fk-end-cta-title"}>
+      <div className="fk-end-cta-photo"><img src={familyImage} alt="Family smiling together" loading="lazy" /></div>
+      <div className="fk-end-cta-content">
+        <h2 id={mobile ? "fk-end-cta-m-title" : "fk-end-cta-title"}>Bring Your Family’s <span>Life Together.</span></h2>
+        <p>One place for everything that matters to your family.<br />Start your FamilyKit journey today.</p>
+        <button className="fk-end-cta-button" type="button" disabled title="Early access registration coming soon">Get Early Access <ArrowRight aria-hidden="true" /></button>
+        <div className="fk-end-cta-benefits">
+          <div><FileText aria-hidden="true" /><span>Organize<br />Documents</span></div>
+          <div><CalendarDays aria-hidden="true" /><span>Never Miss<br />Important Dates</span></div>
+          <div><ShieldCheck aria-hidden="true" /><span>Secure &amp;<br />Private</span></div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FamilyKitContactForm({ onClose }) {
+  const [name, setName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
+
+  const submitContact = (event) => {
+    event.preventDefault();
+    if (!name.trim() || !/^[0-9]{10}$/.test(mobileNumber)) {
+      setError("Enter your name and a valid 10-digit mobile number.");
+      return;
+    }
+    setError("");
+    setStatus("success");
+  };
+
+  return (
+    <div className="fk-contact-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section className="fk-contact-dialog" role="dialog" aria-modal="true" aria-labelledby="fk-contact-title">
+        <button className="fk-contact-close" type="button" onClick={onClose} aria-label="Close contact form"><X size={22} /></button>
+        {status === "success" ? (
+          <div className="fk-contact-success" role="status">
+            <span className="fk-contact-success-icon"><Check size={28} /></span>
+            <h2 id="fk-contact-title">Form completed</h2>
+            <p>Your details were entered successfully. This demo does not send or save submissions.</p>
+            <button type="button" className="fk-contact-submit" onClick={onClose}>Close</button>
+          </div>
+        ) : (
+          <>
+            <span className="fk-contact-eyebrow">We’re here to help</span>
+            <h2 id="fk-contact-title">Contact Us</h2>
+            <p className="fk-contact-intro">Enter your details below.</p>
+            <form className="fk-contact-form" name="familykit-contact" onSubmit={submitContact}>
+              <label htmlFor="fk-contact-name">Name <span>*</span></label>
+              <input id="fk-contact-name" name="name" type="text" autoComplete="name" required maxLength={100} value={name} onChange={(event) => setName(event.target.value)} placeholder="Enter your full name" />
+              <label htmlFor="fk-contact-mobile">Mobile Number <span>*</span></label>
+              <input id="fk-contact-mobile" name="mobile" type="tel" inputMode="numeric" autoComplete="tel-national" required pattern="[0-9]{10}" maxLength={10} value={mobileNumber} onChange={(event) => setMobileNumber(event.target.value.replace(/[^0-9]/g, "").slice(0, 10))} placeholder="Enter 10-digit mobile number" />
+              <label htmlFor="fk-contact-email">Email ID <small>(Optional)</small></label>
+              <input id="fk-contact-email" name="email" type="email" autoComplete="email" maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email address" />
+              <label htmlFor="fk-contact-message">Message <small>(Optional)</small></label>
+              <textarea id="fk-contact-message" name="message" rows={4} maxLength={1000} value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Write your message here..." />
+              {error && <p className="fk-contact-error" role="alert">{error}</p>}
+              <button className="fk-contact-submit" type="submit" disabled={status === "sending"}>{status === "sending" ? "Submitting…" : "Submit"} <ArrowRight size={18} /></button>
+            </form>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function FamilyKitFooter({ mobile = false }) {
+  const [opened, setOpened] = useState(null);
+  const [contactOpen, setContactOpen] = useState(false);
+  const prefix = mobile ? "m-" : "";
+  return (
+    <>
+    <footer className={`fk-end-footer${mobile ? " fk-end-footer-mobile" : ""}`}>
+      <div className="fk-end-footer-main">
+        <div className="fk-end-footer-about">
+          <a className="fk-end-footer-logo" href={`#${prefix}home`}><img src={familyKitLogo} alt="" /><span><strong>FamilyKit<sup>®</sup></strong><small>Everything in Place.</small></span></a>
+          <p>One intelligent platform to organize your family’s information, important documents and everyday life.</p>
+          <div className="fk-end-footer-socials" aria-label="Social media (links coming soon)">
+            <span title="LinkedIn coming soon"><FaLinkedinIn /></span><span title="YouTube coming soon"><Play /></span><span title="Instagram coming soon"><FaInstagram /></span><span title="Facebook coming soon"><FaFacebookF /></span>
+          </div>
+        </div>
+        <nav className="fk-end-footer-nav" aria-label="Footer navigation">
+          {fkFooterGroups.map((group, index) => (
+            <div className="fk-end-footer-group" key={group.title}>
+              {mobile ? <button type="button" className="fk-end-footer-group-toggle" onClick={() => setOpened(opened === index ? null : index)} aria-expanded={opened === index} aria-controls={`fk-end-links-${index}`}><span>{group.title}</span><ChevronDown aria-hidden="true" /></button> : <h3>{group.title}</h3>}
+              <div className={`fk-end-footer-group-links${mobile && opened !== index ? " is-collapsed" : ""}`} id={mobile ? `fk-end-links-${index}` : undefined}>
+                {group.links.map(([label, target]) => label === "Contact Us" ? <button type="button" className="fk-end-footer-contact-link" key={label} onClick={() => setContactOpen(true)}>{label}</button> : target ? <a href={`#${prefix}${target}`} key={label}>{label}</a> : <span className="fk-end-footer-pending" title="Page coming soon" key={label}>{label}</span>)}
+              </div>
+            </div>
+          ))}
+        </nav>
+      </div>
+      <div className="fk-end-footer-bottom"><span>© 2026 FamilyKit. All rights reserved.</span><span>Powered by <strong>Medhaara Innovations Private Limited</strong></span></div>
+    </footer>
+    {contactOpen && <FamilyKitContactForm onClose={() => setContactOpen(false)} />}
+    </>
+  );
+}
+
 function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheelImages, faqs, onExploreFeatures }) {
   const mobileSteps = [
     [<Users />, "01", "Create your family account", "Set up your family space securely."],
@@ -87,28 +651,38 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
 
   return (
     <div className="fk-mobile-app">
-      <header className="fk-mobile-header">
-        <a className="fk-mobile-brand" href="#m-home">
+      <header className="fk-mobile-header fk-responsive-mobile-header">
+        <a className="fk-mobile-brand" href="#m-home" onClick={() => setMenuOpen(false)}>
           <img src={familyKitLogo} alt="FamilyKit" />
           <strong>FamilyKit</strong>
         </a>
-        <button className="fk-mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-          {menuOpen ? <X /> : <Menu />}
-        </button>
+        <div className="fk-responsive-mobile-actions">
+          <a className="fk-responsive-login" href="#m-home" onClick={() => setMenuOpen(false)}>Login</a>
+          <button className="fk-mobile-menu" onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen}>
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
         {menuOpen && (
-          <nav className="fk-mobile-nav">
-            <a href="#m-problem" onClick={() => setMenuOpen(false)}>Why FamilyKit</a>
+          <nav className="fk-mobile-nav fk-responsive-mobile-nav" aria-label="Mobile navigation">
+            <a href="#m-home" onClick={() => setMenuOpen(false)}>Home</a>
+            <a href="#m-why-familykit" onClick={() => setMenuOpen(false)}>Why FamilyKit</a>
+            
+            <a href="#m-how" onClick={() => setMenuOpen(false)}>How It Works</a>
             <a href="#m-features" onClick={() => setMenuOpen(false)}>Features</a>
-            <a href="#m-how" onClick={() => setMenuOpen(false)}>How it works</a>
-            <a href="#m-security" onClick={() => setMenuOpen(false)}>Security</a>
+            <a href="#m-security" onClick={() => setMenuOpen(false)}>Security &amp; Privacy</a>
+            <a href="#m-testimonials" onClick={() => setMenuOpen(false)}>Testimonials</a>
+            <a href="#m-pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
+            <a href="#m-faq" onClick={() => setMenuOpen(false)}>FAQs</a>
+            <button className="fk-responsive-mobile-signup" type="button" onClick={() => setMenuOpen(false)}>Sign Up</button>
           </nav>
         )}
       </header>
 
       <main>
         <section className="fk-mobile-hero" id="m-home">
-          <div className="fk-mobile-pill"><Sparkles /> Your family, Well organized</div>
-          <h1>The Smart Family<br/>Life Management<br/>App</h1>
+          <div className="fk-mobile-pill"><Sparkles /> Your family, well organized</div>
+          <h1>The Smart Family Life Management App</h1>
           <p>Bring your family’s important documents, finances, assets, reminders and everyday tasks into one secure, easy-to-use space.</p>
           <div className="fk-mobile-hero-actions">
             <button>Get Started <ChevronRight className="cta-chevron-icon" /></button>
@@ -132,173 +706,47 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
           </div>
         </section>
 
-        <section className="fk-mobile-problem" id="m-problem">
-          <div className="fk-mobile-section-pill">
-            <img src={alertIcon} alt="" className="fk-mobile-section-pill-icon" aria-hidden="true" />
-            <span>The Problem</span>
-          </div>
-          <h2>Your family’s information is<br/>scattered everywhere.</h2>
-          <p>Keeping track of family documents, renewals, bills and<br/>tasks can feel overwhelming.</p>
-          <div className="fk-problem-canvas fk-problem-canvas-mobile">
-            <img className="fk-problem-base-image" src={problemImage} alt="Family information challenges" />
-            <div className="fk-problem-card fk-problem-card-finance">
-              <img src={financeImage} alt="" aria-hidden="true" />
-              <span>Unable to track finances</span>
-              <b aria-hidden="true">×</b>
-            </div>
-            <div className="fk-problem-card fk-problem-card-documents">
-              <img src={fileImage} alt="" aria-hidden="true" />
-              <span>Documents are in different places</span>
-              <b aria-hidden="true">×</b>
-            </div>
-            <div className="fk-problem-card fk-problem-card-insurance">
-              <img src={insuranceImage} alt="" aria-hidden="true" />
-              <span>Insurance Renewals pending</span>
-              <b aria-hidden="true">×</b>
-            </div>
-            <div className="fk-problem-card fk-problem-card-bills">
-              <img src={householdImage} alt="" aria-hidden="true" />
-              <span>EMI's and bill Payments pending</span>
-              <b aria-hidden="true">×</b>
-            </div>
-            <div className="fk-problem-card fk-problem-card-warranty">
-              <img src={heroShieldImage} alt="" aria-hidden="true" />
-              <span>Warranties and services are missing</span>
-              <b aria-hidden="true">×</b>
-            </div>
-          </div>
-        </section>
-
-        <section className="fk-mobile-solution">
-          <div className="fk-mobile-section-pill">
-            <img src={ideaIcon} alt="" className="fk-mobile-section-pill-icon" aria-hidden="true" />
-            <span>The Solution</span>
-          </div>
-          <h2>Meet FamilyKit</h2>
-          <p>Keep everything that matters to your family organized, secure, and effortlessly managed with AI.</p>
-          <div className="fk-mobile-solution-cards">
-            <article className="fk-mobile-solution-card fk-mobile-solution-organize">
-              <FolderOpen />
-              <div><h3>Organize</h3><p>Keep all family information in one place.</p></div>
-              <div className="fk-mobile-organize-art" aria-hidden="true">
-                <span className="fk-mobile-insurance-sheet fk-mobile-insurance-sheet-back"></span>
-                <span className="fk-mobile-insurance-sheet fk-mobile-insurance-sheet-middle"></span>
-                <span className="fk-mobile-insurance-sheet fk-mobile-insurance-sheet-front">
-                  <Heart />
-                  <small>Life Insurance</small>
-                </span>
-              </div>
-            </article>
-            <article className="fk-mobile-insights-card">
-              <Sparkles />
-              <div>
-                <h3>Get insights</h3>
-                <p>Let AI read, understand and summarize your documents.</p>
-              </div>
-              <div className="fk-mobile-insights-orb" aria-hidden="true">
-                <img src={aiTrackerCircle} alt="" />
-              </div>
-            </article>
-            <article className="fk-mobile-solution-card fk-mobile-solution-track">
-              <CalendarDays />
-              <div><h3>Stay on Track</h3><p>Never miss renewals, bills and important dates.</p></div>
-              <div className="fk-mobile-mini-calendar" aria-hidden="true">
-                <div className="fk-mobile-mini-calendar-head">
-                  <span>‹</span><strong>October 2026</strong><span>›</span>
-                </div>
-                <div className="fk-mobile-mini-calendar-weekdays">
-                  <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-                </div>
-                <div className="fk-mobile-mini-calendar-days">
-                  <b className="fk-mobile-cal-empty"></b><b className="fk-mobile-cal-empty"></b><b className="fk-mobile-cal-empty"></b>
-                  <b className="fk-mobile-cal-blue">1</b><b>2</b><b>3</b><b>4</b>
-                  <b>5</b><b>6</b><b>7</b><b>8</b><b>9</b><b>10</b><b>11</b>
-                  <b>12</b><b>13</b><b className="fk-mobile-cal-multi">14</b><b>15</b><b>16</b><b>17</b><b>18</b>
-                  <b>19</b><b>20</b><b>21</b><b>22</b><b>23</b><b>24</b><b>25</b>
-                  <b>26</b><b>27</b><b>28</b><b>29</b><b>30</b><b>31</b>
-                </div>
-              </div>
-            </article>
-            <article className="fk-mobile-solution-card fk-mobile-solution-prepared">
-              <ShieldCheck />
-              <div><h3>Be Prepared</h3><p>Find what your family needs, when you need it.</p></div>
-              <div className="fk-mobile-solution-handshake" aria-hidden="true">
-                <HeartHandshake />
-              </div>
-            </article>
-          </div>
-        </section>
+        <WhyFamilyKitSection mobile />
+        <FamilyKitHowItWorks mobile />
 
         <section className="fk-mobile-features" id="m-features">
-          
-          <h2>Everything your family<br/>needs, organized</h2>
-          <p>Keep your family's important information, documents and responsibilities together.</p>
-          <button className="fk-mobile-text-link" type="button" onClick={onExploreFeatures}>Explore all Features <ArrowRight /></button>
-          <div className="fk-mobile-feature-wheel">
-            <svg className="fk-mobile-wheel-spokes" viewBox="0 0 350 430" aria-hidden="true">
-              <line x1="175" y1="215" x2="175" y2="41" />
-              <line x1="175" y1="215" x2="299" y2="111" />
-              <line x1="175" y1="215" x2="309" y2="221" />
-              <line x1="175" y1="215" x2="276" y2="341" />
-              <line x1="175" y1="215" x2="175" y2="386" />
-              <line x1="175" y1="215" x2="71" y2="341" />
-              <line x1="175" y1="215" x2="41" y2="221" />
-              <line x1="175" y1="215" x2="51" y2="111" />
-            </svg>
-            <div className="fk-mobile-wheel-center"><img src={centerFamilyImage} alt="FamilyKit family" /></div>
-            {featureWheelImages.map((f,i)=>(
-              <article className={`fk-mobile-feature mf-feature-${i+1} fk-tone-${f.tone}`} key={f.title}>
-                <img src={f.image} alt="" />
-                <strong>{f.title}</strong>
-                <small>{f.desc}</small>
-              </article>
-            ))}
+          <div className="fk-features-heading-badge">
+            <Layers aria-hidden="true" />
+            <span>FamilyKit Features</span>
           </div>
-        </section>
 
-        <section className="fk-mobile-how" id="m-how">
-          <div className="fk-mobile-section-pill">
-  <img
-    src={howItWorksIcon}
-    alt=""
-    className="fk-mobile-section-pill-icon"
-    aria-hidden="true"
-  />
-  <span>How it Works</span>
-</div>
-          <h2>Minimum Input and<br/>Maximum Organization</h2>
-          <p>Get started in minutes and let AI do the heavy lifting.</p>
-          <img className="fk-mobile-how-art" src={mobileIcon} alt="FamilyKit mobile organization" />
-          <div className="fk-mobile-steps">
-            {mobileSteps.map(([icon,num,title,desc])=>(
-              <article key={num}>
-                <span className="fk-mobile-step-icon">{icon}</span>
-                <div><small>Step - {num}</small><h3>{title}</h3><p>{desc}</p></div>
-              </article>
-            ))}
+          <div className="fk-features-heading-row">
+            <h2>Your Entire Family. One Connected Ecosystem.</h2>
+            <span className="fk-features-heading-accent" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </span>
           </div>
-        </section>
 
-        <section className="fk-mobile-dashboard">
-          <div className="fk-mobile-section-pill">
+          <p className="fk-features-heading-subtitle">
+            From important documents to everyday needs, bring your entire family life together.
+          </p>
+
+          <div className="fk-features-tree-wrap fk-features-tree-wrap-mobile">
             <img
-              src={dashboardIcon}
-              alt=""
-              className="fk-mobile-section-pill-icon"
-              aria-hidden="true"
+              className="fk-features-tree-image"
+              src={featuresTreeImage}
+              alt="FamilyKit family information tree"
+              loading="lazy"
             />
-            <span>Your Family Dashboard</span>
           </div>
-          <h2>A clear view of your family life</h2>
-          <p>Your family’s documents, reminders and essentials in one place. Always know what’s next.</p>
-          <div className="fk-mobile-dashboard-preview" aria-label="Family dashboard preview">
-            <span className="fk-mobile-dashboard-avatar">F</span>
+          <div className="fk-mobile-ai-banner" aria-label="Powered by FamilyKit AI">
+            <img
+              src={featuresAiBanner}
+              alt="Powered by FamilyKit AI — find information instantly, get reminders and updates, and see source documents"
+              loading="lazy"
+            />
           </div>
-          <div className="fk-mobile-benefits">
-            <span><Check/>Quick access to everything</span>
-            <span><Check/>Upcoming renewals and payments</span>
-            <span><Check/>Family-wide visibility (with your permission)</span>
-            <span><Check/>Works across mobile and web</span>
+          <div className="fk-mobile-features-tagline" aria-label="One family. One platform. Endless possibilities.">
+            <span className="fk-mobile-features-tagline-line" aria-hidden="true" />
+            <span className="fk-mobile-features-tagline-leaf" aria-hidden="true">🌿</span>
+            <strong>One family. One platform. Endless possibilities.</strong>
+            <span className="fk-mobile-features-tagline-leaf" aria-hidden="true">🌿</span>
+            <span className="fk-mobile-features-tagline-line" aria-hidden="true" />
           </div>
         </section>
 
@@ -311,9 +759,9 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
             <div className="fk-mobile-purple-base"></div>
             <div className="fk-mchip mc1"><img className="fk-mchip-image" src={insuranceImage} alt="" /><span>Insurance Renewals</span><Check/></div>
             <div className="fk-mchip mc2"><img className="fk-mchip-image" src={householdImage} alt="" /><span>EMI’s and bill Payments</span><Check/></div>
-            <div className="fk-mchip mc3"><Users/><span>Active updates for Nominee’s</span><Check/></div>
+            <div className="fk-mchip mc3"><Users/><span>Active updates for Nominees</span><Check/></div>
             <div className="fk-mchip mc4"><img className="fk-mchip-image" src={heroShieldImage} alt="" /><span>Warranties and Service Reminders</span><Check/></div>
-            <div className="fk-mchip mc5"><img className="fk-mchip-image" src={fileImage} alt="" /><span>Find Documents easy</span><Check/></div>
+            <div className="fk-mchip mc5"><img className="fk-mchip-image" src={fileImage} alt="" /><span>Find Documents Easily</span><Check/></div>
             <img className="fk-mobile-reminder-phone" src={notificationsMockup} alt="FamilyKit notifications" />
 
             <div className="fk-mobile-notice fk-passport">
@@ -332,63 +780,22 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
         </section>
 
         <section className="fk-mobile-tracker">
-          <div className="fk-mobile-tracker-head"><span><Sparkles/></span><div><h2>AI Powered Tracker</h2><p>We update you everytime</p></div></div>
+          <div className="fk-mobile-tracker-head"><span><Sparkles/></span><div><h2>AI-Powered Tracker</h2><p>We update you every time</p></div></div>
           <div className="fk-mobile-tracker-list">
             {["Renewal and expiry tracker","Documents Organisation","Finance and EMI Trackers","AI Summarised Notes & Reminders"].map(x=><span key={x}><Check/>{x}</span>)}
           </div>
           <div className="fk-mobile-orb"><img src={aiTrackerCircle} alt="" /></div>
         </section>
 
-        <section className="fk-mobile-security" id="m-security">
-          <div className="fk-mobile-section-pill">♡&nbsp; Private By Design</div>
-          <h2>Your family’s data stays<br/>private and secure</h2>
-          <div className="fk-mobile-security-grid">
-            <article><LockKeyhole/><b>AES-256 encryption</b><p>Strong protection for your data.</p></article>
-            <article><ShieldCheck/><b>India data residency</b><p>Your data is stored in AWS India regions.</p></article>
-            <article><Sparkles/><b>No AI training</b><p>Your personal data is never used to train public AI models.</p></article>
-            <article><Users/><b>Your control</b><p>Only you and the people you authorize can access your family information.</p></article>
-          </div>
-        </section>
+        <FamilyKitSecurity mobile />
 
-        <section className="fk-mobile-faq">
-          <h2>Frequently asked questions</h2>
-          <p className="fk-mobile-faq-intro">Have questions? We have answers.</p>
-          {faqs.map((faq,index)=>(
-            <div className="fk-mobile-faq-item" key={faq.question}>
-              <button onClick={()=>toggleFaq(index)}><span>{faq.question}</span><ChevronDown/></button>
-              {openFaq===index && <p>{faq.answer}</p>}
-            </div>
-          ))}
-        </section>
-
-        <section className="fk-mobile-cta">
-          <h2>Be Among the First<br/>Families to experience<br/><strong>FamilyKit</strong></h2>
-          <p>Join our early access program and help shape the future of family life management.</p>
-          <button>Get Early Access <ChevronRight className="cta-chevron-icon" /></button>
-          <img src={earlyAccessPhone} alt="FamilyKit mobile app" />
-        </section>
+        <FamilyKitTestimonials mobile />
+        <FamilyKitPricing mobile />
+        <FamilyKitFaq mobile />
+        <FamilyKitEarlyAccess mobile />
       </main>
 
-      <footer className="fk-mobile-footer">
-        <div className="fk-mobile-footer-brand"><img src={familyKitLogo} alt="FamilyKit"/><strong>FamilyKit</strong></div>
-        <p>A Medhaara Innovations product</p>
-        <p>Office Address:<br/>Street address, City, District, State, Pincode</p>
-
-   
-
-
-        
-        <div className="fk-mobile-footer-socials">
-          <a href="#" aria-label="Facebook"><FaFacebookF /></a>
-          <a href="#" aria-label="Instagram"><FaInstagram /></a>
-          <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
-          <a href="#" aria-label="X"><FaXTwitter /></a>
-        </div>
-
-        <div className="fk-mobile-footer-links"><a href="#m-home">About</a><a href="#m-security">Privacy</a><a href="#m-home">Terms</a><a href="#m-home">Contact</a></div>
-        
-        <small>© 2026 FamilyKit. All rights reserved.</small>
-      </footer>
+      <FamilyKitFooter mobile />
     </div>
   );
 }
@@ -628,98 +1035,29 @@ function App() {
           HEADER
       ====================================================== */}
 
-      <header className="header">
-
-        <div className="header-inner">
-
+      <header className="header fk-responsive-desktop-header">
+        <div className="header-inner fk-responsive-desktop-inner">
           <a className="brand" href="#home">
-
-            <div className="brand-mark">
-              <img
-                src={familyKitLogo}
-                alt="FamilyKit"
-                className="brand-icon-image"
-              />
-            </div>
-
-            <span className="brand-name">
-              FamilyKit
-            </span>
-
+            <span className="brand-mark"><img className="brand-icon-image" src={familyKitLogo} alt="" /></span>
+            <span className="brand-name">FamilyKit</span>
           </a>
-
-
-          {/* DESKTOP NAVIGATION */}
-
-          <nav className="desktop-nav">
-            <a href="#problem">Why FamilyKit</a>
+          <nav className="desktop-nav fk-responsive-desktop-nav" aria-label="Primary navigation">
+            <a href="#home">Home</a>
+            <a href="#why-familykit">Why FamilyKit</a>
+            
+            <a href="#how">How It Works</a>
             <a href="#features">Features</a>
-            <a href="#how">How it works</a>
-            <a href="#security">Security</a>
+            
+            <a href="#security">Security &amp; Privacy</a>
+            <a href="#testimonials">Testimonials</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQs</a>
           </nav>
-
-
-          <button className="desktop-cta">
-            Get Early Access
-           
-          </button>
-
-
-          {/* MOBILE MENU */}
-
-          <div className="mobile-header-actions">
-
-            <button
-              className="menu-btn"
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle menu"
-            >
-              {menuOpen ? <X /> : <Menu />}
-            </button>
-
+          <div className="fk-responsive-account-actions">
+            <a className="fk-responsive-login" href="#home">Login</a>
+            <button className="fk-responsive-signup" type="button">Sign Up</button>
           </div>
-
         </div>
-
-
-        {/* MOBILE DROPDOWN */}
-
-        {menuOpen && (
-
-          <nav className="mobile-nav">
-
-            <a
-              href="#problem"
-              onClick={() => setMenuOpen(false)}
-            >
-              Why FamilyKit
-            </a>
-
-            <a
-              href="#features"
-              onClick={() => setMenuOpen(false)}
-            >
-              Features
-            </a>
-
-            <a
-              href="#how"
-              onClick={() => setMenuOpen(false)}
-            >
-              How it works
-            </a>
-
-            <a
-              href="#security"
-              onClick={() => setMenuOpen(false)}
-            >
-              Security
-            </a>
-
-          </nav>
-
-        )}
-
       </header>
 
 
@@ -740,7 +1078,7 @@ function App() {
               <Sparkles size={18} />
 
               <span>
-                Your family, Well organized
+                Your family, well organized
               </span>
 
             </div>
@@ -749,11 +1087,7 @@ function App() {
             {/* HERO HEADING */}
 
             <h1>
-              The Smart Family
-              <br />
-              Life Management
-              <br />
-              App
+              The Smart Family Life Management App
             </h1>
 
 
@@ -894,204 +1228,19 @@ function App() {
 
 
         {/* ======================================================
-            PROBLEM SECTION
+            WHY FAMILYKIT — PROBLEM STORYTELLING
         ====================================================== */}
 
-        <section
-          className="problem-section"
-          id="problem"
-        >
-
-          <div className="section-label fk-desktop-section-label">
-            <img src={alertIcon} alt="" aria-hidden="true" />
-            <span>The Problem</span>
-          </div>
-
-
-          <h2>
-            Your family’s information is
-            <span> scattered everywhere.</span>
-          </h2>
-
-
-          <p className="section-intro">
-
-            Keeping track of family documents, renewals,
-            bills and tasks can feel overwhelming.
-
-          </p>
-
-          <div className="problem-image-wrapper">
-  <div className="fk-problem-canvas">
-    <img
-      src={problemImage}
-      alt="Family information challenges"
-      className="problem-image fk-problem-base-image"
-    />
-    <div className="fk-problem-card fk-problem-card-finance">
-      <img src={financeImage} alt="" aria-hidden="true" />
-      <span>Unable to track finances</span>
-      <b aria-hidden="true">×</b>
-    </div>
-    <div className="fk-problem-card fk-problem-card-documents">
-      <img src={fileImage} alt="" aria-hidden="true" />
-      <span>Documents are in different places</span>
-      <b aria-hidden="true">×</b>
-    </div>
-    <div className="fk-problem-card fk-problem-card-insurance">
-      <img src={insuranceImage} alt="" aria-hidden="true" />
-      <span>Insurance Renewals pending</span>
-      <b aria-hidden="true">×</b>
-    </div>
-    <div className="fk-problem-card fk-problem-card-bills">
-      <img src={householdImage} alt="" aria-hidden="true" />
-      <span>EMI's and bill Payments pending</span>
-      <b aria-hidden="true">×</b>
-    </div>
-    <div className="fk-problem-card fk-problem-card-warranty">
-      <img src={heroShieldImage} alt="" aria-hidden="true" />
-      <span>Warranties and services are missing</span>
-      <b aria-hidden="true">×</b>
-    </div>
-  </div>
-</div>
-        </section>
-
+        <WhyFamilyKitSection />
 
         {/* ======================================================
             SOLUTION SECTION
         ====================================================== */}
+        {/* ======================================================
+            HOW IT WORKS
+        ====================================================== */}
 
-        <section className="solution-section">
-
-          <div className="section-label solution-label fk-desktop-section-label">
-            <img src={ideaIcon} alt="" aria-hidden="true" />
-            <span>The Solution</span>
-          </div>
-
-          <h2>
-            Meet <span>FamilyKit</span>
-          </h2>
-
-          <p className="section-intro">
-            Keep everything that matters to your family organized,
-            secure, and effortlessly managed with AI
-          </p>
-
-          <div className="solution-cards">
-
-            <article className="solution-card solution-organize">
-              <div className="solution-card-copy">
-                <FolderOpen className="solution-line-icon" />
-                <h3>Organize</h3>
-                <p>Keep all family information in<br />one place.</p>
-              </div>
-
-              <div className="solution-organize-art" aria-hidden="true">
-                <span className="insurance-sheet insurance-sheet-back"></span>
-                <span className="insurance-sheet insurance-sheet-middle"></span>
-                <span className="insurance-sheet insurance-sheet-front">
-                  <Heart />
-                  <small>Life Insurance</small>
-                </span>
-              </div>
-            </article>
-
-            <article className="solution-card solution-insights">
-              <div className="solution-card-copy">
-                <Sparkles className="solution-line-icon" />
-                <h3>Get insights</h3>
-                <p>Let AI read, understand and<br />summarize your documents.</p>
-              </div>
-
-              <div className="solution-ai-orb" aria-hidden="true">
-                <img
-                  src={aiTrackerCircle}
-                  alt=""
-                  className="solution-ai-orb-image"
-                />
-              </div>
-            </article>
-
-            <article className="solution-card solution-track">
-              <div className="solution-card-copy">
-                <CalendarDays className="solution-line-icon" />
-                <h3>Stay on track</h3>
-                <p>Never miss renewals, payments<br />or important dates.</p>
-              </div>
-
-              <div className="solution-mini-calendar" aria-hidden="true">
-                <div className="mini-calendar-head">
-                  <span className="mini-calendar-arrow">‹</span>
-                  <strong>October 2026</strong>
-                  <span className="mini-calendar-arrow">›</span>
-                </div>
-
-                <div className="mini-calendar-weekdays">
-                  <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
-                  <span>Thu</span><span>Fri</span><span>Sat</span>
-                </div>
-
-                <div className="mini-calendar-days">
-                  <b className="mini-calendar-empty"></b>
-                  <b className="mini-calendar-empty"></b>
-                  <b className="mini-calendar-empty"></b>
-                  <b className="mini-calendar-date mini-calendar-event-blue">1</b>
-                  <b className="mini-calendar-date">2</b>
-                  <b className="mini-calendar-date">3</b>
-                  <b className="mini-calendar-date">4</b>
-
-                  <b className="mini-calendar-date">5</b>
-                  <b className="mini-calendar-date">6</b>
-                  <b className="mini-calendar-date">7</b>
-                  <b className="mini-calendar-date">8</b>
-                  <b className="mini-calendar-date">9</b>
-                  <b className="mini-calendar-date">10</b>
-                  <b className="mini-calendar-date">11</b>
-
-                  <b className="mini-calendar-date">12</b>
-                  <b className="mini-calendar-date">13</b>
-                  <b className="mini-calendar-date mini-calendar-event-multi">14</b>
-                  <b className="mini-calendar-date">15</b>
-                  <b className="mini-calendar-date">16</b>
-                  <b className="mini-calendar-date">17</b>
-                  <b className="mini-calendar-date">18</b>
-
-                  <b className="mini-calendar-date">19</b>
-                  <b className="mini-calendar-date">20</b>
-                  <b className="mini-calendar-date">21</b>
-                  <b className="mini-calendar-date">22</b>
-                  <b className="mini-calendar-date">23</b>
-                  <b className="mini-calendar-date">24</b>
-                  <b className="mini-calendar-date">25</b>
-
-                  <b className="mini-calendar-date">26</b>
-                  <b className="mini-calendar-date">27</b>
-                  <b className="mini-calendar-date">28</b>
-                  <b className="mini-calendar-date">29</b>
-                  <b className="mini-calendar-date">30</b>
-                  <b className="mini-calendar-date">31</b>
-                  <b className="mini-calendar-empty"></b>
-                </div>
-              </div>
-            </article>
-
-            <article className="solution-card solution-prepared">
-              <div className="solution-card-copy">
-                <ShieldCheck className="solution-line-icon" />
-                <h3>Be prepared</h3>
-                <p>Access what you need, when your<br />family needs it most.</p>
-              </div>
-
-              <div className="solution-handshake" aria-hidden="true">
-                <HeartHandshake />
-              </div>
-            </article>
-
-          </div>
-
-        </section>
-
+        <FamilyKitHowItWorks />
 
         {/* ======================================================
             FEATURES
@@ -1102,94 +1251,43 @@ function App() {
           id="features"
         >
 
-          <h2>
-            Everything your family needs,
-            <span> organized</span>
-          </h2>
+          <div className="fk-features-heading-badge">
+            <Layers aria-hidden="true" />
+            <span>FamilyKit Features</span>
+          </div>
 
+          <div className="fk-features-heading-row">
+            <h2>Your Entire Family. One Connected Ecosystem.</h2>
+            <span className="fk-features-heading-accent" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </span>
+          </div>
 
-          <p className="section-intro">
-
-            Keep your family's important information,
-            documents and responsibilities together.
-
+          <p className="section-intro fk-features-heading-subtitle">
+            From important documents to everyday needs, bring your entire family life together.
           </p>
 
 
-          <button className="text-link" type="button" onClick={openAllFeatures}>
 
-            Explore all Features
+          <div className="fk-features-tree-wrap fk-features-tree-wrap-desktop">
+            <img
+              className="fk-features-tree-image"
+              src={featuresTreeImage}
+              alt="FamilyKit family information tree"
+              loading="lazy"
+            />
+          </div>
 
-            <ArrowRight size={17} />
+          <div className="fk-features-ai-banner-desktop">
+            <img src={featuresAiBanner} alt="Powered by FamilyKit AI — find information instantly, get reminders and updates, and see source documents" loading="lazy" />
+          </div>
 
-          </button>
-
-
-          {/* ======================================================
-              NEW IMAGE-BASED FEATURE WHEEL
-              Existing feature-wheel code is preserved below.
-          ====================================================== */}
-
-          <div className="fk-image-feature-wheel">
-            <svg
-              className="fk-wheel-connectors-svg"
-              viewBox="0 0 620 610"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              {/* center -> Documents */}
-              <line x1="310" y1="200" x2="310" y2="126" />
-
-              {/* center -> Insurance */}
-              <line x1="388" y1="228" x2="445" y2="171" />
-
-              {/* center -> Finance */}
-              <line x1="420" y1="305" x2="489" y2="305" />
-
-              {/* center -> Property */}
-              <line x1="388" y1="382" x2="443" y2="438" />
-
-              {/* center -> Health */}
-              <line x1="310" y1="410" x2="310" y2="484" />
-
-              {/* center -> Household */}
-              <line x1="232" y1="382" x2="177" y2="438" />
-
-              {/* center -> Education */}
-              <line x1="200" y1="305" x2="131" y2="305" />
-
-              {/* center -> To do Lists */}
-              <line x1="232" y1="228" x2="175" y2="171" />
-            </svg>
-
-            <div className="fk-wheel-center">
-              <div className="fk-wheel-center-glow" aria-hidden="true" />
-              <div className="fk-wheel-center-image-wrap">
-                <img src={centerFamilyImage} alt="FamilyKit family" />
-              </div>
-            </div>
-
-            {featureWheelImages.map((feature, index) => (
-              <article
-                key={`image-wheel-${feature.title}`}
-                className={`fk-feature-circle fk-feature-circle-${index + 1} fk-tone-${feature.tone}`}
-              >
-                <img
-                  src={feature.image}
-                  alt=""
-                  aria-hidden="true"
-                  className="fk-feature-circle-image"
-                />
-
-                <h3 className="fk-feature-circle-title">
-                  {feature.title}
-                </h3>
-
-                <p className="fk-feature-circle-desc">
-                  {feature.desc}
-                </p>
-              </article>
-            ))}
+          <div className="fk-features-ai-tagline-desktop" aria-label="One family. One platform. Endless possibilities.">
+            <span className="fk-features-tagline-line" aria-hidden="true" />
+            <span className="fk-features-tagline-leaf" aria-hidden="true">🌿</span>
+            <strong>One family. One platform. Endless possibilities.</strong>
+            <span className="fk-features-tagline-leaf" aria-hidden="true">🌿</span>
+            <span className="fk-features-tagline-line" aria-hidden="true" />
           </div>
 
           {/* FEATURE WHEEL — original code preserved */}
@@ -1247,458 +1345,6 @@ function App() {
 
 
         {/* ======================================================
-            HOW IT WORKS
-        ====================================================== */}
-
-        <section
-          className="how-section"
-          id="how"
-        >
-
-          <div className="section-label fk-desktop-section-label">
-            <img src={howItWorksIcon} alt="" aria-hidden="true" />
-            <span>How it Works</span>
-          </div>
-
-
-          <h2>
-            Minimum Input and
-            <span> Maximum Organization</span>
-          </h2>
-
-
-          <p className="section-intro">
-
-            Get started in minutes and let AI
-            do the heavy lifting.
-
-          </p>
-
-
-
-          <div className="how-it-works-visual">
-            <img
-              src={mobileIcon}
-              alt="FamilyKit mobile organization"
-              className="how-it-works-mobile-icon"
-            />
-          </div>
-
-
-          <div className="steps">
-
-
-            {/* STEP 1 */}
-
-            <div className="step-card">
-
-              <span className="step-number">
-                Step - 01
-              </span>
-
-              <div className="step-icon">
-                <Users />
-              </div>
-
-              <div>
-
-                <h3>
-                  Create your family account
-                </h3>
-
-                <p>
-                  Set up your family space securely.
-                </p>
-
-              </div>
-
-            </div>
-
-
-            {/* STEP 2 */}
-
-            <div className="step-card">
-
-              <span className="step-number">
-                Step - 02
-              </span>
-
-              <div className="step-icon">
-                <FileText />
-              </div>
-
-              <div>
-
-                <h3>
-                  Add your documents
-                </h3>
-
-                <p>
-                  Upload or capture documents easily.
-                </p>
-
-              </div>
-
-            </div>
-
-
-            {/* STEP 3 */}
-
-            <div className="step-card">
-
-              <span className="step-number">
-                Step - 03
-              </span>
-
-              <div className="step-icon step-icon-image">
-                <img
-                  src={stepThreePurpleIcon}
-                  alt=""
-                  className="step-three-purple-icon"
-                />
-              </div>
-
-              <div>
-
-                <h3>
-                  AI organizes & understands
-                </h3>
-
-                <p>
-                  We read, extract and organize key details.
-                </p>
-
-              </div>
-
-            </div>
-
-
-            {/* STEP 4 */}
-
-            <div className="step-card">
-
-              <span className="step-number">
-                Step - 04
-              </span>
-
-              <div className="step-icon">
-                <Bell />
-              </div>
-
-              <div>
-
-                <h3>
-                  Stay notified & in control
-                </h3>
-
-                <p>
-                  Get reminders, insights and quick actions.
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-
-          {/* ======================================================
-              NEW MOBILE HOW-IT-WORKS TIMELINE
-              Added without removing the original steps above.
-              Desktop/tablet keeps the original cards.
-          ====================================================== */}
-
-          <div className="mobile-how-timeline" aria-label="How FamilyKit works">
-
-            <article className="mobile-how-step">
-              <div className="mobile-how-marker">
-                <Users />
-              </div>
-
-              <div className="mobile-how-card">
-                <span className="mobile-how-number">Step -01</span>
-                <h3>Create your family account</h3>
-                <p>Set up your family space securely.</p>
-              </div>
-            </article>
-
-
-            <article className="mobile-how-step">
-              <div className="mobile-how-marker">
-                <FileText />
-              </div>
-
-              <div className="mobile-how-card">
-                <span className="mobile-how-number">Step -02</span>
-                <h3>Add your documents</h3>
-                <p>Upload or capture documents easily.</p>
-              </div>
-            </article>
-
-
-            <article className="mobile-how-step">
-              <div className="mobile-how-marker">
-                <Sparkles />
-              </div>
-
-              <div className="mobile-how-card">
-                <span className="mobile-how-number">Step -03</span>
-                <h3>AI organizes &amp; understands</h3>
-                <p>We read, extract and organize key details.</p>
-              </div>
-            </article>
-
-
-            <article className="mobile-how-step">
-              <div className="mobile-how-marker">
-                <Bell />
-              </div>
-
-              <div className="mobile-how-card">
-                <span className="mobile-how-number">Step -04</span>
-                <h3>Stay notified &amp; in control</h3>
-                <p>Get reminders, insights and quick actions.</p>
-              </div>
-            </article>
-
-          </div>
-
-        </section>
-
-
-        {/* ======================================================
-            DASHBOARD
-        ====================================================== */}
-
-        <section className="dashboard-section">
-
-          <div className="section-label fk-desktop-section-label">
-            <img src={dashboardIcon} alt="" aria-hidden="true" />
-            <span>Your Family Dashboard</span>
-          </div>
-
-
-          <h2>
-            A clear view of your
-            <span> family life</span>
-          </h2>
-
-
-          <p className="section-intro">
-
-            Your family’s documents, reminders and essentials
-            in one place.
-
-          </p>
-
-
-
-
-          {/* ======================================================
-              NEW MOBILE FAMILY DASHBOARD PRESENTATION
-              Existing dashboard-points and phone-dashboard below
-              are preserved unchanged.
-          ====================================================== */}
-
-          <div className="mobile-family-dashboard">
-
-            <div className="mobile-dashboard-preview" aria-hidden="true">
-              <div className="mobile-dashboard-preview-inner"></div>
-            </div>
-
-            <div className="mobile-dashboard-benefits">
-
-              <div className="mobile-dashboard-benefit">
-                <span className="mobile-dashboard-check">
-                  <Check />
-                </span>
-                <span>Quick access to everything</span>
-              </div>
-
-              <div className="mobile-dashboard-benefit">
-                <span className="mobile-dashboard-check">
-                  <Check />
-                </span>
-                <span>Upcoming renewals and payments</span>
-              </div>
-
-              <div className="mobile-dashboard-benefit">
-                <span className="mobile-dashboard-check">
-                  <Check />
-                </span>
-                <span>Family-wide visibility (with your permission)</span>
-              </div>
-
-              <div className="mobile-dashboard-benefit">
-                <span className="mobile-dashboard-check">
-                  <Check />
-                </span>
-                <span>Works across mobile and web</span>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div className="dashboard-points">
-
-            <div>
-              <Check />
-              Quick access to everything
-            </div>
-
-            <div>
-              <Check />
-              Upcoming renewals and payments
-            </div>
-
-            <div>
-              <Check />
-              Family-wide visibility
-            </div>
-
-            <div>
-              <Check />
-              Works across mobile and web
-            </div>
-
-          </div>
-
-
-          {/* PHONE UI */}
-
-          <div className="phone-dashboard">
-
-            <div className="phone-top">
-
-              <div>
-
-                <small>
-                  Hello
-                </small>
-
-                <strong>
-                  My Family
-                </strong>
-
-              </div>
-
-
-              <div className="profile-circle">
-                F
-              </div>
-
-            </div>
-
-
-            <div className="dashboard-summary">
-
-              <div>
-
-                <FileText />
-
-                <strong>
-                  12
-                </strong>
-
-                <small>
-                  Documents
-                </small>
-
-              </div>
-
-
-              <div>
-
-                <Bell />
-
-                <strong>
-                  04
-                </strong>
-
-                <small>
-                  Reminders
-                </small>
-
-              </div>
-
-
-              <div>
-
-                <Users />
-
-                <strong>
-                  05
-                </strong>
-
-                <small>
-                  Members
-                </small>
-
-              </div>
-
-            </div>
-
-
-            <h4>
-              Upcoming
-            </h4>
-
-
-            <div className="mini-card">
-
-              <div className="mini-icon">
-                <ReceiptText />
-              </div>
-
-              <div>
-
-                <strong>
-                  Electricity Bill
-                </strong>
-
-                <small>
-                  Due today
-                </small>
-
-              </div>
-
-              <ArrowRight size={17} />
-
-            </div>
-
-
-            <div className="mini-card">
-
-              <div className="mini-icon">
-                <FileText />
-              </div>
-
-              <div>
-
-                <strong>
-                  Passport
-                </strong>
-
-                <small>
-                  Document update
-                </small>
-
-              </div>
-
-              <ArrowRight size={17} />
-
-            </div>
-
-          </div>
-
-        
-</section>
-
-
-        {/* ======================================================
             REMINDERS
         ====================================================== */}
 
@@ -1743,7 +1389,7 @@ function App() {
 
               <div className="smart-reminder-chip smart-chip-nominee">
                 <Users />
-                <span>Active updates for<br />Nominee’s</span>
+                <span>Active updates for<br />Nominees</span>
                 <Check className="smart-chip-check" />
               </div>
 
@@ -1755,7 +1401,7 @@ function App() {
 
               <div className="smart-reminder-chip smart-chip-find">
                 <img className="smart-reminder-chip-image" src={fileImage} alt="" />
-                <span>Find Documents easy</span>
+                <span>Find Documents Easily</span>
                 <Check className="smart-chip-check" />
               </div>
 
@@ -1841,7 +1487,7 @@ function App() {
 
             <div className="reminder-chip">
               <ReceiptText />
-              EMI's and Bill Payments
+              EMIs and Bill Payments
             </div>
 
             <div className="reminder-chip">
@@ -1917,11 +1563,11 @@ function App() {
             <div className="tracker-heading-copy">
 
               <h2>
-                AI Powered Tracker
+                AI-Powered Tracker
               </h2>
 
               <p>
-                We update you everytime
+                We update you every time
               </p>
 
             </div>
@@ -1971,208 +1617,17 @@ function App() {
             SECURITY
         ====================================================== */}
 
-        <section
-          className="security-section"
-          id="security"
-        >
-
-          <div className="section-label">
-            Security
-          </div>
-
-
-          <h2>
-            Your family’s data stays
-            <span> private and secure</span>
-          </h2>
-
-
-          <div className="security-grid">
-
-            <div className="security-card">
-
-              <div className="security-icon">
-                <LockKeyhole />
-              </div>
-
-              <h3>
-                AES-256 Encryption
-              </h3>
-
-              <p>
-                Strong protection for your family data.
-              </p>
-
-            </div>
-
-
-            <div className="security-card">
-
-              <div className="security-icon security-reference-icon" aria-hidden="true">
-                <svg className="security-location-svg" viewBox="0 0 48 48">
-                  <path d="M24 42s13-12.1 13-24A13 13 0 0 0 11 18c0 11.9 13 24 13 24Z" />
-                  <circle cx="24" cy="18" r="5.2" />
-                </svg>
-              </div>
-
-              <h3>
-                India data residency
-              </h3>
-
-              <p>
-                Your data is stored in AWS India regions.
-              </p>
-
-            </div>
-
-
-            <div className="security-card">
-
-              <div className="security-icon security-reference-icon" aria-hidden="true">
-                <img
-                  src={noAiTrainingIcon}
-                  alt=""
-                  className="security-no-ai-training-icon"
-                />
-              </div>
-
-              <h3>
-                No AI Training
-              </h3>
-
-              <p>
-                Your personal data is never used to train public AI models.
-              </p>
-
-            </div>
-
-
-            <div className="security-card">
-
-              <div className="security-icon">
-                <Users />
-              </div>
-
-              <h3>
-                Your control
-              </h3>
-
-              <p>
-                Only you and the people you authorize can access your family information.
-              </p>
-
-            </div>
-
-          </div>
-
-        </section>
+        <FamilyKitSecurity />
 
 
         {/* ======================================================
             FAQ
         ====================================================== */}
 
-        <section className="faq-section">
-
-          <div className="section-label">
-            Frequently Asked Questions
-          </div>
-
-
-          <h2>
-            Have questions?
-            <span> We have answers.</span>
-          </h2>
-
-
-          <div className="faq-list">
-
-            {faqs.map((faq, index) => (
-
-              <div
-                className={
-                  `faq-item ${
-                    openFaq === index ? "faq-open" : ""
-                  }`
-                }
-                key={faq.question}
-              >
-
-                <button
-                  className="faq-question"
-                  onClick={() => toggleFaq(index)}
-                >
-
-                  <span>
-                    {faq.question}
-                  </span>
-
-                  <ChevronDown />
-
-                </button>
-
-
-                {openFaq === index && (
-
-                  <div className="faq-answer">
-                    {faq.answer}
-                  </div>
-
-                )}
-
-              </div>
-
-            ))}
-
-          </div>
-
-        </section>
-
-
-        {/* ======================================================
-            GET STARTED
-        ====================================================== */}
-
-        <section className="early-access">
-
-          <div className="cta-decoration cta-decoration-one" />
-          <div className="cta-decoration cta-decoration-two" />
-
-
-          <span className="cta-small">
-            Be Among the First
-          </span>
-
-
-          <h2>
-            Be Among the First to Experience 
-            <strong> FamilyKit</strong>
-          </h2>
-
-
-          <p>
-
-            Join our early access program and help shape
-            the future of family life management.
-
-          </p>
-
-
-          <button>
-
-            Get Early Access
-
-            <ChevronRight className="cta-chevron" />
-
-          </button>
-
-          <img
-            src={earlyAccessPhone}
-            alt="FamilyKit mobile app"
-            className="early-access-phone"
-          />
-
-        </section>
+        <FamilyKitTestimonials />
+        <FamilyKitPricing />
+        <FamilyKitFaq />
+        <FamilyKitEarlyAccess />
 
       </main>
 
@@ -2181,79 +1636,7 @@ function App() {
           FOOTER
       ====================================================== */}
 
-      <footer className="footer">
-
-        <div className="footer-brand">
-
-          <div className="brand">
-
-            <div className="brand-mark">
-
-              <img
-                src={familyKitLogo}
-                alt="FamilyKit"
-                className="brand-icon-image"
-              />
-
-            </div>
-
-            <span className="footer-brand-name">
-              FamilyKit
-            </span>
-
-          </div>
-
-
-          <p>
-            A Medhaara Innovations product
-          </p>
-
-          <div className="footer-address">
-            <span>Office Address:</span>
-            <span>Street address, City, District, State, Pincode</span>
-          </div>
-
-                  <div className="footer-socials">
-            <a href="#" aria-label="Facebook"><FaFacebookF /></a>
-            <a href="#" aria-label="Instagram"><FaInstagram /></a>
-            <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
-            <a href="#" aria-label="X"><FaXTwitter /></a>
-          </div>
-
-</div>
-
-
-        <div className="footer-links">
-
-          <div className="footer-link-column">
-            <a href="#home">About</a>
-            <a href="#security">Privacy</a>
-            <a href="#home">Terms</a>
-            <a href="#home">Contact</a>
-          </div>
-
-          <div className="footer-link-column">
-            <a href="#home">About</a>
-            <a href="#security">Privacy</a>
-            <a href="#home">Terms</a>
-            <a href="#home">Contact</a>
-          </div>
-
-          <div className="footer-link-column">
-            <a href="#home">About</a>
-            <a href="#security">Privacy</a>
-            <a href="#home">Terms</a>
-            <a href="#home">Contact</a>
-          </div>
-
-        </div>
-
-
-        <div className="footer-bottom">
-          © 2026 FamilyKit. All rights reserved.
-        </div>
-
-      </footer>
+      <FamilyKitFooter />
 
     </div>
     </>

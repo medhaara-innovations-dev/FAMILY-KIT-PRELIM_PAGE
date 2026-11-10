@@ -5,3 +5,5 @@ dist/
 .env.*
 !.env.example
 "@ | Set-Content .gitignore
+# Local Netlify folder
+.netlify
