@@ -8960,56 +8960,42 @@ body {
   }
 }
 
-/* FAQ — consolidated question layout (replaces conflicting legacy overrides).
-   Desktop keeps its original appearance. Mobile reserves a stable chevron
-   column while allowing the question to wrap naturally. */
-.familykit-app .fk-new-faq-item h3 > button,
-.fk-mobile-app .fk-new-faq-item h3 > button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 12px;
-}
-.familykit-app .fk-new-faq-item h3 > button > span,
-.fk-mobile-app .fk-new-faq-item h3 > button > span {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: none;
-  white-space: normal;
-  overflow-wrap: normal;
-  word-break: normal;
-  text-align: left;
-}
-.familykit-app .fk-new-faq-item h3 > button > svg,
-.fk-mobile-app .fk-new-faq-item h3 > button > svg {
-  position: static;
-  flex: 0 0 21px;
-  width: 21px;
-  height: 21px;
-  margin-left: auto;
-}
+/* FAQ mobile: restore the original compact question layout and chevron position.
+   The JSX explicitly breaks only FAQ 2 before FamilyKit? and FAQ 4 before
+   information?. All other questions keep their original wrapping. */
 @media (max-width: 700px) {
   .fk-mobile-app .fk-new-faq-item h3 > button {
-    display: flex;
-    padding: 16px;
-    gap: 12px;
-    font-size: 16px;
-    line-height: 1.45;
-    letter-spacing: normal;
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 16px 39px 16px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: -0.15px;
+    text-align: left;
+  }
+  .fk-mobile-app .fk-new-faq-item h3 > button > span {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .fk-mobile-app .fk-new-faq-item h3 > button > svg {
-    position: static;
-    flex: 0 0 19px;
-    width: 19px;
-    height: 19px;
-    transform: none;
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    transform: translateY(-50%);
   }
   .fk-mobile-app .fk-new-faq-item.is-open h3 > button > svg {
-    transform: rotate(180deg);
+    transform: translateY(-50%) rotate(180deg);
   }
-  /* JSX-specified break applies only to FAQ 2 and 4. */
   .fk-mobile-app .fk-new-faq-item .fk-faq-mobile-break {
-    display: block;
+    display: initial;
   }
 }
