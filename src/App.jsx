@@ -645,7 +645,7 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
       <main>
         <section className="fk-mobile-hero" id="m-home">
           <div className="fk-mobile-pill"><Sparkles /> Your family, well organized</div>
-          <h1>The Smart Family Life Management App</h1>
+          <h1>The Smart Family Life Management App</h1>
           <p>Bring your family’s important documents, finances, assets, reminders and everyday tasks into one secure, easy-to-use space.</p>
           <div className="fk-mobile-hero-actions">
             <button>Get Started <ChevronRight className="cta-chevron-icon" /></button>
@@ -721,7 +721,7 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
           <div className="fk-mobile-reminder-stage">
             <div className="fk-mobile-purple-base"></div>
             <div className="fk-mchip mc1"><img className="fk-mchip-image" src={insuranceImage} alt="" /><span>Insurance Renewals</span><Check/></div>
-            <div className="fk-mchip mc2"><img className="fk-mchip-image" src={householdImage} alt="" /><span>EMI’s and bill Payments</span><Check/></div>
+            <div className="fk-mchip mc2"><img className="fk-mchip-image" src={householdImage} alt="" /><span>EMIs and Bill Payments</span><Check/></div>
             <div className="fk-mchip mc3"><Users/><span>Active updates for Nominees</span><Check/></div>
             <div className="fk-mchip mc4"><img className="fk-mchip-image" src={heroShieldImage} alt="" /><span>Warranties and Service Reminders</span><Check/></div>
             <div className="fk-mchip mc5"><img className="fk-mchip-image" src={fileImage} alt="" /><span>Find Documents Easily</span><Check/></div>
@@ -1346,7 +1346,7 @@ function App() {
 
               <div className="smart-reminder-chip smart-chip-emi">
                 <img className="smart-reminder-chip-image" src={householdImage} alt="" />
-                <span>EMI’s and bill Payments</span>
+                <span>EMIs and Bill Payments</span>
                 <Check className="smart-chip-check" />
               </div>
 

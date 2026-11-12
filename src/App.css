@@ -7651,6 +7651,7 @@ body {
   }
   .fk-how-subtitle {
     max-width:350px; margin:12px auto 18px; font-size:12px !important; line-height:18px !important;
+    text-align:left; padding-left:10px;
   }
   .fk-how-step-grid { grid-template-columns:1fr !important; gap:9px !important; }
   .fk-how-step-card {
@@ -7678,7 +7679,7 @@ body {
   .fk-how-summary > div svg { width:13px; height:13px; }
   .fk-how-summary > svg { width:12px; height:12px; }
   .fk-how-summary strong { font-size:8px; white-space:nowrap; }
-  .fk-how-summary > p { margin-top:2px; font-size:8px !important; line-height:12px !important; }
+  .fk-how-summary > p { margin-top:2px; text-align:left !important; text-align-last:left !important; font-size:8px !important; line-height:12px !important; }
 
   .fk-how-ai-demo {
     margin-top:11px; padding:12px; grid-template-columns:1fr; gap:10px; border-radius:14px;
@@ -8052,6 +8053,7 @@ body {
   }
   .fk-mobile-features > .fk-features-heading-subtitle {
     max-width:350px !important;
+    text-align:left !important;
     margin:7px auto 8px !important;
     color:#050011 !important;
     font-family:"Mulish", sans-serif !important;
@@ -8375,7 +8377,7 @@ body {
 .fk-privacy-extra:last-child{border:0}
 .fk-privacy-extra>svg{width:38px;height:38px;color:#2D0B84;stroke-width:1.9;margin:auto auto 9px}
 .fk-privacy-extra h4{margin:0 0 6px;font:800 17px/1.3 "Poppins",sans-serif;color:#2D0B84}
-.fk-privacy-extra p{margin:0;color:#2D0B84;font-size:14px;line-height:1.45}
+.fk-privacy-extra p{margin:0;color:#2D0B84;font-size:14px;line-height:1.45;text-align:left}
 .fk-privacy-banner{display:flex;align-items:center;gap:18px;padding:19px 24px;border:1px solid #EBE6F7;border-radius:20px;background:linear-gradient(105deg,#EDEAF3,#EDEAF3);box-shadow:0 8px 18px #2D0B8418}
 .fk-privacy-banner-icon{width:61px;height:61px;flex:0 0 61px;display:grid;place-items:center;color:#FFFFFF;border-radius:17px;background:linear-gradient(140deg,#2D0B84,#2D0B84)}
 .fk-privacy-banner-icon svg{width:37px;height:37px}
@@ -8391,7 +8393,7 @@ body {
 .fk-mobile-app .fk-privacy-intro{padding-bottom:0;align-self:stretch}
 .fk-mobile-app .fk-privacy-pill{font-size:13px;padding:7px 12px}
 .fk-mobile-app .fk-privacy-section .fk-privacy-intro h2{font-size:clamp(28px,7.1vw,32px)!important;letter-spacing:-.9px;line-height:1.12;margin:13px 0 10px!important;text-align:left}
-.fk-mobile-app .fk-privacy-intro p{font-size:15px;line-height:1.48}
+.fk-mobile-app .fk-privacy-intro p{font-size:15px;line-height:1.48;text-align:left!important;text-align-last:left!important;width:100%;}
 .fk-mobile-app .fk-privacy-hero-art{width:100%;min-height:0;margin-top:10px}
 .fk-mobile-app .fk-privacy-hero-art>img{width:min(100%,330px);max-height:245px}
 .fk-mobile-app .fk-privacy-shield{width:85px;height:100px;right:0;top:5%}
@@ -8413,7 +8415,7 @@ body {
 .fk-mobile-app .fk-privacy-banner{flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px 14px}
 .fk-mobile-app .fk-privacy-banner-icon{width:52px;height:52px;flex-basis:52px}
 .fk-mobile-app .fk-privacy-banner h3{font-size:19px}
-.fk-mobile-app .fk-privacy-banner p{font-size:14px}
+.fk-mobile-app .fk-privacy-banner p{font-size:14px;text-align:left;width:100%;padding-left:10px}
 .fk-mobile-app .fk-privacy-banner button{width:100%;max-width:260px;font-size:12px;margin-top:3px}
 }
 
@@ -8484,7 +8486,7 @@ body {
 .fk-mobile-app .fk-price-pill{font-size:16px;padding:8px 18px}
 .fk-mobile-app .fk-price-pill svg{width:20px;height:20px}
 .fk-mobile-app .fk-price-section h2{font-size:clamp(28px,7vw,32px)!important;line-height:1.17;margin:12px 0 10px!important;letter-spacing:-.6px}
-.fk-mobile-app .fk-price-subtitle{font-size:15px;line-height:1.45;margin:0 0 35px}
+.fk-mobile-app .fk-price-subtitle{font-size:15px;line-height:1.45;margin:0 0 35px;text-align:left;padding-left:10px}
 .fk-mobile-app .fk-price-layout{grid-template-columns:minmax(0,1fr);gap:24px}
 .fk-mobile-app .fk-price-plan{grid-row:1;padding:36px 20px 22px;border-radius:22px;margin-top:12px}
 .fk-mobile-app .fk-price-offer{font-size:16px;left:9%;right:9%;top:-22px;padding:10px 5px}
@@ -8526,7 +8528,7 @@ body {
  .fk-mobile-app .fk-new-faq{padding:46px 15px 58px;}
  .fk-mobile-app .fk-new-faq-pill{font-size:12px;padding:8px 13px;}
  .fk-mobile-app .fk-new-faq h2{font-size:29px;line-height:1.22;}
- .fk-mobile-app .fk-new-faq-subtitle{font-size:15px;margin-bottom:22px;}
+ .fk-mobile-app .fk-new-faq-subtitle{font-size:15px;margin-bottom:22px;text-align:left;}
  .fk-mobile-app .fk-new-faq-list{gap:10px;}
  .fk-mobile-app .fk-new-faq-item{border-radius:13px;}
  .fk-mobile-app .fk-new-faq-item h3 button{padding:16px;font-size:16px;line-height:1.45;}
@@ -9265,18 +9267,508 @@ body {
 }
 
 
-/* Why FamilyKit: readable mobile card typography only.
-   Keep the approved typefaces, colors, icon layout and desktop styling. */
+/* Mobile-only readability adjustment for the six image-free Why FamilyKit cards. */
 @media (max-width: 700px) {
   .fk-mobile-app .why-familykit-section-mobile .why-problem-card h3 {
     font-size: 16px !important;
     line-height: 1.4 !important;
-    font-weight: 600 !important;
-    letter-spacing: -0.15px;
+    letter-spacing: -0.1px !important;
   }
   .fk-mobile-app .why-familykit-section-mobile .why-problem-card p {
     font-size: 14px !important;
     line-height: 1.55 !important;
-    font-weight: 400 !important;
+    margin-top: 7px !important;
   }
+  .fk-mobile-app .why-familykit-section-mobile .why-problem-copy {
+    padding: 18px 16px !important;
+  }
+  .fk-mobile-app .why-familykit-section-mobile .why-problem-title-row {
+    align-items: start !important;
+    gap: 10px !important;
+  }
+}
+
+
+/* Mobile-only: improve readability of image-free How It Works step cards. */
+@media (max-width: 700px) {
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-step-grid .fk-how-step-card h3 {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-step-grid .fk-how-step-card p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    margin-top: 6px !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-step-grid .fk-how-step-number {
+    font-size: 10px !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-step-grid .fk-how-step-content {
+    padding: 18px 16px !important;
+  }
+}
+
+/* Mobile: larger readable text in the workflow summary and Ask FamilyKit AI.
+   Scoped to the mobile component; desktop and step cards remain unchanged. */
+@media (max-width: 700px) {
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step strong {
+    font-size: clamp(9px, 2.65vw, 12px) !important;
+    line-height: 1.25 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary > p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-ai-intro h3 {
+    font-size: 18px !important;
+    line-height: 1.35 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-ai-intro p {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-question,
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-question span {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-answer strong {
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-answer p {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-answer small,
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-example-note {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-closing {
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+
+/* FamilyKit typography consistency pass (2026-11): retains Poppins/Mulish,
+   colours, geometry, artwork and interactions. Real content only. */
+:where(.familykit-app,.fk-mobile-app) {
+  --fk-type-hero: clamp(3.5rem, 4.6vw, 4rem);
+  --fk-type-section: clamp(2rem, 3.05vw, 2.75rem);
+  --fk-type-card: clamp(1.25rem, 1.65vw, 1.5rem);
+  --fk-type-body: clamp(1rem, 1.15vw, 1.125rem);
+  --fk-type-label: .875rem;
+}
+:where(.familykit-app,.fk-mobile-app) :is(.why-familykit-intro,.why-problem-copy p,.fk-how-subtitle,.fk-how-step-content p,.fk-how-ai-intro p,.fk-how-answer p,.fk-how-question,.fk-how-summary > p,.fk-how-example-note,.fk-privacy-intro p,.fk-privacy-commitment p,.fk-privacy-extra p,.fk-social-copy p,.fk-price-subtitle,.fk-price-benefit p,.fk-new-faq-subtitle,.fk-new-faq-answer p,.fk-end-cta-content p) {
+  font-size:var(--fk-type-body) !important;
+  line-height:1.6 !important;
+  font-weight:400;
+}
+:where(.familykit-app,.fk-mobile-app) :is(.why-problem-title-row h3,.fk-how-step-content h3,.fk-how-ai-intro h3,.fk-privacy-commitment h4,.fk-privacy-extra h4,.fk-price-benefit h3) {
+  font-size:var(--fk-type-card) !important;
+  line-height:1.35 !important;
+  font-weight:600;
+}
+:where(.familykit-app,.fk-mobile-app) :is(.fk-how-step-number,.fk-how-answer small,.fk-how-summary-step strong,.fk-privacy-pill,.fk-price-pill,.fk-social-pill,.fk-how-label,.why-familykit-pill,.fk-new-faq-pill) {
+  font-size:max(.875rem, 1em);
+  line-height:1.4;
+}
+:where(.familykit-app,.fk-mobile-app) :is(.why-familykit-heading,.fk-how-workflow-inner > h2,.fk-privacy-intro h2,.fk-social-copy > h2,.fk-price-inner > h2,.fk-new-faq-inner > h2) {
+  font-size:var(--fk-type-section) !important;
+  line-height:1.22 !important;
+  font-weight:700;
+  text-wrap:balance;
+}
+:where(.familykit-app,.fk-mobile-app) :is(p,h1,h2,h3,h4) { overflow-wrap:break-word; }
+@media (max-width:700px) {
+  .fk-mobile-app {
+    --fk-type-hero:clamp(2.375rem,9vw,2.75rem);
+    --fk-type-section:clamp(1.75rem,6.7vw,2.125rem);
+    --fk-type-card:clamp(1.25rem,4.8vw,1.5rem);
+    --fk-type-body:1rem;
+  }
+  .fk-mobile-app .fk-mobile-hero h1 {font-size:var(--fk-type-hero) !important;line-height:1.16 !important;}
+  .fk-mobile-app .why-familykit-section-mobile .why-problem-card h3,
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-step-card h3 {font-size:var(--fk-type-card) !important;}
+  .fk-mobile-app .why-familykit-section-mobile .why-problem-card p,
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-step-card p {font-size:var(--fk-type-body) !important;line-height:1.6 !important;}
+  .fk-mobile-app .fk-how-workflow-mobile :is(.fk-how-ai-intro p,.fk-how-question,.fk-how-question span,.fk-how-answer p,.fk-how-summary > p,.fk-how-example-note,.fk-how-answer small) {font-size:1rem !important;line-height:1.55 !important;}
+  .fk-mobile-app .fk-how-workflow-mobile :is(.fk-how-ai-intro h3,.fk-how-closing) {font-size:clamp(1.25rem,5vw,1.5rem) !important;line-height:1.35 !important;}
+  /* Workflow labels reflow instead of becoming unreadably small. */
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step strong {font-size:.875rem !important;line-height:1.3 !important;white-space:normal;}
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary {max-width:100%;}
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step {min-width:0;}
+}
+@media (max-width:360px) {
+  .fk-mobile-app {--fk-type-hero:2.375rem;--fk-type-section:1.75rem;}
+}
+
+/* Mobile How It Works: keep all four workflow stages on ONE row.
+   Overrides the earlier two-column layout without affecting desktop. */
+@media (max-width: 700px) {
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    column-gap: 2px !important;
+    row-gap: 0 !important;
+    padding: 12px 7px !important;
+    min-width: 0 !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step {
+    flex: 0 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 32px !important;
+    padding: 6px 5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    white-space: nowrap !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step strong {
+    font-family: "Mulish", sans-serif !important;
+    font-size: clamp(8px, 2.5vw, 11px) !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step > svg,
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-ai-organizes-icon {
+    width: 12px !important;
+    height: 12px !important;
+    min-width: 12px !important;
+    flex: 0 0 12px !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-flow-arrow {
+    display: flex !important;
+    flex: 0 1 9px !important;
+    min-width: 6px !important;
+    width: 9px !important;
+    font-size: 13px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary > p {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    margin: 10px 0 0 !important;
+    padding: 0 2px !important;
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    text-align: center !important;
+  }
+  /* Let the paragraph wrap below the single row of steps. */
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary { flex-wrap: wrap !important; }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step,
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-flow-arrow { order: 0 !important; }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary > p { order: 1 !important; }
+}
+
+/* Mobile workflow refinement: larger capsules, four stages on exactly one row.
+   Grid reserves space for each capsule and each arrow; description sits below. */
+@media (max-width: 700px) {
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) 8px minmax(0,1.65fr) 8px minmax(0,1.12fr) 8px minmax(0,1.25fr) !important;
+    column-gap: clamp(1px, .5vw, 4px) !important;
+    row-gap: 12px !important;
+    align-items: center !important;
+    padding: 14px 8px !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    padding: 8px 3px !important;
+    gap: clamp(2px, .6vw, 5px) !important;
+    white-space: nowrap !important;
+    flex: none !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step strong {
+    font-size: clamp(8px, 2.65vw, 12px) !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary-step > svg,
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-ai-organizes-icon {
+    width: clamp(11px, 3vw, 15px) !important;
+    height: clamp(11px, 3vw, 15px) !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-flow-arrow {
+    width: 8px !important;
+    min-width: 0 !important;
+    font-size: 12px !important;
+    justify-self: center !important;
+  }
+  .fk-mobile-app .fk-how-workflow-mobile .fk-how-summary > p {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 4px 0 14px !important;
+  }
+}
+
+
+/* FamilyKit approved DESKTOP typography scale — 1024px and wider.
+   Intentionally scoped to desktop app so mobile capsules and layouts are untouched.
+   Typography only: no spacing, dimensions, colours or interaction changes. */
+@media screen and (min-width: 1024px) {
+  .familykit-app { 
+    --fk-type-hero: 64px;
+    --fk-type-section: 42px;
+    --fk-type-card: 24px;
+    --fk-type-body: 18px;
+    --fk-type-label: 14px;
+  }
+  .familykit-app .hero h1 { font-size:64px !important; line-height:1.12 !important; }
+  .familykit-app :is(.why-familykit-heading,.fk-how-workflow-inner > h2,.fk-privacy-intro h2,.fk-social-copy > h2,.fk-price-inner > h2,.fk-new-faq-inner > h2,.fk-end-cta-content > h2) {
+    font-size:42px !important; line-height:1.2 !important;
+  }
+  .familykit-app :is(.fk-social-copy > h3,.fk-privacy-divider h3,.fk-privacy-banner h3,.fk-how-closing) {
+    font-size:32px !important; line-height:1.25 !important;
+  }
+  .familykit-app :is(.why-problem-title-row h3,.fk-how-step-content h3,.fk-how-ai-intro h3,.fk-privacy-commitment h4,.fk-privacy-extra h4,.fk-price-benefit h3,.fk-price-plan > h3) {
+    font-size:24px !important; line-height:1.35 !important;
+  }
+  .familykit-app :is(.fk-price-family strong,.fk-how-answer strong,.fk-privacy-banner h4) {
+    font-size:20px !important; line-height:1.35 !important;
+  }
+  .familykit-app :is(.hero-description,.why-familykit-intro,.fk-how-subtitle,.fk-privacy-intro > p,.fk-social-copy > p,.fk-price-subtitle,.fk-new-faq-subtitle,.fk-end-cta-content > p) {
+    font-size:20px !important; line-height:1.6 !important;
+  }
+  .familykit-app :is(.why-problem-copy p,.fk-how-step-content p,.fk-how-ai-intro p,.fk-how-answer p,.fk-how-question,.fk-how-summary > p,.fk-privacy-commitment p,.fk-privacy-extra p,.fk-price-benefit p,.fk-new-faq-answer p) {
+    font-size:18px !important; line-height:1.6 !important;
+  }
+  .familykit-app :is(.desktop-nav a,.desktop-cta,.primary-btn,.secondary-btn,.fk-price-join,.fk-end-cta-button,.fk-privacy-banner button,.fk-new-faq-item h3 button) {
+    font-size:16px !important;
+  }
+  .familykit-app :is(.fk-price-family span,.fk-price-amount > span,.fk-social-coming,.fk-end-cta-benefits span,.fk-end-footer-group h3) {
+    font-size:16px !important;
+  }
+  .familykit-app :is(.why-familykit-pill,.fk-how-label,.fk-how-step-number,.fk-privacy-pill,.fk-social-pill,.fk-price-pill,.fk-new-faq-pill,.fk-how-answer small,.fk-how-example-note,.fk-how-summary-step strong) {
+    font-size:14px !important;
+  }
+  .familykit-app :is(.fk-end-footer-about p,.fk-end-footer-group-links a,.fk-end-footer-group-links span,.fk-end-footer-bottom) {
+    font-size:15px !important; line-height:1.5 !important;
+  }
+  .familykit-app .fk-price-amount strong { font-size:clamp(32px, 4vw, 64px) !important; }
+}
+
+
+/* APPROVED MOBILE TYPOGRAPHY — mobile application only, up to 1023px.
+   Does not change the seven-column How It Works capsule row or its labels. */
+@media (max-width: 1023px) {
+  .fk-mobile-app {
+    --fk-type-hero: 42px;
+    --fk-type-section: 32px;
+    --fk-type-card: 21px;
+    --fk-type-body: 16px;
+    --fk-type-label: 14px;
+  }
+  .fk-mobile-app .fk-mobile-hero h1 { font-size:42px !important; line-height:1.15 !important; }
+  .fk-mobile-app :is(.why-familykit-heading,.fk-how-workflow-inner > h2,.fk-privacy-intro h2,.fk-social-copy > h2,.fk-price-inner > h2,.fk-new-faq-inner > h2,.fk-end-cta-content > h2) {
+    font-size:32px !important; line-height:1.22 !important;
+  }
+  .fk-mobile-app :is(.fk-social-copy > h3,.fk-privacy-divider h3,.fk-privacy-banner h3,.fk-how-closing) {
+    font-size:26px !important; line-height:1.3 !important;
+  }
+  .fk-mobile-app :is(.why-problem-title-row h3,.fk-how-step-content h3,.fk-how-ai-intro h3,.fk-privacy-commitment h4,.fk-privacy-extra h4,.fk-price-benefit h3,.fk-price-plan > h3) {
+    font-size:21px !important; line-height:1.35 !important;
+  }
+  .fk-mobile-app :is(.fk-price-family strong,.fk-how-answer strong) { font-size:18px !important; }
+  .fk-mobile-app :is(.fk-mobile-hero p,.why-familykit-intro,.fk-how-subtitle,.fk-privacy-intro > p,.fk-social-copy > p,.fk-price-subtitle,.fk-new-faq-subtitle,.fk-end-cta-content > p) {
+    font-size:18px !important; line-height:1.6 !important;
+  }
+  .fk-mobile-app :is(.why-problem-copy p,.fk-how-step-content p,.fk-how-ai-intro p,.fk-how-answer p,.fk-how-question,.fk-how-question span,.fk-how-summary > p,.fk-privacy-commitment p,.fk-privacy-extra p,.fk-price-benefit p,.fk-new-faq-answer p) {
+    font-size:16px !important; line-height:1.6 !important;
+  }
+  .fk-mobile-app :is(.fk-mobile-nav a,.fk-mobile-hero button,.fk-price-join,.fk-end-cta-button,.fk-privacy-banner button,.fk-new-faq-item h3 button) {
+    font-size:16px !important;
+  }
+  .fk-mobile-app :is(.fk-price-family span,.fk-price-amount > span,.fk-end-cta-benefits span,.fk-social-coming) { font-size:15px !important; }
+  .fk-mobile-app :is(.why-familykit-pill,.fk-how-label,.fk-how-step-number,.fk-privacy-pill,.fk-social-pill,.fk-price-pill,.fk-new-faq-pill,.fk-how-answer small,.fk-how-example-note) {
+    font-size:14px !important;
+  }
+  .fk-mobile-app .fk-price-amount strong { font-size:24px !important; }
+  .fk-mobile-app :is(.fk-end-footer-about p,.fk-end-footer-group-links a,.fk-end-footer-group-links span,.fk-end-footer-bottom) {
+    font-size:14px !important; line-height:1.5 !important;
+  }
+}
+
+/* Mobile hero: never split a word into individual letters.
+   Preserve the approved 42px type at roomy widths; scale gently on narrow phones. */
+@media screen and (max-width: 1023px) {
+  .fk-mobile-app .fk-mobile-hero h1 {
+    font-size: clamp(30px, 9vw, 42px) !important;
+    line-height: 1.14 !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+    text-wrap: balance;
+    max-width: 100%;
+  }
+}
+
+/* MOBILE HERO CTA REPAIR — keep both buttons intact and aligned. */
+@media (max-width: 700px) {
+  .fk-mobile-app .fk-mobile-hero .fk-mobile-hero-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr) !important;
+    width: 100% !important;
+    max-width: 390px !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+    margin-inline: auto !important;
+  }
+  .fk-mobile-app .fk-mobile-hero .fk-mobile-hero-actions button {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 48px !important;
+    padding: 0 9px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+    font-size: clamp(12px, 3.55vw, 16px) !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.2px !important;
+  }
+  .fk-mobile-app .fk-mobile-hero .fk-mobile-hero-actions button:first-child span {
+    margin-left: 0 !important;
+  }
+  .fk-mobile-app .fk-mobile-hero .fk-mobile-hero-actions button:last-child svg {
+    width: 19px !important;
+    height: 19px !important;
+    min-width: 19px !important;
+    flex: 0 0 19px !important;
+    padding: 3px !important;
+  }
+}
+
+
+/* Desktop navigation: retain the white rounded capsule, remove ONLY the
+   full-width rectangular header background behind it. Mobile untouched. */
+@media screen and (min-width: 901px) {
+  .familykit-app .fk-responsive-desktop-header,
+  .familykit-app .header {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .familykit-app .fk-responsive-desktop-inner {
+    background: #FFFFFF !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(19, 4, 56, .08) !important;
+    box-shadow: 0 10px 30px rgba(19, 4, 56, .12) !important;
+  }
+}
+
+
+/* FAMILYKIT PDF TYPOGRAPHY SPECIFICATION — 11 NOV 2026
+   Mobile Audit: existing Figma typography; Desktop Guide: recommended typography.
+   These role-specific rules supersede earlier broad typography experiments.
+   All geometry, background, navigation capsules and workflow layout stay unchanged. */
+@media screen and (max-width: 767px) {
+  .fk-mobile-app { font-family: "Mulish", sans-serif; }
+  .fk-mobile-app :is(h1,h2,h3,h4,h5,h6) { font-family:"Poppins",sans-serif !important; }
+  .fk-mobile-app :is(button,.fk-mobile-hero-actions a) { font-family:"Poppins",sans-serif !important; font-weight:500 !important; }
+  /* Mobile landing-page hero: use Figma H1 (28/600), with natural word wrapping. */
+  .fk-mobile-app .fk-mobile-hero h1 { font-size:28px !important; line-height:36px !important; font-weight:600 !important; letter-spacing:normal !important; overflow-wrap:normal !important; word-break:normal !important; hyphens:none !important; }
+  /* Mobile landing page section headings observed at Poppins 24/600. */
+  .fk-mobile-app :is(.why-familykit-heading,.fk-how-workflow-inner > h2,.fk-privacy-intro h2,.fk-social-copy > h2,.fk-price-inner > h2,.fk-new-faq-inner > h2,.fk-end-cta-content > h2) { font-size:24px !important; line-height:32px !important; font-weight:600 !important; }
+  /* H3 22/500, H4 20/500, H5 18/500, H6 16/500. */
+  .fk-mobile-app :is(.fk-social-copy > h3,.fk-privacy-divider h3,.fk-how-closing) { font-size:22px !important; line-height:30px !important; font-weight:500 !important; }
+  .fk-mobile-app :is(.why-problem-title-row h3,.fk-how-step-content h3,.fk-how-ai-intro h3,.fk-privacy-commitment h4,.fk-privacy-extra h4,.fk-price-benefit h3,.fk-price-plan > h3,.fk-privacy-banner h3) { font-size:20px !important; line-height:28px !important; font-weight:500 !important; }
+  .fk-mobile-app :is(.fk-price-family strong,.fk-how-answer strong) { font-size:18px !important; font-weight:500 !important; }
+  /* Figma body Large/Medium/Small: 16/14/12, Mulish 400. */
+  .fk-mobile-app :is(.fk-mobile-hero p,.why-familykit-intro,.fk-how-subtitle,.fk-privacy-intro > p,.fk-social-copy > p,.fk-price-subtitle,.fk-new-faq-subtitle,.fk-end-cta-content > p,.why-problem-copy p,.fk-how-step-content p,.fk-how-ai-intro p,.fk-how-answer p,.fk-how-question,.fk-how-question span,.fk-how-summary > p,.fk-privacy-commitment p,.fk-privacy-extra p,.fk-price-benefit p,.fk-new-faq-answer p) { font-family:"Mulish",sans-serif !important; font-size:16px !important; line-height:24px !important; font-weight:400 !important; }
+  .fk-mobile-app :is(.fk-how-example-note,.fk-how-answer small) { font-family:"Mulish",sans-serif !important; font-size:12px !important; line-height:18px !important; font-weight:400 !important; }
+  .fk-mobile-app :is(.why-familykit-pill,.fk-how-label,.fk-how-step-number,.fk-privacy-pill,.fk-social-pill,.fk-price-pill,.fk-new-faq-pill) { font-family:"Mulish",sans-serif !important; font-size:14px !important; font-weight:500 !important; }
+  .fk-mobile-app :is(.fk-mobile-hero-actions button,.fk-price-join,.fk-end-cta-button) { font-size:16px !important; font-weight:500 !important; }
+  .fk-mobile-app :is(.fk-privacy-banner button,.fk-new-faq-item h3 button) { font-size:14px !important; font-weight:500 !important; }
+  .fk-mobile-app :is(.fk-price-family span,.fk-price-amount > span,.fk-end-cta-benefits span,.fk-social-coming) { font-size:14px !important; }
+  .fk-mobile-app :is(.fk-end-footer-about p,.fk-end-footer-group-links a,.fk-end-footer-group-links span) { font-family:"Mulish",sans-serif !important; font-size:14px !important; line-height:20px !important; font-weight:400 !important; }
+  .fk-mobile-app .fk-end-footer-bottom { font-family:"Mulish",sans-serif !important; font-size:12px !important; line-height:18px !important; }
+  /* The 4 workflow capsule labels are a compact diagram, not H1-H7 text. */
+}
+@media screen and (min-width: 768px) and (max-width: 1199px) {
+  /* PDF tablet: mobile values for dense UI, heading increases only when spacious. */
+  .fk-mobile-app :is(.why-familykit-heading,.fk-how-workflow-inner > h2,.fk-privacy-intro h2,.fk-social-copy > h2,.fk-price-inner > h2,.fk-new-faq-inner > h2,.fk-end-cta-content > h2) { font-family:"Poppins",sans-serif !important; font-size:28px !important; line-height:36px !important; font-weight:500 !important; }
+  .fk-mobile-app .fk-mobile-hero h1 { font-family:"Poppins",sans-serif !important; font-size:36px !important; line-height:44px !important; font-weight:600 !important; overflow-wrap:normal !important; word-break:normal !important; }
+  .fk-mobile-app :is(.why-problem-copy p,.fk-how-step-content p,.fk-privacy-commitment p,.fk-price-benefit p) { font-family:"Mulish",sans-serif !important; font-size:16px !important; line-height:24px !important; font-weight:400 !important; }
+}
+@media screen and (min-width: 1200px) {
+  .familykit-app { font-family:"Mulish",sans-serif; }
+  .familykit-app :is(h1,h2,h3,h4,h5,h6) { font-family:"Poppins",sans-serif !important; }
+  /* PDF permits 48–56px for a marketing hero, distinct from app dashboard H1=36px. */
+  .familykit-app .hero h1 { font-size:56px !important; line-height:1.14 !important; font-weight:600 !important; overflow-wrap:normal !important; word-break:normal !important; }
+  /* Desktop H2=32/40, H3=28/36, H4=24/32, H5=20/28, H6=18/28. */
+  .familykit-app :is(.why-familykit-heading,.fk-how-workflow-inner > h2,.fk-privacy-intro h2,.fk-social-copy > h2,.fk-price-inner > h2,.fk-new-faq-inner > h2,.fk-end-cta-content > h2) { font-size:32px !important; line-height:40px !important; font-weight:500 !important; }
+  .familykit-app :is(.fk-social-copy > h3,.fk-privacy-divider h3,.fk-how-closing) { font-size:28px !important; line-height:36px !important; font-weight:500 !important; }
+  .familykit-app :is(.why-problem-title-row h3,.fk-how-step-content h3,.fk-how-ai-intro h3,.fk-privacy-banner h3) { font-size:24px !important; line-height:32px !important; font-weight:500 !important; }
+  .familykit-app :is(.fk-privacy-commitment h4,.fk-price-plan > h3) { font-size:20px !important; line-height:28px !important; font-weight:500 !important; }
+  .familykit-app :is(.fk-privacy-extra h4,.fk-price-benefit h3) { font-size:18px !important; line-height:28px !important; font-weight:500 !important; }
+  /* Desktop body 18/28, 16/24, 14/20. */
+  .familykit-app :is(.hero-description,.why-familykit-intro,.fk-how-subtitle,.fk-privacy-intro > p,.fk-social-copy > p,.fk-price-subtitle,.fk-new-faq-subtitle,.fk-end-cta-content > p) { font-family:"Mulish",sans-serif !important; font-size:18px !important; line-height:28px !important; font-weight:400 !important; }
+  .familykit-app :is(.why-problem-copy p,.fk-how-step-content p,.fk-how-ai-intro p,.fk-how-answer p,.fk-how-summary > p,.fk-privacy-commitment p,.fk-privacy-extra p,.fk-price-benefit p,.fk-new-faq-answer p) { font-family:"Mulish",sans-serif !important; font-size:16px !important; line-height:24px !important; font-weight:400 !important; }
+  .familykit-app :is(.fk-how-answer small,.fk-how-example-note) { font-family:"Mulish",sans-serif !important; font-size:14px !important; line-height:20px !important; font-weight:400 !important; }
+  /* PDF desktop navigation: 24px brand, 16px Mulish links, 14px Poppins CTAs. */
+  .familykit-app :is(.fk-responsive-desktop-brand-name,.brand-name) { font-family:"Poppins",sans-serif !important; font-size:24px !important; line-height:32px !important; font-weight:600 !important; }
+  .familykit-app :is(.fk-responsive-desktop-nav a,.desktop-nav a) { font-family:"Mulish",sans-serif !important; font-size:16px !important; line-height:24px !important; font-weight:500 !important; }
+  .familykit-app :is(.fk-responsive-desktop-nav a.active,.desktop-nav a.active) { font-weight:600 !important; }
+  .familykit-app :is(.fk-responsive-desktop-header button,.desktop-cta,.primary-btn,.secondary-btn) { font-family:"Poppins",sans-serif !important; font-size:14px !important; line-height:20px !important; font-weight:500 !important; }
+  .familykit-app :is(.why-familykit-pill,.fk-how-label,.fk-how-step-number,.fk-privacy-pill,.fk-social-pill,.fk-price-pill,.fk-new-faq-pill) { font-family:"Mulish",sans-serif !important; font-size:14px !important; line-height:20px !important; font-weight:500 !important; }
+  /* Footer: Poppins 16/600 headings, Mulish 14/400 links and description, 12px legal. */
+  .familykit-app :is(.fk-end-footer-group h3,.fk-end-footer-main h3) { font-family:"Poppins",sans-serif !important; font-size:16px !important; line-height:24px !important; font-weight:600 !important; }
+  .familykit-app :is(.fk-end-footer-about p,.fk-end-footer-group-links a,.fk-end-footer-group-links span) { font-family:"Mulish",sans-serif !important; font-size:14px !important; line-height:22px !important; font-weight:400 !important; }
+  .familykit-app .fk-end-footer-bottom { font-family:"Mulish",sans-serif !important; font-size:12px !important; line-height:18px !important; font-weight:400 !important; }
+}
+
+/* Mobile only: left-align the Why FamilyKit introductory paragraph; leave heading and other text unchanged. */
+@media (max-width: 767px) {
+  .fk-mobile-app .why-familykit-section-mobile .why-familykit-intro {
+    text-align: left !important;
+  }
+}
+
+/* Mobile only: keep the approved 20px Why FamilyKit heading size. */
+@media screen and (max-width: 767px) {
+  .fk-mobile-app .why-familykit-section-mobile .why-familykit-heading {
+    font-size: 20px !important;
+    line-height: 28px !important;
+    text-align: left !important;
+  }
+}
+
+/* Purple headings: retain mobile left alignment, restore desktop center alignment
+   for Why FamilyKit, How It Works, Pricing, and FAQ. Alignment only. */
+@media screen and (max-width: 767px) {
+  .fk-mobile-app :is(
+    .why-familykit-heading,
+    .fk-features-heading-row > h2,
+    .fk-how-workflow-inner > h2,
+    .fk-privacy-intro > h2,
+    .fk-social-copy > h2,
+    .fk-price-inner > h2,
+    .fk-new-faq-inner > h2
+  ) { text-align: left !important; }
+}
+@media screen and (min-width: 768px) {
+  .familykit-app :is(
+    .why-familykit-heading,
+    .fk-how-workflow-inner > h2,
+    .fk-price-inner > h2,
+    .fk-new-faq-inner > h2
+  ) { text-align: center !important; }
 }
