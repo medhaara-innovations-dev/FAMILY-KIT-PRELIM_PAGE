@@ -1,0 +1,55 @@
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.signup-card {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.signup-card h1 {
+  margin: 0;
+}
+
+.signup-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  font-size: 16px;
+}
+
+.signup-card > button {
+  padding: 14px 20px;
+  cursor: pointer;
+}
+
+.signup-card > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.signup-error {
+  color: #b42318;
+  font-size: 14px;
+}
+
+.verification-note {
+  font-size: 14px;
+}
+
+.resend-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}

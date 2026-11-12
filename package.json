@@ -9,11 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.1167.0",
     "@vitejs/plugin-react": "latest",
+    "amazon-cognito-identity-js": "^6.3.22",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
     "react-icons": "^5.7.0",
+    "react-router-dom": "^7.18.5",
     "vite": "latest"
   }
 }

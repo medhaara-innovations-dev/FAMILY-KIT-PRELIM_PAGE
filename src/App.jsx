@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaFacebookF,
   FaInstagram,
@@ -604,7 +605,7 @@ function FamilyKitFooter({ mobile = false }) {
   );
 }
 
-function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheelImages, faqs, onExploreFeatures }) {
+function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheelImages, faqs, onExploreFeatures, onLogin, onSignup }) {
   const mobileSteps = [
     [<Users />, "01", "Create your family account", "Set up your family space securely."],
     [<FileText />, "02", "Add your documents", "Upload or capture documents easily."],
@@ -620,7 +621,7 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
           <strong>FamilyKit</strong>
         </a>
         <div className="fk-responsive-mobile-actions">
-          <a className="fk-responsive-login" href="#m-home" onClick={() => setMenuOpen(false)}>Login</a>
+          <a className="fk-responsive-login" href="/login" onClick={(event) => { event.preventDefault(); setMenuOpen(false); onLogin(); }}>Login</a>
           <button className="fk-mobile-menu" onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen}>
             {menuOpen ? <X /> : <Menu />}
@@ -637,7 +638,7 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
             <a href="#m-testimonials" onClick={() => setMenuOpen(false)}>Testimonials</a>
             <a href="#m-pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
             <a href="#m-faq" onClick={() => setMenuOpen(false)}>FAQs</a>
-            <button className="fk-responsive-mobile-signup" type="button" onClick={() => setMenuOpen(false)}>Sign Up</button>
+            <button className="fk-responsive-mobile-signup" type="button" onClick={() => { setMenuOpen(false); onSignup(); }}>Sign Up</button>
           </nav>
         )}
       </header>
@@ -648,7 +649,7 @@ function MobileLanding({ menuOpen, setMenuOpen, openFaq, toggleFaq, featureWheel
           <h1>The Smart Family Life Management App</h1>
           <p>Bring your family’s important documents, finances, assets, reminders and everyday tasks into one secure, easy-to-use space.</p>
           <div className="fk-mobile-hero-actions">
-            <button>Get Started <ChevronRight className="cta-chevron-icon" /></button>
+            <button type="button" onClick={onSignup}>Get Started <ChevronRight className="cta-chevron-icon" /></button>
             <button><Play /> See How it Works</button>
           </div>
           <div className="fk-mobile-trust">
@@ -879,6 +880,7 @@ function AllFeaturesPage({ onBack }) {
 
 
 function App() {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
   const [showAllFeatures, setShowAllFeatures] = useState(false);
@@ -990,6 +992,8 @@ function App() {
         featureWheelImages={featureWheelImages}
         faqs={faqs}
         onExploreFeatures={openAllFeatures}
+        onLogin={() => navigate("/login")}
+        onSignup={() => navigate("/signup")}
       />
 
     <div className="familykit-app">
@@ -1017,8 +1021,8 @@ function App() {
             <a href="#faq">FAQs</a>
           </nav>
           <div className="fk-responsive-account-actions">
-            <a className="fk-responsive-login" href="#home">Login</a>
-            <button className="fk-responsive-signup" type="button">Sign Up</button>
+            <a className="fk-responsive-login" href="/login" onClick={(event) => { event.preventDefault(); navigate("/login"); }}>Login</a>
+            <button className="fk-responsive-signup" type="button" onClick={() => navigate("/signup")}>Sign Up</button>
           </div>
         </div>
       </header>
@@ -1069,7 +1073,7 @@ function App() {
 
             <div className="hero-actions">
 
-              <button className="primary-btn">
+              <button className="primary-btn" type="button" onClick={() => navigate("/signup")}>
 
                 <span>
                   Get Started
