@@ -16,12 +16,65 @@
   gap: 16px;
 }
 
-.login-card h1 {
-  margin: 0;
+.login-card h1 { margin: 0; }
+
+.login-subtitle { margin-top: -6px; }
+
+.login-google-button {
+  width: 100%;
+  min-height: 50px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border: 1px solid #b8b8b8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #050011;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.login-subtitle {
-  margin-top: -6px;
+.login-google-button:hover:not(:disabled) {
+  background: #f8f8f8;
+}
+
+.login-google-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.login-google-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #4285f4;
+}
+
+.login-divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #777777;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #dddddd;
 }
 
 .login-field {
@@ -82,7 +135,8 @@
   cursor: pointer;
 }
 
-.login-button:disabled {
+.login-button:disabled,
+.login-link-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -100,22 +154,11 @@
   cursor: pointer;
 }
 
-.login-link-button.inline {
-  display: inline;
-}
+.login-link-button.inline { display: inline; }
 
-.login-signup-text {
-  text-align: center;
-}
-
-
-/* =====================================================
-   TABLET ONLY
-   769px - 1024px
-   ===================================================== */
+.login-signup-text { text-align: center; }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-
   .login-page {
     min-height: 100dvh;
     padding: 48px 40px;
@@ -138,9 +181,13 @@
     line-height: 1.5;
   }
 
-  .login-field {
-    gap: 9px;
+  .login-google-button {
+    min-height: 54px;
+    padding: 15px 20px;
+    border-radius: 9px;
   }
+
+  .login-field { gap: 9px; }
 
   .login-field > label {
     font-size: 15px;
@@ -166,9 +213,7 @@
     border-radius: 10px;
   }
 
-  .login-show-pin {
-    font-size: 15px;
-  }
+  .login-show-pin { font-size: 15px; }
 
   .login-show-pin input {
     width: 17px;
@@ -183,9 +228,7 @@
     border-radius: 9px;
   }
 
-  .login-link-button {
-    font-size: 15px;
-  }
+  .login-link-button { font-size: 15px; }
 
   .login-signup-text {
     font-size: 15px;
@@ -193,24 +236,15 @@
   }
 }
 
-
-/* =====================================================
-   MOBILE ONLY
-   768px and below
-   ===================================================== */
-
 @media (max-width: 768px) {
-
   .login-page {
     min-height: 100dvh;
     align-items: flex-start;
     justify-content: center;
-
     padding-top: 72px;
     padding-right: 22px;
     padding-bottom: 32px;
     padding-left: 22px;
-
     overflow-x: hidden;
   }
 
@@ -233,9 +267,13 @@
     line-height: 1.5;
   }
 
-  .login-field {
-    gap: 9px;
+  .login-google-button {
+    min-height: 52px;
+    padding: 14px 16px;
+    border-radius: 9px;
   }
+
+  .login-field { gap: 9px; }
 
   .login-field > label {
     font-size: 15px;
@@ -289,9 +327,7 @@
     border-radius: 9px;
   }
 
-  .login-link-button {
-    font-size: 15px;
-  }
+  .login-link-button { font-size: 15px; }
 
   .login-signup-text {
     margin-top: 2px;
@@ -300,27 +336,16 @@
   }
 }
 
-
-/* =====================================================
-   SMALL MOBILE
-   380px and below
-   ===================================================== */
-
 @media (max-width: 380px) {
-
   .login-page {
     padding-top: 52px;
     padding-right: 18px;
     padding-left: 18px;
   }
 
-  .login-card h1 {
-    font-size: 28px;
-  }
+  .login-card h1 { font-size: 28px; }
 
-  .login-pin-boxes {
-    gap: 9px;
-  }
+  .login-pin-boxes { gap: 9px; }
 
   .login-pin-box {
     height: 56px;
