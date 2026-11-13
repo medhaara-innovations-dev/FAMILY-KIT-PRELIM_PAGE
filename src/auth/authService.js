@@ -22,11 +22,15 @@ const CLIENT_ID =
 
 
 // API Gateway
+
 const PIN_API_URL =
   "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/pin";
 
 const RESOLVE_LOGIN_API_URL =
   "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/resolve-login";
+
+const REGISTRATION_STATUS_API_URL =
+  "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/registration-status";
 
 
 // ======================================================
@@ -737,6 +741,76 @@ export async function storeFamilyKitPin(
 
 
 // ======================================================
+// CHECK FAMILYKIT REGISTRATION STATUS
+//
+// Used after Google authentication on the Signup page.
+//
+// The access token identifies the authenticated Cognito
+// user. API Gateway validates the JWT and Lambda checks
+// whether that Cognito "sub" already has a FamilyKit PIN
+// record in DynamoDB.
+//
+// true  -> registration already completed
+// false -> first-time Google signup
+// ======================================================
+
+export async function getRegistrationStatus(
+  accessToken
+) {
+  if (!accessToken) {
+    throw new Error(
+      "Authentication session is missing."
+    );
+  }
+
+  const response =
+    await fetch(
+      REGISTRATION_STATUS_API_URL,
+      {
+        method:
+          "GET",
+
+        headers: {
+          Authorization:
+            `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+  let result = null;
+
+  try {
+    result =
+      await response.json();
+  } catch {
+    result = null;
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message ||
+        `Unable to check registration status. Server returned ${response.status}.`
+    );
+  }
+
+  if (
+    !result?.success ||
+    typeof result.registrationComplete !==
+      "boolean"
+  ) {
+    throw new Error(
+      "Invalid registration status response."
+    );
+  }
+
+  return {
+    registrationComplete:
+      result.registrationComplete,
+  };
+}
+
+
+// ======================================================
 // LOGIN USERNAME RESOLVER
 //
 // Converts the email entered on the login page into
@@ -809,7 +883,7 @@ async function resolveLoginUsername(
 // START FAMILYKIT CUSTOM PIN AUTHENTICATION
 //
 // IMPORTANT:
-// This now receives the ACTUAL Cognito username,
+// This receives the ACTUAL Cognito username,
 // not necessarily the email address.
 // ======================================================
 
@@ -1063,12 +1137,6 @@ export async function loginWithFamilyKitPin(
 
   // ----------------------------------------------------
   // Resolve email to the actual Cognito username.
-  //
-  // Example Google account:
-  //
-  // vsuryaabhiram@gmail.com
-  //        ↓
-  // google_112270982236010788848
   // ----------------------------------------------------
 
   const cognitoUsername =
@@ -1077,7 +1145,7 @@ export async function loginWithFamilyKitPin(
     );
 
   // ----------------------------------------------------
-  // Start Cognito CUSTOM_AUTH with the actual username.
+  // Start Cognito CUSTOM_AUTH with actual username.
   // ----------------------------------------------------
 
   const loginStart =
@@ -1086,8 +1154,7 @@ export async function loginWithFamilyKitPin(
     );
 
   // ----------------------------------------------------
-  // Answer the custom challenge using the SAME Cognito
-  // username and the user's FamilyKit PIN.
+  // Answer custom challenge using same Cognito username.
   // ----------------------------------------------------
 
   const loginResult =
@@ -1129,4 +1196,7 @@ export const apiConfig = {
 
   resolveLoginApiUrl:
     RESOLVE_LOGIN_API_URL,
+
+  registrationStatusApiUrl:
+    REGISTRATION_STATUS_API_URL,
 };

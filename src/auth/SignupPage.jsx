@@ -8,6 +8,7 @@ import {
   storeFamilyKitPin,
   startGoogleLogin,
   completeGoogleLogin,
+  getRegistrationStatus,
 } from "./authService";
 
 import "./SignupPage.css";
@@ -67,78 +68,196 @@ export default function SignupPage() {
 
   // =====================================================
   // GOOGLE SIGNUP
+  //
+  // FIRST-TIME GOOGLE USER:
+  //
+  // Google
+  //   ↓
+  // Cognito authentication
+  //   ↓
+  // GET /registration-status
+  //   ↓
+  // registrationComplete = false
+  //   ↓
+  // Family Details
+  //
+  //
+  // EXISTING FAMILYKIT GOOGLE USER:
+  //
+  // Google
+  //   ↓
+  // Cognito authentication
+  //   ↓
+  // GET /registration-status
+  //   ↓
+  // registrationComplete = true
+  //   ↓
+  // /login
   // =====================================================
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const hasGoogleCallback = params.has("code") || params.has("error");
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
 
-    if (!hasGoogleCallback || googleCallbackStarted.current) {
+    const hasGoogleCallback =
+      params.has("code") ||
+      params.has("error");
+
+    if (
+      !hasGoogleCallback ||
+      googleCallbackStarted.current
+    ) {
       return;
     }
 
-    googleCallbackStarted.current = true;
+    googleCallbackStarted.current =
+      true;
 
-    const finishGoogleSignup = async () => {
-      try {
-        setError("");
-        setLoading(true);
+    const finishGoogleSignup =
+      async () => {
+        try {
+          setError("");
+          setLoading(true);
 
-        const result = await completeGoogleLogin("/signup");
+          // ---------------------------------------------
+          // Complete Cognito / Google OAuth.
+          // ---------------------------------------------
 
-        if (!result?.accessToken) {
-          throw new Error("Cognito did not return an access token.");
+          const result =
+            await completeGoogleLogin(
+              "/signup"
+            );
+
+          if (!result?.accessToken) {
+            throw new Error(
+              "Cognito did not return an access token."
+            );
+          }
+
+          // ---------------------------------------------
+          // IMPORTANT:
+          // Check whether this authenticated Cognito
+          // user's sub already has a FamilyKit PIN.
+          // ---------------------------------------------
+
+          const registrationStatus =
+            await getRegistrationStatus(
+              result.accessToken
+            );
+
+          // ---------------------------------------------
+          // Remove OAuth code/state from browser URL.
+          // ---------------------------------------------
+
+          window.history.replaceState(
+            {},
+            document.title,
+            "/signup"
+          );
+
+          // ---------------------------------------------
+          // EXISTING FAMILYKIT USER
+          //
+          // PIN already exists in DynamoDB.
+          //
+          // Do NOT ask:
+          // - Family Name
+          // - Your Name
+          // - Gender
+          // - Review
+          // - Create PIN
+          //
+          // Send directly to normal FamilyKit login.
+          // ---------------------------------------------
+
+          if (
+            registrationStatus
+              .registrationComplete
+          ) {
+            window.location.replace(
+              "/login"
+            );
+
+            return;
+          }
+
+          // ---------------------------------------------
+          // FIRST-TIME GOOGLE USER
+          //
+          // Registration is not complete yet.
+          // Keep the Google Cognito access token so
+          // POST /pin can later securely create the PIN.
+          // ---------------------------------------------
+
+          setAccessToken(
+            result.accessToken
+          );
+
+          if (result.email) {
+            setEmail(
+              result.email
+            );
+          }
+
+          // Google may already know the user's name.
+          // Pre-fill it, but the user can edit it.
+          if (result.name) {
+            setYourName(
+              result.name
+            );
+          }
+
+          // Continue with Family Details.
+          setStep(3);
+        } catch (err) {
+          console.error(
+            "Google signup error:",
+            err
+          );
+
+          setError(
+            err?.message ||
+              "Unable to sign up with Google."
+          );
+
+          window.history.replaceState(
+            {},
+            document.title,
+            "/signup"
+          );
+        } finally {
+          setLoading(false);
         }
-
-        setAccessToken(result.accessToken);
-
-        if (result.email) {
-          setEmail(result.email);
-        }
-
-        if (result.name) {
-          setYourName(result.name);
-        }
-
-        window.history.replaceState({}, document.title, "/signup");
-
-        // Google has already authenticated the user.
-        // Continue with the existing Family Details screen.
-        setStep(3);
-      } catch (err) {
-        console.error("Google signup error:", err);
-
-        setError(
-          err?.message ||
-            "Unable to sign up with Google."
-        );
-
-        window.history.replaceState({}, document.title, "/signup");
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
     finishGoogleSignup();
   }, []);
 
-  const handleGoogleSignup = async () => {
-    try {
-      setError("");
-      setLoading(true);
+  const handleGoogleSignup =
+    async () => {
+      try {
+        setError("");
+        setLoading(true);
 
-      await startGoogleLogin("/signup");
-    } catch (err) {
-      console.error("Google signup start error:", err);
+        await startGoogleLogin(
+          "/signup"
+        );
+      } catch (err) {
+        console.error(
+          "Google signup start error:",
+          err
+        );
 
-      setError(
-        err?.message ||
-          "Unable to start Google sign-up."
-      );
+        setError(
+          err?.message ||
+            "Unable to start Google sign-up."
+        );
 
-      setLoading(false);
-    }
-  };
+        setLoading(false);
+      }
+    };
 
 
   // =====================================================
@@ -146,184 +265,193 @@ export default function SignupPage() {
   // EMAIL SIGNUP
   // =====================================================
 
-  const handleEmailContinue = async () => {
-    setError("");
+  const handleEmailContinue =
+    async () => {
+      setError("");
 
-    const cleanEmail =
-      email.trim().toLowerCase();
+      const cleanEmail =
+        email.trim().toLowerCase();
 
-    if (!cleanEmail) {
-      setError(
-        "Please enter your email address."
-      );
-
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const signupResult =
-        await signUpWithEmail(
-          cleanEmail
-        );
-
-      setEmail(cleanEmail);
-
-      // Save Cognito signup session.
-      setSignUpSession(
-        signupResult.session || null
-      );
-
-      // Go to 6-digit OTP verification.
-      setStep(2);
-    } catch (err) {
-      console.error(
-        "Signup error:",
-        err
-      );
-
-      if (
-        err?.name ===
-        "UsernameExistsException"
-      ) {
+      if (!cleanEmail) {
         setError(
-          "An account already exists with this email address."
+          "Please enter your email address."
         );
-      } else {
-        setError(
-          err?.message ||
-            "Unable to create your account. Please try again."
-        );
+
+        return;
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      try {
+        setLoading(true);
+
+        const signupResult =
+          await signUpWithEmail(
+            cleanEmail
+          );
+
+        setEmail(cleanEmail);
+
+        // Save Cognito signup session.
+        setSignUpSession(
+          signupResult.session ||
+            null
+        );
+
+        // Go to 6-digit OTP verification.
+        setStep(2);
+      } catch (err) {
+        console.error(
+          "Signup error:",
+          err
+        );
+
+        if (
+          err?.name ===
+          "UsernameExistsException"
+        ) {
+          setError(
+            "An account already exists with this email address."
+          );
+        } else {
+          setError(
+            err?.message ||
+              "Unable to create your account. Please try again."
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
 
   // =====================================================
   // SCREEN 2
   // VERIFY 6-DIGIT EMAIL OTP
   // =====================================================
 
-  const handleVerifyEmail = async () => {
-    setError("");
-
-    if (
-      !/^\d{6}$/.test(
-        verificationCode
-      )
-    ) {
-      setError(
-        "Please enter the 6-digit verification code."
-      );
-
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      // Confirm the email OTP.
-      const confirmationResult =
-        await confirmEmail(
-          email,
-          verificationCode,
-          signUpSession
-        );
+  const handleVerifyEmail =
+    async () => {
+      setError("");
 
       if (
-        !confirmationResult.session
-      ) {
-        throw new Error(
-          "Cognito did not return a confirmation session."
-        );
-      }
-
-      // Automatically authenticate the newly
-      // confirmed Cognito user.
-      const authResult =
-        await completeSignupAuthentication(
-          email,
-          confirmationResult.session
-        );
-
-      if (!authResult.accessToken) {
-        throw new Error(
-          "Cognito did not return an access token."
-        );
-      }
-
-      // Keep the access token in React memory.
-      // This will later authorize POST /pin.
-      setAccessToken(
-        authResult.accessToken
-      );
-
-      // Email verified + user authenticated.
-      setStep(3);
-    } catch (err) {
-      console.error(
-        "Verification/authentication error:",
-        err
-      );
-
-      if (
-        err?.name ===
-        "CodeMismatchException"
+        !/^\d{6}$/.test(
+          verificationCode
+        )
       ) {
         setError(
-          "The verification code is incorrect."
+          "Please enter the 6-digit verification code."
         );
-      } else if (
-        err?.name ===
-        "ExpiredCodeException"
-      ) {
-        setError(
-          "The verification code has expired. Please request a new code."
-        );
-      } else {
-        setError(
-          err?.message ||
-            "Unable to verify your email. Please try again."
-        );
+
+        return;
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      try {
+        setLoading(true);
+
+        // Confirm the email OTP.
+        const confirmationResult =
+          await confirmEmail(
+            email,
+            verificationCode,
+            signUpSession
+          );
+
+        if (
+          !confirmationResult.session
+        ) {
+          throw new Error(
+            "Cognito did not return a confirmation session."
+          );
+        }
+
+        // Automatically authenticate the newly
+        // confirmed Cognito user.
+        const authResult =
+          await completeSignupAuthentication(
+            email,
+            confirmationResult.session
+          );
+
+        if (
+          !authResult.accessToken
+        ) {
+          throw new Error(
+            "Cognito did not return an access token."
+          );
+        }
+
+        // Keep access token in React memory.
+        // This authorizes POST /pin.
+        setAccessToken(
+          authResult.accessToken
+        );
+
+        // Email verified + authenticated.
+        setStep(3);
+      } catch (err) {
+        console.error(
+          "Verification/authentication error:",
+          err
+        );
+
+        if (
+          err?.name ===
+          "CodeMismatchException"
+        ) {
+          setError(
+            "The verification code is incorrect."
+          );
+        } else if (
+          err?.name ===
+          "ExpiredCodeException"
+        ) {
+          setError(
+            "The verification code has expired. Please request a new code."
+          );
+        } else {
+          setError(
+            err?.message ||
+              "Unable to verify your email. Please try again."
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
 
   // =====================================================
   // RESEND EMAIL OTP
   // =====================================================
 
-  const handleResendCode = async () => {
-    setError("");
+  const handleResendCode =
+    async () => {
+      setError("");
 
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      await resendVerificationCode(
-        email
-      );
+        await resendVerificationCode(
+          email
+        );
 
-      alert(
-        "A new verification code has been sent to your email."
-      );
-    } catch (err) {
-      console.error(
-        "Resend error:",
-        err
-      );
+        alert(
+          "A new verification code has been sent to your email."
+        );
+      } catch (err) {
+        console.error(
+          "Resend error:",
+          err
+        );
 
-      setError(
-        err?.message ||
-          "Unable to resend the verification code."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        setError(
+          err?.message ||
+            "Unable to resend the verification code."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
 
   // =====================================================
   // SCREEN 3
@@ -367,6 +495,7 @@ export default function SignupPage() {
       setStep(4);
     };
 
+
   // =====================================================
   // SCREEN 5
   // CREATE PIN
@@ -393,100 +522,93 @@ export default function SignupPage() {
       setStep(6);
     };
 
+
   // =====================================================
   // SCREEN 6
   // CONFIRM PIN + STORE IN DYNAMODB
   // =====================================================
 
-  const handleConfirmPin = async () => {
-    setError("");
+  const handleConfirmPin =
+    async () => {
+      setError("");
 
-    if (
-      !/^\d{4}$/.test(
-        confirmPin
-      )
-    ) {
-      setError(
-        "Please enter your 4-digit PIN again."
-      );
+      if (
+        !/^\d{4}$/.test(
+          confirmPin
+        )
+      ) {
+        setError(
+          "Please enter your 4-digit PIN again."
+        );
 
-      return;
-    }
+        return;
+      }
 
-    if (pin !== confirmPin) {
-      setError(
-        "PINs do not match. Please try again."
-      );
+      if (
+        pin !== confirmPin
+      ) {
+        setError(
+          "PINs do not match. Please try again."
+        );
 
-      return;
-    }
+        return;
+      }
 
-    if (!accessToken) {
-      setError(
-        "Your authentication session has expired. Please restart registration."
-      );
+      if (!accessToken) {
+        setError(
+          "Your authentication session has expired. Please restart registration."
+        );
 
-      return;
-    }
+        return;
+      }
 
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      // =================================================
-      // REAL BACKEND PIN STORAGE
-      // =================================================
-      //
-      // Sends:
-      //
-      // Authorization:
-      // Bearer <Cognito Access Token>
-      //
-      // Body:
-      // {
-      //   "pin": "1234"
-      // }
-      //
-      // React DOES NOT send userId.
-      //
-      // API Gateway verifies the Cognito JWT.
-      //
-      // Lambda gets the authenticated user's
-      // Cognito "sub".
-      //
-      // Lambda hashes the PIN with PBKDF2 + salt.
-      //
-      // DynamoDB stores only:
-      // userId
-      // pinHash
-      // salt
-      // iterations
-      // timestamps
-      //
-      // =================================================
+        // =================================================
+        // REAL BACKEND PIN STORAGE
+        // =================================================
+        //
+        // Authorization:
+        // Bearer <Cognito Access Token>
+        //
+        // Body:
+        // {
+        //   "pin": "1234"
+        // }
+        //
+        // React does NOT send userId.
+        //
+        // API Gateway validates JWT.
+        //
+        // Lambda gets Cognito sub.
+        //
+        // PIN is PBKDF2 hashed and salted.
+        // =================================================
 
-      await storeFamilyKitPin(
-        accessToken,
-        pin
-      );
+        await storeFamilyKitPin(
+          accessToken,
+          pin
+        );
 
-      // IMPORTANT:
-      // Registration success is shown only
-      // after the backend confirms PIN storage.
-      setStep(7);
-    } catch (err) {
-      console.error(
-        "PIN registration error:",
-        err
-      );
+        // Registration success is shown only
+        // after backend confirms PIN storage.
+        setStep(7);
+      } catch (err) {
+        console.error(
+          "PIN registration error:",
+          err
+        );
 
-      setError(
-        err?.message ||
-          "Unable to save your PIN. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        setError(
+          err?.message ||
+            "Unable to save your PIN. Please try again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
 
   // =====================================================
   // HELPER
@@ -530,6 +652,7 @@ export default function SignupPage() {
     }
   };
 
+
   // =====================================================
   // HELPER
   // CONFIRM PIN INPUT
@@ -572,6 +695,7 @@ export default function SignupPage() {
     }
   };
 
+
   // =====================================================
   // SCREEN 1
   // EMAIL
@@ -592,16 +716,27 @@ export default function SignupPage() {
           <button
             type="button"
             className="signup-google-button"
-            onClick={handleGoogleSignup}
+            onClick={
+              handleGoogleSignup
+            }
             disabled={loading}
           >
-            <span className="signup-google-icon" aria-hidden="true">
+            <span
+              className="signup-google-icon"
+              aria-hidden="true"
+            >
               G
             </span>
-            <span>Continue with Google</span>
+
+            <span>
+              Continue with Google
+            </span>
           </button>
 
-          <div className="signup-divider" aria-hidden="true">
+          <div
+            className="signup-divider"
+            aria-hidden="true"
+          >
             <span>OR</span>
           </div>
 
@@ -616,18 +751,14 @@ export default function SignupPage() {
             type="email"
             placeholder="Enter your email address"
             value={email}
-            onChange={(
-              event
-            ) => {
+            onChange={(event) => {
               setEmail(
                 event.target.value
               );
 
               setError("");
             }}
-            onKeyDown={(
-              event
-            ) => {
+            onKeyDown={(event) => {
               if (
                 event.key ===
                 "Enter"
@@ -648,9 +779,7 @@ export default function SignupPage() {
             onClick={
               handleEmailContinue
             }
-            disabled={
-              loading
-            }
+            disabled={loading}
           >
             {loading
               ? "Please wait..."
@@ -664,6 +793,7 @@ export default function SignupPage() {
       </div>
     );
   }
+
 
   // =====================================================
   // SCREEN 2
@@ -702,9 +832,7 @@ export default function SignupPage() {
               verificationCode
             }
             maxLength={6}
-            onChange={(
-              event
-            ) => {
+            onChange={(event) => {
               const value =
                 event.target.value
                   .replace(
@@ -722,12 +850,10 @@ export default function SignupPage() {
 
               setError("");
             }}
-            onKeyDown={(
-              event
-            ) => {
+            onKeyDown={(event) => {
               if (
                 event.key ===
-                "Enter"
+                  "Enter"
               ) {
                 handleVerifyEmail();
               }
@@ -745,9 +871,7 @@ export default function SignupPage() {
             onClick={
               handleVerifyEmail
             }
-            disabled={
-              loading
-            }
+            disabled={loading}
           >
             {loading
               ? "Verifying..."
@@ -763,9 +887,7 @@ export default function SignupPage() {
               onClick={
                 handleResendCode
               }
-              disabled={
-                loading
-              }
+              disabled={loading}
             >
               Resend code
             </button>
@@ -774,6 +896,7 @@ export default function SignupPage() {
       </div>
     );
   }
+
 
   // =====================================================
   // SCREEN 3
@@ -791,8 +914,6 @@ export default function SignupPage() {
           <p className="signup-subtitle">
             A shared space for your family's important details.
           </p>
-
-          {/* FAMILY NAME */}
 
           <div className="signup-field">
             <label
@@ -812,9 +933,7 @@ export default function SignupPage() {
               value={
                 familyName
               }
-              onChange={(
-                event
-              ) => {
+              onChange={(event) => {
                 setFamilyName(
                   event.target.value
                 );
@@ -827,8 +946,6 @@ export default function SignupPage() {
               Choose a name everyone will recognise.
             </span>
           </div>
-
-          {/* YOUR NAME */}
 
           <div className="signup-field">
             <label
@@ -848,9 +965,7 @@ export default function SignupPage() {
               value={
                 yourName
               }
-              onChange={(
-                event
-              ) => {
+              onChange={(event) => {
                 setYourName(
                   event.target.value
                 );
@@ -859,8 +974,6 @@ export default function SignupPage() {
               }}
             />
           </div>
-
-          {/* GENDER */}
 
           <div className="signup-field">
             <label>
@@ -900,9 +1013,7 @@ export default function SignupPage() {
                         gender ===
                         option
                       }
-                      onChange={(
-                        event
-                      ) => {
+                      onChange={(event) => {
                         setGender(
                           event
                             .target
@@ -938,6 +1049,7 @@ export default function SignupPage() {
       </div>
     );
   }
+
 
   // =====================================================
   // SCREEN 4
@@ -1026,6 +1138,7 @@ export default function SignupPage() {
     );
   }
 
+
   // =====================================================
   // SCREEN 5
   // CREATE 4-DIGIT PIN
@@ -1047,9 +1160,7 @@ export default function SignupPage() {
             {[0, 1, 2, 3].map(
               (index) => (
                 <input
-                  key={
-                    index
-                  }
+                  key={index}
                   id={`create-pin-${index}`}
                   className="pin-box"
                   type={
@@ -1064,21 +1175,15 @@ export default function SignupPage() {
                     pin[index] ||
                     ""
                   }
-                  onChange={(
-                    event
-                  ) => {
+                  onChange={(event) => {
                     handleCreatePinChange(
                       index,
-                      event
-                        .target
-                        .value
+                      event.target.value
                     );
 
                     setError("");
                   }}
-                  onKeyDown={(
-                    event
-                  ) => {
+                  onKeyDown={(event) => {
                     if (
                       event.key ===
                         "Backspace" &&
@@ -1088,8 +1193,7 @@ export default function SignupPage() {
                       document
                         .getElementById(
                           `create-pin-${
-                            index -
-                            1
+                            index - 1
                           }`
                         )
                         ?.focus();
@@ -1106,13 +1210,9 @@ export default function SignupPage() {
               checked={
                 showPin
               }
-              onChange={(
-                event
-              ) =>
+              onChange={(event) =>
                 setShowPin(
-                  event
-                    .target
-                    .checked
+                  event.target.checked
                 )
               }
             />
@@ -1145,6 +1245,7 @@ export default function SignupPage() {
     );
   }
 
+
   // =====================================================
   // SCREEN 6
   // CONFIRM 4-DIGIT PIN
@@ -1166,9 +1267,7 @@ export default function SignupPage() {
             {[0, 1, 2, 3].map(
               (index) => (
                 <input
-                  key={
-                    index
-                  }
+                  key={index}
                   id={`confirm-pin-${index}`}
                   className="pin-box"
                   type={
@@ -1184,21 +1283,15 @@ export default function SignupPage() {
                       index
                     ] || ""
                   }
-                  onChange={(
-                    event
-                  ) => {
+                  onChange={(event) => {
                     handleConfirmPinChange(
                       index,
-                      event
-                        .target
-                        .value
+                      event.target.value
                     );
 
                     setError("");
                   }}
-                  onKeyDown={(
-                    event
-                  ) => {
+                  onKeyDown={(event) => {
                     if (
                       event.key ===
                         "Backspace" &&
@@ -1210,8 +1303,7 @@ export default function SignupPage() {
                       document
                         .getElementById(
                           `confirm-pin-${
-                            index -
-                            1
+                            index - 1
                           }`
                         )
                         ?.focus();
@@ -1238,13 +1330,9 @@ export default function SignupPage() {
               checked={
                 showConfirmPin
               }
-              onChange={(
-                event
-              ) =>
+              onChange={(event) =>
                 setShowConfirmPin(
-                  event
-                    .target
-                    .checked
+                  event.target.checked
                 )
               }
             />
@@ -1277,6 +1365,7 @@ export default function SignupPage() {
       </div>
     );
   }
+
 
   // =====================================================
   // SCREEN 7
