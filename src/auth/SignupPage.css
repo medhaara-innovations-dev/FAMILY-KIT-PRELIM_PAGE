@@ -1144,3 +1144,13 @@
     line-height: 16px;
   }
 }
+
+/* FamilyKit brand icon replacement — welcome screen, desktop only sizing */
+@media (min-width: 1025px) {
+  .signup-page--welcome .signup-brand-image {
+    display: block;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+  }
+}

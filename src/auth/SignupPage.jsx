@@ -730,12 +730,11 @@ export default function SignupPage() {
           <section className="signup-welcome-panel">
             <div className="signup-card signup-welcome-card">
               <div className="signup-brand-mark" aria-hidden="true">
-                <svg viewBox="0 0 64 64" width="54" height="54" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="17" y="11" width="30" height="9" rx="4" />
-                  <rect x="10" y="18" width="44" height="34" rx="10" />
-                  <circle cx="23" cy="33" r="5" /><circle cx="41" cy="33" r="5" /><circle cx="32" cy="41" r="5" />
-                  <path d="M17 48c0-5 3-8 6-8m18 0c4 0 6 3 6 8M26 51c0-5 2-8 6-8s6 3 6 8" />
-                </svg>
+                <img
+                  className="signup-brand-image"
+                  src={new URL("../assets/images/WhatsApp Image 2026-10-19 at 21.39.33 1.png", import.meta.url).href}
+                  alt=""
+                />
               </div>
               <h1>Welcome to FamilyKit</h1>
               <p className="signup-welcome-subtitle">Log in or sign up with your email address.</p>
