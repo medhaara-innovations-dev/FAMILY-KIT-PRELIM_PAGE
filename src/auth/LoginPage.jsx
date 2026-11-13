@@ -1,24 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  completeGoogleLogin,
   loginWithFamilyKitPin,
-  startGoogleLogin,
 } from "./authService";
 
 import "./LoginPage.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const googleCallbackStarted = useRef(false);
 
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
 
   const storeAuthenticationTokens = (result) => {
     if (!result?.accessToken) {
@@ -48,69 +44,6 @@ export default function LoginPage() {
   };
 
   // =====================================================
-  // GOOGLE OAUTH CALLBACK
-  // =====================================================
-
-  useEffect(() => {
-    const params =
-      new URLSearchParams(window.location.search);
-
-    const hasGoogleCallback =
-      params.has("code") || params.has("error");
-
-    if (
-      !hasGoogleCallback ||
-      googleCallbackStarted.current
-    ) {
-      return;
-    }
-
-    googleCallbackStarted.current = true;
-
-    const finishGoogleLogin = async () => {
-      try {
-        setError("");
-        setGoogleLoading(true);
-
-        const result =
-          await completeGoogleLogin();
-
-        storeAuthenticationTokens(result);
-
-        window.history.replaceState(
-          {},
-          document.title,
-          "/login"
-        );
-
-        navigate("/my-family", {
-          replace: true,
-        });
-      } catch (err) {
-        console.error(
-          "Google login error:",
-          err
-        );
-
-        setError(
-          err?.message ||
-            "Unable to sign in with Google."
-        );
-
-        window.history.replaceState(
-          {},
-          document.title,
-          "/login"
-        );
-      } finally {
-        setGoogleLoading(false);
-      }
-    };
-
-    finishGoogleLogin();
-  }, [navigate]);
-
-  // =====================================================
   // PIN INPUT
   // =====================================================
 
@@ -137,30 +70,6 @@ export default function LoginPage() {
           `login-pin-${index + 1}`
         )
         ?.focus();
-    }
-  };
-
-  // =====================================================
-  // GOOGLE LOGIN
-  // =====================================================
-
-  const handleGoogleLogin = async () => {
-    try {
-      setError("");
-      setGoogleLoading(true);
-      await startGoogleLogin();
-    } catch (err) {
-      console.error(
-        "Google login start error:",
-        err
-      );
-
-      setError(
-        err?.message ||
-          "Unable to start Google sign-in."
-      );
-
-      setGoogleLoading(false);
     }
   };
 
@@ -245,33 +154,6 @@ export default function LoginPage() {
           Log in to your FamilyKit.
         </p>
 
-        <button
-          type="button"
-          className="login-google-button"
-          onClick={handleGoogleLogin}
-          disabled={loading || googleLoading}
-        >
-          <span
-            className="login-google-icon"
-            aria-hidden="true"
-          >
-            G
-          </span>
-
-          <span>
-            {googleLoading
-              ? "Connecting to Google..."
-              : "Continue with Google"}
-          </span>
-        </button>
-
-        <div
-          className="login-divider"
-          aria-hidden="true"
-        >
-          <span>OR</span>
-        </div>
-
         <div className="login-field">
           <label htmlFor="login-email">
             Email address
@@ -283,7 +165,7 @@ export default function LoginPage() {
             placeholder="Enter your email address"
             value={email}
             autoComplete="email"
-            disabled={loading || googleLoading}
+            disabled={loading}
             onChange={(event) => {
               setEmail(event.target.value);
               setError("");
@@ -304,7 +186,7 @@ export default function LoginPage() {
                 inputMode="numeric"
                 maxLength={1}
                 autoComplete="off"
-                disabled={loading || googleLoading}
+                disabled={loading}
                 value={pin[index] || ""}
                 onChange={(event) =>
                   handlePinChange(
@@ -340,7 +222,7 @@ export default function LoginPage() {
             <input
               type="checkbox"
               checked={showPin}
-              disabled={loading || googleLoading}
+              disabled={loading}
               onChange={(event) =>
                 setShowPin(event.target.checked)
               }
@@ -360,7 +242,7 @@ export default function LoginPage() {
           type="button"
           className="login-button"
           onClick={handleLogin}
-          disabled={loading || googleLoading}
+          disabled={loading}
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -368,7 +250,7 @@ export default function LoginPage() {
         <button
           type="button"
           className="login-link-button"
-          disabled={loading || googleLoading}
+          disabled={loading}
           onClick={() => {
             alert(
               "Forgot PIN functionality will be added later."
@@ -384,7 +266,7 @@ export default function LoginPage() {
           <button
             type="button"
             className="login-link-button inline"
-            disabled={loading || googleLoading}
+            disabled={loading}
             onClick={() => navigate("/signup")}
           >
             Sign up
