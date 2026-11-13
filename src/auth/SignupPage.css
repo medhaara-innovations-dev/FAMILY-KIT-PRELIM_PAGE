@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
 .signup-page {
   min-height: 100vh;
   display: flex;
@@ -976,5 +978,169 @@
     font-family: Poppins, sans-serif;
     font-weight: 600;
     font-size: clamp(13px, 1.15vw, 18px);
+  }
+}
+
+/* Bell between House and Document — Desktop only */
+
+@media (min-width: 1025px) {
+  .signup-page--welcome .signup-family-art .signup-float-icon--bell {
+    position: absolute;
+    top: -2%;
+    left: 55%;
+    right: auto;
+    transform: translateX(-50%);
+    z-index: 5;
+  }
+}
+
+/* ================================================
+   FAMILYKIT — EVEN FLOATING ICON SPACING
+   DESKTOP ONLY
+   ================================================ */
+
+@media (min-width: 1025px) {
+
+  .signup-page--welcome .signup-family-art .signup-float-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 0;
+    max-width: none;
+    transform: none;
+  }
+
+  /* Leftmost pink icon */
+  .signup-page--welcome .signup-float-icon--extra {
+    top: 37%;
+    left: 0%;
+    right: auto;
+  }
+
+  /* Yellow bills icon */
+  .signup-page--welcome .signup-float-icon--bills {
+    top: 20%;
+    left: 7%;
+    right: auto;
+  }
+
+  /* Pink heart icon */
+  .signup-page--welcome .signup-float-icon--insurance {
+    top: 9%;
+    left: 19%;
+    right: auto;
+  }
+
+  /* Purple house icon */
+  .signup-page--welcome .signup-float-icon--vector {
+    top: 2%;
+    left: 40%;
+    right: auto;
+  }
+
+  /* Orange bell icon */
+  .signup-page--welcome .signup-float-icon--bell {
+    top: 4%;
+    left: 53%;
+    right: auto;
+  }
+
+  /* Blue document icon */
+  .signup-page--welcome .signup-float-icon--file {
+    top: 13%;
+    left: 74%;
+    right: auto;
+  }
+
+  /* Turquoise health icon */
+  .signup-page--welcome .signup-float-icon--health {
+    top: 29%;
+    left: 91%;
+    right: auto;
+  }
+}
+
+/* FINAL BELL POSITION FIX — DESKTOP ONLY */
+
+@media (min-width: 1025px) {
+  .signup-page--welcome
+  .signup-family-art
+  .signup-float-icon--bell {
+    position: absolute;
+    top: 4%;
+    left: 64%;
+    right: auto;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+}
+
+/* Desktop only: swap purple house and blue document positions. */
+@media (min-width: 1025px) {
+  .signup-page--welcome .signup-float-icon--vector {
+    top: 13%;
+    left: 74%;
+    right: auto;
+  }
+
+  .signup-page--welcome .signup-float-icon--file {
+    top: 2%;
+    left: 40%;
+    right: auto;
+  }
+}
+
+/* Align the curved overlay gradient with the right panel.
+   The overlay begins 17% above the viewport and is 134% tall;
+   a viewport-height gradient offset down by 17vh keeps its colors
+   aligned with the right-hand panel at every screen height. */
+@media (min-width: 1025px) {
+  .signup-page--welcome .signup-illustration-curve::after {
+    background-image: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+    background-color: transparent;
+    background-size: 100% 100vh;
+    background-repeat: no-repeat;
+    background-position: left top 17vh;
+  }
+}
+
+/* Welcome to FamilyKit heading — Desktop only */
+
+@media (min-width: 1025px) {
+  .signup-page--welcome .signup-welcome-card h1 {
+    color: #19181A;
+    font-family: Poppins, sans-serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 40px;
+  }
+}
+
+/* Family illustration caption — Desktop only */
+
+@media (min-width: 1025px) {
+  .signup-page--welcome .signup-illustration-caption {
+    color: #000000;
+    font-family: Poppins, sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+}
+
+/* Continue button text — Desktop only */
+
+@media (min-width: 1025px) {
+  .signup-page--welcome
+  .signup-welcome-card
+  > .signup-primary-continue {
+    color: #FFFFFF;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
   }
 }
