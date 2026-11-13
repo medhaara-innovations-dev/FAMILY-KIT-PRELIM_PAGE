@@ -497,3 +497,81 @@
     grid-template-columns: 1fr;
   }
 }
+/* Append this block to the END of your existing SignupPage.css */
+
+.signup-google-button {
+  width: 100%;
+  min-height: 50px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border: 1px solid #b8b8b8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #050011;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.signup-google-button:hover:not(:disabled) {
+  background: #f8f8f8;
+}
+
+.signup-google-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.signup-google-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #4285f4;
+}
+
+.signup-divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #777777;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.signup-divider::before,
+.signup-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #dddddd;
+}
+
+.signup-divider span {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .signup-google-button {
+    min-height: 54px;
+    padding: 15px 20px;
+    border-radius: 9px;
+  }
+}
+
+@media (max-width: 768px) {
+  .signup-google-button {
+    min-height: 52px;
+    padding: 14px 16px;
+    border-radius: 9px;
+  }
+}

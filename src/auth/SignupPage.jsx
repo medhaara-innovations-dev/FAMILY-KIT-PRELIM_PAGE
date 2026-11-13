@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   signUpWithEmail,
@@ -6,11 +6,15 @@ import {
   resendVerificationCode,
   completeSignupAuthentication,
   storeFamilyKitPin,
+  startGoogleLogin,
+  completeGoogleLogin,
 } from "./authService";
 
 import "./SignupPage.css";
 
 export default function SignupPage() {
+  const googleCallbackStarted = useRef(false);
+
   // =====================================================
   // STATE
   // =====================================================
@@ -60,6 +64,82 @@ export default function SignupPage() {
 
   const [error, setError] =
     useState("");
+
+  // =====================================================
+  // GOOGLE SIGNUP
+  // =====================================================
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hasGoogleCallback = params.has("code") || params.has("error");
+
+    if (!hasGoogleCallback || googleCallbackStarted.current) {
+      return;
+    }
+
+    googleCallbackStarted.current = true;
+
+    const finishGoogleSignup = async () => {
+      try {
+        setError("");
+        setLoading(true);
+
+        const result = await completeGoogleLogin("/signup");
+
+        if (!result?.accessToken) {
+          throw new Error("Cognito did not return an access token.");
+        }
+
+        setAccessToken(result.accessToken);
+
+        if (result.email) {
+          setEmail(result.email);
+        }
+
+        if (result.name) {
+          setYourName(result.name);
+        }
+
+        window.history.replaceState({}, document.title, "/signup");
+
+        // Google has already authenticated the user.
+        // Continue with the existing Family Details screen.
+        setStep(3);
+      } catch (err) {
+        console.error("Google signup error:", err);
+
+        setError(
+          err?.message ||
+            "Unable to sign up with Google."
+        );
+
+        window.history.replaceState({}, document.title, "/signup");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    finishGoogleSignup();
+  }, []);
+
+  const handleGoogleSignup = async () => {
+    try {
+      setError("");
+      setLoading(true);
+
+      await startGoogleLogin("/signup");
+    } catch (err) {
+      console.error("Google signup start error:", err);
+
+      setError(
+        err?.message ||
+          "Unable to start Google sign-up."
+      );
+
+      setLoading(false);
+    }
+  };
+
 
   // =====================================================
   // SCREEN 1
@@ -508,6 +588,22 @@ export default function SignupPage() {
           <p>
             Log in or sign up with your email address.
           </p>
+
+          <button
+            type="button"
+            className="signup-google-button"
+            onClick={handleGoogleSignup}
+            disabled={loading}
+          >
+            <span className="signup-google-icon" aria-hidden="true">
+              G
+            </span>
+            <span>Continue with Google</span>
+          </button>
+
+          <div className="signup-divider" aria-hidden="true">
+            <span>OR</span>
+          </div>
 
           <label
             htmlFor="signup-email"

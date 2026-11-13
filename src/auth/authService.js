@@ -45,15 +45,26 @@ const GOOGLE_OAUTH_STATE_KEY =
 
 // ======================================================
 // GOOGLE REDIRECT URI
+// Supports BOTH:
+//
+// /login
+// /signup
 // ======================================================
 
-function getGoogleRedirectUri() {
-  return `${window.location.origin}/login`;
+function getGoogleRedirectUri(
+  redirectPath = "/login"
+) {
+  const safePath =
+    redirectPath === "/signup"
+      ? "/signup"
+      : "/login";
+
+  return `${window.location.origin}${safePath}`;
 }
 
 
 // ======================================================
-// BASE64 URL ENCODING
+// PKCE HELPERS
 // ======================================================
 
 function base64UrlEncode(bytes) {
@@ -71,10 +82,6 @@ function base64UrlEncode(bytes) {
 }
 
 
-// ======================================================
-// CREATE SECURE RANDOM STRING
-// ======================================================
-
 function createRandomUrlSafeString(
   byteLength = 64
 ) {
@@ -86,10 +93,6 @@ function createRandomUrlSafeString(
   return base64UrlEncode(bytes);
 }
 
-
-// ======================================================
-// CREATE PKCE CODE CHALLENGE
-// ======================================================
 
 async function createCodeChallenge(
   codeVerifier
@@ -112,11 +115,19 @@ async function createCodeChallenge(
 
 
 // ======================================================
-// START GOOGLE LOGIN
+// GOOGLE LOGIN / SIGNUP
+// START OAUTH
+//
+// Login:
+// startGoogleLogin("/login")
+//
+// Signup:
+// startGoogleLogin("/signup")
 // ======================================================
 
-export async function startGoogleLogin() {
-
+export async function startGoogleLogin(
+  redirectPath = "/login"
+) {
   const codeVerifier =
     createRandomUrlSafeString(64);
 
@@ -129,14 +140,12 @@ export async function startGoogleLogin() {
     createRandomUrlSafeString(32);
 
 
-  // Store PKCE verifier temporarily.
+  // Store PKCE values temporarily.
   sessionStorage.setItem(
     GOOGLE_PKCE_VERIFIER_KEY,
     codeVerifier
   );
 
-
-  // Store OAuth state for CSRF protection.
   sessionStorage.setItem(
     GOOGLE_OAUTH_STATE_KEY,
     state
@@ -145,14 +154,14 @@ export async function startGoogleLogin() {
 
   const params =
     new URLSearchParams({
-      response_type:
-        "code",
+      response_type: "code",
 
-      client_id:
-        CLIENT_ID,
+      client_id: CLIENT_ID,
 
       redirect_uri:
-        getGoogleRedirectUri(),
+        getGoogleRedirectUri(
+          redirectPath
+        ),
 
       identity_provider:
         "Google",
@@ -177,11 +186,19 @@ export async function startGoogleLogin() {
 
 
 // ======================================================
-// COMPLETE GOOGLE LOGIN
+// GOOGLE LOGIN / SIGNUP
+// COMPLETE OAUTH CALLBACK
+//
+// Login:
+// completeGoogleLogin("/login")
+//
+// Signup:
+// completeGoogleLogin("/signup")
 // ======================================================
 
-export async function completeGoogleLogin() {
-
+export async function completeGoogleLogin(
+  redirectPath = "/login"
+) {
   const params =
     new URLSearchParams(
       window.location.search
@@ -195,17 +212,11 @@ export async function completeGoogleLogin() {
   const oauthError =
     params.get("error");
 
-
   if (oauthError) {
-
-    const description =
+    throw new Error(
       params.get(
         "error_description"
-      );
-
-
-    throw new Error(
-      description ||
+      ) ||
         `Google sign-in failed: ${oauthError}`
     );
   }
@@ -230,14 +241,13 @@ export async function completeGoogleLogin() {
 
 
   // ====================================================
-  // LOAD STORED PKCE DATA
+  // LOAD SAVED PKCE VALUES
   // ====================================================
 
   const expectedState =
     sessionStorage.getItem(
       GOOGLE_OAUTH_STATE_KEY
     );
-
 
   const codeVerifier =
     sessionStorage.getItem(
@@ -246,23 +256,20 @@ export async function completeGoogleLogin() {
 
 
   // ====================================================
-  // VALIDATE OAUTH STATE
+  // VALIDATE STATE
   // ====================================================
 
   if (
     !returnedState ||
     !expectedState ||
-    returnedState !== expectedState
+    returnedState !==
+      expectedState
   ) {
     throw new Error(
       "Google sign-in security validation failed."
     );
   }
 
-
-  // ====================================================
-  // VALIDATE PKCE VERIFIER
-  // ====================================================
 
   if (!codeVerifier) {
     throw new Error(
@@ -272,7 +279,7 @@ export async function completeGoogleLogin() {
 
 
   // ====================================================
-  // TOKEN REQUEST
+  // EXCHANGE AUTHORIZATION CODE FOR COGNITO TOKENS
   // ====================================================
 
   const body =
@@ -286,7 +293,9 @@ export async function completeGoogleLogin() {
       code,
 
       redirect_uri:
-        getGoogleRedirectUri(),
+        getGoogleRedirectUri(
+          redirectPath
+        ),
 
       code_verifier:
         codeVerifier,
@@ -321,12 +330,7 @@ export async function completeGoogleLogin() {
   }
 
 
-  // ====================================================
-  // TOKEN EXCHANGE FAILED
-  // ====================================================
-
   if (!response.ok) {
-
     throw new Error(
       result?.error_description ||
         result?.error ||
@@ -335,12 +339,7 @@ export async function completeGoogleLogin() {
   }
 
 
-  // ====================================================
-  // ACCESS TOKEN REQUIRED
-  // ====================================================
-
   if (!result?.access_token) {
-
     throw new Error(
       "Cognito did not return an access token."
     );
@@ -361,7 +360,39 @@ export async function completeGoogleLogin() {
 
 
   // ====================================================
-  // RETURN COGNITO TOKENS
+  // GET GOOGLE / COGNITO USER INFORMATION
+  // ====================================================
+
+  let userInfo = null;
+
+
+  try {
+    const userInfoResponse =
+      await fetch(
+        `${COGNITO_DOMAIN}/oauth2/userInfo`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${result.access_token}`,
+          },
+        }
+      );
+
+
+    if (
+      userInfoResponse.ok
+    ) {
+      userInfo =
+        await userInfoResponse.json();
+    }
+
+  } catch {
+    userInfo = null;
+  }
+
+
+  // ====================================================
+  // RETURN COGNITO TOKENS + PROFILE
   // ====================================================
 
   return {
@@ -369,16 +400,29 @@ export async function completeGoogleLogin() {
       result.access_token,
 
     idToken:
-      result.id_token || null,
+      result.id_token ||
+      null,
 
     refreshToken:
-      result.refresh_token || null,
+      result.refresh_token ||
+      null,
 
     expiresIn:
-      result.expires_in || null,
+      result.expires_in ||
+      null,
 
     tokenType:
-      result.token_type || null,
+      result.token_type ||
+      null,
+
+    email:
+      userInfo?.email ||
+      "",
+
+    name:
+      userInfo?.name ||
+      userInfo?.given_name ||
+      "",
   };
 }
 
@@ -401,7 +445,6 @@ const cognitoClient =
 export async function signUpWithEmail(
   email
 ) {
-
   const normalizedEmail =
     email.trim().toLowerCase();
 
@@ -415,7 +458,6 @@ export async function signUpWithEmail(
 
   const command =
     new SignUpCommand({
-
       ClientId:
         CLIENT_ID,
 
@@ -441,15 +483,17 @@ export async function signUpWithEmail(
 
 
   return {
-
     userSub:
-      response.UserSub || null,
+      response.UserSub ||
+      null,
 
     userConfirmed:
-      response.UserConfirmed || false,
+      response.UserConfirmed ||
+      false,
 
     session:
-      response.Session || null,
+      response.Session ||
+      null,
   };
 }
 
@@ -464,10 +508,8 @@ export async function confirmEmail(
   verificationCode,
   signUpSession
 ) {
-
   const normalizedEmail =
     email.trim().toLowerCase();
-
 
   const normalizedCode =
     verificationCode.trim();
@@ -485,7 +527,6 @@ export async function confirmEmail(
       normalizedCode
     )
   ) {
-
     throw new Error(
       "Verification code must contain exactly 6 digits."
     );
@@ -494,7 +535,6 @@ export async function confirmEmail(
 
   const command =
     new ConfirmSignUpCommand({
-
       ClientId:
         CLIENT_ID,
 
@@ -520,9 +560,9 @@ export async function confirmEmail(
 
 
   return {
-
     session:
-      response.Session || null,
+      response.Session ||
+      null,
   };
 }
 
@@ -536,13 +576,11 @@ export async function completeSignupAuthentication(
   email,
   confirmationSession
 ) {
-
   const normalizedEmail =
     email.trim().toLowerCase();
 
 
   if (!normalizedEmail) {
-
     throw new Error(
       "Email address is required."
     );
@@ -550,7 +588,6 @@ export async function completeSignupAuthentication(
 
 
   if (!confirmationSession) {
-
     throw new Error(
       "Cognito did not return a confirmation session."
     );
@@ -559,7 +596,6 @@ export async function completeSignupAuthentication(
 
   const command =
     new InitiateAuthCommand({
-
       ClientId:
         CLIENT_ID,
 
@@ -567,7 +603,6 @@ export async function completeSignupAuthentication(
         "USER_AUTH",
 
       AuthParameters: {
-
         USERNAME:
           normalizedEmail,
       },
@@ -586,7 +621,6 @@ export async function completeSignupAuthentication(
   if (
     !response.AuthenticationResult
   ) {
-
     throw new Error(
       "Cognito did not complete authentication."
     );
@@ -601,11 +635,9 @@ export async function completeSignupAuthentication(
     authenticationResult.AccessToken ||
     null;
 
-
   const idToken =
     authenticationResult.IdToken ||
     null;
-
 
   const refreshToken =
     authenticationResult.RefreshToken ||
@@ -613,7 +645,6 @@ export async function completeSignupAuthentication(
 
 
   if (!accessToken) {
-
     throw new Error(
       "Cognito did not return an access token."
     );
@@ -621,7 +652,6 @@ export async function completeSignupAuthentication(
 
 
   return {
-
     accessToken,
 
     idToken,
@@ -646,13 +676,11 @@ export async function completeSignupAuthentication(
 export async function resendVerificationCode(
   email
 ) {
-
   const normalizedEmail =
     email.trim().toLowerCase();
 
 
   if (!normalizedEmail) {
-
     throw new Error(
       "Email address is required."
     );
@@ -661,7 +689,6 @@ export async function resendVerificationCode(
 
   const command =
     new ResendConfirmationCodeCommand({
-
       ClientId:
         CLIENT_ID,
 
@@ -684,17 +711,16 @@ export async function storeFamilyKitPin(
   accessToken,
   pin
 ) {
-
   if (!accessToken) {
-
     throw new Error(
       "Authentication session is missing."
     );
   }
 
 
-  if (!/^\d{4}$/.test(pin)) {
-
+  if (
+    !/^\d{4}$/.test(pin)
+  ) {
     throw new Error(
       "PIN must contain exactly 4 digits."
     );
@@ -709,7 +735,6 @@ export async function storeFamilyKitPin(
           "POST",
 
         headers: {
-
           "Content-Type":
             "application/json",
 
@@ -729,18 +754,14 @@ export async function storeFamilyKitPin(
 
 
   try {
-
     result =
       await response.json();
-
   } catch {
-
     result = null;
   }
 
 
   if (!response.ok) {
-
     throw new Error(
       result?.message ||
         `Unable to save PIN. Server returned ${response.status}.`
@@ -749,7 +770,6 @@ export async function storeFamilyKitPin(
 
 
   if (!result?.success) {
-
     throw new Error(
       result?.message ||
         "Unable to save PIN."
@@ -769,13 +789,11 @@ export async function storeFamilyKitPin(
 export async function startPinLogin(
   email
 ) {
-
   const normalizedEmail =
     email.trim().toLowerCase();
 
 
   if (!normalizedEmail) {
-
     throw new Error(
       "Email address is required."
     );
@@ -784,7 +802,6 @@ export async function startPinLogin(
 
   const command =
     new InitiateAuthCommand({
-
       ClientId:
         CLIENT_ID,
 
@@ -792,13 +809,11 @@ export async function startPinLogin(
         "CUSTOM_AUTH",
 
       AuthParameters: {
-
         USERNAME:
           normalizedEmail,
 
         // Start directly with our
         // FamilyKit custom challenge.
-
         CHALLENGE_NAME:
           "CUSTOM_CHALLENGE",
       },
@@ -815,7 +830,6 @@ export async function startPinLogin(
     response.ChallengeName !==
     "CUSTOM_CHALLENGE"
   ) {
-
     throw new Error(
       "FamilyKit PIN authentication could not be started."
     );
@@ -823,7 +837,6 @@ export async function startPinLogin(
 
 
   if (!response.Session) {
-
     throw new Error(
       "Cognito did not return an authentication session."
     );
@@ -831,7 +844,6 @@ export async function startPinLogin(
 
 
   return {
-
     challengeName:
       response.ChallengeName,
 
@@ -855,21 +867,20 @@ export async function respondToPinChallenge(
   pin,
   session
 ) {
-
   const normalizedEmail =
     email.trim().toLowerCase();
 
 
   if (!normalizedEmail) {
-
     throw new Error(
       "Email address is required."
     );
   }
 
 
-  if (!/^\d{4}$/.test(pin)) {
-
+  if (
+    !/^\d{4}$/.test(pin)
+  ) {
     throw new Error(
       "PIN must contain exactly 4 digits."
     );
@@ -877,7 +888,6 @@ export async function respondToPinChallenge(
 
 
   if (!session) {
-
     throw new Error(
       "Authentication session is missing."
     );
@@ -886,7 +896,6 @@ export async function respondToPinChallenge(
 
   const command =
     new RespondToAuthChallengeCommand({
-
       ClientId:
         CLIENT_ID,
 
@@ -897,7 +906,6 @@ export async function respondToPinChallenge(
         session,
 
       ChallengeResponses: {
-
         USERNAME:
           normalizedEmail,
 
@@ -920,7 +928,6 @@ export async function respondToPinChallenge(
   if (
     response.AuthenticationResult
   ) {
-
     const authenticationResult =
       response.AuthenticationResult;
 
@@ -929,11 +936,9 @@ export async function respondToPinChallenge(
       authenticationResult.AccessToken ||
       null;
 
-
     const idToken =
       authenticationResult.IdToken ||
       null;
-
 
     const refreshToken =
       authenticationResult.RefreshToken ||
@@ -941,7 +946,6 @@ export async function respondToPinChallenge(
 
 
     if (!accessToken) {
-
       throw new Error(
         "Cognito did not return an access token."
       );
@@ -949,7 +953,6 @@ export async function respondToPinChallenge(
 
 
     return {
-
       success:
         true,
 
@@ -982,9 +985,7 @@ export async function respondToPinChallenge(
     response.ChallengeName ===
     "CUSTOM_CHALLENGE"
   ) {
-
     return {
-
       success:
         false,
 
@@ -992,7 +993,8 @@ export async function respondToPinChallenge(
         true,
 
       session:
-        response.Session || null,
+        response.Session ||
+        null,
 
       challengeName:
         response.ChallengeName,
@@ -1014,21 +1016,20 @@ export async function loginWithFamilyKitPin(
   email,
   pin
 ) {
-
   const normalizedEmail =
     email.trim().toLowerCase();
 
 
   if (!normalizedEmail) {
-
     throw new Error(
       "Please enter your email address."
     );
   }
 
 
-  if (!/^\d{4}$/.test(pin)) {
-
+  if (
+    !/^\d{4}$/.test(pin)
+  ) {
     throw new Error(
       "Please enter your 4-digit FamilyKit PIN."
     );
@@ -1036,7 +1037,6 @@ export async function loginWithFamilyKitPin(
 
 
   // Start Cognito CUSTOM_AUTH.
-
   const loginStart =
     await startPinLogin(
       normalizedEmail
@@ -1045,7 +1045,6 @@ export async function loginWithFamilyKitPin(
 
   // Answer the custom challenge
   // with the PIN.
-
   const loginResult =
     await respondToPinChallenge(
       normalizedEmail,
@@ -1055,7 +1054,6 @@ export async function loginWithFamilyKitPin(
 
 
   if (!loginResult.success) {
-
     throw new Error(
       "Incorrect email address or FamilyKit PIN."
     );
@@ -1071,7 +1069,6 @@ export async function loginWithFamilyKitPin(
 // ======================================================
 
 export const cognitoConfig = {
-
   region:
     REGION,
 
@@ -1084,7 +1081,6 @@ export const cognitoConfig = {
 
 
 export const apiConfig = {
-
   pinApiUrl:
     PIN_API_URL,
 };
