@@ -890,146 +890,82 @@ export default function SignupPage() {
 
   if (step === 3) {
     return (
-      <div className="signup-page">
-        <div className="signup-card family-details-card">
-          <h1>
-            Give your family name
-          </h1>
-
-          <p className="signup-subtitle">
-            A shared space for your family's important details.
-          </p>
-
-          <div className="signup-field">
-            <label
-              htmlFor="family-name"
-            >
-              Family Name{" "}
-
-              <span className="required">
-                *
-              </span>
-            </label>
-
-            <input
-              id="family-name"
-              type="text"
-              placeholder="e.g. The Sharmas"
-              value={
-                familyName
-              }
-              onChange={(event) => {
-                setFamilyName(
-                  event.target.value
-                );
-
-                setError("");
-              }}
-            />
-
-            <span className="field-helper">
-              Choose a name everyone will recognise.
-            </span>
-          </div>
-
-          <div className="signup-field">
-            <label
-              htmlFor="your-name"
-            >
-              Your Name{" "}
-
-              <span className="required">
-                *
-              </span>
-            </label>
-
-            <input
-              id="your-name"
-              type="text"
-              placeholder="Enter your name as per Records"
-              value={
-                yourName
-              }
-              onChange={(event) => {
-                setYourName(
-                  event.target.value
-                );
-
-                setError("");
-              }}
-            />
-          </div>
-
-          <div className="signup-field">
-            <label>
-              Gender{" "}
-
-              <span className="optional">
-                (optional)
-              </span>
-            </label>
-
-            <div className="gender-options">
-              {[
-                "Female",
-                "Male",
-                "Other",
-                "Prefer not to say",
-              ].map(
-                (option) => (
-                  <label
-                    key={
-                      option
-                    }
-                    className={`gender-option ${
-                      gender ===
-                      option
-                        ? "selected"
-                        : ""
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="gender"
-                      value={
-                        option
-                      }
-                      checked={
-                        gender ===
-                        option
-                      }
-                      onChange={(event) => {
-                        setGender(
-                          event
-                            .target
-                            .value
-                        );
-                      }}
-                    />
-
-                    <span>
-                      {option}
-                    </span>
-                  </label>
-                )
-              )}
+      <div className="signup-page signup-page--family-details">
+        <div className="signup-welcome-layout">
+          <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
+            <div className="signup-illustration-curve" />
+            <div className="signup-illustration-content">
+              <div className="signup-family-art">
+                <img className="signup-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
+                <img className="signup-float-icon signup-float-icon--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
+                <span className="signup-float-icon signup-float-icon--bell" aria-hidden="true">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                  </svg>
+                </span>
+              </div>
+              <p className="signup-illustration-caption">Everything your family needs, in one place</p>
             </div>
-          </div>
+          </section>
 
-          {error && (
-            <div className="signup-error">
-              {error}
+          <section className="signup-welcome-panel">
+            <div className="signup-card family-details-card">
+              <h1>Give your family name</h1>
+              <p className="signup-subtitle">A shared space for your family's important details.</p>
+
+              <div className="signup-field">
+                <label htmlFor="family-name">Family Name <span className="required">*</span></label>
+                <input
+                  id="family-name"
+                  type="text"
+                  placeholder="e.g. The Sharmas"
+                  value={familyName}
+                  onChange={(event) => { setFamilyName(event.target.value); setError(""); }}
+                />
+                <span className="field-helper">Choose a name everyone will recognise.</span>
+              </div>
+
+              <div className="signup-field">
+                <label htmlFor="your-name">Your Name <span className="required">*</span></label>
+                <input
+                  id="your-name"
+                  type="text"
+                  placeholder="Enter your name as per Records"
+                  value={yourName}
+                  onChange={(event) => { setYourName(event.target.value); setError(""); }}
+                />
+              </div>
+
+              <fieldset className="signup-gender-fieldset">
+                <legend>Gender <span className="optional">(optional)</span></legend>
+                <div className="gender-options">
+                  {["Female", "Male", "Other", "Prefer not to say"].map((option) => (
+                    <label key={option} className={`gender-option ${gender === option ? "selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="gender"
+                        value={option}
+                        checked={gender === option}
+                        onChange={(event) => setGender(event.target.value)}
+                      />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              {error && <div className="signup-error" role="alert">{error}</div>}
+              <button type="button" className="signup-family-continue" onClick={handleFamilyDetailsContinue} disabled={loading}>
+                Continue
+              </button>
             </div>
-          )}
-
-          <button
-            type="button"
-            onClick={
-              handleFamilyDetailsContinue
-            }
-          >
-            Continue
-          </button>
+          </section>
         </div>
       </div>
     );

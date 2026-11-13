@@ -1520,3 +1520,154 @@
   .signup-page--otp .signup-otp-resend .resend-button { color: #2D0B84; font-weight: 600; text-decoration: none; }
   .signup-page--otp .signup-otp-verify { width: 100%; min-height: 50px; border: 0; border-radius: 28px; background: #2D0B84; color: #fff; font: 500 14px/16px Poppins,sans-serif; }
 }
+
+
+/* ============================================================
+   SCREEN 3 — FAMILY DETAILS
+   Desktop matches the existing OTP/welcome split-panel layout.
+   All rules scoped to step 3; other screens stay untouched.
+   ============================================================ */
+@media (min-width: 1025px) {
+  .signup-page--family-details {
+    min-height: 100vh;
+    padding: 0;
+    display: block;
+    background: #F0EEF3;
+    font-family: Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-welcome-layout {
+    grid-template-columns: 56% 44%;
+  }
+  .signup-page--family-details .signup-illustration-panel { background: #F7FFCA; }
+  .signup-page--family-details .signup-illustration-curve {
+    right: -58%; width: 76%; height: 134%;
+  }
+  .signup-page--family-details .signup-illustration-content {
+    width: min(82%, 620px);
+    transform: translateX(-9%);
+    align-items: center;
+  }
+  .signup-page--family-details .signup-family-art { margin-top: 55px; }
+  .signup-page--family-details .signup-float-icon {
+    width: 32px; height: 32px; min-width: 0; max-width: none;
+    box-sizing: border-box; padding: 5px; border-radius: 9px;
+    background: #F5F7FF;
+    box-shadow: 0 3px 9px rgba(45,11,132,.10);
+    filter: none; z-index: 3;
+  }
+  .signup-page--family-details .signup-float-icon--health { top: 5%; left: 19%; }
+  .signup-page--family-details .signup-float-icon--vector { top: -4%; left: 40%; }
+  .signup-page--family-details .signup-float-icon--bills { top: 18%; left: 7%; }
+  .signup-page--family-details .signup-float-icon--extra { top: 38%; left: 0%; }
+  .signup-page--family-details .signup-float-icon--insurance { top: 30%; right: 5%; }
+  .signup-page--family-details .signup-float-icon--file { top: 8%; right: 21%; }
+  .signup-page--family-details .signup-float-icon--bell {
+    top: 0%; right: 9%; background: #FFF5EC;
+    border: 1px solid #F6DCC8; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .signup-page--family-details .signup-float-icon--bell svg { width: 19px; height: 19px; }
+  .signup-page--family-details .signup-illustration-caption {
+    margin-top: 14px; color: #000; font: 600 20px/normal Poppins, sans-serif;
+  }
+  .signup-page--family-details .signup-welcome-panel {
+    background: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+  }
+  .signup-page--family-details .family-details-card {
+    width: 100%; max-width: 390px; gap: 0; align-items: stretch;
+  }
+  .signup-page--family-details .family-details-card h1 {
+    color: #19181A; font: 600 27px/1.3 Poppins, sans-serif;
+    text-align: left; white-space: nowrap;
+  }
+  .signup-page--family-details .signup-subtitle {
+    margin: 10px 0 25px; color: #77717F;
+    font: 400 13px/1.5 Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-field {
+    display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px;
+  }
+  .signup-page--family-details .signup-field > label,
+  .signup-page--family-details .signup-gender-fieldset legend {
+    color: #19181A; font: 600 13px/20px Poppins, sans-serif;
+  }
+  .signup-page--family-details .signup-field input {
+    width: 100%; height: 49px; min-height: 0;
+    padding: 12px 15px; box-sizing: border-box;
+    border: 1px solid #D8D3E0; border-radius: 15px;
+    background: #FFF; color: #19181A;
+    font: 400 13px Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-field input:focus {
+    outline: none; border-color: #2D0B84;
+    box-shadow: 0 0 0 3px rgba(45,11,132,.08);
+  }
+  .signup-page--family-details .field-helper {
+    color: #9B9B9D; font: 400 11px/1.4 Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-gender-fieldset {
+    border: 0; padding: 0; margin: 0 0 22px; min-width: 0;
+  }
+  .signup-page--family-details .signup-gender-fieldset legend { margin-bottom: 12px; }
+  .signup-page--family-details .optional {
+    color: #9B9B9D; font: 400 11px Mulish, sans-serif;
+  }
+  .signup-page--family-details .gender-options {
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .signup-page--family-details .gender-option {
+    display: inline-flex; align-items: center; gap: 7px;
+    min-height: 35px; padding: 7px 12px;
+    box-sizing: border-box; border: 1px solid #D8D3E0;
+    border-radius: 22px; background: #FFF; cursor: pointer;
+    font: 400 12px Mulish, sans-serif; color: #4D485A;
+  }
+  .signup-page--family-details .gender-option.selected {
+    border-color: #2D0B84; background: #EBE6F7; color: #2D0B84;
+  }
+  .signup-page--family-details .gender-option input[type="radio"] {
+    appearance: none; width: 14px; height: 14px; min-width: 14px;
+    min-height: 14px; padding: 0; margin: 0;
+    border: 1px solid #BBB3C9; border-radius: 50%;
+    background: #FFF; flex: 0 0 14px;
+  }
+  .signup-page--family-details .gender-option input[type="radio"]:checked {
+    border: 4px solid #2D0B84;
+  }
+  .signup-page--family-details .signup-error { margin-bottom: 12px; }
+  .signup-page--family-details .signup-family-continue {
+    width: 100%; min-height: 49px; padding: 14px 20px;
+    border: 0; border-radius: 28px;
+    background: #2D0B84; color: #FFF;
+    font: 500 14px/16px Poppins, sans-serif;
+    box-shadow: -1px 4px 12px rgba(45,11,132,.10),
+      1px 4px 4px rgba(255,255,255,.25) inset;
+    cursor: pointer;
+  }
+  .signup-page--family-details .signup-family-continue:disabled {
+    opacity: .6; cursor: not-allowed;
+  }
+}
+
+/* Tablet/mobile: keep the existing single-column signup layout. */
+@media (max-width: 1024px) {
+  .signup-page--family-details .signup-welcome-layout { display: block; width: 100%; }
+  .signup-page--family-details .signup-illustration-panel { display: none; }
+  .signup-page--family-details .signup-welcome-panel {
+    display: flex; width: 100%; align-items: flex-start;
+    justify-content: center; background: transparent;
+  }
+  .signup-page--family-details .family-details-card { width: 100%; max-width: 440px; }
+  .signup-page--family-details .signup-gender-fieldset {
+    min-width: 0; border: 0; margin: 0; padding: 0;
+  }
+  .signup-page--family-details .signup-gender-fieldset legend {
+    font-size: 15px; font-weight: 600; margin-bottom: 10px;
+  }
+  .signup-page--family-details .signup-family-continue {
+    width: 100%; min-height: 52px; border: 0;
+    border-radius: 28px; background: #2D0B84; color: #FFF;
+    font: 500 14px/16px Poppins, sans-serif; cursor: pointer;
+  }
+  .signup-page--family-details .gender-option { border-radius: 22px; }
+}
