@@ -779,96 +779,104 @@ export default function SignupPage() {
 
   if (step === 2) {
     return (
-      <div className="signup-page">
-        <div className="signup-card">
-          <h1>
-            Enter your Verification code
-          </h1>
-
-          <p>
-            We sent a 6-digit verification code to
-          </p>
-
-          <strong>
-            {email}
-          </strong>
-
-          <label
-            htmlFor="verification-code"
-          >
-            Verification code
-          </label>
-
-          <input
-            id="verification-code"
-            type="text"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            placeholder="Enter 6-digit verification code"
-            value={
-              verificationCode
-            }
-            maxLength={6}
-            onChange={(event) => {
-              const value =
-                event.target.value
-                  .replace(
-                    /\D/g,
-                    ""
-                  )
-                  .slice(
-                    0,
-                    6
-                  );
-
-              setVerificationCode(
-                value
-              );
-
-              setError("");
-            }}
-            onKeyDown={(event) => {
-              if (
-                event.key ===
-                  "Enter"
-              ) {
-                handleVerifyEmail();
-              }
-            }}
-          />
-
-          {error && (
-            <div className="signup-error">
-              {error}
+      <div className="signup-page signup-page--otp">
+        <div className="signup-welcome-layout">
+          <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
+            <div className="signup-illustration-curve" />
+            <div className="signup-illustration-content">
+              <div className="signup-family-art">
+                <img className="signup-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
+                <img className="signup-float-icon signup-float-icon--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
+                <span className="signup-float-icon signup-float-icon--bell" aria-hidden="true">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                  </svg>
+                </span>
+              </div>
+              <p className="signup-illustration-caption">Everything your family needs, in one place</p>
             </div>
-          )}
+          </section>
 
-          <button
-            type="button"
-            onClick={
-              handleVerifyEmail
-            }
-            disabled={loading}
-          >
-            {loading
-              ? "Verifying..."
-              : "Verify"}
-          </button>
-
-          <p>
-            Didn't get a code?{" "}
-
-            <button
-              type="button"
-              className="resend-button"
-              onClick={
-                handleResendCode
-              }
-              disabled={loading}
-            >
-              Resend code
-            </button>
-          </p>
+          <section className="signup-welcome-panel">
+            <div className="signup-card signup-otp-card">
+              <h1>Enter your Verification code</h1>
+              <p className="signup-otp-subtitle">
+                We sent a 6-digit code to <strong>{email}</strong>
+              </p>
+              <label className="signup-otp-label" htmlFor="verification-code-0">
+                Verification code
+              </label>
+              <div className="signup-otp-boxes" role="group" aria-label="6-digit verification code">
+                {Array.from({ length: 6 }, (_, index) => (
+                  <input
+                    key={index}
+                    id={`verification-code-${index}`}
+                    className="signup-otp-digit"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete={index === 0 ? "one-time-code" : "off"}
+                    aria-label={`Digit ${index + 1} of 6`}
+                    maxLength={6}
+                    value={verificationCode[index] || ""}
+                    onChange={(event) => {
+                      const digits = event.target.value.replace(/\D/g, "");
+                      if (!digits) {
+                        setVerificationCode((current) => current.slice(0, index) + current.slice(index + 1));
+                        setError("");
+                        return;
+                      }
+                      // Accept full OTP pasted/autofilled into any box.
+                      if (digits.length > 1) {
+                        const next = (verificationCode.slice(0, index) + digits + verificationCode.slice(index + digits.length)).slice(0, 6);
+                        setVerificationCode(next);
+                        document.getElementById(`verification-code-${Math.min(index + digits.length, 5)}`)?.focus();
+                      } else {
+                        const next = verificationCode.split("");
+                        next[index] = digits;
+                        setVerificationCode(next.join("").slice(0, 6));
+                        if (index < 5) document.getElementById(`verification-code-${index + 1}`)?.focus();
+                      }
+                      setError("");
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") handleVerifyEmail();
+                      if (event.key === "Backspace" && !verificationCode[index] && index > 0) {
+                        document.getElementById(`verification-code-${index - 1}`)?.focus();
+                      }
+                      if (event.key === "ArrowLeft" && index > 0) document.getElementById(`verification-code-${index - 1}`)?.focus();
+                      if (event.key === "ArrowRight" && index < 5) document.getElementById(`verification-code-${index + 1}`)?.focus();
+                    }}
+                    onPaste={(event) => {
+                      const digits = event.clipboardData.getData("text").replace(/\D/g, "");
+                      if (!digits) return;
+                      event.preventDefault();
+                      const next = (verificationCode.slice(0, index) + digits + verificationCode.slice(index + digits.length)).slice(0, 6);
+                      setVerificationCode(next);
+                      setError("");
+                      document.getElementById(`verification-code-${Math.min(index + digits.length, 5)}`)?.focus();
+                    }}
+                  />
+                ))}
+              </div>
+              <p className="signup-otp-hint">Enter the code from your email.</p>
+              <p className="signup-otp-resend">
+                Didn't get a code?{" "}
+                <button type="button" className="resend-button" onClick={handleResendCode} disabled={loading}>
+                  Resend code
+                </button>
+              </p>
+              {error && <div className="signup-error" role="alert">{error}</div>}
+              <button type="button" className="signup-otp-verify" onClick={handleVerifyEmail} disabled={loading}>
+                {loading ? "Verifying..." : "Verify"}
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     );

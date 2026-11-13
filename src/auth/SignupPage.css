@@ -1145,12 +1145,378 @@
   }
 }
 
-/* FamilyKit brand icon replacement — welcome screen, desktop only sizing */
+
+/* =====================================================
+   SCREEN 2 — OTP (desktop matches welcome illustration)
+   ===================================================== */
 @media (min-width: 1025px) {
-  .signup-page--welcome .signup-brand-image {
+  .signup-page.signup-page--otp { min-height: 100vh; padding: 0; display: block; background: #F0EEF3; font-family: Mulish, sans-serif; }
+.signup-page.signup-page--otp {
+    min-height: 100vh;
+    padding: 0;
     display: block;
-    width: 64px;
-    height: 64px;
+    background: #F0EEF3;
+    font-family: Mulish, sans-serif;
+  }
+.signup-page--otp .signup-welcome-card {
+    width: 100%;
+    max-width: 390px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+.signup-page--otp .signup-welcome-card h1 {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 2.05vw, 32px);
+    line-height: 1.3;
+    color: #050011;
+    text-align: center;
+    white-space: nowrap;
+  }
+.signup-page--otp .signup-welcome-card #signup-email {
+    display: block;
+    width: 100%;
+    min-height: 49px;
+    padding: 12px 15px;
+    border: 1.5px solid #7D59C6;
+    border-radius: 8px;
+    outline: none;
+    background: #FFF;
+    font: 14px Mulish, sans-serif;
+    color: #050011;
+  }
+.signup-page--otp .signup-welcome-card #signup-email:focus {
+    border-color: #2D0B84;
+    box-shadow: 0 0 0 3px rgba(45,11,132,.10);
+  }
+.signup-page--otp .verification-note {
+    margin: 8px 0 16px;
+    color: #6F6B78;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+.signup-page--otp .signup-error { margin-bottom: 12px; }
+.signup-page--otp .signup-welcome-card > .signup-primary-continue {
+    display: flex;
+    width: 100%;
+    min-width: 94px;
+    max-width: 800px;
+    padding: 16px 80px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border: 0;
+    border-radius: 28px;
+    background: #2D0B84;
+    box-shadow: -1px 4px 12px 0 rgba(45,11,132,.10), 1px 4px 4px 0 rgba(255,255,255,.25) inset;
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    cursor: pointer;
+  }
+.signup-page--otp .signup-welcome-card > .signup-primary-continue:disabled,
+  .signup-page--otp .signup-welcome-card > .signup-google-button:disabled { opacity: .6; cursor: not-allowed; }
+.signup-page--otp .signup-divider {
+    margin: 19px 0;
+    color: #8A8593;
+    text-transform: none;
+    font-size: 12px;
+  }
+.signup-page--otp .signup-welcome-card > .signup-google-button {
+    display: flex;
+    width: 100%;
+    min-height: 49px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid #D5D1DF;
+    border-radius: 28px;
+    background: #FFF;
+    color: #050011;
+    font: 500 14px Poppins, sans-serif;
+    cursor: pointer;
+  }
+.signup-page--otp .signup-google-icon { width: 19px; height: 19px; flex: 0 0 19px; }
+.signup-page--otp .signup-illustration-content {
+    width: min(64%, 440px);
+    transform: translateX(-15%);
+  }
+.signup-page--otp .signup-family-art {
+    width: 100%;
+    margin-top: 42px;
+  }
+.signup-page--otp .signup-family-photo {
+    display: block;
+    width: 100%;
+    height: auto;
     object-fit: contain;
   }
+.signup-page--otp .signup-float-icon {
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    min-width: 0;
+    max-width: none;
+    aspect-ratio: 1;
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,.85);
+    border-radius: 9px;
+    background: #f3f7fc;
+    object-fit: contain;
+    box-shadow: 0 3px 7px rgba(45,11,132,.10), 0 1px 2px rgba(0,0,0,.05);
+    filter: none;
+    z-index: 3;
+  }
+.signup-page--otp .signup-float-icon--health { top: 0%; left: 25%; }
+.signup-page--otp .signup-float-icon--vector { top: -7%; left: 44%; }
+.signup-page--otp .signup-float-icon--bills { top: 13%; left: 10%; }
+.signup-page--otp .signup-float-icon--extra { top: 29%; left: 1%; }
+.signup-page--otp .signup-float-icon--insurance { top: 20%; right: 1%; }
+.signup-page--otp .signup-float-icon--file { top: -3%; right: 26%; }
+.signup-page--otp .signup-float-icon--bell {
+    top: -5%;
+    right: 12%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    background: #fff5ec;
+    border-color: #f6dcc8;
+  }
+.signup-page--otp .signup-float-icon--bell svg {
+    width: 100%;
+    height: 100%;
+  }
+.signup-page--otp .signup-illustration-caption {
+    margin-top: 14px;
+  }
+/* Extend yellow background further right */
+  .signup-page--otp .signup-welcome-layout {
+    grid-template-columns: 56% 44%;
+  }
+.signup-page--otp .signup-illustration-panel {
+    background: #F7FFCA;
+    overflow: hidden;
+  }
+/* Move lavender curve towards the right edge */
+  .signup-page--otp .signup-illustration-curve {
+    right: -58%;
+    width: 76%;
+    height: 134%;
+  }
+/* Keep the inner gradient following the curve */
+  .signup-page--otp .signup-illustration-curve::after {
+    right: -22px;
+  }
+/* Make the illustration group larger */
+  .signup-page--otp .signup-illustration-content {
+    width: min(82%, 620px);
+    transform: translateX(-9%);
+    align-items: center;
+  }
+/* Family illustration */
+  .signup-page--otp .signup-family-art {
+    width: 100%;
+    margin-top: 55px;
+    position: relative;
+  }
+.signup-page--otp .signup-family-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+/* Floating icons — compact square appearance */
+  .signup-page--otp .signup-float-icon {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    min-width: 0;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 5px;
+    border-radius: 9px;
+    background-color: #F5F7FF;
+    box-shadow: 0 3px 9px rgba(45, 11, 132, 0.10);
+    object-fit: contain;
+    filter: none;
+    z-index: 3;
+  }
+/* Position icons like the reference */
+  .signup-page--otp .signup-float-icon--health {
+    top: 5%;
+    left: 19%;
+  }
+.signup-page--otp .signup-float-icon--vector {
+    top: -4%;
+    left: 40%;
+  }
+.signup-page--otp .signup-float-icon--bills {
+    top: 18%;
+    left: 7%;
+  }
+.signup-page--otp .signup-float-icon--extra {
+    top: 38%;
+    left: 0%;
+  }
+.signup-page--otp .signup-float-icon--insurance {
+    top: 30%;
+    right: 5%;
+  }
+.signup-page--otp .signup-float-icon--file {
+    top: 8%;
+    right: 21%;
+  }
+.signup-page--otp .signup-float-icon--bell {
+    top: 0%;
+    right: 9%;
+    background: #FFF5EC;
+    border: 1px solid #F6DCC8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+.signup-page--otp .signup-float-icon--bell svg {
+    width: 19px;
+    height: 19px;
+  }
+/* Caption beneath the family */
+  .signup-page--otp .signup-illustration-caption {
+    margin-top: 18px;
+    text-align: center;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: clamp(13px, 1.15vw, 18px);
+  }
+.signup-page--otp .signup-family-art .signup-float-icon--bell {
+    position: absolute;
+    top: -2%;
+    left: 55%;
+    right: auto;
+    transform: translateX(-50%);
+    z-index: 5;
+  }
+.signup-page--otp .signup-family-art .signup-float-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 0;
+    max-width: none;
+    transform: none;
+  }
+/* Leftmost pink icon */
+  .signup-page--otp .signup-float-icon--extra {
+    top: 37%;
+    left: 0%;
+    right: auto;
+  }
+/* Yellow bills icon */
+  .signup-page--otp .signup-float-icon--bills {
+    top: 20%;
+    left: 7%;
+    right: auto;
+  }
+/* Pink heart icon */
+  .signup-page--otp .signup-float-icon--insurance {
+    top: 9%;
+    left: 19%;
+    right: auto;
+  }
+/* Purple house icon */
+  .signup-page--otp .signup-float-icon--vector {
+    top: 2%;
+    left: 40%;
+    right: auto;
+  }
+/* Orange bell icon */
+  .signup-page--otp .signup-float-icon--bell {
+    top: 4%;
+    left: 53%;
+    right: auto;
+  }
+/* Blue document icon */
+  .signup-page--otp .signup-float-icon--file {
+    top: 13%;
+    left: 74%;
+    right: auto;
+  }
+/* Turquoise health icon */
+  .signup-page--otp .signup-float-icon--health {
+    top: 29%;
+    left: 91%;
+    right: auto;
+  }
+.signup-page--otp
+  .signup-family-art
+  .signup-float-icon--bell {
+    position: absolute;
+    top: 4%;
+    left: 64%;
+    right: auto;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+.signup-page--otp .signup-float-icon--vector {
+    top: 13%;
+    left: 74%;
+    right: auto;
+  }
+.signup-page--otp .signup-float-icon--file {
+    top: 2%;
+    left: 40%;
+    right: auto;
+  }
+.signup-page--otp .signup-illustration-curve::after {
+    background-image: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+    background-color: transparent;
+    background-size: 100% 100vh;
+    background-repeat: no-repeat;
+    background-position: left top 17vh;
+  }
+.signup-page--otp .signup-illustration-caption {
+    color: #000000;
+    font-family: Poppins, sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+  .signup-page--otp .signup-otp-card { width: 100%; max-width: 390px; display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .signup-page--otp .signup-otp-card h1 { margin: 0; color: #19181A; text-align: center; font: 600 25px/1.35 Poppins, sans-serif; white-space: nowrap; }
+  .signup-page--otp .signup-otp-subtitle { margin: 10px 0 30px; color: #77717F; text-align: center; font: 400 12px/1.5 Mulish, sans-serif; }
+  .signup-page--otp .signup-otp-subtitle strong { font-weight: 600; color: #4D485A; }
+  .signup-page--otp .signup-otp-label { text-align: center; color: #19181A; font: 600 13px/20px Poppins, sans-serif; margin-bottom: 12px; }
+  .signup-page--otp .signup-otp-boxes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 9px; }
+  .signup-page--otp .signup-otp-digit { width: 100%; min-width: 0; height: 48px; padding: 0; box-sizing: border-box; border: 1px solid #D8D3E0; border-radius: 9px; background: #FFF; text-align: center; font: 600 20px Poppins, sans-serif; color: #2D0B84; outline: none; }
+  .signup-page--otp .signup-otp-digit:focus { border: 2px solid #2D0B84; box-shadow: 0 0 0 2px rgba(45,11,132,.08); }
+  .signup-page--otp .signup-otp-hint { margin: 13px 0 0; color: #9B9B9D; text-align: center; font: 400 12px/1.5 Mulish, sans-serif; }
+  .signup-page--otp .signup-otp-resend { margin: 12px 0 20px; color: #77717F; text-align: center; font: 400 12px/1.5 Mulish, sans-serif; }
+  .signup-page--otp .signup-otp-resend .resend-button { color: #2D0B84; font: 600 12px Mulish, sans-serif; text-decoration: none; }
+  .signup-page--otp .signup-otp-verify { width: 100%; min-height: 49px; border: 0; border-radius: 28px; background: #2D0B84; color: white; font: 500 14px/16px Poppins, sans-serif; box-shadow: -1px 4px 12px rgba(45,11,132,.10), 1px 4px 4px rgba(255,255,255,.25) inset; cursor: pointer; }
+  .signup-page--otp .signup-otp-verify:disabled { opacity: .6; cursor: not-allowed; }
+}
+/* Screen 2 responsive layout: existing welcome styles are desktop-only. */
+@media (max-width: 1024px) {
+  .signup-page--otp .signup-welcome-layout { display: block; width: 100%; }
+  .signup-page--otp .signup-illustration-panel { display: none; }
+  .signup-page--otp .signup-welcome-panel { width: 100%; }
+  .signup-page--otp .signup-otp-card { width: 100%; max-width: 420px; margin: 0 auto; gap: 0; }
+  .signup-page--otp .signup-otp-card h1 { font: 600 clamp(21px, 5vw, 27px)/1.3 Poppins, sans-serif; text-align: center; }
+  .signup-page--otp .signup-otp-subtitle { text-align: center; font-size: 13px; margin: 12px 0 26px; overflow-wrap: anywhere; }
+  .signup-page--otp .signup-otp-label { text-align: center; font: 600 14px Poppins, sans-serif; margin-bottom: 12px; }
+  .signup-page--otp .signup-otp-boxes { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; }
+  .signup-page--otp .signup-card .signup-otp-digit { box-sizing: border-box; width: 100%; min-width: 0; height: 48px; min-height: 48px; padding: 0; border: 1px solid #D8D3E0; border-radius: 8px; text-align: center; font: 600 20px Poppins,sans-serif; background: #fff; }
+  .signup-page--otp .signup-card .signup-otp-digit:focus { border: 2px solid #2D0B84; outline: none; }
+  .signup-page--otp .signup-otp-hint, .signup-page--otp .signup-otp-resend { text-align: center; font-size: 12px; color: #77717F; }
+  .signup-page--otp .signup-otp-hint { margin: 12px 0 0; }
+  .signup-page--otp .signup-otp-resend { margin: 12px 0 20px; }
+  .signup-page--otp .signup-otp-resend .resend-button { color: #2D0B84; font-weight: 600; text-decoration: none; }
+  .signup-page--otp .signup-otp-verify { width: 100%; min-height: 50px; border: 0; border-radius: 28px; background: #2D0B84; color: #fff; font: 500 14px/16px Poppins,sans-serif; }
 }
