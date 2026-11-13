@@ -890,7 +890,7 @@ export default function SignupPage() {
 
   if (step === 3) {
     return (
-      <div className="signup-page signup-page--family-details">
+      <div className="signup-page signup-page--otp signup-page--family-details">
         <div className="signup-welcome-layout">
           <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
             <div className="signup-illustration-curve" />
@@ -979,81 +979,49 @@ export default function SignupPage() {
 
   if (step === 4) {
     return (
-      <div className="signup-page">
-        <div className="signup-card review-card">
-          <h1>
-            {familyName}
-          </h1>
-
-          <p className="signup-subtitle">
-            Review your details before continuing.
-          </p>
-
-          <div className="review-details">
-            <div className="review-item">
-              <span>
-                Family Name
-              </span>
-
-              <strong>
-                {familyName}
-              </strong>
-            </div>
-
-            <div className="review-item">
-              <span>
-                Your Name
-              </span>
-
-              <strong>
-                {yourName}
-              </strong>
-            </div>
-
-            <div className="review-item">
-              <span>
-                Email
-              </span>
-
-              <strong>
-                {email}
-              </strong>
-            </div>
-
-            {gender && (
-              <div className="review-item">
-                <span>
-                  Gender
+      <div className="signup-page signup-page--otp signup-page--review">
+        <div className="signup-welcome-layout">
+          <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
+            <div className="signup-illustration-curve" />
+            <div className="signup-illustration-content">
+              <div className="signup-family-art">
+                <img className="signup-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
+                <img className="signup-float-icon signup-float-icon--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
+                <span className="signup-float-icon signup-float-icon--bell" aria-hidden="true">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                  </svg>
                 </span>
-
-                <strong>
-                  {gender}
-                </strong>
               </div>
-            )}
-          </div>
+              <p className="signup-illustration-caption">Everything your family needs, in one place</p>
+            </div>
+          </section>
 
-          <button
-            type="button"
-            onClick={() => {
-              setError("");
-
-              setStep(3);
-            }}
-          >
-            Edit
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setError("");
-
-              setStep(5);
-            }}
-          >
-            Save
-          </button>
+          <section className="signup-welcome-panel">
+            <div className="signup-card signup-review-card">
+              <h1>The {familyName.trim().replace(/^the\s+/i, "").replace(/['’]s$/i, "")}'s Family</h1>
+              <p className="signup-review-subtitle">A shared space for the family's important details.</p>
+              <p className="signup-review-description">Family details</p>
+              <div className="signup-review-field">
+                <label htmlFor="review-family-name">Family name</label>
+                <input id="review-family-name" type="text" value={familyName} readOnly />
+              </div>
+              <div className="signup-review-field">
+                <label htmlFor="review-your-name">Your name</label>
+                <input id="review-your-name" type="text" value={yourName} readOnly />
+              </div>
+              <div className="signup-review-actions">
+                <button type="button" className="signup-review-edit" onClick={() => { setError(""); setStep(3); }}>Edit</button>
+                <button type="button" className="signup-review-save" onClick={() => { setError(""); setStep(5); }}>Save</button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     );
@@ -1067,221 +1035,148 @@ export default function SignupPage() {
 
   if (step === 5) {
     return (
-      <div className="signup-page">
-        <div className="signup-card pin-card">
-          <h1>
-            Create your PIN
-          </h1>
-
-          <p className="signup-subtitle">
-            Use this 4-digit PIN to unlock FamilyKit.
-          </p>
-
-          <div className="pin-boxes">
-            {[0, 1, 2, 3].map(
-              (index) => (
-                <input
-                  key={index}
-                  id={`create-pin-${index}`}
-                  className="pin-box"
-                  type={
-                    showPin
-                      ? "text"
-                      : "password"
-                  }
-                  inputMode="numeric"
-                  maxLength={1}
-                  autoComplete="off"
-                  value={
-                    pin[index] ||
-                    ""
-                  }
-                  onChange={(event) => {
-                    handleCreatePinChange(
-                      index,
-                      event.target.value
-                    );
-
-                    setError("");
-                  }}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key ===
-                        "Backspace" &&
-                      !pin[index] &&
-                      index > 0
-                    ) {
-                      document
-                        .getElementById(
-                          `create-pin-${
-                            index - 1
-                          }`
-                        )
-                        ?.focus();
-                    }
-                  }}
-                />
-              )
-            )}
-          </div>
-
-          <label className="show-pin-option">
-            <input
-              type="checkbox"
-              checked={
-                showPin
-              }
-              onChange={(event) =>
-                setShowPin(
-                  event.target.checked
-                )
-              }
-            />
-
-            <span>
-              Show PIN
-            </span>
-          </label>
-
-          <p className="field-helper">
-            Choose a 4-digit PIN that you can remember.
-          </p>
-
-          {error && (
-            <div className="signup-error">
-              {error}
+      <div className="signup-page signup-page--otp signup-page--pin-step">
+        <div className="signup-welcome-layout">
+          <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
+            <div className="signup-illustration-curve" />
+            <div className="signup-illustration-content">
+              <div className="signup-family-art">
+                <img className="signup-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
+                <img className="signup-float-icon signup-float-icon--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
+                <span className="signup-float-icon signup-float-icon--bell" aria-hidden="true">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                  </svg>
+                </span>
+              </div>
+              <p className="signup-illustration-caption">Everything your family needs, in one place</p>
             </div>
-          )}
+          </section>
 
-          <button
-            type="button"
-            onClick={
-              handleCreatePinContinue
-            }
-          >
-            Continue
-          </button>
+          <section className="signup-welcome-panel">
+            <div className="signup-card signup-pin-card">
+              <h1>Create your PIN</h1>
+              <p className="signup-pin-subtitle">Use this 4-digit PIN to unlock FamilyKit.</p>
+              <div className="signup-pin-header">
+                <label htmlFor="create-pin-0">Your PIN</label>
+                <label className="signup-pin-toggle">
+                  <input type="checkbox" checked={showPin} onChange={(event) => setShowPin(event.target.checked)} />
+                  <span aria-hidden="true">{showPin ? "◉" : "◎"}</span>
+                  Show PIN
+                </label>
+              </div>
+              <div className="signup-pin-digits" role="group" aria-label="4-digit PIN">
+                {[0, 1, 2, 3].map((index) => (
+                  <input
+                    key={index}
+                    id={`create-pin-${index}`}
+                    className="signup-pin-digit"
+                    type={showPin ? "text" : "password"}
+                    inputMode="numeric"
+                    maxLength={1}
+                    autoComplete="off"
+                    aria-label={`PIN digit ${index + 1}`}
+                    value={pin[index] || ""}
+                    onChange={(event) => { handleCreatePinChange(index, event.target.value); setError(""); }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Backspace" && !pin[index] && index > 0) {
+                        document.getElementById(`create-pin-${index - 1}`)?.focus();
+                      }
+                      if (event.key === "ArrowLeft" && index > 0) document.getElementById(`create-pin-${index - 1}`)?.focus();
+                      if (event.key === "ArrowRight" && index < 3) document.getElementById(`create-pin-${index + 1}`)?.focus();
+                      if (event.key === "Enter" && !loading) handleCreatePinContinue();
+                    }}
+                  />
+                ))}
+              </div>
+              <p className="signup-pin-hint">Choose a PIN that’s hard to guess.</p>
+              {error && <div className="signup-error" role="alert">{error}</div>}
+              <button type="button" className="signup-pin-continue" onClick={handleCreatePinContinue} disabled={loading}>
+                {loading ? "Please wait..." : "Continue"}
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     );
   }
 
 
-  // =====================================================
-  // SCREEN 6
-  // CONFIRM 4-DIGIT PIN
-  // =====================================================
-
   if (step === 6) {
     return (
-      <div className="signup-page">
-        <div className="signup-card pin-card">
-          <h1>
-            Confirm your PIN
-          </h1>
-
-          <p className="signup-subtitle">
-            Enter your 4-digit PIN again.
-          </p>
-
-          <div className="pin-boxes">
-            {[0, 1, 2, 3].map(
-              (index) => (
-                <input
-                  key={index}
-                  id={`confirm-pin-${index}`}
-                  className="pin-box"
-                  type={
-                    showConfirmPin
-                      ? "text"
-                      : "password"
-                  }
-                  inputMode="numeric"
-                  maxLength={1}
-                  autoComplete="off"
-                  value={
-                    confirmPin[
-                      index
-                    ] || ""
-                  }
-                  onChange={(event) => {
-                    handleConfirmPinChange(
-                      index,
-                      event.target.value
-                    );
-
-                    setError("");
-                  }}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key ===
-                        "Backspace" &&
-                      !confirmPin[
-                        index
-                      ] &&
-                      index > 0
-                    ) {
-                      document
-                        .getElementById(
-                          `confirm-pin-${
-                            index - 1
-                          }`
-                        )
-                        ?.focus();
-                    }
-
-                    if (
-                      event.key ===
-                        "Enter" &&
-                      confirmPin.length ===
-                        4 &&
-                      !loading
-                    ) {
-                      handleConfirmPin();
-                    }
-                  }}
-                />
-              )
-            )}
-          </div>
-
-          <label className="show-pin-option">
-            <input
-              type="checkbox"
-              checked={
-                showConfirmPin
-              }
-              onChange={(event) =>
-                setShowConfirmPin(
-                  event.target.checked
-                )
-              }
-            />
-
-            <span>
-              Show PIN
-            </span>
-          </label>
-
-          {error && (
-            <div className="signup-error">
-              {error}
+      <div className="signup-page signup-page--otp signup-page--pin-step">
+        <div className="signup-welcome-layout">
+          <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
+            <div className="signup-illustration-curve" />
+            <div className="signup-illustration-content">
+              <div className="signup-family-art">
+                <img className="signup-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
+                <img className="signup-float-icon signup-float-icon--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
+                <span className="signup-float-icon signup-float-icon--bell" aria-hidden="true">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                  </svg>
+                </span>
+              </div>
+              <p className="signup-illustration-caption">Everything your family needs, in one place</p>
             </div>
-          )}
+          </section>
 
-          <button
-            type="button"
-            onClick={
-              handleConfirmPin
-            }
-            disabled={
-              loading
-            }
-          >
-            {loading
-              ? "Creating account..."
-              : "Continue"}
-          </button>
+          <section className="signup-welcome-panel">
+            <div className="signup-card signup-pin-card">
+              <h1>Confirm your PIN</h1>
+              <p className="signup-pin-subtitle">Enter your 4-digit PIN again.</p>
+              <div className="signup-pin-header">
+                <label htmlFor="confirm-pin-0">Your PIN</label>
+                <label className="signup-pin-toggle">
+                  <input type="checkbox" checked={showConfirmPin} onChange={(event) => setShowConfirmPin(event.target.checked)} />
+                  <span aria-hidden="true">{showConfirmPin ? "◉" : "◎"}</span>
+                  Show PIN
+                </label>
+              </div>
+              <div className="signup-pin-digits" role="group" aria-label="4-digit PIN">
+                {[0, 1, 2, 3].map((index) => (
+                  <input
+                    key={index}
+                    id={`confirm-pin-${index}`}
+                    className="signup-pin-digit"
+                    type={showConfirmPin ? "text" : "password"}
+                    inputMode="numeric"
+                    maxLength={1}
+                    autoComplete="off"
+                    aria-label={`PIN digit ${index + 1}`}
+                    value={confirmPin[index] || ""}
+                    onChange={(event) => { handleConfirmPinChange(index, event.target.value); setError(""); }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Backspace" && !confirmPin[index] && index > 0) {
+                        document.getElementById(`confirm-pin-${index - 1}`)?.focus();
+                      }
+                      if (event.key === "ArrowLeft" && index > 0) document.getElementById(`confirm-pin-${index - 1}`)?.focus();
+                      if (event.key === "ArrowRight" && index < 3) document.getElementById(`confirm-pin-${index + 1}`)?.focus();
+                      if (event.key === "Enter" && !loading) handleConfirmPin();
+                    }}
+                  />
+                ))}
+              </div>
+              <p className="signup-pin-hint">Re-enter your PIN to confirm it.</p>
+              {error && <div className="signup-error" role="alert">{error}</div>}
+              <button type="button" className="signup-pin-continue" onClick={handleConfirmPin} disabled={loading}>
+                {loading ? "Please wait..." : "Continue"}
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     );

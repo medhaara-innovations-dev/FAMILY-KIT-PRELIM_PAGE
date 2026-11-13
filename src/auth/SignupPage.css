@@ -1522,57 +1522,10 @@
 }
 
 
-/* ============================================================
-   SCREEN 3 — FAMILY DETAILS
-   Desktop matches the existing OTP/welcome split-panel layout.
-   All rules scoped to step 3; other screens stay untouched.
-   ============================================================ */
+/* Screen 3 reuses Screen 2's exact illustration, curve, icon positions,
+   split ratio and background via signup-page--otp on the root element.
+   Only the right-side form has screen-specific styling. */
 @media (min-width: 1025px) {
-  .signup-page--family-details {
-    min-height: 100vh;
-    padding: 0;
-    display: block;
-    background: #F0EEF3;
-    font-family: Mulish, sans-serif;
-  }
-  .signup-page--family-details .signup-welcome-layout {
-    grid-template-columns: 56% 44%;
-  }
-  .signup-page--family-details .signup-illustration-panel { background: #F7FFCA; }
-  .signup-page--family-details .signup-illustration-curve {
-    right: -58%; width: 76%; height: 134%;
-  }
-  .signup-page--family-details .signup-illustration-content {
-    width: min(82%, 620px);
-    transform: translateX(-9%);
-    align-items: center;
-  }
-  .signup-page--family-details .signup-family-art { margin-top: 55px; }
-  .signup-page--family-details .signup-float-icon {
-    width: 32px; height: 32px; min-width: 0; max-width: none;
-    box-sizing: border-box; padding: 5px; border-radius: 9px;
-    background: #F5F7FF;
-    box-shadow: 0 3px 9px rgba(45,11,132,.10);
-    filter: none; z-index: 3;
-  }
-  .signup-page--family-details .signup-float-icon--health { top: 5%; left: 19%; }
-  .signup-page--family-details .signup-float-icon--vector { top: -4%; left: 40%; }
-  .signup-page--family-details .signup-float-icon--bills { top: 18%; left: 7%; }
-  .signup-page--family-details .signup-float-icon--extra { top: 38%; left: 0%; }
-  .signup-page--family-details .signup-float-icon--insurance { top: 30%; right: 5%; }
-  .signup-page--family-details .signup-float-icon--file { top: 8%; right: 21%; }
-  .signup-page--family-details .signup-float-icon--bell {
-    top: 0%; right: 9%; background: #FFF5EC;
-    border: 1px solid #F6DCC8; display: flex;
-    align-items: center; justify-content: center;
-  }
-  .signup-page--family-details .signup-float-icon--bell svg { width: 19px; height: 19px; }
-  .signup-page--family-details .signup-illustration-caption {
-    margin-top: 14px; color: #000; font: 600 20px/normal Poppins, sans-serif;
-  }
-  .signup-page--family-details .signup-welcome-panel {
-    background: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
-  }
   .signup-page--family-details .family-details-card {
     width: 100%; max-width: 390px; gap: 0; align-items: stretch;
   }
@@ -1670,4 +1623,130 @@
     font: 500 14px/16px Poppins, sans-serif; cursor: pointer;
   }
   .signup-page--family-details .gender-option { border-radius: 22px; }
+}
+
+/* Screen 4 — review: same desktop artwork/layout as OTP and family details */
+@media (min-width: 1025px) {
+  .signup-page--review .signup-review-card { width: 100%; max-width: 390px; gap: 0; }
+  .signup-page--review .signup-review-card h1 {
+    margin: 0; font: 600 27px/1.3 Poppins, sans-serif;
+    color: #19181A; overflow-wrap: anywhere;
+  }
+  .signup-page--review .signup-review-subtitle {
+    margin: 10px 0 18px; font: 400 13px/1.5 Mulish, sans-serif; color: #77717F;
+  }
+  .signup-page--review .signup-review-description {
+    margin: 0 0 16px; font: 500 13px/1.5 Mulish, sans-serif; color: #4D485A;
+  }
+  .signup-page--review .signup-review-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 15px; }
+  .signup-page--review .signup-review-field label { font: 600 13px/20px Poppins, sans-serif; color: #19181A; }
+  .signup-page--review .signup-review-field input {
+    box-sizing: border-box; width: 100%; height: 49px; min-height: 0;
+    padding: 12px 15px; border: 1px solid #D8D3E0; border-radius: 15px;
+    background: #FFF; color: #19181A; font: 400 13px Mulish, sans-serif;
+  }
+  .signup-page--review .signup-review-actions { display: flex; gap: 14px; margin-top: 8px; }
+  .signup-page--review .signup-review-actions button {
+    flex: 1; min-height: 45px; padding: 12px 20px; border-radius: 28px;
+    font: 500 14px/16px Poppins, sans-serif; cursor: pointer;
+  }
+  .signup-page--review .signup-review-edit { border: 1px solid #2D0B84; background: #FFF; color: #2D0B84; }
+  .signup-page--review .signup-review-save {
+    border: 1px solid #2D0B84; background: #2D0B84; color: #FFF;
+    box-shadow: -1px 4px 12px rgba(45,11,132,.10), 1px 4px 4px rgba(255,255,255,.25) inset;
+  }
+}
+@media (max-width: 1024px) {
+  .signup-page--review .signup-welcome-layout { display: block; width: 100%; }
+  .signup-page--review .signup-illustration-panel { display: none; }
+  .signup-page--review .signup-welcome-panel { display: flex; justify-content: center; background: transparent; width: 100%; }
+  .signup-page--review .signup-review-card { width: 100%; max-width: 440px; gap: 14px; }
+  .signup-page--review .signup-review-card h1 { font-family: Poppins, sans-serif; overflow-wrap: anywhere; }
+  .signup-page--review .signup-review-field { display: flex; flex-direction: column; gap: 7px; }
+  .signup-page--review .signup-review-field input { border: 1px solid #D8D3E0; border-radius: 12px; background: #FFF; }
+  .signup-page--review .signup-review-actions { display: flex; gap: 12px; }
+  .signup-page--review .signup-review-actions button { flex: 1; border-radius: 28px; min-height: 48px; cursor: pointer; }
+  .signup-page--review .signup-review-edit { border: 1px solid #2D0B84; color: #2D0B84; background: #FFF; }
+  .signup-page--review .signup-review-save { border: 1px solid #2D0B84; color: #FFF; background: #2D0B84; }
+}
+
+
+/* Screens 5 & 6 — PIN setup. Reuse OTP's exact desktop split/artwork. */
+@media (min-width: 1025px) {
+  .signup-page--pin-step .signup-pin-card {
+    width: 100%; max-width: 390px; gap: 0; align-items: stretch;
+  }
+  .signup-page--pin-step .signup-pin-card h1 {
+    margin: 0; color: #19181A; font: 600 27px/1.3 Poppins, sans-serif;
+    text-align: left;
+  }
+  .signup-page--pin-step .signup-pin-subtitle {
+    margin: 10px 0 26px; color: #77717F;
+    font: 400 13px/1.5 Mulish, sans-serif;
+  }
+}
+.signup-page--pin-step .signup-pin-card { font-family: Mulish, sans-serif; }
+.signup-page--pin-step .signup-pin-header {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; margin-bottom: 12px;
+}
+.signup-page--pin-step .signup-pin-header > label:first-child {
+  color: #19181A; font: 600 13px/20px Poppins, sans-serif;
+}
+.signup-page--pin-step .signup-pin-toggle {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  color: #2D0B84; font: 600 12px/20px Mulish, sans-serif;
+  white-space: nowrap;
+}
+.signup-page--pin-step .signup-pin-toggle input {
+  position: absolute; width: 1px; height: 1px; opacity: 0;
+}
+.signup-page--pin-step .signup-pin-toggle span { font-size: 17px; }
+.signup-page--pin-step .signup-pin-toggle:focus-within {
+  outline: 2px solid #2D0B84; outline-offset: 3px; border-radius: 3px;
+}
+.signup-page--pin-step .signup-pin-digits {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+}
+.signup-page--pin-step .signup-pin-card .signup-pin-digit {
+  box-sizing: border-box; width: 100%; min-width: 0; height: 55px;
+  min-height: 55px; padding: 0; text-align: center;
+  border: 1px solid #E6E1EE; border-radius: 12px;
+  background: #FFF; color: #19181A;
+  font: 600 23px Poppins, sans-serif;
+  -webkit-text-security: none;
+}
+.signup-page--pin-step .signup-pin-card .signup-pin-digit:focus {
+  outline: none; border-color: #2D0B84;
+  box-shadow: 0 0 0 3px rgba(45,11,132,.10);
+}
+.signup-page--pin-step .signup-pin-hint {
+  margin: 10px 0 20px; color: #9B9B9D;
+  font: 400 12px/1.5 Mulish, sans-serif;
+}
+.signup-page--pin-step .signup-pin-continue {
+  width: 100%; min-height: 49px; padding: 14px 20px;
+  border: 0; border-radius: 28px; background: #2D0B84; color: #FFF;
+  font: 500 14px/16px Poppins, sans-serif;
+  box-shadow: -1px 4px 12px rgba(45,11,132,.10),
+    1px 4px 4px rgba(255,255,255,.25) inset;
+  cursor: pointer;
+}
+.signup-page--pin-step .signup-pin-continue:disabled { opacity: .6; cursor: not-allowed; }
+@media (max-width: 1024px) {
+  .signup-page--pin-step .signup-welcome-layout { display: block; width: 100%; }
+  .signup-page--pin-step .signup-illustration-panel { display: none; }
+  .signup-page--pin-step .signup-welcome-panel {
+    width: 100%; display: flex; justify-content: center; background: transparent;
+  }
+  .signup-page--pin-step .signup-pin-card { width: 100%; max-width: 420px; gap: 0; }
+  .signup-page--pin-step .signup-pin-card h1 {
+    font: 600 clamp(23px, 5vw, 29px)/1.3 Poppins, sans-serif;
+    text-align: center;
+  }
+  .signup-page--pin-step .signup-pin-subtitle {
+    margin: 12px 0 28px; text-align: center; color: #77717F;
+    font: 400 14px/1.5 Mulish, sans-serif;
+  }
+  .signup-page--pin-step .signup-pin-card .signup-pin-digit { height: 56px; min-height: 56px; }
 }
