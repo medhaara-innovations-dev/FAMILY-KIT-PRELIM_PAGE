@@ -703,92 +703,70 @@ export default function SignupPage() {
 
   if (step === 1) {
     return (
-      <div className="signup-page">
-        <div className="signup-card">
-          <h1>
-            Welcome to FamilyKit
-          </h1>
-
-          <p>
-            Log in or sign up with your email address.
-          </p>
-
-          <button
-            type="button"
-            className="signup-google-button"
-            onClick={
-              handleGoogleSignup
-            }
-            disabled={loading}
-          >
-            <span
-              className="signup-google-icon"
-              aria-hidden="true"
-            >
-              G
-            </span>
-
-            <span>
-              Continue with Google
-            </span>
-          </button>
-
-          <div
-            className="signup-divider"
-            aria-hidden="true"
-          >
-            <span>OR</span>
-          </div>
-
-          <label
-            htmlFor="signup-email"
-          >
-            Email address
-          </label>
-
-          <input
-            id="signup-email"
-            type="email"
-            placeholder="Enter your email address"
-            value={email}
-            onChange={(event) => {
-              setEmail(
-                event.target.value
-              );
-
-              setError("");
-            }}
-            onKeyDown={(event) => {
-              if (
-                event.key ===
-                "Enter"
-              ) {
-                handleEmailContinue();
-              }
-            }}
-          />
-
-          {error && (
-            <div className="signup-error">
-              {error}
+      <div className="signup-page signup-page--welcome">
+        <div className="signup-welcome-layout">
+          <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
+            <div className="signup-illustration-curve" />
+            <div className="signup-illustration-content">
+              <div className="signup-family-art">
+                <img className="signup-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
+                <img className="signup-float-icon signup-float-icon--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
+                <img className="signup-float-icon signup-float-icon--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
+                <span className="signup-float-icon signup-float-icon--bell" aria-hidden="true">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                  </svg>
+                </span>
+              </div>
+              <p className="signup-illustration-caption">Everything your family needs, in one place</p>
             </div>
-          )}
+          </section>
 
-          <button
-            type="button"
-            onClick={
-              handleEmailContinue
-            }
-            disabled={loading}
-          >
-            {loading
-              ? "Please wait..."
-              : "Continue"}
-          </button>
+          <section className="signup-welcome-panel">
+            <div className="signup-card signup-welcome-card">
+              <div className="signup-brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 64 64" width="54" height="54" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="17" y="11" width="30" height="9" rx="4" />
+                  <rect x="10" y="18" width="44" height="34" rx="10" />
+                  <circle cx="23" cy="33" r="5" /><circle cx="41" cy="33" r="5" /><circle cx="32" cy="41" r="5" />
+                  <path d="M17 48c0-5 3-8 6-8m18 0c4 0 6 3 6 8M26 51c0-5 2-8 6-8s6 3 6 8" />
+                </svg>
+              </div>
+              <h1>Welcome to FamilyKit</h1>
+              <p className="signup-welcome-subtitle">Log in or sign up with your email address.</p>
 
-          <p className="verification-note">
-            We'll send a verification code to your email.
-          </p>
+              <label className="signup-welcome-label" htmlFor="signup-email">Email address</label>
+              <input
+                id="signup-email"
+                type="email"
+                autoComplete="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(event) => { setEmail(event.target.value); setError(""); }}
+                onKeyDown={(event) => { if (event.key === "Enter" && !loading) handleEmailContinue(); }}
+              />
+              <p className="verification-note">We'll send a verification code to your email.</p>
+              {error && <div className="signup-error" role="alert">{error}</div>}
+              <button type="button" className="signup-primary-continue" onClick={handleEmailContinue} disabled={loading}>
+                {loading ? "Please wait..." : "Continue"}
+              </button>
+              <div className="signup-divider" aria-hidden="true"><span>or</span></div>
+              <button type="button" className="signup-google-button" onClick={handleGoogleSignup} disabled={loading}>
+                <svg className="signup-google-icon" viewBox="0 0 48 48" aria-hidden="true">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.28 5.48-4.81 7.18l7.73 6C44.36 38.03 46.98 31.88 46.98 24.55z" />
+                  <path fill="#FBBC05" d="M10.53 28.59A14.41 14.41 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.2A23.86 23.86 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19z" />
+                  <path fill="#34A853" d="M24 48c6.48 0 11.92-2.13 15.89-5.8l-7.73-6C30.01 37.64 27.26 38.5 24 38.5c-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                </svg>
+                <span>Continue with Google</span>
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     );

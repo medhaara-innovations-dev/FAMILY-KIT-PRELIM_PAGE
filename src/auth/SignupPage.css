@@ -575,3 +575,406 @@
     border-radius: 9px;
   }
 }
+/* FamilyKit desktop signup — append at the END of existing SignupPage.css.
+   Scoped to welcome step only. Existing tablet/mobile and steps 2–7 remain unchanged. */
+@media (min-width: 1025px) {
+  .signup-page.signup-page--welcome {
+    min-height: 100vh;
+    padding: 0;
+    display: block;
+    background: #F0EEF3;
+    font-family: Mulish, sans-serif;
+  }
+  .signup-welcome-layout {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 56% 44%;
+    overflow: hidden;
+  }
+  .signup-illustration-panel {
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F7FFCA;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .signup-illustration-curve {
+    position: absolute;
+    z-index: -1;
+    top: -17%;
+    right: -39%;
+    width: 76%;
+    height: 134%;
+    border-radius: 50%;
+    background: #DACBFF;
+  }
+  .signup-illustration-curve::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -22px;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+  }
+  .signup-illustration-content {
+    width: min(78%, 560px);
+    position: relative;
+    z-index: 1;
+    transform: translateX(-6%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .signup-family-art {
+    position: relative;
+    width: 100%;
+    margin-top: 65px;
+  }
+  .signup-family-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  .signup-float-icon {
+    position: absolute;
+    width: 9%;
+    max-width: 45px;
+    min-width: 28px;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border-radius: 12px;
+    filter: drop-shadow(0 4px 5px rgba(45,11,132,.07));
+  }
+  .signup-float-icon--health { top: 0%; left: 25%; }
+  .signup-float-icon--vector { top: -7%; left: 44%; }
+  .signup-float-icon--bills { top: 13%; left: 10%; }
+  .signup-float-icon--extra { top: 29%; left: 1%; }
+  .signup-float-icon--insurance { top: 20%; right: 1%; }
+  .signup-float-icon--file { top: -3%; right: 26%; }
+  .signup-float-icon--bell {
+    top: -5%;
+    right: 12%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFF5EC;
+    border: 1px solid #F6DCC8;
+  }
+  .signup-illustration-caption {
+    margin: 18px 0 0;
+    font-family: Poppins, sans-serif;
+    font-size: clamp(13px, 1.15vw, 18px);
+    font-weight: 600;
+    line-height: 1.5;
+    color: #050011;
+    text-align: center;
+  }
+  .signup-welcome-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 44px clamp(28px, 5vw, 90px);
+    background: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+  }
+  .signup-page--welcome .signup-welcome-card {
+    width: 100%;
+    max-width: 390px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .signup-brand-mark {
+    color: #4332B9;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .signup-page--welcome .signup-welcome-card h1 {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 2.05vw, 32px);
+    line-height: 1.3;
+    color: #050011;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .signup-welcome-subtitle {
+    margin: 8px 0 34px;
+    color: #4D485A;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .signup-welcome-label {
+    color: #050011;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 9px;
+  }
+  .signup-page--welcome .signup-welcome-card #signup-email {
+    display: block;
+    width: 100%;
+    min-height: 49px;
+    padding: 12px 15px;
+    border: 1.5px solid #7D59C6;
+    border-radius: 8px;
+    outline: none;
+    background: #FFF;
+    font: 14px Mulish, sans-serif;
+    color: #050011;
+  }
+  .signup-page--welcome .signup-welcome-card #signup-email:focus {
+    border-color: #2D0B84;
+    box-shadow: 0 0 0 3px rgba(45,11,132,.10);
+  }
+  .signup-page--welcome .verification-note {
+    margin: 8px 0 16px;
+    color: #6F6B78;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .signup-page--welcome .signup-error { margin-bottom: 12px; }
+  .signup-page--welcome .signup-welcome-card > .signup-primary-continue {
+    display: flex;
+    width: 100%;
+    min-width: 94px;
+    max-width: 800px;
+    padding: 16px 80px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border: 0;
+    border-radius: 28px;
+    background: #2D0B84;
+    box-shadow: -1px 4px 12px 0 rgba(45,11,132,.10), 1px 4px 4px 0 rgba(255,255,255,.25) inset;
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    cursor: pointer;
+  }
+  .signup-page--welcome .signup-welcome-card > .signup-primary-continue:disabled,
+  .signup-page--welcome .signup-welcome-card > .signup-google-button:disabled { opacity: .6; cursor: not-allowed; }
+  .signup-page--welcome .signup-divider {
+    margin: 19px 0;
+    color: #8A8593;
+    text-transform: none;
+    font-size: 12px;
+  }
+  .signup-page--welcome .signup-welcome-card > .signup-google-button {
+    display: flex;
+    width: 100%;
+    min-height: 49px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid #D5D1DF;
+    border-radius: 28px;
+    background: #FFF;
+    color: #050011;
+    font: 500 14px Poppins, sans-serif;
+    cursor: pointer;
+  }
+  .signup-page--welcome .signup-google-icon { width: 19px; height: 19px; flex: 0 0 19px; }
+}
+
+/* =====================================================
+   DESKTOP SCREEN 1 — CORRECTED FAMILY IMAGE + ICONS
+   Uses actual class names from SignupPage.jsx.
+   ===================================================== */
+@media (min-width: 1025px) {
+  .signup-page--welcome .signup-illustration-content {
+    width: min(64%, 440px);
+    transform: translateX(-15%);
+  }
+
+  .signup-page--welcome .signup-family-art {
+    width: 100%;
+    margin-top: 42px;
+  }
+
+  .signup-page--welcome .signup-family-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .signup-page--welcome .signup-float-icon {
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    min-width: 0;
+    max-width: none;
+    aspect-ratio: 1;
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,.85);
+    border-radius: 9px;
+    background: #f3f7fc;
+    object-fit: contain;
+    box-shadow: 0 3px 7px rgba(45,11,132,.10), 0 1px 2px rgba(0,0,0,.05);
+    filter: none;
+    z-index: 3;
+  }
+
+  .signup-page--welcome .signup-float-icon--health { top: 0%; left: 25%; }
+  .signup-page--welcome .signup-float-icon--vector { top: -7%; left: 44%; }
+  .signup-page--welcome .signup-float-icon--bills { top: 13%; left: 10%; }
+  .signup-page--welcome .signup-float-icon--extra { top: 29%; left: 1%; }
+  .signup-page--welcome .signup-float-icon--insurance { top: 20%; right: 1%; }
+  .signup-page--welcome .signup-float-icon--file { top: -3%; right: 26%; }
+  .signup-page--welcome .signup-float-icon--bell {
+    top: -5%;
+    right: 12%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    background: #fff5ec;
+    border-color: #f6dcc8;
+  }
+  .signup-page--welcome .signup-float-icon--bell svg {
+    width: 100%;
+    height: 100%;
+  }
+  .signup-page--welcome .signup-illustration-caption {
+    margin-top: 14px;
+  }
+}
+
+/* =====================================================
+   FAMILYKIT DESKTOP — YELLOW PANEL & IMAGE ALIGNMENT
+   Applies to first signup screen only
+   ===================================================== */
+
+@media (min-width: 1025px) {
+
+  /* Extend yellow background further right */
+  .signup-page--welcome .signup-welcome-layout {
+    grid-template-columns: 56% 44%;
+  }
+
+  .signup-page--welcome .signup-illustration-panel {
+    background: #F7FFCA;
+    overflow: hidden;
+  }
+
+  /* Move lavender curve towards the right edge */
+  .signup-page--welcome .signup-illustration-curve {
+    right: -58%;
+    width: 76%;
+    height: 134%;
+  }
+
+  /* Keep the inner gradient following the curve */
+  .signup-page--welcome .signup-illustration-curve::after {
+    right: -22px;
+  }
+
+  /* Make the illustration group larger */
+  .signup-page--welcome .signup-illustration-content {
+    width: min(82%, 620px);
+    transform: translateX(-9%);
+    align-items: center;
+  }
+
+  /* Family illustration */
+  .signup-page--welcome .signup-family-art {
+    width: 100%;
+    margin-top: 55px;
+    position: relative;
+  }
+
+  .signup-page--welcome .signup-family-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Floating icons — compact square appearance */
+  .signup-page--welcome .signup-float-icon {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    min-width: 0;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 5px;
+    border-radius: 9px;
+    background-color: #F5F7FF;
+    box-shadow: 0 3px 9px rgba(45, 11, 132, 0.10);
+    object-fit: contain;
+    filter: none;
+    z-index: 3;
+  }
+
+  /* Position icons like the reference */
+  .signup-page--welcome .signup-float-icon--health {
+    top: 5%;
+    left: 19%;
+  }
+
+  .signup-page--welcome .signup-float-icon--vector {
+    top: -4%;
+    left: 40%;
+  }
+
+  .signup-page--welcome .signup-float-icon--bills {
+    top: 18%;
+    left: 7%;
+  }
+
+  .signup-page--welcome .signup-float-icon--extra {
+    top: 38%;
+    left: 0%;
+  }
+
+  .signup-page--welcome .signup-float-icon--insurance {
+    top: 30%;
+    right: 5%;
+  }
+
+  .signup-page--welcome .signup-float-icon--file {
+    top: 8%;
+    right: 21%;
+  }
+
+  .signup-page--welcome .signup-float-icon--bell {
+    top: 0%;
+    right: 9%;
+    background: #FFF5EC;
+    border: 1px solid #F6DCC8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .signup-page--welcome .signup-float-icon--bell svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  /* Caption beneath the family */
+  .signup-page--welcome .signup-illustration-caption {
+    margin-top: 18px;
+    text-align: center;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: clamp(13px, 1.15vw, 18px);
+  }
+}
