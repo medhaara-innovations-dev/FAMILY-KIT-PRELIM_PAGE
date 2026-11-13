@@ -53,3 +53,447 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+
+/* =====================================================
+   TABLET ONLY
+   769px - 1024px
+   ===================================================== */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  .signup-page {
+    min-height: 100dvh;
+    padding: 48px 40px;
+  }
+
+  .signup-card {
+    width: 100%;
+    max-width: 500px;
+    gap: 18px;
+  }
+
+  .signup-card h1 {
+    font-size: 32px;
+    line-height: 1.2;
+  }
+
+  .signup-card p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .signup-card > label,
+  .signup-field > label {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .signup-card input {
+    min-height: 54px;
+    padding: 15px 16px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+
+  .signup-card > button {
+    min-height: 54px;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 9px;
+  }
+
+  .signup-subtitle {
+    margin-top: -4px;
+    line-height: 1.5;
+  }
+
+  .signup-field {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .field-helper {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .gender-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .gender-option {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    box-sizing: border-box;
+    padding: 11px 13px;
+  }
+
+  .gender-option input {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    min-height: 18px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .gender-option span {
+    font-size: 15px;
+  }
+
+  .review-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .review-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 14px 16px;
+    box-sizing: border-box;
+  }
+
+  .review-item span {
+    font-size: 14px;
+  }
+
+  .review-item strong {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .pin-boxes {
+    display: flex;
+    gap: 14px;
+    margin: 6px 0;
+  }
+
+  .signup-card .pin-box {
+    width: 62px;
+    height: 62px;
+    min-height: 62px;
+    padding: 0;
+    text-align: center;
+    font-size: 27px;
+    font-weight: 600;
+    border-radius: 10px;
+  }
+
+  .show-pin-option {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  .signup-card .show-pin-option input {
+    width: 17px;
+    min-width: 17px;
+    height: 17px;
+    min-height: 17px;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+
+/* =====================================================
+   MOBILE ONLY
+   768px and below
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+  .signup-page {
+    min-height: 100dvh;
+    align-items: flex-start;
+    justify-content: center;
+
+    padding-top: 58px;
+    padding-right: 22px;
+    padding-bottom: 36px;
+    padding-left: 22px;
+
+    overflow-x: hidden;
+  }
+
+  .signup-card {
+    width: 100%;
+    max-width: 420px;
+    gap: 17px;
+  }
+
+  .signup-card h1 {
+    font-size: 29px;
+    line-height: 1.18;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .signup-card p {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .signup-card strong {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .signup-card > label,
+  .signup-field > label {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .signup-card input {
+    min-height: 52px;
+    padding: 14px 15px;
+    font-size: 16px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
+
+  .signup-card > button {
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 9px;
+  }
+
+  .signup-error {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .verification-note {
+    margin-top: 0;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .resend-button {
+    font-size: 15px;
+  }
+
+
+  /* FAMILY DETAILS */
+
+  .family-details-card {
+    gap: 18px;
+  }
+
+  .signup-subtitle {
+    margin-top: -5px;
+    margin-bottom: 4px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .signup-field {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .signup-field input[type="text"],
+  .signup-field input[type="email"] {
+    width: 100%;
+  }
+
+  .required {
+    color: #b42318;
+  }
+
+  .optional {
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .field-helper {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+
+  /* GENDER */
+
+  .gender-options {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .gender-option {
+    min-width: 0;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 10px 11px;
+    cursor: pointer;
+  }
+
+  .gender-option input {
+    width: 17px;
+    min-width: 17px;
+    height: 17px;
+    min-height: 17px;
+    padding: 0;
+    margin: 0;
+    flex: 0 0 auto;
+  }
+
+  .gender-option span {
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+
+  /* REVIEW DETAILS */
+
+  .review-card {
+    gap: 18px;
+  }
+
+  .review-details {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .review-item {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 13px 14px;
+  }
+
+  .review-item span {
+    font-size: 13px;
+  }
+
+  .review-item strong {
+    font-size: 15px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+
+  /* CREATE / CONFIRM PIN */
+
+  .pin-card {
+    gap: 18px;
+  }
+
+  .pin-boxes {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 4px 0;
+  }
+
+  .signup-card .pin-box {
+    width: 100%;
+    max-width: 64px;
+    height: 60px;
+    min-height: 60px;
+    justify-self: start;
+    box-sizing: border-box;
+    padding: 0;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+    border-radius: 10px;
+  }
+
+  .show-pin-option {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .signup-card .show-pin-option input {
+    width: 17px;
+    min-width: 17px;
+    height: 17px;
+    min-height: 17px;
+    padding: 0;
+    margin: 0;
+  }
+
+
+  /* SUCCESS */
+
+  .success-card {
+    padding-top: 30px;
+    text-align: center;
+  }
+
+  .success-card h1 {
+    font-size: 28px;
+  }
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+   380px and below
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+  .signup-page {
+    padding-top: 46px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .signup-card {
+    gap: 15px;
+  }
+
+  .signup-card h1 {
+    font-size: 27px;
+  }
+
+  .pin-boxes {
+    gap: 9px;
+  }
+
+  .signup-card .pin-box {
+    height: 56px;
+    min-height: 56px;
+    font-size: 23px;
+  }
+
+  .gender-options {
+    grid-template-columns: 1fr;
+  }
+}
