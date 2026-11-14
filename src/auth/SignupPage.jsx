@@ -1278,8 +1278,15 @@ export default function SignupPage() {
 
   if (step === 7) {
     return (
-      <div className="signup-page">
+      <div className="signup-page signup-page--registration-success">
         <div className="signup-card success-card">
+          <div className="signup-success-check" role="img" aria-label="Registration completed">
+            <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+              <circle className="signup-success-check__ring" cx="60" cy="60" r="52" />
+              <circle className="signup-success-check__fill" cx="60" cy="60" r="43" />
+              <path className="signup-success-check__tick" d="M37 60 L53 76 L85 43" />
+            </svg>
+          </div>
           <h1>
             Registration successful
           </h1>

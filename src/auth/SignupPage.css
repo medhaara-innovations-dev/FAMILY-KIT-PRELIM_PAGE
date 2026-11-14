@@ -2477,3 +2477,114 @@
   .signup-page--mobile-pin .signup-mobile-pin-key { height: 46px; }
   .signup-page--mobile-pin .signup-pin-card .signup-pin-digit { height: 51px; min-height: 51px; }
 }
+
+/* Mobile registration-success screen only. No desktop/signup-step changes. */
+@media (max-width: 768px) {
+  .signup-page.signup-page--registration-success {
+    min-height: 100dvh;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 40px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--Color-Green-100, #E5FFE7);
+  }
+
+  .signup-page--registration-success .success-card {
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    text-align: center;
+    background: transparent;
+  }
+
+  .signup-page--registration-success .signup-success-check {
+    width: 116px;
+    height: 116px;
+    margin: 0 0 26px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: signup-success-pop 650ms cubic-bezier(.2, 1.45, .35, 1) both;
+  }
+
+  .signup-page--registration-success .signup-success-check svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    overflow: visible;
+  }
+
+  .signup-page--registration-success .signup-success-check__ring {
+    fill: #0DBA25;
+  }
+
+  .signup-page--registration-success .signup-success-check__fill {
+    fill: #85D994;
+  }
+
+  .signup-page--registration-success .signup-success-check__tick {
+    fill: none;
+    stroke: #FDFCFF;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 85;
+    stroke-dashoffset: 85;
+    animation: signup-success-draw 500ms ease-out 400ms forwards;
+  }
+
+  .signup-page--registration-success .success-card h1 {
+    width: 100%;
+    margin: 0;
+    font: 700 clamp(25px, 6.4vw, 34px)/1.25 Poppins, sans-serif;
+    color: #050011;
+    text-align: center;
+  }
+
+  .signup-page--registration-success .success-card p {
+    margin: 22px 0 32px;
+    font: 400 16px/1.5 Mulish, sans-serif;
+    color: #050011;
+    text-align: center;
+  }
+
+  .signup-page--registration-success .success-card > button {
+    width: 100%;
+    min-height: 52px;
+    border: 0;
+    border-radius: 28px;
+    background: #2D0B84;
+    color: #FFFFFF;
+    font: 500 16px/1.3 Poppins, sans-serif;
+    cursor: pointer;
+  }
+}
+
+@keyframes signup-success-pop {
+  0% { opacity: 0; transform: scale(.45); }
+  65% { opacity: 1; transform: scale(1.09); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes signup-success-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signup-page--registration-success .signup-success-check,
+  .signup-page--registration-success .signup-success-check__tick {
+    animation: none;
+  }
+  .signup-page--registration-success .signup-success-check__tick {
+    stroke-dashoffset: 0;
+  }
+}
