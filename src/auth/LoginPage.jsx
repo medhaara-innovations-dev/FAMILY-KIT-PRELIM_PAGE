@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginWithFamilyKitPin } from "./authService";
 import "./LoginPage.css";
@@ -10,6 +10,34 @@ export default function LoginPage() {
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mobileStage, setMobileStage] = useState("login");
+  const [profileName, setProfileName] = useState("");
+  const [verifiedEmail, setVerifiedEmail] = useState("");
+
+  useEffect(() => {
+    if (mobileStage !== "syncing") return undefined;
+    // UI transition only. Login was authenticated before entering this stage.
+    const successTimer = window.setTimeout(() => setMobileStage("synced"), 1100);
+    const redirectTimer = window.setTimeout(() => navigate("/my-family", { replace: true }), 2300);
+    return () => { window.clearTimeout(successTimer); window.clearTimeout(redirectTimer); };
+  }, [mobileStage, navigate]);
+
+  const getProfileName = (result, cleanEmail) => {
+    const directName = result?.yourName || result?.profile?.yourName || result?.name || result?.profile?.name;
+    if (typeof directName === "string" && directName.trim()) return directName.trim();
+    try {
+      const jwt = result?.idToken;
+      if (jwt) {
+        const part = jwt.split(".")[1];
+        const normalized = part.replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(atob(normalized));
+        if (typeof payload.name === "string" && payload.name.trim()) return payload.name.trim();
+        if (typeof payload.given_name === "string" && payload.given_name.trim()) return payload.given_name.trim();
+      }
+    } catch { /* Name is optional in the ID token. */ }
+    try { return JSON.parse(localStorage.getItem(`familykit_profile_${cleanEmail}`) || "null")?.yourName || ""; }
+    catch { return ""; }
+  };
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const ready = validEmail && /^\d{4}$/.test(pin);
 
@@ -62,7 +90,13 @@ export default function LoginPage() {
       const result = await loginWithFamilyKitPin(cleanEmail, pin);
       storeAuthenticationTokens(result);
       console.log("FamilyKit login successful.");
-      navigate("/my-family");
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        setVerifiedEmail(cleanEmail);
+        setProfileName(getProfileName(result, cleanEmail));
+        setMobileStage("account");
+      } else {
+        navigate("/my-family");
+      }
     } catch (err) {
       console.error("Login error:", err);
       if (err?.name === "UserNotFoundException" || err?.name === "NotAuthorizedException") {
@@ -78,6 +112,52 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (mobileStage !== "login") {
+    const syncing = mobileStage === "syncing";
+    const synced = mobileStage === "synced";
+    return (
+      <div className="login-account-page">
+        <div className="login-account-shell">
+          <div className="login-account-brand">FamilyKit</div>
+          {synced ? (
+            <div className="login-account-success" aria-hidden="true">✓</div>
+          ) : null}
+          <h1>{syncing ? "Getting things ready" : synced ? "Profile synced" : "Welcome back"}</h1>
+          <p className="login-account-subtitle">
+            {syncing ? "We're syncing your latest information." : synced ? "Continue with your saved account." : "Continue with your saved account."}
+          </p>
+          <div className="login-account-profile">
+            <div className="login-account-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7.5" r="4"/><path d="M4.5 21c0-4.2 3.2-7 7.5-7s7.5 2.8 7.5 7"/></svg>
+            </div>
+            <strong>{profileName || "Your account"}</strong>
+            <span className="login-account-email">{verifiedEmail}</span>
+            <small>{syncing ? "Previously signed in on this device" : synced ? "Welcome back!" : "Previously signed in on this device"}</small>
+            {!synced && (
+              <div className="login-account-sync-info">
+                <svg className={syncing ? "login-account-spinning" : ""} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg>
+                <p>{syncing ? "Keep FamilyKit open while your account syncs." : "Sync your latest documents, family details and reminders."}</p>
+              </div>
+            )}
+          </div>
+          {mobileStage === "account" && (
+            <div className="login-account-actions">
+              <button type="button" className="login-account-primary" onClick={() => setMobileStage("syncing")}>Continue</button>
+              <button type="button" className="login-account-secondary" onClick={() => {
+                sessionStorage.removeItem("familykit_access_token");
+                sessionStorage.removeItem("familykit_id_token");
+                sessionStorage.removeItem("familykit_refresh_token");
+                setPin(""); setEmail(""); setProfileName(""); setVerifiedEmail(""); setMobileStage("login");
+              }}>Use Another Account</button>
+            </div>
+          )}
+          {syncing && <div className="login-account-sync-button" role="status">Syncing...</div>}
+          <p className="login-account-footer">Your family, organised in one place.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-page">
