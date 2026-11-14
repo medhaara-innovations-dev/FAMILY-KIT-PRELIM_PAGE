@@ -598,7 +598,8 @@ export default function SignupPage() {
 
         await storeFamilyKitPin(
           accessToken,
-          pin
+          pin,
+          yourName.trim()
         );
 
         // Cache the registered personal name for same-device welcome display.

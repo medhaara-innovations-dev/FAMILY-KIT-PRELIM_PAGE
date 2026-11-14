@@ -1,3 +1,4 @@
+
 import {
   CognitoIdentityProviderClient,
   SignUpCommand,
@@ -7,19 +8,15 @@ import {
   RespondToAuthChallengeCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 
-
 // ======================================================
 // CONFIGURATION
 // ======================================================
 
 const REGION = "ap-southeast-2";
 
-const USER_POOL_ID =
-  "ap-southeast-2_XKEDA5qep";
+const USER_POOL_ID = "ap-southeast-2_XKEDA5qep";
 
-const CLIENT_ID =
-  "3o16vpjbrc6kf5205pc3rtchm5";
-
+const CLIENT_ID = "3o16vpjbrc6kf5205pc3rtchm5";
 
 // API Gateway
 
@@ -32,6 +29,10 @@ const RESOLVE_LOGIN_API_URL =
 const REGISTRATION_STATUS_API_URL =
   "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/registration-status";
 
+// NEW: Authenticated user profile endpoint
+
+const PROFILE_API_URL =
+  "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/profile";
 
 // ======================================================
 // GOOGLE SIGN-IN / COGNITO OAUTH + PKCE
@@ -40,8 +41,7 @@ const REGISTRATION_STATUS_API_URL =
 const COGNITO_DOMAIN =
   "https://ap-southeast-2xkeda5qep.auth.ap-southeast-2.amazoncognito.com";
 
-const GOOGLE_OAUTH_SCOPES =
-  "openid email profile";
+const GOOGLE_OAUTH_SCOPES = "openid email profile";
 
 const GOOGLE_PKCE_VERIFIER_KEY =
   "familykit_google_pkce_verifier";
@@ -49,12 +49,10 @@ const GOOGLE_PKCE_VERIFIER_KEY =
 const GOOGLE_OAUTH_STATE_KEY =
   "familykit_google_oauth_state";
 
-
 // ======================================================
 // GOOGLE REDIRECT URI
 //
 // Supports BOTH:
-//
 // /login
 // /signup
 // ======================================================
@@ -70,7 +68,6 @@ function getGoogleRedirectUri(
   return `${window.location.origin}${safePath}`;
 }
 
-
 // ======================================================
 // PKCE HELPERS
 // ======================================================
@@ -79,8 +76,7 @@ function base64UrlEncode(bytes) {
   let binary = "";
 
   bytes.forEach((byte) => {
-    binary +=
-      String.fromCharCode(byte);
+    binary += String.fromCharCode(byte);
   });
 
   return btoa(binary)
@@ -89,26 +85,21 @@ function base64UrlEncode(bytes) {
     .replace(/=+$/g, "");
 }
 
-
 function createRandomUrlSafeString(
   byteLength = 64
 ) {
-  const bytes =
-    new Uint8Array(byteLength);
+  const bytes = new Uint8Array(byteLength);
 
   crypto.getRandomValues(bytes);
 
   return base64UrlEncode(bytes);
 }
 
-
 async function createCodeChallenge(
   codeVerifier
 ) {
   const encoded =
-    new TextEncoder().encode(
-      codeVerifier
-    );
+    new TextEncoder().encode(codeVerifier);
 
   const digest =
     await crypto.subtle.digest(
@@ -120,7 +111,6 @@ async function createCodeChallenge(
     new Uint8Array(digest)
   );
 }
-
 
 // ======================================================
 // GOOGLE LOGIN / SIGNUP
@@ -148,6 +138,7 @@ export async function startGoogleLogin(
     createRandomUrlSafeString(32);
 
   // Store PKCE values temporarily.
+
   sessionStorage.setItem(
     GOOGLE_PKCE_VERIFIER_KEY,
     codeVerifier
@@ -169,26 +160,21 @@ export async function startGoogleLogin(
           redirectPath
         ),
 
-      identity_provider:
-        "Google",
+      identity_provider: "Google",
 
-      scope:
-        GOOGLE_OAUTH_SCOPES,
+      scope: GOOGLE_OAUTH_SCOPES,
 
       state,
 
-      code_challenge:
-        codeChallenge,
+      code_challenge: codeChallenge,
 
-      code_challenge_method:
-        "S256",
+      code_challenge_method: "S256",
     });
 
   window.location.assign(
     `${COGNITO_DOMAIN}/oauth2/authorize?${params.toString()}`
   );
 }
-
 
 // ======================================================
 // GOOGLE LOGIN / SIGNUP
@@ -209,25 +195,19 @@ export async function completeGoogleLogin(
       window.location.search
     );
 
-  // ====================================================
-  // CHECK OAUTH ERROR
-  // ====================================================
+  // Check OAuth error.
 
   const oauthError =
     params.get("error");
 
   if (oauthError) {
     throw new Error(
-      params.get(
-        "error_description"
-      ) ||
+      params.get("error_description") ||
         `Google sign-in failed: ${oauthError}`
     );
   }
 
-  // ====================================================
-  // GET AUTHORIZATION CODE
-  // ====================================================
+  // Get authorization code.
 
   const code =
     params.get("code");
@@ -241,9 +221,7 @@ export async function completeGoogleLogin(
     );
   }
 
-  // ====================================================
-  // LOAD SAVED PKCE VALUES
-  // ====================================================
+  // Load saved PKCE values.
 
   const expectedState =
     sessionStorage.getItem(
@@ -255,15 +233,12 @@ export async function completeGoogleLogin(
       GOOGLE_PKCE_VERIFIER_KEY
     );
 
-  // ====================================================
-  // VALIDATE STATE
-  // ====================================================
+  // Validate state.
 
   if (
     !returnedState ||
     !expectedState ||
-    returnedState !==
-      expectedState
+    returnedState !== expectedState
   ) {
     throw new Error(
       "Google sign-in security validation failed."
@@ -276,17 +251,13 @@ export async function completeGoogleLogin(
     );
   }
 
-  // ====================================================
-  // EXCHANGE AUTHORIZATION CODE FOR COGNITO TOKENS
-  // ====================================================
+  // Exchange authorization code for Cognito tokens.
 
   const body =
     new URLSearchParams({
-      grant_type:
-        "authorization_code",
+      grant_type: "authorization_code",
 
-      client_id:
-        CLIENT_ID,
+      client_id: CLIENT_ID,
 
       code,
 
@@ -295,8 +266,7 @@ export async function completeGoogleLogin(
           redirectPath
         ),
 
-      code_verifier:
-        codeVerifier,
+      code_verifier: codeVerifier,
     });
 
   const response =
@@ -310,16 +280,14 @@ export async function completeGoogleLogin(
             "application/x-www-form-urlencoded",
         },
 
-        body:
-          body.toString(),
+        body: body.toString(),
       }
     );
 
   let result = null;
 
   try {
-    result =
-      await response.json();
+    result = await response.json();
   } catch {
     result = null;
   }
@@ -338,9 +306,7 @@ export async function completeGoogleLogin(
     );
   }
 
-  // ====================================================
-  // REMOVE TEMPORARY PKCE DATA
-  // ====================================================
+  // Remove temporary PKCE data.
 
   sessionStorage.removeItem(
     GOOGLE_PKCE_VERIFIER_KEY
@@ -350,9 +316,7 @@ export async function completeGoogleLogin(
     GOOGLE_OAUTH_STATE_KEY
   );
 
-  // ====================================================
-  // GET GOOGLE / COGNITO USER INFORMATION
-  // ====================================================
+  // Get Google / Cognito user information.
 
   let userInfo = null;
 
@@ -368,9 +332,7 @@ export async function completeGoogleLogin(
         }
       );
 
-    if (
-      userInfoResponse.ok
-    ) {
+    if (userInfoResponse.ok) {
       userInfo =
         await userInfoResponse.json();
     }
@@ -378,33 +340,26 @@ export async function completeGoogleLogin(
     userInfo = null;
   }
 
-  // ====================================================
-  // RETURN COGNITO TOKENS + PROFILE
-  // ====================================================
+  // Return Cognito tokens + profile.
 
   return {
     accessToken:
       result.access_token,
 
     idToken:
-      result.id_token ||
-      null,
+      result.id_token || null,
 
     refreshToken:
-      result.refresh_token ||
-      null,
+      result.refresh_token || null,
 
     expiresIn:
-      result.expires_in ||
-      null,
+      result.expires_in || null,
 
     tokenType:
-      result.token_type ||
-      null,
+      result.token_type || null,
 
     email:
-      userInfo?.email ||
-      "",
+      userInfo?.email || "",
 
     name:
       userInfo?.name ||
@@ -412,7 +367,6 @@ export async function completeGoogleLogin(
       "",
   };
 }
-
 
 // ======================================================
 // COGNITO CLIENT
@@ -422,7 +376,6 @@ const cognitoClient =
   new CognitoIdentityProviderClient({
     region: REGION,
   });
-
 
 // ======================================================
 // STEP 1
@@ -443,19 +396,15 @@ export async function signUpWithEmail(
 
   const command =
     new SignUpCommand({
-      ClientId:
-        CLIENT_ID,
+      ClientId: CLIENT_ID,
 
-      Username:
-        normalizedEmail,
+      Username: normalizedEmail,
 
       UserAttributes: [
         {
-          Name:
-            "email",
+          Name: "email",
 
-          Value:
-            normalizedEmail,
+          Value: normalizedEmail,
         },
       ],
     });
@@ -467,19 +416,15 @@ export async function signUpWithEmail(
 
   return {
     userSub:
-      response.UserSub ||
-      null,
+      response.UserSub || null,
 
     userConfirmed:
-      response.UserConfirmed ||
-      false,
+      response.UserConfirmed || false,
 
     session:
-      response.Session ||
-      null,
+      response.Session || null,
   };
 }
-
 
 // ======================================================
 // STEP 2
@@ -515,19 +460,16 @@ export async function confirmEmail(
 
   const command =
     new ConfirmSignUpCommand({
-      ClientId:
-        CLIENT_ID,
+      ClientId: CLIENT_ID,
 
-      Username:
-        normalizedEmail,
+      Username: normalizedEmail,
 
       ConfirmationCode:
         normalizedCode,
 
       ...(signUpSession
         ? {
-            Session:
-              signUpSession,
+            Session: signUpSession,
           }
         : {}),
     });
@@ -539,11 +481,9 @@ export async function confirmEmail(
 
   return {
     session:
-      response.Session ||
-      null,
+      response.Session || null,
   };
 }
-
 
 // ======================================================
 // STEP 3
@@ -571,19 +511,15 @@ export async function completeSignupAuthentication(
 
   const command =
     new InitiateAuthCommand({
-      ClientId:
-        CLIENT_ID,
+      ClientId: CLIENT_ID,
 
-      AuthFlow:
-        "USER_AUTH",
+      AuthFlow: "USER_AUTH",
 
       AuthParameters: {
-        USERNAME:
-          normalizedEmail,
+        USERNAME: normalizedEmail,
       },
 
-      Session:
-        confirmationSession,
+      Session: confirmationSession,
     });
 
   const response =
@@ -637,7 +573,6 @@ export async function completeSignupAuthentication(
   };
 }
 
-
 // ======================================================
 // RESEND 6-DIGIT EMAIL OTP
 // ======================================================
@@ -656,11 +591,9 @@ export async function resendVerificationCode(
 
   const command =
     new ResendConfirmationCodeCommand({
-      ClientId:
-        CLIENT_ID,
+      ClientId: CLIENT_ID,
 
-      Username:
-        normalizedEmail,
+      Username: normalizedEmail,
     });
 
   return await cognitoClient.send(
@@ -668,14 +601,19 @@ export async function resendVerificationCode(
   );
 }
 
-
 // ======================================================
 // STORE FAMILYKIT 4-DIGIT PIN
+//
+// UPDATED:
+// Store the personal name entered under "Your Name".
+//
+// Existing authentication and PIN validation preserved.
 // ======================================================
 
 export async function storeFamilyKitPin(
   accessToken,
-  pin
+  pin,
+  yourName
 ) {
   if (!accessToken) {
     throw new Error(
@@ -691,12 +629,24 @@ export async function storeFamilyKitPin(
     );
   }
 
+  // NEW: Validate the registered personal name.
+
+  const cleanYourName =
+    typeof yourName === "string"
+      ? yourName.trim()
+      : "";
+
+  if (!cleanYourName) {
+    throw new Error(
+      "Please enter your name."
+    );
+  }
+
   const response =
     await fetch(
       PIN_API_URL,
       {
-        method:
-          "POST",
+        method: "POST",
 
         headers: {
           "Content-Type":
@@ -706,9 +656,13 @@ export async function storeFamilyKitPin(
             `Bearer ${accessToken}`,
         },
 
+        // UPDATED: Send PIN and personal name.
+        // The userId is still obtained from the JWT.
+
         body:
           JSON.stringify({
             pin,
+            yourName: cleanYourName,
           }),
       }
     );
@@ -739,7 +693,6 @@ export async function storeFamilyKitPin(
   return result;
 }
 
-
 // ======================================================
 // CHECK FAMILYKIT REGISTRATION STATUS
 //
@@ -767,8 +720,7 @@ export async function getRegistrationStatus(
     await fetch(
       REGISTRATION_STATUS_API_URL,
       {
-        method:
-          "GET",
+        method: "GET",
 
         headers: {
           Authorization:
@@ -809,7 +761,6 @@ export async function getRegistrationStatus(
   };
 }
 
-
 // ======================================================
 // LOGIN USERNAME RESOLVER
 //
@@ -839,8 +790,7 @@ async function resolveLoginUsername(
     await fetch(
       RESOLVE_LOGIN_API_URL,
       {
-        method:
-          "POST",
+        method: "POST",
 
         headers: {
           "Content-Type":
@@ -877,7 +827,6 @@ async function resolveLoginUsername(
   return result.username;
 }
 
-
 // ======================================================
 // LOGIN STEP 1
 // START FAMILYKIT CUSTOM PIN AUTHENTICATION
@@ -901,11 +850,9 @@ export async function startPinLogin(
 
   const command =
     new InitiateAuthCommand({
-      ClientId:
-        CLIENT_ID,
+      ClientId: CLIENT_ID,
 
-      AuthFlow:
-        "CUSTOM_AUTH",
+      AuthFlow: "CUSTOM_AUTH",
 
       AuthParameters: {
         USERNAME:
@@ -913,6 +860,7 @@ export async function startPinLogin(
 
         // Start directly with our
         // FamilyKit custom challenge.
+
         CHALLENGE_NAME:
           "CUSTOM_CHALLENGE",
       },
@@ -950,7 +898,6 @@ export async function startPinLogin(
       {},
   };
 }
-
 
 // ======================================================
 // LOGIN STEP 2
@@ -991,8 +938,7 @@ export async function respondToPinChallenge(
 
   const command =
     new RespondToAuthChallengeCommand({
-      ClientId:
-        CLIENT_ID,
+      ClientId: CLIENT_ID,
 
       ChallengeName:
         "CUSTOM_CHALLENGE",
@@ -1095,7 +1041,6 @@ export async function respondToPinChallenge(
   );
 }
 
-
 // ======================================================
 // COMPLETE FAMILYKIT PIN LOGIN
 //
@@ -1135,27 +1080,21 @@ export async function loginWithFamilyKitPin(
     );
   }
 
-  // ----------------------------------------------------
   // Resolve email to the actual Cognito username.
-  // ----------------------------------------------------
 
   const cognitoUsername =
     await resolveLoginUsername(
       normalizedEmail
     );
 
-  // ----------------------------------------------------
   // Start Cognito CUSTOM_AUTH with actual username.
-  // ----------------------------------------------------
 
   const loginStart =
     await startPinLogin(
       cognitoUsername
     );
 
-  // ----------------------------------------------------
   // Answer custom challenge using same Cognito username.
-  // ----------------------------------------------------
 
   const loginResult =
     await respondToPinChallenge(
@@ -1173,6 +1112,69 @@ export async function loginWithFamilyKitPin(
   return loginResult;
 }
 
+// ======================================================
+// NEW: GET FAMILYKIT PROFILE FROM AWS
+//
+// Returns the name entered in "Your Name" during signup.
+//
+// Uses the Cognito access token.
+// The backend identifies the user from the validated JWT.
+//
+// This is required for cross-device name retrieval.
+// ======================================================
+
+export async function getFamilyKitProfile(
+  accessToken
+) {
+  if (!accessToken) {
+    throw new Error(
+      "Authentication session is missing."
+    );
+  }
+
+  const response =
+    await fetch(
+      PROFILE_API_URL,
+      {
+        method: "GET",
+
+        headers: {
+          Authorization:
+            `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+  let result = null;
+
+  try {
+    result =
+      await response.json();
+  } catch {
+    result = null;
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message ||
+        `Unable to retrieve profile. Server returned ${response.status}.`
+    );
+  }
+
+  if (!result?.success) {
+    throw new Error(
+      result?.message ||
+        "Unable to retrieve FamilyKit profile."
+    );
+  }
+
+  return {
+    yourName:
+      typeof result.yourName === "string"
+        ? result.yourName.trim()
+        : "",
+  };
+}
 
 // ======================================================
 // CONFIG
@@ -1189,7 +1191,6 @@ export const cognitoConfig = {
     CLIENT_ID,
 };
 
-
 export const apiConfig = {
   pinApiUrl:
     PIN_API_URL,
@@ -1199,4 +1200,8 @@ export const apiConfig = {
 
   registrationStatusApiUrl:
     REGISTRATION_STATUS_API_URL,
+
+  // NEW
+  profileApiUrl:
+    PROFILE_API_URL,
 };

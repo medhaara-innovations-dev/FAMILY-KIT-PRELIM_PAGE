@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { loginWithFamilyKitPin } from "./authService";
+import { loginWithFamilyKitPin, getFamilyKitProfile } from "./authService";
 
 import "./LoginPage.css";
-
-
 
 export default function LoginPage() {
 
@@ -28,24 +26,34 @@ export default function LoginPage() {
 
   const [verifiedEmail, setVerifiedEmail] = useState("");
 
-
-
   useEffect(() => {
+
     if (mobileStage === "syncing") {
+
       const successTimer = window.setTimeout(() => {
+
         setMobileStage("synced");
+
       }, 1100);
+
       return () => window.clearTimeout(successTimer);
+
     }
 
     if (mobileStage === "synced") {
+
       const redirectTimer = window.setTimeout(() => {
+
         navigate("/my-family", { replace: true });
+
       }, 1200);
+
       return () => window.clearTimeout(redirectTimer);
+
     }
 
     return undefined;
+
   }, [mobileStage, navigate]);
 
   const getProfileName = (result, cleanEmail) => {
@@ -84,8 +92,6 @@ export default function LoginPage() {
 
   const ready = validEmail && /^\d{4}$/.test(pin);
 
-
-
   const storeAuthenticationTokens = (result) => {
 
     if (!result?.accessToken) {
@@ -101,8 +107,6 @@ export default function LoginPage() {
     if (result.refreshToken) sessionStorage.setItem("familykit_refresh_token", result.refreshToken);
 
   };
-
-
 
   // Preserve the original four-digit input behavior.
 
@@ -123,8 +127,6 @@ export default function LoginPage() {
     if (digit && index < 3) document.getElementById(`login-pin-${index + 1}`)?.focus();
 
   };
-
-
 
   // Mobile keypad updates the SAME PIN state used by the backend.
 
@@ -149,8 +151,6 @@ export default function LoginPage() {
     }
 
   };
-
-
 
   const handleLogin = async () => {
 
@@ -184,19 +184,25 @@ export default function LoginPage() {
 
       console.log("FamilyKit login successful.");
 
-      if (window.matchMedia("(max-width: 768px)").matches) {
-
-        setVerifiedEmail(cleanEmail);
-
-        setProfileName(getProfileName(result, cleanEmail));
-
-        setMobileStage("account");
-
-      } else {
-
-        navigate("/my-family");
-
+    // Prefer the name saved in DynamoDB, but never block login if the
+    // profile endpoint is unavailable or this older account has no name.
+    let savedName = getProfileName(result, cleanEmail);
+    try {
+      const profile = await getFamilyKitProfile(result.accessToken);
+      if (typeof profile?.yourName === "string" && profile.yourName.trim()) {
+        savedName = profile.yourName.trim();
       }
+    } catch (profileError) {
+      console.warn("Unable to retrieve FamilyKit profile:", profileError);
+    }
+
+    if (window.matchMedia("(max-width: 768px)").matches) {
+      setVerifiedEmail(cleanEmail);
+      setProfileName(savedName);
+      setMobileStage("account");
+    } else {
+      navigate("/my-family");
+    }
 
     } catch (err) {
 
@@ -227,8 +233,6 @@ export default function LoginPage() {
     }
 
   };
-
-
 
   if (mobileStage !== "login") {
 
@@ -320,8 +324,6 @@ export default function LoginPage() {
 
   }
 
-
-
   return (
 
     <div className="login-page">
@@ -354,8 +356,6 @@ export default function LoginPage() {
 
         <p className="login-subtitle">Log in to your FamilyKit.</p>
 
-
-
         <div className="login-field">
 
           <label htmlFor="login-email">Email address</label>
@@ -379,8 +379,6 @@ export default function LoginPage() {
           />
 
         </div>
-
-
 
         <div className="login-field login-pin-field">
 
@@ -456,11 +454,7 @@ export default function LoginPage() {
 
         </div>
 
-
-
         {error && <div className="login-error" role="alert">{error}</div>}
-
-
 
         <div className="login-mobile-keypad" role="group" aria-label="PIN keypad">
 
@@ -475,8 +469,6 @@ export default function LoginPage() {
           ))}
 
         </div>
-
-
 
         <button
 
@@ -504,8 +496,6 @@ export default function LoginPage() {
 
         </button>
 
-
-
         <button
 
           type="button"
@@ -521,8 +511,6 @@ export default function LoginPage() {
           Forgot your PIN?
 
         </button>
-
-
 
         <p className="login-signup-text">
 
