@@ -327,8 +327,32 @@ export default function LoginPage() {
   return (
 
     <div className="login-page">
-
+      <section className="login-desktop-illustration" aria-label="FamilyKit family illustration">
+        <div className="login-desktop-curve" />
+        <div className="login-desktop-art-content">
+          <div className="login-desktop-family-art">
+            <img className="login-desktop-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
+            <img className="login-desktop-float login-desktop-float--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
+            <img className="login-desktop-float login-desktop-float--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
+            <img className="login-desktop-float login-desktop-float--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
+            <img className="login-desktop-float login-desktop-float--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
+            <img className="login-desktop-float login-desktop-float--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
+            <img className="login-desktop-float login-desktop-float--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
+            <span className="login-desktop-float login-desktop-float--bell" aria-hidden="true">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                <path d="M10 21h4" />
+              </svg>
+            </span>
+          </div>
+          <p className="login-desktop-art-caption">Everything your family needs, in one place</p>
+        </div>
+      </section>
+      <section className="login-desktop-form-panel">
       <div className="login-card">
+        <div className="login-desktop-brand" aria-hidden="true">
+          <img src={new URL("../assets/images/WhatsApp Image 2026-10-19 at 21.39.33 1.png", import.meta.url).href} alt="" />
+        </div>
 
         <header className="login-mobile-header">
 
@@ -525,7 +549,7 @@ export default function LoginPage() {
         </p>
 
       </div>
-
+      </section>
     </div>
 
   );
