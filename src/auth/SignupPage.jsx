@@ -260,6 +260,16 @@ export default function SignupPage() {
     };
 
 
+  // Mobile-only visual keypad for PIN entry. Existing PIN handlers remain unchanged.
+  const handleMobilePinKey = (key, confirming) => {
+    const current = confirming ? confirmPin : pin;
+    const update = confirming ? setConfirmPin : setPin;
+    if (key === "Clear") update("");
+    else if (key === "Delete") update(current.slice(0, -1));
+    else if (/^\d$/.test(key) && current.length < 4) update(current + key);
+    setError("");
+  };
+
   // =====================================================
   // SCREEN 1
   // EMAIL SIGNUP
@@ -728,6 +738,12 @@ export default function SignupPage() {
           </section>
 
           <section className="signup-welcome-panel">
+            <div className="signup-mobile-topbar">
+              <button type="button" className="signup-mobile-back" aria-label="Go back" onClick={() => { window.location.assign("/"); }}>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
+              </button>
+              <span className="signup-mobile-brand">FamilyKit</span>
+            </div>
             <div className="signup-card signup-welcome-card">
               <div className="signup-brand-mark" aria-hidden="true">
                 <img
@@ -779,7 +795,7 @@ export default function SignupPage() {
 
   if (step === 2) {
     return (
-      <div className="signup-page signup-page--otp">
+      <div className="signup-page signup-page--otp signup-page--otp-entry">
         <div className="signup-welcome-layout">
           <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
             <div className="signup-illustration-curve" />
@@ -804,6 +820,12 @@ export default function SignupPage() {
           </section>
 
           <section className="signup-welcome-panel">
+            <div className="signup-mobile-topbar">
+              <button type="button" className="signup-mobile-back" aria-label="Back to email signup" onClick={() => { setError(""); setStep(1); }}>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
+              </button>
+              <span className="signup-mobile-brand">Verify email address</span>
+            </div>
             <div className="signup-card signup-otp-card">
               <h1>Enter your Verification code</h1>
               <p className="signup-otp-subtitle">
@@ -872,7 +894,7 @@ export default function SignupPage() {
                 </button>
               </p>
               {error && <div className="signup-error" role="alert">{error}</div>}
-              <button type="button" className="signup-otp-verify" onClick={handleVerifyEmail} disabled={loading}>
+              <button type="button" className="signup-otp-verify" onClick={handleVerifyEmail} disabled={loading || !/^\d{6}$/.test(verificationCode)}>
                 {loading ? "Verifying..." : "Verify"}
               </button>
             </div>
@@ -915,7 +937,20 @@ export default function SignupPage() {
           </section>
 
           <section className="signup-welcome-panel">
+            <div className="signup-mobile-family-topbar">
+              <button type="button" className="signup-mobile-family-back" aria-label="Back to verification" onClick={() => { setError(""); setStep(2); }}>
+                <span aria-hidden="true">‹</span>
+              </button>
+              <span className="signup-mobile-family-title">Create your family</span>
+            </div>
             <div className="signup-card family-details-card">
+              <div className="signup-mobile-family-emblem" aria-hidden="true">
+                <svg width="27" height="27" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="16" cy="11" r="4"/><path d="M8.5 25v-2a7.5 7.5 0 0 1 15 0v2"/>
+                  <circle cx="7" cy="14" r="2.5"/><path d="M3 24v-2a5 5 0 0 1 4-4.9"/>
+                  <circle cx="25" cy="14" r="2.5"/><path d="M29 24v-2a5 5 0 0 0-4-4.9"/>
+                </svg>
+              </div>
               <h1>Give your family name</h1>
               <p className="signup-subtitle">A shared space for your family's important details.</p>
 
@@ -961,9 +996,10 @@ export default function SignupPage() {
               </fieldset>
 
               {error && <div className="signup-error" role="alert">{error}</div>}
-              <button type="button" className="signup-family-continue" onClick={handleFamilyDetailsContinue} disabled={loading}>
+              <button type="button" className="signup-family-continue" onClick={handleFamilyDetailsContinue} disabled={loading || !familyName.trim() || !yourName.trim()}>
                 Continue
               </button>
+              <p className="signup-mobile-family-footer">You can change your family name later.</p>
             </div>
           </section>
         </div>
@@ -1004,7 +1040,20 @@ export default function SignupPage() {
           </section>
 
           <section className="signup-welcome-panel">
+            <div className="signup-mobile-review-topbar">
+              <button type="button" className="signup-mobile-review-back" aria-label="Back to family details" onClick={() => { setError(""); setStep(3); }}>
+                <span aria-hidden="true">‹</span>
+              </button>
+              <span className="signup-mobile-review-title">Your Family</span>
+            </div>
             <div className="signup-card signup-review-card">
+              <div className="signup-mobile-review-emblem" aria-hidden="true">
+                <svg width="27" height="27" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="16" cy="11" r="4"/><path d="M8.5 25v-2a7.5 7.5 0 0 1 15 0v2"/>
+                  <circle cx="7" cy="14" r="2.5"/><path d="M3 24v-2a5 5 0 0 1 4-4.9"/>
+                  <circle cx="25" cy="14" r="2.5"/><path d="M29 24v-2a5 5 0 0 0-4-4.9"/>
+                </svg>
+              </div>
               <h1>The {familyName.trim().replace(/^the\s+/i, "").replace(/['’]s$/i, "")}'s Family</h1>
               <p className="signup-review-subtitle">A shared space for the family's important details.</p>
               <p className="signup-review-description">Family details</p>
@@ -1035,7 +1084,7 @@ export default function SignupPage() {
 
   if (step === 5) {
     return (
-      <div className="signup-page signup-page--otp signup-page--pin-step">
+      <div className="signup-page signup-page--otp signup-page--pin-step signup-page--mobile-pin">
         <div className="signup-welcome-layout">
           <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
             <div className="signup-illustration-curve" />
@@ -1060,7 +1109,15 @@ export default function SignupPage() {
           </section>
 
           <section className="signup-welcome-panel">
+            <div className="signup-mobile-pin-topbar">
+              <button type="button" className="signup-mobile-pin-back" aria-label="Go back" onClick={() => { setError(""); setStep(4); }}>‹</button>
+              <span className="signup-mobile-pin-title">App lock</span>
+              <span className="signup-mobile-pin-progress">1 of 2</span>
+            </div>
             <div className="signup-card signup-pin-card">
+              <div className="signup-mobile-pin-emblem" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1"/><path d="M12 16v2"/></svg>
+              </div>
               <h1>Create your PIN</h1>
               <p className="signup-pin-subtitle">Use this 4-digit PIN to unlock FamilyKit.</p>
               <div className="signup-pin-header">
@@ -1096,6 +1153,13 @@ export default function SignupPage() {
                 ))}
               </div>
               <p className="signup-pin-hint">Choose a PIN that’s hard to guess.</p>
+              <div className="signup-mobile-pin-footer">
+                <div className="signup-mobile-pin-keypad" role="group" aria-label="PIN keypad">
+                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "Delete"].map((key) => (
+                    <button key={key} type="button" className="signup-mobile-pin-key" disabled={loading} onClick={() => handleMobilePinKey(key, false)}>{key}</button>
+                  ))}
+                </div>
+              </div>
               {error && <div className="signup-error" role="alert">{error}</div>}
               <button type="button" className="signup-pin-continue" onClick={handleCreatePinContinue} disabled={loading}>
                 {loading ? "Please wait..." : "Continue"}
@@ -1110,7 +1174,7 @@ export default function SignupPage() {
 
   if (step === 6) {
     return (
-      <div className="signup-page signup-page--otp signup-page--pin-step">
+      <div className="signup-page signup-page--otp signup-page--pin-step signup-page--mobile-pin">
         <div className="signup-welcome-layout">
           <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
             <div className="signup-illustration-curve" />
@@ -1135,9 +1199,17 @@ export default function SignupPage() {
           </section>
 
           <section className="signup-welcome-panel">
+            <div className="signup-mobile-pin-topbar">
+              <button type="button" className="signup-mobile-pin-back" aria-label="Go back" onClick={() => { setError(""); setStep(5); }}>‹</button>
+              <span className="signup-mobile-pin-title">App lock</span>
+              <span className="signup-mobile-pin-progress">2 of 2</span>
+            </div>
             <div className="signup-card signup-pin-card">
+              <div className="signup-mobile-pin-emblem" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1"/><path d="M12 16v2"/></svg>
+              </div>
               <h1>Confirm your PIN</h1>
-              <p className="signup-pin-subtitle">Enter your 4-digit PIN again.</p>
+              <p className="signup-pin-subtitle">Enter the same 4 digits again.</p>
               <div className="signup-pin-header">
                 <label htmlFor="confirm-pin-0">Your PIN</label>
                 <label className="signup-pin-toggle">
@@ -1171,6 +1243,13 @@ export default function SignupPage() {
                 ))}
               </div>
               <p className="signup-pin-hint">Re-enter your PIN to confirm it.</p>
+              <div className="signup-mobile-pin-footer">
+                <div className="signup-mobile-pin-keypad" role="group" aria-label="PIN keypad">
+                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "Delete"].map((key) => (
+                    <button key={key} type="button" className="signup-mobile-pin-key" disabled={loading} onClick={() => handleMobilePinKey(key, true)}>{key}</button>
+                  ))}
+                </div>
+              </div>
               {error && <div className="signup-error" role="alert">{error}</div>}
               <button type="button" className="signup-pin-continue" onClick={handleConfirmPin} disabled={loading}>
                 {loading ? "Please wait..." : "Continue"}

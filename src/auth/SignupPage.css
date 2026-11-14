@@ -1750,3 +1750,730 @@
   }
   .signup-page--pin-step .signup-pin-card .signup-pin-digit { height: 56px; min-height: 56px; }
 }
+
+
+/* Mobile-only header: never render on desktop or tablet. */
+.signup-page--welcome .signup-mobile-topbar {
+  display: none;
+}
+
+/* ==============================================================
+   MOBILE SIGNUP SCREEN 1 — Figma reference
+   Scoped to welcome step and <=768px. Desktop and other steps intact.
+   ============================================================== */
+@media (max-width: 768px) {
+  .signup-page.signup-page--welcome {
+    display: block;
+    min-height: 100dvh;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background: linear-gradient(180deg, #D8C7FF 0px, #F0ECF7 145px, #FFFFFF 365px);
+    font-family: Mulish, sans-serif;
+    overflow-x: hidden;
+  }
+  .signup-page--welcome .signup-welcome-layout {
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+  }
+  .signup-page--welcome .signup-illustration-panel { display: none; }
+  .signup-page--welcome .signup-welcome-panel {
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding: 0 24px 42px;
+    background: transparent;
+  }
+  .signup-page--welcome .signup-mobile-topbar {
+    height: 118px;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 43px;
+    box-sizing: border-box;
+  }
+  .signup-page--welcome .signup-mobile-back {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.52);
+    color: #766A91;
+    cursor: pointer;
+  }
+  .signup-page--welcome .signup-mobile-brand {
+    color: #2D0B84;
+    font: 600 13px/20px Poppins, sans-serif;
+  }
+  .signup-page--welcome .signup-welcome-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    gap: 0;
+  }
+  .signup-page--welcome .signup-brand-mark { display: none; }
+  .signup-page--welcome .signup-welcome-card h1 {
+    margin: 0;
+    max-width: 235px;
+    color: #19181A;
+    text-align: left;
+    font: 600 28px/1.2 Poppins, sans-serif;
+    letter-spacing: -.55px;
+  }
+  .signup-page--welcome .signup-welcome-subtitle {
+    margin: 12px 0 34px;
+    text-align: left;
+    color: #817D8A;
+    font: 400 13px/1.5 Mulish, sans-serif;
+  }
+  .signup-page--welcome .signup-welcome-label {
+    margin: 0 0 9px;
+    color: #19181A;
+    font: 600 13px/18px Poppins, sans-serif;
+  }
+  .signup-page--welcome .signup-welcome-card #signup-email {
+    width: 100%;
+    height: 51px;
+    min-height: 51px;
+    box-sizing: border-box;
+    padding: 0 15px;
+    border: 1.5px solid #9B7DE4;
+    border-radius: 10px;
+    outline: none;
+    background: transparent;
+    color: #19181A;
+    font: 400 14px Mulish, sans-serif;
+    box-shadow: 0 0 0 2px rgba(155,125,228,.10);
+  }
+  .signup-page--welcome .signup-welcome-card #signup-email:focus {
+    border-color: #7D59C6;
+  }
+  .signup-page--welcome .signup-welcome-card #signup-email::placeholder { color: #A6A0AE; }
+  .signup-page--welcome .verification-note {
+    margin: 9px 0 0;
+    color: #96909F;
+    font: 400 12px/1.5 Mulish, sans-serif;
+  }
+  .signup-page--welcome .signup-error { margin: 9px 0 0; }
+  .signup-page--welcome .signup-welcome-card > .signup-primary-continue {
+    width: 100%;
+    min-height: 43px;
+    margin-top: 16px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 24px;
+    background: #2D0B84;
+    color: white;
+    font: 500 13px/18px Poppins, sans-serif;
+    cursor: pointer;
+  }
+  .signup-page--welcome .signup-divider {
+    margin: 18px 0;
+    gap: 12px;
+    color: #9B96A4;
+    font: 400 12px/16px Mulish, sans-serif;
+  }
+  .signup-page--welcome .signup-divider::before,
+  .signup-page--welcome .signup-divider::after { background: #D8D3DF; }
+  .signup-page--welcome .signup-welcome-card > .signup-google-button {
+    display: flex;
+    width: 100%;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border: 1px solid #D3CEDB;
+    border-radius: 28px;
+    background: rgba(255,255,255,.68);
+    color: #19181A;
+    font: 500 13px/18px Poppins, sans-serif;
+  }
+  .signup-page--welcome .signup-google-icon { width: 18px; height: 18px; flex: 0 0 18px; }
+}
+
+
+/* Mobile OTP screen only. No desktop, tablet, or other-step overrides. */
+.signup-page--otp-entry .signup-mobile-topbar { display: none; }
+
+@media (max-width: 768px) {
+  .signup-page.signup-page--otp-entry {
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+    padding: 0;
+    margin: 0;
+    background: linear-gradient(180deg, #D8C7FF 0px, #F0ECF7 145px, #FFFFFF 365px);
+    font-family: Mulish, sans-serif;
+    overflow-x: hidden;
+  }
+  .signup-page--otp-entry .signup-welcome-layout { display: block; width: 100%; min-height: 100dvh; }
+  .signup-page--otp-entry .signup-illustration-panel { display: none; }
+  .signup-page--otp-entry .signup-welcome-panel {
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding: 0 24px 42px;
+    background: transparent;
+  }
+  .signup-page--otp-entry .signup-mobile-topbar {
+    height: 118px;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 43px;
+    box-sizing: border-box;
+  }
+  .signup-page--otp-entry .signup-mobile-back {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.52);
+    color: #766A91;
+    cursor: pointer;
+  }
+  .signup-page--otp-entry .signup-mobile-brand { color: #2D0B84; font: 600 13px/20px Poppins, sans-serif; }
+  .signup-page--otp-entry .signup-otp-card { width: 100%; max-width: 420px; margin: 0 auto; gap: 0; align-items: stretch; }
+  .signup-page--otp-entry .signup-otp-card h1 {
+    margin: 0;
+    color: #19181A;
+    text-align: left;
+    white-space: normal;
+    max-width: 240px;
+    font: 600 27px/1.16 Poppins, sans-serif;
+  }
+  .signup-page--otp-entry .signup-otp-subtitle {
+    margin: 13px 0 25px;
+    color: #827C8B;
+    text-align: left;
+    font: 400 12px/1.6 Mulish, sans-serif;
+    overflow-wrap: anywhere;
+  }
+  .signup-page--otp-entry .signup-otp-subtitle strong { color: #6B6574; font: inherit; font-weight: 600; }
+  .signup-page--otp-entry .signup-otp-label {
+    margin: 0 0 9px;
+    color: #19181A;
+    text-align: left;
+    font: 600 12px/18px Poppins, sans-serif;
+  }
+  .signup-page--otp-entry .signup-otp-boxes {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 7px;
+    width: 100%;
+  }
+  .signup-page--otp-entry .signup-card .signup-otp-digit {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    min-height: 46px;
+    padding: 0;
+    border: 1px solid #D8D3E0;
+    border-radius: 9px;
+    background: rgba(255,255,255,.76);
+    color: #2D0B84;
+    text-align: center;
+    font: 600 19px Poppins, sans-serif;
+  }
+  .signup-page--otp-entry .signup-card .signup-otp-digit:focus {
+    border: 2px solid #7D59C6;
+    outline: none;
+    box-shadow: 0 0 0 1px rgba(125,89,198,.12);
+  }
+  .signup-page--otp-entry .signup-otp-hint {
+    margin: 12px 0 0;
+    color: #9993A0;
+    text-align: left;
+    font: 400 11px/1.5 Mulish, sans-serif;
+  }
+  .signup-page--otp-entry .signup-otp-resend {
+    margin: 21px 0 18px;
+    color: #918B9B;
+    text-align: left;
+    font: 400 12px/18px Mulish, sans-serif;
+  }
+  .signup-page--otp-entry .signup-otp-resend .resend-button {
+    color: #2D0B84;
+    font: 600 12px/18px Mulish, sans-serif;
+    text-decoration: none;
+  }
+  .signup-page--otp-entry .signup-otp-verify {
+    width: 100%;
+    min-height: 43px;
+    border: 0;
+    border-radius: 24px;
+    background: #A49ABC;
+    color: #FFF;
+    font: 500 13px/18px Poppins, sans-serif;
+    cursor: pointer;
+  }
+  .signup-page--otp-entry .signup-otp-verify:not(:disabled):active { background: #2D0B84; }
+}
+
+/* Mobile OTP: Verify becomes purple only when all six digits are entered. */
+@media (max-width: 768px) {
+  .signup-page--otp-entry .signup-otp-verify:disabled {
+    background: #A49ABC;
+    opacity: 1;
+    cursor: not-allowed;
+  }
+  .signup-page--otp-entry .signup-otp-verify:not(:disabled) {
+    background: #2D0B84;
+    opacity: 1;
+    cursor: pointer;
+  }
+}
+
+
+/* Screen 3 mobile-only additions; desktop master is unchanged. */
+.signup-mobile-family-topbar,
+.signup-mobile-family-emblem,
+.signup-mobile-family-footer { display: none; }
+
+@media (max-width: 768px) {
+  .signup-page.signup-page--family-details {
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    background: linear-gradient(180deg, #D8C7FF 0px, #F0ECF7 145px, #FFFFFF 365px);
+    font-family: Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-welcome-layout { min-height: 100dvh; }
+  .signup-page--family-details .signup-welcome-panel {
+    display: block;
+    box-sizing: border-box;
+    min-height: 100dvh;
+    width: 100%;
+    padding: 0 24px 35px;
+    background: transparent;
+  }
+  .signup-page--family-details .signup-mobile-family-topbar {
+    position: relative;
+    display: flex;
+    height: 106px;
+    box-sizing: border-box;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 42px;
+  }
+  .signup-page--family-details .signup-mobile-family-back {
+    position: absolute;
+    top: 35px;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.5);
+    color: #766A91;
+    font: 26px/1 Mulish, sans-serif;
+    cursor: pointer;
+  }
+  .signup-page--family-details .signup-mobile-family-title {
+    color: #2D0B84;
+    font: 600 13px/20px Poppins, sans-serif;
+  }
+  .signup-page--family-details .family-details-card {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    gap: 0;
+    align-items: stretch;
+  }
+  .signup-page--family-details .signup-mobile-family-emblem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 66px;
+    height: 66px;
+    margin: 0 0 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.46);
+    color: #4D485A;
+  }
+  .signup-page--family-details .family-details-card h1 {
+    margin: 0;
+    color: #19181A;
+    font: 600 25px/1.25 Poppins, sans-serif;
+    text-align: left;
+  }
+  .signup-page--family-details .signup-subtitle {
+    margin: 12px 0 22px;
+    color: #827C8B;
+    font: 400 12px/1.6 Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0 0 21px;
+  }
+  .signup-page--family-details .signup-field > label,
+  .signup-page--family-details .signup-gender-fieldset legend {
+    margin: 0 0 9px;
+    color: #19181A;
+    font: 600 12px/18px Poppins, sans-serif;
+  }
+  .signup-page--family-details .signup-card .signup-field input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    padding: 12px 15px;
+    border: 1px solid #D8D3E0;
+    border-radius: 12px;
+    background: rgba(255,255,255,.8);
+    color: #19181A;
+    font: 400 13px Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-field input:focus {
+    outline: none;
+    border-color: #7D59C6;
+    box-shadow: 0 0 0 2px rgba(125,89,198,.12);
+  }
+  .signup-page--family-details .field-helper {
+    margin-top: 8px;
+    color: #9B96A4;
+    font: 400 11px/1.5 Mulish, sans-serif;
+  }
+  .signup-page--family-details .signup-gender-fieldset {
+    min-width: 0;
+    margin: 0 0 17px;
+    padding: 0;
+    border: 0;
+  }
+  .signup-page--family-details .signup-gender-fieldset legend { margin-bottom: 10px; }
+  .signup-page--family-details .optional { color: #9993A0; font: 400 11px Mulish, sans-serif; }
+  .signup-page--family-details .gender-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+  .signup-page--family-details .gender-option {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: 34px;
+    padding: 7px 10px;
+    gap: 6px;
+    box-sizing: border-box;
+    border: 1px solid #D8D3E0;
+    border-radius: 22px;
+    background: rgba(255,255,255,.75);
+    color: #4D485A;
+    font: 400 11px Mulish, sans-serif;
+  }
+  .signup-page--family-details .gender-option span { font-size: 11px; white-space: nowrap; }
+  .signup-page--family-details .gender-option input[type="radio"] {
+    appearance: none;
+    flex: 0 0 13px;
+    width: 13px;
+    min-width: 13px;
+    height: 13px;
+    min-height: 13px;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #BDB4CC;
+    border-radius: 50%;
+    background: #FFF;
+  }
+  .signup-page--family-details .gender-option input[type="radio"]:checked { border: 4px solid #2D0B84; }
+  .signup-page--family-details .gender-option.selected { border-color: #7D59C6; background: #EBE6F7; }
+  .signup-page--family-details .signup-family-continue {
+    width: 100%;
+    min-height: 45px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 28px;
+    background: #2D0B84;
+    color: #FFF;
+    font: 500 13px/18px Poppins, sans-serif;
+    opacity: 1;
+    cursor: pointer;
+  }
+  .signup-page--family-details .signup-family-continue:disabled {
+    background: #A49ABC;
+    opacity: 1;
+    cursor: not-allowed;
+  }
+  .signup-page--family-details .signup-mobile-family-footer {
+    display: block;
+    margin: 31px 0 0;
+    color: #9B96A4;
+    text-align: center;
+    font: 400 11px/1.5 Mulish, sans-serif;
+  }
+}
+
+
+/* Screen 4 — mobile review only. Desktop/tablet master stays untouched. */
+.signup-mobile-review-topbar,
+.signup-mobile-review-emblem { display: none; }
+
+@media (max-width: 768px) {
+  .signup-page.signup-page--review {
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background: linear-gradient(180deg, #D8C7FF 0px, #F0ECF7 145px, #FFFFFF 365px);
+    font-family: Mulish, sans-serif;
+  }
+  .signup-page--review .signup-welcome-layout { display: block; min-height: 100dvh; }
+  .signup-page--review .signup-illustration-panel { display: none; }
+  .signup-page--review .signup-welcome-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 100dvh;
+    padding: 0 24px 34px;
+    box-sizing: border-box;
+    background: transparent;
+  }
+  .signup-page--review .signup-mobile-review-topbar {
+    position: relative;
+    display: flex;
+    flex: 0 0 106px;
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
+    padding-top: 42px;
+  }
+  .signup-page--review .signup-mobile-review-back {
+    position: absolute;
+    top: 35px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.5);
+    color: #766A91;
+    font: 26px/1 Mulish, sans-serif;
+    cursor: pointer;
+  }
+  .signup-page--review .signup-mobile-review-title {
+    color: #2D0B84;
+    font: 600 13px/20px Poppins, sans-serif;
+  }
+  .signup-page--review .signup-review-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    gap: 0;
+  }
+  .signup-page--review .signup-mobile-review-emblem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 66px;
+    height: 66px;
+    margin: 0 0 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.46);
+    color: #4D485A;
+  }
+  .signup-page--review .signup-review-card h1 {
+    margin: 0;
+    color: #19181A;
+    font: 600 25px/1.25 Poppins, sans-serif;
+    text-align: left;
+    overflow-wrap: break-word;
+  }
+  .signup-page--review .signup-review-subtitle {
+    margin: 12px 0 7px;
+    color: #827C8B;
+    font: 400 12px/1.6 Mulish, sans-serif;
+  }
+  .signup-page--review .signup-review-description {
+    margin: 0 0 18px;
+    color: #827C8B;
+    font: 400 12px/1.5 Mulish, sans-serif;
+  }
+  .signup-page--review .signup-review-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin: 0 0 19px;
+  }
+  .signup-page--review .signup-review-field label {
+    color: #19181A;
+    font: 600 12px/18px Poppins, sans-serif;
+  }
+  .signup-page--review .signup-card .signup-review-field input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    padding: 12px 15px;
+    border: 1px solid #D8D3E0;
+    border-radius: 12px;
+    background: rgba(255,255,255,.8);
+    color: #4D485A;
+    font: 400 13px Mulish, sans-serif;
+  }
+  .signup-page--review .signup-review-actions {
+    display: flex;
+    gap: 18px;
+    width: 100%;
+    margin-top: auto;
+    margin-bottom: clamp(38px, 13dvh, 115px);
+    justify-content: center;
+    align-items: center;
+  }
+  .signup-page--review .signup-review-actions button {
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 28px;
+    font: 500 13px/18px Poppins, sans-serif;
+    cursor: pointer;
+  }
+  .signup-page--review .signup-review-actions .signup-review-edit {
+    flex: 0 0 31%;
+    border: 1px solid #7D59C6;
+    background: #FFF;
+    color: #2D0B84;
+  }
+  .signup-page--review .signup-review-actions .signup-review-save {
+    flex: 1 1 auto;
+    border: 1px solid #2D0B84;
+    background: #2D0B84;
+    color: #FFF;
+    box-shadow: -1px 4px 12px rgba(45,11,132,.10), 1px 4px 4px rgba(255,255,255,.25) inset;
+  }
+}
+
+
+/* Mobile PIN screens 5 and 6 ONLY. Desktop/tablet styles are untouched. */
+.signup-mobile-pin-topbar,
+.signup-mobile-pin-emblem,
+.signup-mobile-pin-footer { display: none; }
+@media (max-width: 768px) {
+  .signup-page.signup-page--mobile-pin {
+    display: block;
+    min-height: 100dvh;
+    padding: 0;
+    background: linear-gradient(180deg, #DCCAFF 0%, #EEEAF4 38%, #F2F0F3 61%, #FFF 61%);
+    font-family: Mulish, sans-serif;
+  }
+  .signup-page--mobile-pin .signup-welcome-layout { display: block; min-height: 100dvh; overflow: visible; }
+  .signup-page--mobile-pin .signup-illustration-panel { display: none; }
+  .signup-page--mobile-pin .signup-welcome-panel {
+    display: flex; flex-direction: column; align-items: stretch;
+    width: 100%; min-height: 100dvh; box-sizing: border-box;
+    padding: 0 24px 24px; background: transparent;
+  }
+  .signup-page--mobile-pin .signup-mobile-pin-topbar {
+    position: relative; display: flex; flex: 0 0 106px;
+    justify-content: center; align-items: flex-start;
+    box-sizing: border-box; padding-top: 43px;
+  }
+  .signup-page--mobile-pin .signup-mobile-pin-back {
+    position: absolute; left: 0; top: 34px; width: 32px; height: 32px;
+    border: 0; border-radius: 50%; background: rgba(255,255,255,.5);
+    color: #766A91; font: 26px/28px Mulish,sans-serif; cursor: pointer;
+  }
+  .signup-page--mobile-pin .signup-mobile-pin-title { color: #2D0B84; font: 600 13px/20px Poppins,sans-serif; }
+  .signup-page--mobile-pin .signup-mobile-pin-progress {
+    position: absolute; right: 0; top: 44px; color: #827C8B; font: 400 12px/20px Mulish,sans-serif;
+  }
+  .signup-page--mobile-pin .signup-pin-card {
+    display: flex; flex-direction: column; align-items: stretch; gap: 0;
+    width: 100%; max-width: 420px; margin: 0 auto; flex: 1;
+  }
+  .signup-page--mobile-pin .signup-mobile-pin-emblem {
+    display: flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px; margin: 0 0 19px;
+    border-radius: 50%; background: rgba(255,255,255,.45); color: #2D0B84;
+  }
+  .signup-page--mobile-pin .signup-pin-card h1 {
+    margin: 0; text-align: left; color: #19181A;
+    font: 600 27px/1.25 Poppins,sans-serif;
+  }
+  .signup-page--mobile-pin .signup-pin-subtitle {
+    margin: 10px 0 29px; text-align: left; color: #827C8B;
+    font: 400 13px/1.5 Mulish,sans-serif;
+  }
+  .signup-page--mobile-pin .signup-pin-header { margin-bottom: 14px; }
+  .signup-page--mobile-pin .signup-pin-digits { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 9px; }
+  .signup-page--mobile-pin .signup-pin-card .signup-pin-digit {
+    width: 100%; min-width: 0; height: 58px; min-height: 58px;
+    padding: 0; border: 1px solid #EDEAF3; border-radius: 13px;
+    background: rgba(255,255,255,.9); text-align: center; font: 600 24px Poppins,sans-serif;
+  }
+  .signup-page--mobile-pin .signup-pin-card .signup-pin-digit:focus {
+    border-color: #6B48C2; outline: none; box-shadow: 0 2px 0 #6B48C2;
+  }
+  .signup-page--mobile-pin .signup-pin-hint { margin: 9px 0 12px; font: 400 12px/1.5 Mulish,sans-serif; color: #827C8B; }
+  .signup-page--mobile-pin .signup-mobile-pin-footer {
+    display: block; margin-top: auto; padding: 18px 0 66px;
+  }
+  .signup-page--mobile-pin .signup-mobile-pin-keypad {
+    display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px;
+  }
+  .signup-page--mobile-pin .signup-mobile-pin-key {
+    display: flex; align-items: center; justify-content: center;
+    height: 52px; padding: 0; border: 0; border-radius: 12px;
+    background: #F5F0FC; color: #32108D;
+    font: 600 23px/1 Poppins,sans-serif; cursor: pointer;
+  }
+  .signup-page--mobile-pin .signup-mobile-pin-key:nth-child(10),
+  .signup-page--mobile-pin .signup-mobile-pin-key:nth-child(12) { font-size: 12px; }
+  .signup-page--mobile-pin .signup-mobile-pin-key:active { background: #E0D4F8; }
+  .signup-page--mobile-pin .signup-pin-continue {
+    position: relative; margin-top: -57px; width: calc(100% - 20px);
+    align-self: center; min-height: 47px; padding: 12px;
+    border-radius: 28px; background: #2D0B84; color: white;
+    font: 500 14px/18px Poppins,sans-serif;
+  }
+  .signup-page--mobile-pin .signup-error { margin: 0 0 12px; }
+}
+@media (max-width: 380px) {
+  .signup-page--mobile-pin .signup-welcome-panel { padding-left: 18px; padding-right: 18px; }
+  .signup-page--mobile-pin .signup-mobile-pin-key { height: 46px; }
+  .signup-page--mobile-pin .signup-pin-card .signup-pin-digit { height: 51px; min-height: 51px; }
+}
