@@ -1,583 +1,882 @@
-import { useEffect, useState } from "react";
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { loginWithFamilyKitPin, getFamilyKitProfile } from "./authService";
+import {
+  loginWithFamilyKitPin,
+  getFamilyKitProfile,
+} from "./authService";
 
 import "./LoginPage.css";
 
 export default function LoginPage() {
-
   const navigate = useNavigate();
 
+  // Form state
   const [email, setEmail] = useState("");
-
   const [pin, setPin] = useState("");
-
   const [showPin, setShowPin] = useState(false);
-
   const [error, setError] = useState("");
-
   const [loading, setLoading] = useState(false);
 
+  // Mobile account synchronization
   const [mobileStage, setMobileStage] = useState("login");
-
   const [profileName, setProfileName] = useState("");
-
   const [verifiedEmail, setVerifiedEmail] = useState("");
 
+  // --------------------------------------------------
+  // Mobile synchronization and navigation
+  // --------------------------------------------------
+
   useEffect(() => {
-
     if (mobileStage === "syncing") {
-
       const successTimer = window.setTimeout(() => {
-
         setMobileStage("synced");
-
       }, 1100);
 
       return () => window.clearTimeout(successTimer);
-
     }
 
     if (mobileStage === "synced") {
-
       const redirectTimer = window.setTimeout(() => {
-
         navigate("/my-family", { replace: true });
-
       }, 1200);
 
       return () => window.clearTimeout(redirectTimer);
-
     }
 
     return undefined;
-
   }, [mobileStage, navigate]);
 
+  // --------------------------------------------------
+  // Retrieve profile name
+  // --------------------------------------------------
+
   const getProfileName = (result, cleanEmail) => {
+    const directName =
+      result?.yourName ||
+      result?.profile?.yourName ||
+      result?.name ||
+      result?.profile?.name;
 
-    const directName = result?.yourName || result?.profile?.yourName || result?.name || result?.profile?.name;
-
-    if (typeof directName === "string" && directName.trim()) return directName.trim();
+    if (typeof directName === "string" && directName.trim()) {
+      return directName.trim();
+    }
 
     try {
-
       const jwt = result?.idToken;
 
       if (jwt) {
-
         const part = jwt.split(".")[1];
-
-        const normalized = part.replace(/-/g, "+").replace(/_/g, "/");
+        const normalized = part
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
 
         const payload = JSON.parse(atob(normalized));
 
-        if (typeof payload.name === "string" && payload.name.trim()) return payload.name.trim();
+        if (
+          typeof payload.name === "string" &&
+          payload.name.trim()
+        ) {
+          return payload.name.trim();
+        }
 
-        if (typeof payload.given_name === "string" && payload.given_name.trim()) return payload.given_name.trim();
-
+        if (
+          typeof payload.given_name === "string" &&
+          payload.given_name.trim()
+        ) {
+          return payload.given_name.trim();
+        }
       }
+    } catch {
+      // Name is optional in the ID token.
+    }
 
-    } catch { /* Name is optional in the ID token. */ }
-
-    try { return JSON.parse(localStorage.getItem(`familykit_profile_${cleanEmail}`) || "null")?.yourName || ""; }
-
-    catch { return ""; }
-
+    try {
+      return (
+        JSON.parse(
+          localStorage.getItem(
+            `familykit_profile_${cleanEmail}`
+          ) || "null"
+        )?.yourName || ""
+      );
+    } catch {
+      return "";
+    }
   };
 
-  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  // --------------------------------------------------
+  // Form validation
+  // --------------------------------------------------
+
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+    email.trim()
+  );
 
   const ready = validEmail && /^\d{4}$/.test(pin);
 
+  // --------------------------------------------------
+  // Store Cognito authentication tokens
+  // --------------------------------------------------
+
   const storeAuthenticationTokens = (result) => {
-
     if (!result?.accessToken) {
-
-      throw new Error("Authentication completed without an access token.");
-
+      throw new Error(
+        "Authentication completed without an access token."
+      );
     }
 
-    sessionStorage.setItem("familykit_access_token", result.accessToken);
+    sessionStorage.setItem(
+      "familykit_access_token",
+      result.accessToken
+    );
 
-    if (result.idToken) sessionStorage.setItem("familykit_id_token", result.idToken);
+    if (result.idToken) {
+      sessionStorage.setItem(
+        "familykit_id_token",
+        result.idToken
+      );
+    }
 
-    if (result.refreshToken) sessionStorage.setItem("familykit_refresh_token", result.refreshToken);
-
+    if (result.refreshToken) {
+      sessionStorage.setItem(
+        "familykit_refresh_token",
+        result.refreshToken
+      );
+    }
   };
 
-  // Preserve the original four-digit input behavior.
+  // --------------------------------------------------
+  // Desktop PIN input handling
+  // --------------------------------------------------
 
   const handlePinChange = (index, value) => {
-
     const digit = value.replace(/\D/g, "").slice(-1);
-
     const digits = pin.split("");
 
-    while (digits.length < 4) digits.push("");
+    while (digits.length < 4) {
+      digits.push("");
+    }
 
     digits[index] = digit;
 
     setPin(digits.join(""));
-
     setError("");
 
-    if (digit && index < 3) document.getElementById(`login-pin-${index + 1}`)?.focus();
-
+    if (digit && index < 3) {
+      document
+        .getElementById(`login-pin-${index + 1}`)
+        ?.focus();
+    }
   };
 
-  // Mobile keypad updates the SAME PIN state used by the backend.
+  // --------------------------------------------------
+  // Mobile numeric keypad
+  // --------------------------------------------------
 
   const handleKeypad = (key) => {
-
     if (loading) return;
 
     setError("");
 
     if (key === "Clear") {
-
       setPin("");
-
     } else if (key === "Delete") {
-
       setPin((current) => current.slice(0, -1));
-
     } else if (/^\d$/.test(key)) {
-
-      setPin((current) => (current.length < 4 ? current + key : current));
-
+      setPin((current) =>
+        current.length < 4 ? current + key : current
+      );
     }
-
   };
 
-  const handleLogin = async () => {
+  // --------------------------------------------------
+  // Cognito FamilyKit PIN login
+  // --------------------------------------------------
 
+  const handleLogin = async () => {
     setError("");
 
     const cleanEmail = email.trim().toLowerCase();
 
     if (!cleanEmail) {
-
       setError("Please enter your email address.");
-
       return;
-
     }
 
     if (!/^\d{4}$/.test(pin)) {
-
       setError("Please enter your 4-digit FamilyKit PIN.");
-
       return;
-
     }
 
     try {
-
       setLoading(true);
 
-      const result = await loginWithFamilyKitPin(cleanEmail, pin);
+      const result = await loginWithFamilyKitPin(
+        cleanEmail,
+        pin
+      );
 
       storeAuthenticationTokens(result);
 
       console.log("FamilyKit login successful.");
 
-    // Prefer the name saved in DynamoDB, but never block login if the
-    // profile endpoint is unavailable or this older account has no name.
-    let savedName = getProfileName(result, cleanEmail);
-    try {
-      const profile = await getFamilyKitProfile(result.accessToken);
-      if (typeof profile?.yourName === "string" && profile.yourName.trim()) {
-        savedName = profile.yourName.trim();
+      // Prefer the DynamoDB profile name.
+      // Do not block login if profile retrieval fails.
+
+      let savedName = getProfileName(result, cleanEmail);
+
+      try {
+        const profile = await getFamilyKitProfile(
+          result.accessToken
+        );
+
+        if (
+          typeof profile?.yourName === "string" &&
+          profile.yourName.trim()
+        ) {
+          savedName = profile.yourName.trim();
+        }
+      } catch (profileError) {
+        console.warn(
+          "Unable to retrieve FamilyKit profile:",
+          profileError
+        );
       }
-    } catch (profileError) {
-      console.warn("Unable to retrieve FamilyKit profile:", profileError);
-    }
 
-    if (window.matchMedia("(max-width: 768px)").matches) {
-      setVerifiedEmail(cleanEmail);
-      setProfileName(savedName);
-      setMobileStage("account");
-    } else {
-      navigate("/my-family");
-    }
-
+      if (
+        window.matchMedia("(max-width: 768px)").matches
+      ) {
+        setVerifiedEmail(cleanEmail);
+        setProfileName(savedName);
+        setMobileStage("account");
+      } else {
+        navigate("/my-family");
+      }
     } catch (err) {
-
       console.error("Login error:", err);
 
-      if (err?.name === "UserNotFoundException" || err?.name === "NotAuthorizedException") {
-
-        setError("Incorrect email address or FamilyKit PIN.");
-
+      if (
+        err?.name === "UserNotFoundException" ||
+        err?.name === "NotAuthorizedException"
+      ) {
+        setError(
+          "Incorrect email address or FamilyKit PIN."
+        );
         return;
-
       }
 
       if (err?.name === "UserNotConfirmedException") {
-
-        setError("Please verify your email address before logging in.");
-
+        setError(
+          "Please verify your email address before logging in."
+        );
         return;
-
       }
 
-      setError(err?.message || "Unable to log in. Please check your email and PIN.");
-
+      setError(
+        err?.message ||
+          "Unable to log in. Please check your email and PIN."
+      );
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
+  // --------------------------------------------------
+  // Reusable PIN visibility icon
+  // --------------------------------------------------
+
+  const PinVisibilityIcon = () =>
+    showPin ? (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ) : (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M10.6 5.6A10.7 10.7 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a15 15 0 0 1-3.2 3.8M6.1 6.1C3.5 8 2 12 2 12s3.6 6.5 10 6.5a10 10 0 0 0 4.3-.9" />
+        <path d="m3 3 18 18" />
+        <path d="M10 10a3 3 0 0 0 4 4" />
+      </svg>
+    );
+
+  // --------------------------------------------------
+  // Mobile post-login account screens
+  // --------------------------------------------------
+
   if (mobileStage !== "login") {
-
     const syncing = mobileStage === "syncing";
-
     const synced = mobileStage === "synced";
 
     return (
-
       <div className="login-account-page">
-
         <div className="login-account-shell">
+          <div className="login-account-brand">
+            FamilyKit
+          </div>
 
-          <div className="login-account-brand">FamilyKit</div>
+          {synced && (
+            <div
+              className="login-account-success"
+              aria-hidden="true"
+            >
+              ✓
+            </div>
+          )}
 
-          {synced ? (
-
-            <div className="login-account-success" aria-hidden="true">✓</div>
-
-          ) : null}
-
-          <h1>{syncing ? "Getting things ready" : synced ? "Profile synced" : "Welcome back"}</h1>
+          <h1>
+            {syncing
+              ? "Getting things ready"
+              : synced
+                ? "Profile synced"
+                : "Welcome back"}
+          </h1>
 
           <p className="login-account-subtitle">
-
-            {syncing ? "We're syncing your latest information." : synced ? "Continue with your saved account." : "Continue with your saved account."}
-
+            {syncing
+              ? "We're syncing your latest information."
+              : "Continue with your saved account."}
           </p>
 
           <div className="login-account-profile">
-
-            <div className="login-account-avatar" aria-hidden="true">
-
-              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7.5" r="4"/><path d="M4.5 21c0-4.2 3.2-7 7.5-7s7.5 2.8 7.5 7"/></svg>
-
+            <div
+              className="login-account-avatar"
+              aria-hidden="true"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <circle cx="12" cy="7.5" r="4" />
+                <path d="M4.5 21c0-4.2 3.2-7 7.5-7s7.5 2.8 7.5 7" />
+              </svg>
             </div>
 
-            <strong>{profileName || "Your account"}</strong>
+            <strong>
+              {profileName || "Your account"}
+            </strong>
 
-            <span className="login-account-email">{verifiedEmail}</span>
+            <span className="login-account-email">
+              {verifiedEmail}
+            </span>
 
-            <small>{syncing ? "Previously signed in on this device" : synced ? "Welcome back!" : "Previously signed in on this device"}</small>
+            <small>
+              {synced
+                ? "Welcome back!"
+                : "Previously signed in on this device"}
+            </small>
 
             {!synced && (
-
               <div className="login-account-sync-info">
+                <svg
+                  className={
+                    syncing
+                      ? "login-account-spinning"
+                      : ""
+                  }
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M20 7v5h-5M4 17v-5h5" />
+                  <path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2" />
+                </svg>
 
-                <svg className={syncing ? "login-account-spinning" : ""} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg>
-
-                <p>{syncing ? "Keep FamilyKit open while your account syncs." : "Sync your latest documents, family details and reminders."}</p>
-
+                <p>
+                  {syncing
+                    ? "Keep FamilyKit open while your account syncs."
+                    : "Sync your latest documents, family details and reminders."}
+                </p>
               </div>
-
             )}
-
           </div>
 
           {mobileStage === "account" && (
-
             <div className="login-account-actions">
+              <button
+                type="button"
+                className="login-account-primary"
+                onClick={() =>
+                  setMobileStage("syncing")
+                }
+              >
+                Continue
+              </button>
 
-              <button type="button" className="login-account-primary" onClick={() => setMobileStage("syncing")}>Continue</button>
+              <button
+                type="button"
+                className="login-account-secondary"
+                onClick={() => {
+                  sessionStorage.removeItem(
+                    "familykit_access_token"
+                  );
 
-              <button type="button" className="login-account-secondary" onClick={() => {
+                  sessionStorage.removeItem(
+                    "familykit_id_token"
+                  );
 
-                sessionStorage.removeItem("familykit_access_token");
+                  sessionStorage.removeItem(
+                    "familykit_refresh_token"
+                  );
 
-                sessionStorage.removeItem("familykit_id_token");
-
-                sessionStorage.removeItem("familykit_refresh_token");
-
-                setPin(""); setEmail(""); setProfileName(""); setVerifiedEmail(""); setMobileStage("login");
-
-              }}>Use Another Account</button>
-
+                  setPin("");
+                  setEmail("");
+                  setProfileName("");
+                  setVerifiedEmail("");
+                  setMobileStage("login");
+                }}
+              >
+                Use Another Account
+              </button>
             </div>
-
           )}
 
-          {syncing && <div className="login-account-sync-button" role="status">Syncing...</div>}
+          {syncing && (
+            <div
+              className="login-account-sync-button"
+              role="status"
+            >
+              Syncing...
+            </div>
+          )}
 
-          <p className="login-account-footer">Your family, organised in one place.</p>
-
+          <p className="login-account-footer">
+            Your family, organised in one place.
+          </p>
         </div>
-
       </div>
-
     );
-
   }
 
-  return (
+  // --------------------------------------------------
+  // Main login screen
+  // --------------------------------------------------
 
+  return (
     <div className="login-page">
-      <section className="login-desktop-illustration" aria-label="FamilyKit family illustration">
+      {/* Desktop illustration panel */}
+
+      <section
+        className="login-desktop-illustration"
+        aria-label="FamilyKit family illustration"
+      >
         <div className="login-desktop-curve" />
+
         <div className="login-desktop-art-content">
           <div className="login-desktop-family-art">
-            <img className="login-desktop-family-photo" src={new URL("../assets/images/Smiling Family with Purple Tablet.png", import.meta.url).href} alt="Family using FamilyKit together" />
-            <img className="login-desktop-float login-desktop-float--health" src={new URL("../assets/images/health.png", import.meta.url).href} alt="" />
-            <img className="login-desktop-float login-desktop-float--vector" src={new URL("../assets/images/Vector.png", import.meta.url).href} alt="" />
-            <img className="login-desktop-float login-desktop-float--bills" src={new URL("../assets/images/Household & Bills.png", import.meta.url).href} alt="" />
-            <img className="login-desktop-float login-desktop-float--extra" src={new URL("../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png", import.meta.url).href} alt="" />
-            <img className="login-desktop-float login-desktop-float--insurance" src={new URL("../assets/images/Insurance.png", import.meta.url).href} alt="" />
-            <img className="login-desktop-float login-desktop-float--file" src={new URL("../assets/images/File.png", import.meta.url).href} alt="" />
-            <span className="login-desktop-float login-desktop-float--bell" aria-hidden="true">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <img
+              className="login-desktop-family-photo"
+              src={
+                new URL(
+                  "../assets/images/Smiling Family with Purple Tablet.png",
+                  import.meta.url
+                ).href
+              }
+              alt="Family using FamilyKit together"
+            />
+
+            <img
+              className="login-desktop-float login-desktop-float--health"
+              src={
+                new URL(
+                  "../assets/images/health.png",
+                  import.meta.url
+                ).href
+              }
+              alt=""
+            />
+
+            <img
+              className="login-desktop-float login-desktop-float--vector"
+              src={
+                new URL(
+                  "../assets/images/Vector.png",
+                  import.meta.url
+                ).href
+              }
+              alt=""
+            />
+
+            <img
+              className="login-desktop-float login-desktop-float--bills"
+              src={
+                new URL(
+                  "../assets/images/Household & Bills.png",
+                  import.meta.url
+                ).href
+              }
+              alt=""
+            />
+
+            <img
+              className="login-desktop-float login-desktop-float--extra"
+              src={
+                new URL(
+                  "../assets/images/4db75485-c10a-4574-b017-11775affeb6e.png",
+                  import.meta.url
+                ).href
+              }
+              alt=""
+            />
+
+            <img
+              className="login-desktop-float login-desktop-float--insurance"
+              src={
+                new URL(
+                  "../assets/images/Insurance.png",
+                  import.meta.url
+                ).href
+              }
+              alt=""
+            />
+
+            <img
+              className="login-desktop-float login-desktop-float--file"
+              src={
+                new URL(
+                  "../assets/images/File.png",
+                  import.meta.url
+                ).href
+              }
+              alt=""
+            />
+
+            <span
+              className="login-desktop-float login-desktop-float--bell"
+              aria-hidden="true"
+            >
+              <svg
+                width="19"
+                height="19"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#F2994A"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
                 <path d="M10 21h4" />
               </svg>
             </span>
           </div>
-          <p className="login-desktop-art-caption">Everything your family needs, in one place</p>
+
+          <p className="login-desktop-art-caption">
+            Everything your family needs, in one place
+          </p>
         </div>
       </section>
+
+      {/* Login form panel */}
+
       <section className="login-desktop-form-panel">
-      <div className="login-card">
-        <div className="login-desktop-brand" aria-hidden="true">
-          <img src={new URL("../assets/images/WhatsApp Image 2026-10-19 at 21.39.33 1.png", import.meta.url).href} alt="" />
-        </div>
+        <div className="login-card">
+          {/* Desktop FamilyKit logo */}
 
-        <header className="login-mobile-header">
-
-          <button type="button" className="login-mobile-back" onClick={() => navigate(-1)} aria-label="Go back">‹</button>
-
-          <span>FamilyKit</span>
-
-        </header>
-
-        <div className="login-mobile-icon" aria-hidden="true">
-
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-
-            <rect x="5" y="10" width="14" height="11" rx="2" />
-
-            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-
-            <circle cx="12" cy="15" r="1" />
-
-          </svg>
-
-        </div>
-
-        <h1>Welcome back</h1>
-
-        <p className="login-subtitle">Log in to your FamilyKit.</p>
-
-        <div className="login-field">
-
-          <label htmlFor="login-email">Email address</label>
-
-          <input
-
-            id="login-email"
-
-            type="email"
-
-            placeholder="Enter your email address"
-
-            value={email}
-
-            autoComplete="email"
-
-            disabled={loading}
-
-            onChange={(event) => { setEmail(event.target.value); setError(""); }}
-
-          />
-
-        </div>
-
-        <div className="login-field login-pin-field">
-
-          <div className="login-pin-label-row">
-
-            <label>FamilyKit PIN</label>
-
-            <label className="login-show-pin login-show-pin--mobile">
-
-              <button
-                type="button"
-                className="login-pin-eye-button"
-                aria-label={showPin ? "Hide PIN" : "Show PIN"}
-                aria-pressed={showPin}
-                disabled={loading}
-                onClick={() => setShowPin((current) => !current)}
-              >
-                {showPin ? (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.6 5.6A10.7 10.7 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a15 15 0 0 1-3.2 3.8M6.1 6.1C3.5 8 2 12 2 12s3.6 6.5 10 6.5a10 10 0 0 0 4.3-.9"/><path d="m3 3 18 18"/><path d="M10 10a3 3 0 0 0 4 4"/></svg>
-                )}
-              </button>
-
-              <span>Show PIN</span>
-
-            </label>
-
+          <div
+            className="login-desktop-brand"
+            aria-hidden="true"
+          >
+            <img
+              src={
+                new URL(
+                  "../assets/images/WhatsApp Image 2026-10-19 at 21.39.33 1.png",
+                  import.meta.url
+                ).href
+              }
+              alt=""
+            />
           </div>
 
-          <div className="login-pin-boxes">
+          {/* Mobile header */}
 
-            {[0, 1, 2, 3].map((index) => (
-
-              <input
-
-                key={index}
-
-                id={`login-pin-${index}`}
-
-                className="login-pin-box"
-
-                type={showPin ? "text" : "password"}
-
-                inputMode="numeric"
-
-                maxLength={1}
-
-                autoComplete="off"
-
-                aria-label={`PIN digit ${index + 1}`}
-
-                disabled={loading}
-
-                value={pin[index] || ""}
-
-                onChange={(event) => handlePinChange(index, event.target.value)}
-
-                onKeyDown={(event) => {
-
-                  if (event.key === "Backspace" && !pin[index] && index > 0) {
-
-                    document.getElementById(`login-pin-${index - 1}`)?.focus();
-
-                  }
-
-                  if (event.key === "Enter" && pin.length === 4) handleLogin();
-
-                }}
-
-              />
-
-            ))}
-
-          </div>
-
-          <label className="login-show-pin login-show-pin--desktop">
-
+          <header className="login-mobile-header">
             <button
-                type="button"
-                className="login-pin-eye-button"
-                aria-label={showPin ? "Hide PIN" : "Show PIN"}
-                aria-pressed={showPin}
-                disabled={loading}
-                onClick={() => setShowPin((current) => !current)}
-              >
-                {showPin ? (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.6 5.6A10.7 10.7 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a15 15 0 0 1-3.2 3.8M6.1 6.1C3.5 8 2 12 2 12s3.6 6.5 10 6.5a10 10 0 0 0 4.3-.9"/><path d="m3 3 18 18"/><path d="M10 10a3 3 0 0 0 4 4"/></svg>
-                )}
-              </button>
-
-            <span>Show PIN</span>
-
-          </label>
-
-          <p className="login-mobile-pin-hint">Enter your 4-digit PIN to unlock FamilyKit.</p>
-
-        </div>
-
-        {error && <div className="login-error" role="alert">{error}</div>}
-
-        <div className="login-mobile-keypad" role="group" aria-label="PIN keypad">
-
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "Delete"].map((key) => (
-
-            <button key={key} type="button" onClick={() => handleKeypad(key)} disabled={loading} className={key.length > 1 ? "login-keypad-action" : ""}>
-
-              {key}
-
+              type="button"
+              className="login-mobile-back"
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+            >
+              ‹
             </button>
 
-          ))}
+            <span>FamilyKit</span>
+          </header>
 
-        </div>
+          {/* Mobile lock icon */}
 
-        <button
+          <div
+            className="login-mobile-icon"
+            aria-hidden="true"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect
+                x="5"
+                y="10"
+                width="14"
+                height="11"
+                rx="2"
+              />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+              <circle cx="12" cy="15" r="1" />
+            </svg>
+          </div>
 
-          type="button"
+          {/* Welcome heading */}
 
-          className="login-button"
+          <h1>Welcome back</h1>
 
-          data-ready={ready}
+          <p className="login-subtitle">
+            Log in to your FamilyKit.
+          </p>
 
-          onClick={() => {
+          {/* Email address */}
 
-            if (window.matchMedia("(max-width: 768px)").matches && !ready) return;
+          <div className="login-field">
+            <label htmlFor="login-email">
+              Email address
+            </label>
 
-            handleLogin();
+            <input
+              id="login-email"
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              autoComplete="email"
+              disabled={loading}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setError("");
+              }}
+            />
+          </div>
 
-          }}
+          {/* FamilyKit PIN */}
 
-          disabled={loading}
+          <div className="login-field login-pin-field">
+            <div className="login-pin-label-row">
+              <label>FamilyKit PIN</label>
 
-          aria-disabled={!ready || loading}
+              {/* Mobile Show PIN */}
 
-        >
+              <div className="login-show-pin login-show-pin--mobile">
+                <button
+                  type="button"
+                  className="login-pin-eye-button"
+                  aria-label={
+                    showPin ? "Hide PIN" : "Show PIN"
+                  }
+                  aria-pressed={showPin}
+                  disabled={loading}
+                  onClick={() =>
+                    setShowPin((current) => !current)
+                  }
+                >
+                  <PinVisibilityIcon />
+                </button>
 
-          {loading ? "Logging in..." : "Login"}
+                <span>Show PIN</span>
+              </div>
 
-        </button>
+              {/* Desktop Show PIN */}
 
-        <button
+              <div className="login-show-pin login-show-pin--desktop">
+                <button
+                  type="button"
+                  className="login-pin-eye-button"
+                  aria-label={
+                    showPin ? "Hide PIN" : "Show PIN"
+                  }
+                  aria-pressed={showPin}
+                  disabled={loading}
+                  onClick={() =>
+                    setShowPin((current) => !current)
+                  }
+                >
+                  <PinVisibilityIcon />
+                </button>
 
-          type="button"
+                <span>Show PIN</span>
+              </div>
+            </div>
 
-          className="login-link-button"
+            {/* Four-digit PIN inputs */}
 
-          disabled={loading}
+            <div className="login-pin-boxes">
+              {[0, 1, 2, 3].map((index) => (
+                <input
+                  key={index}
+                  id={`login-pin-${index}`}
+                  className="login-pin-box"
+                  type={showPin ? "text" : "password"}
+                  inputMode="numeric"
+                  maxLength={1}
+                  autoComplete="off"
+                  aria-label={`PIN digit ${index + 1}`}
+                  disabled={loading}
+                  value={pin[index] || ""}
+                  onChange={(event) =>
+                    handlePinChange(
+                      index,
+                      event.target.value
+                    )
+                  }
+                  onKeyDown={(event) => {
+                    if (
+                      event.key === "Backspace" &&
+                      !pin[index] &&
+                      index > 0
+                    ) {
+                      document
+                        .getElementById(
+                          `login-pin-${index - 1}`
+                        )
+                        ?.focus();
+                    }
 
-          onClick={() => alert("Forgot PIN functionality will be added later.")}
+                    if (
+                      event.key === "Enter" &&
+                      pin.length === 4
+                    ) {
+                      handleLogin();
+                    }
+                  }}
+                />
+              ))}
+            </div>
 
-        >
+            <p className="login-mobile-pin-hint">
+              Enter your 4-digit PIN to unlock FamilyKit.
+            </p>
+          </div>
 
-          Forgot your PIN?
+          {/* Authentication errors */}
 
-        </button>
+          {error && (
+            <div className="login-error" role="alert">
+              {error}
+            </div>
+          )}
 
-        <p className="login-signup-text">
+          {/* Mobile PIN keypad */}
 
-          Don't have an account?{" "}
+          <div
+            className="login-mobile-keypad"
+            role="group"
+            aria-label="PIN keypad"
+          >
+            {[
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "Clear",
+              "0",
+              "Delete",
+            ].map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleKeypad(key)}
+                disabled={loading}
+                className={
+                  key.length > 1
+                    ? "login-keypad-action"
+                    : ""
+                }
+              >
+                {key}
+              </button>
+            ))}
+          </div>
 
-          <button type="button" className="login-link-button inline" disabled={loading} onClick={() => navigate("/signup")}>
+          {/* Continue button */}
 
-            Sign up
+          <button
+            type="button"
+            className="login-button"
+            data-ready={ready}
+            onClick={() => {
+              if (
+                window.matchMedia(
+                  "(max-width: 768px)"
+                ).matches &&
+                !ready
+              ) {
+                return;
+              }
 
+              handleLogin();
+            }}
+            disabled={loading}
+            aria-disabled={!ready || loading}
+          >
+            {loading ? "Continuing..." : "Continue"}
           </button>
 
-        </p>
+          {/* Forgot PIN placeholder */}
 
-      </div>
+          <button
+            type="button"
+            className="login-link-button"
+            disabled={loading}
+            onClick={() =>
+              alert(
+                "Forgot PIN functionality will be added later."
+              )
+            }
+          >
+            Forgot your PIN?
+          </button>
+
+          {/* Signup navigation */}
+
+          <p className="login-signup-text">
+            Don't have an account?{" "}
+
+            <button
+              type="button"
+              className="login-link-button inline"
+              disabled={loading}
+              onClick={() => navigate("/signup")}
+            >
+              Sign up
+            </button>
+          </p>
+        </div>
       </section>
     </div>
-
   );
-
 }

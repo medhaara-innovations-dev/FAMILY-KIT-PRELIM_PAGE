@@ -131,9 +131,25 @@
   @media (prefers-reduced-motion: reduce) { .login-account-spinning { animation:none; } }
 }
 
+/* Eye toggle — shared by desktop and mobile. */
+.login-pin-eye-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2D0B84;
+  cursor: pointer;
+}
+.login-pin-eye-button svg { width: 19px; height: 19px; }
+.login-pin-eye-button:focus-visible { outline: 2px solid #7D59C6; outline-offset: 3px; border-radius: 4px; }
+.login-pin-eye-button:disabled { opacity: .5; cursor: not-allowed; }
 
-/* Desktop Login — same illustration, palette and proportions as Signup Screen 1.
-   Entirely desktop-scoped: tablet and mobile layouts are untouched. */
+/* Desktop-only layout. Tablet and mobile rules above remain unchanged. */
 .login-desktop-illustration, .login-desktop-brand { display: none; }
 .login-desktop-form-panel { display: contents; }
 
@@ -141,76 +157,100 @@
   .login-page {
     display: grid;
     grid-template-columns: 56% 44%;
+    grid-template-rows: minmax(100vh, auto);
+    align-items: stretch;
+    justify-items: stretch;
     min-height: 100vh;
+    height: auto;
     padding: 0;
+    overflow: hidden;
     background: #F0EEF3;
     font-family: Mulish, sans-serif;
-    overflow: hidden;
   }
   .login-desktop-illustration {
     display: flex;
     position: relative;
     min-width: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+    align-self: stretch;
     align-items: center;
     justify-content: center;
-    background: #F7FFCA;
-    isolation: isolate;
     overflow: hidden;
+    isolation: isolate;
+    background: #F7FFCA;
   }
   .login-desktop-curve {
     position: absolute;
     z-index: -1;
-    top: -17%; right: -39%;
-    width: 76%; height: 134%;
+    top: -17%;
+    right: -58%;
+    width: 76%;
+    height: 134%;
     border-radius: 50%;
     background: #DACBFF;
   }
   .login-desktop-curve::after {
     content: "";
     position: absolute;
-    top: 0; right: -22px;
-    width: 100%; height: 100%;
+    top: 0;
+    right: -22px;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    background: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+    background-color: transparent;
+    background-image: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+    background-size: 100% 100vh;
+    background-repeat: no-repeat;
+    background-position: left top 17vh;
   }
   .login-desktop-art-content {
-    width: min(78%, 560px);
     position: relative;
     z-index: 1;
-    transform: translateX(-6%);
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: min(82%, 620px);
+    transform: translateX(-9%);
   }
-  .login-desktop-family-art { position: relative; width: 100%; margin-top: 65px; }
+  .login-desktop-family-art { position: relative; width: 100%; margin-top: 55px; }
   .login-desktop-family-photo { display: block; width: 100%; height: auto; object-fit: contain; }
   .login-desktop-float {
     position: absolute;
-    width: 9%; max-width: 45px; min-width: 28px;
-    aspect-ratio: 1; object-fit: contain; border-radius: 12px;
-    filter: drop-shadow(0 4px 5px rgba(45,11,132,.07));
+    z-index: 3;
+    box-sizing: border-box;
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+    border: 1px solid rgba(255,255,255,.85);
+    border-radius: 9px;
+    background: #F5F7FF;
+    box-shadow: 0 3px 9px rgba(45,11,132,.10);
+    object-fit: contain;
   }
-  .login-desktop-float--health { top: 0%; left: 25%; }
-  .login-desktop-float--vector { top: -7%; left: 44%; }
-  .login-desktop-float--bills { top: 13%; left: 10%; }
-  .login-desktop-float--extra { top: 29%; left: 1%; }
-  .login-desktop-float--insurance { top: 20%; right: 1%; }
-  .login-desktop-float--file { top: -3%; right: 26%; }
+  .login-desktop-float--extra { top: 37%; left: 0; }
+  .login-desktop-float--bills { top: 20%; left: 7%; }
+  .login-desktop-float--insurance { top: 9%; left: 19%; }
+  .login-desktop-float--vector { top: 13%; left: 74%; }
   .login-desktop-float--bell {
-    top: -5%; right: 12%; display: flex;
-    align-items: center; justify-content: center;
-    background: #FFF5EC; border: 1px solid #F6DCC8;
+    top: 4%; left: 64%; transform: translateX(-50%); z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    background: #FFF5EC; border-color: #F6DCC8;
   }
+  .login-desktop-float--file { top: 2%; left: 40%; }
+  .login-desktop-float--health { top: 29%; left: 91%; }
   .login-desktop-art-caption {
     margin: 18px 0 0;
-    font-family: Poppins, sans-serif;
-    font-size: clamp(13px, 1.15vw, 18px);
-    font-weight: 600; line-height: 1.5;
-    color: #050011; text-align: center;
+    color: #000;
+    text-align: center;
+    font: 600 20px Poppins, sans-serif;
   }
   .login-desktop-form-panel {
     display: flex;
     min-width: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+    align-self: stretch;
     align-items: center;
     justify-content: center;
     padding: 44px clamp(28px, 5vw, 90px);
@@ -220,80 +260,95 @@
   .login-desktop-brand { display: flex; justify-content: center; margin-bottom: 12px; }
   .login-desktop-brand img { display: block; width: 52px; height: 52px; object-fit: contain; }
   .login-card h1 {
-    margin: 0; font-family: Poppins, sans-serif;
-    font-size: clamp(22px, 2.05vw, 32px); line-height: 1.3;
-    font-weight: 700; color: #050011; text-align: center;
+    margin: 0;
+    color: #19181A;
+    text-align: center;
+    font: 600 32px/40px Poppins, sans-serif;
   }
-  .login-subtitle { margin: 8px 0 34px; color: #4D485A; font-size: 13px; line-height: 1.5; text-align: center; }
+  .login-subtitle {
+    margin: 8px 0 34px;
+    color: #4D485A;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+  }
   .login-field { gap: 9px; margin-bottom: 20px; }
-  .login-field > label, .login-pin-label-row > label { font: 700 13px Mulish, sans-serif; color: #050011; }
-  .login-field > input, .login-pin-box {
-    border: 1.5px solid #7D59C6; border-radius: 8px;
-    background: #FFF; color: #050011; font-family: Mulish, sans-serif;
+  .login-field > label, .login-pin-label-row > label:first-child {
+    color: #050011;
+    font: 700 13px Mulish, sans-serif;
   }
-  .login-field > input { min-height: 49px; padding: 12px 15px; font-size: 14px; }
-  .login-field > input:focus, .login-pin-box:focus { outline: none; border-color: #2D0B84; box-shadow: 0 0 0 3px rgba(45,11,132,.10); }
-  .login-pin-boxes { justify-content: space-between; gap: 12px; margin: 6px 0 12px; }
-  .login-pin-box { width: 58px; height: 58px; font-size: 25px; }
-  .login-show-pin--desktop { font: 600 12px Mulish, sans-serif; color: #4D485A; }
-  .login-show-pin--desktop input { accent-color: #2D0B84; }
+  .login-field > input {
+    min-height: 49px;
+    padding: 12px 15px;
+    border: 1.5px solid #7D59C6;
+    border-radius: 8px;
+    background: #FFF;
+    color: #050011;
+    font: 14px Mulish, sans-serif;
+  }
+  .login-field > input:focus {
+    outline: none;
+    border-color: #2D0B84;
+    box-shadow: 0 0 0 3px rgba(45,11,132,.10);
+  }
+  .login-pin-field { margin-bottom: 8px; }
+  .login-pin-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .login-pin-label-row > label:first-child { margin: 0; }
+  .login-show-pin--desktop {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    color: #2D0B84;
+    font: 600 12px Mulish, sans-serif;
+    white-space: nowrap;
+  }
+  .login-pin-boxes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    margin: 0 0 4px;
+  }
+  .login-pin-box {
+    display: block;
+    width: 100%;
+    height: 64px;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0;
+    border: 1px solid var(--scan-line, #E6E0EF);
+    border-radius: var(--radius-16, 16px);
+    background: var(--Color-Background-Surface-Subtle-white, #FDFCFF);
+    color: #050011;
+    text-align: center;
+    font: 600 24px Poppins, sans-serif;
+  }
+  .login-pin-box:focus {
+    outline: none;
+    border-color: #7D59C6;
+    box-shadow: 0 0 0 2px rgba(125,89,198,.12);
+  }
+  .login-pin-field + .login-error { margin-top: 10px; }
   .login-button {
-    min-height: 49px; margin-top: 12px;
-    border: 0; border-radius: 28px;
-    background: #2D0B84; color: #FFF;
+    min-height: 49px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 28px;
+    background: #2D0B84;
+    color: #FFF;
     box-shadow: -1px 4px 12px rgba(45,11,132,.10), 1px 4px 4px rgba(255,255,255,.25) inset;
     font: 500 14px Poppins, sans-serif;
   }
   .login-button:hover:not(:disabled) { background: #3D2184; }
   .login-link-button { color: #2D0B84; font: 600 13px Mulish, sans-serif; }
   .login-card > .login-link-button { align-self: flex-end; margin-top: 14px; }
-  .login-signup-text { margin: 25px 0 0; font: 13px Mulish, sans-serif; color: #4D485A; }
+  .login-signup-text { margin: 25px 0 0; color: #4D485A; font: 13px Mulish, sans-serif; }
   .login-signup-text .login-link-button { margin: 0; }
 }
-
-/* Desktop parity fix: reproduce the final Signup welcome-screen geometry.
-   Desktop-only; all mobile and tablet rules above remain unchanged. */
-@media (min-width: 1025px) {
-  .login-page {
-    align-items: stretch;
-    justify-items: stretch;
-    grid-template-rows: minmax(100vh, auto);
-    height: auto;
-  }
-  .login-desktop-illustration, .login-desktop-form-panel {
-    align-self: stretch;
-    min-height: 100vh;
-    box-sizing: border-box;
-  }
-  .login-desktop-curve { right: -58%; width: 76%; height: 134%; }
-  .login-desktop-curve::after {
-    background-image: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
-    background-color: transparent;
-    background-size: 100% 100vh;
-    background-repeat: no-repeat;
-    background-position: left top 17vh;
-  }
-  .login-desktop-art-content { width: min(82%, 620px); transform: translateX(-9%); }
-  .login-desktop-family-art { margin-top: 55px; }
-  .login-desktop-float {
-    box-sizing: border-box; width: 32px; height: 32px; min-width: 0; max-width: none;
-    padding: 5px; border: 1px solid rgba(255,255,255,.85); border-radius: 9px;
-    background-color: #F5F7FF; box-shadow: 0 3px 9px rgba(45,11,132,.10);
-    filter: none; z-index: 3;
-  }
-  .login-desktop-float--extra { top: 37%; left: 0; right: auto; }
-  .login-desktop-float--bills { top: 20%; left: 7%; right: auto; }
-  .login-desktop-float--insurance { top: 9%; left: 19%; right: auto; }
-  .login-desktop-float--vector { top: 13%; left: 74%; right: auto; }
-  .login-desktop-float--bell { top: 4%; left: 64%; right: auto; transform: translateX(-50%); z-index: 10; background: #FFF5EC; border-color: #F6DCC8; }
-  .login-desktop-float--file { top: 2%; left: 40%; right: auto; }
-  .login-desktop-float--health { top: 29%; left: 91%; right: auto; }
-  .login-desktop-art-caption { color: #000; font-size: 20px; font-weight: 600; line-height: normal; }
-  .login-card h1 { color: #19181A; font-size: 32px; font-weight: 600; line-height: 40px; }
-}
-
-/* Eye toggle replaces the checkbox; all existing layouts are preserved. */
-.login-pin-eye-button { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: #2D0B84; cursor: pointer; flex: 0 0 auto; }
-.login-pin-eye-button svg { width: 19px; height: 19px; }
-.login-pin-eye-button:focus-visible { outline: 2px solid #7D59C6; outline-offset: 3px; border-radius: 4px; }
-.login-pin-eye-button:disabled { opacity: .5; cursor: not-allowed; }
