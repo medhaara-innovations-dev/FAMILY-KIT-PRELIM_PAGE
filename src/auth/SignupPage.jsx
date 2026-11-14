@@ -601,6 +601,14 @@ export default function SignupPage() {
           pin
         );
 
+        // Cache the registered personal name for same-device welcome display.
+        // The authenticated backend remains the source of truth for account data.
+        try {
+          localStorage.setItem(`familykit_profile_${email.trim().toLowerCase()}`,
+            JSON.stringify({ yourName: yourName.trim() }));
+        } catch { /* Storage may be unavailable; registration still succeeds. */ }
+
+
         // Registration success is shown only
         // after backend confirms PIN storage.
         setStep(7);
