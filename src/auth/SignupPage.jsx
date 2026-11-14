@@ -66,6 +66,17 @@ export default function SignupPage() {
   const [error, setError] =
     useState("");
 
+  // Automatically return to Login after the success animation finishes.
+  useEffect(() => {
+    if (step !== 7) return undefined;
+
+    const redirectTimer = window.setTimeout(() => {
+      window.location.replace("/login");
+    }, 3000);
+
+    return () => window.clearTimeout(redirectTimer);
+  }, [step]);
+
   // =====================================================
   // GOOGLE SIGNUP
   //
@@ -1287,23 +1298,8 @@ export default function SignupPage() {
               <path className="signup-success-check__tick" d="M37 60 L53 76 L85 43" />
             </svg>
           </div>
-          <h1>
-            Registration successful
-          </h1>
-
-          <p>
-            Your FamilyKit account setup is complete.
-          </p>
-
-          <button
-            type="button"
-            onClick={() => {
-              window.location.href =
-                "/login";
-            }}
-          >
-            Continue
-          </button>
+          <h1>Registration Successful</h1>
+          <p>Taking you to Next Screen!</p>
         </div>
       </div>
     );
