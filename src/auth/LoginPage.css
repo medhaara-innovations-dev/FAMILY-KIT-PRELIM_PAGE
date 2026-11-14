@@ -291,3 +291,9 @@
   .login-desktop-art-caption { color: #000; font-size: 20px; font-weight: 600; line-height: normal; }
   .login-card h1 { color: #19181A; font-size: 32px; font-weight: 600; line-height: 40px; }
 }
+
+/* Eye toggle replaces the checkbox; all existing layouts are preserved. */
+.login-pin-eye-button { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: #2D0B84; cursor: pointer; flex: 0 0 auto; }
+.login-pin-eye-button svg { width: 19px; height: 19px; }
+.login-pin-eye-button:focus-visible { outline: 2px solid #7D59C6; outline-offset: 3px; border-radius: 4px; }
+.login-pin-eye-button:disabled { opacity: .5; cursor: not-allowed; }

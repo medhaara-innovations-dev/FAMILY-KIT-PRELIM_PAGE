@@ -412,7 +412,20 @@ export default function LoginPage() {
 
             <label className="login-show-pin login-show-pin--mobile">
 
-              <input type="checkbox" checked={showPin} disabled={loading} onChange={(event) => setShowPin(event.target.checked)} />
+              <button
+                type="button"
+                className="login-pin-eye-button"
+                aria-label={showPin ? "Hide PIN" : "Show PIN"}
+                aria-pressed={showPin}
+                disabled={loading}
+                onClick={() => setShowPin((current) => !current)}
+              >
+                {showPin ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.6 5.6A10.7 10.7 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a15 15 0 0 1-3.2 3.8M6.1 6.1C3.5 8 2 12 2 12s3.6 6.5 10 6.5a10 10 0 0 0 4.3-.9"/><path d="m3 3 18 18"/><path d="M10 10a3 3 0 0 0 4 4"/></svg>
+                )}
+              </button>
 
               <span>Show PIN</span>
 
@@ -468,7 +481,20 @@ export default function LoginPage() {
 
           <label className="login-show-pin login-show-pin--desktop">
 
-            <input type="checkbox" checked={showPin} disabled={loading} onChange={(event) => setShowPin(event.target.checked)} />
+            <button
+                type="button"
+                className="login-pin-eye-button"
+                aria-label={showPin ? "Hide PIN" : "Show PIN"}
+                aria-pressed={showPin}
+                disabled={loading}
+                onClick={() => setShowPin((current) => !current)}
+              >
+                {showPin ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.6 5.6A10.7 10.7 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a15 15 0 0 1-3.2 3.8M6.1 6.1C3.5 8 2 12 2 12s3.6 6.5 10 6.5a10 10 0 0 0 4.3-.9"/><path d="m3 3 18 18"/><path d="M10 10a3 3 0 0 0 4 4"/></svg>
+                )}
+              </button>
 
             <span>Show PIN</span>
 
