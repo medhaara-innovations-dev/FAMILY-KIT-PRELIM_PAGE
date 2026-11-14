@@ -250,3 +250,44 @@
   .login-signup-text { margin: 25px 0 0; font: 13px Mulish, sans-serif; color: #4D485A; }
   .login-signup-text .login-link-button { margin: 0; }
 }
+
+/* Desktop parity fix: reproduce the final Signup welcome-screen geometry.
+   Desktop-only; all mobile and tablet rules above remain unchanged. */
+@media (min-width: 1025px) {
+  .login-page {
+    align-items: stretch;
+    justify-items: stretch;
+    grid-template-rows: minmax(100vh, auto);
+    height: auto;
+  }
+  .login-desktop-illustration, .login-desktop-form-panel {
+    align-self: stretch;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .login-desktop-curve { right: -58%; width: 76%; height: 134%; }
+  .login-desktop-curve::after {
+    background-image: linear-gradient(180deg, #C4ADFF -8.01%, #F0EEF3 19.46%);
+    background-color: transparent;
+    background-size: 100% 100vh;
+    background-repeat: no-repeat;
+    background-position: left top 17vh;
+  }
+  .login-desktop-art-content { width: min(82%, 620px); transform: translateX(-9%); }
+  .login-desktop-family-art { margin-top: 55px; }
+  .login-desktop-float {
+    box-sizing: border-box; width: 32px; height: 32px; min-width: 0; max-width: none;
+    padding: 5px; border: 1px solid rgba(255,255,255,.85); border-radius: 9px;
+    background-color: #F5F7FF; box-shadow: 0 3px 9px rgba(45,11,132,.10);
+    filter: none; z-index: 3;
+  }
+  .login-desktop-float--extra { top: 37%; left: 0; right: auto; }
+  .login-desktop-float--bills { top: 20%; left: 7%; right: auto; }
+  .login-desktop-float--insurance { top: 9%; left: 19%; right: auto; }
+  .login-desktop-float--vector { top: 13%; left: 74%; right: auto; }
+  .login-desktop-float--bell { top: 4%; left: 64%; right: auto; transform: translateX(-50%); z-index: 10; background: #FFF5EC; border-color: #F6DCC8; }
+  .login-desktop-float--file { top: 2%; left: 40%; right: auto; }
+  .login-desktop-float--health { top: 29%; left: 91%; right: auto; }
+  .login-desktop-art-caption { color: #000; font-size: 20px; font-weight: 600; line-height: normal; }
+  .login-card h1 { color: #19181A; font-size: 32px; font-weight: 600; line-height: 40px; }
+}
