@@ -68,6 +68,7 @@ export default function LoginPage() {
 
       if (jwt) {
         const part = jwt.split(".")[1];
+
         const normalized = part
           .replace(/-/g, "+")
           .replace(/_/g, "/");
@@ -846,17 +847,13 @@ export default function LoginPage() {
             {loading ? "Continuing..." : "Continue"}
           </button>
 
-          {/* Forgot PIN placeholder */}
+          {/* Forgot PIN navigation - UPDATED */}
 
           <button
             type="button"
             className="login-link-button"
             disabled={loading}
-            onClick={() =>
-              alert(
-                "Forgot PIN functionality will be added later."
-              )
-            }
+            onClick={() => navigate("/forgot-pin")}
           >
             Forgot your PIN?
           </button>
