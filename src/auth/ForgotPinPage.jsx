@@ -9,9 +9,6 @@ import {
 } from "./authService";
 
 import "./ForgotPinPage.css";
-import "./ForgotPinDesktop.css";
-import "./ForgotPinLaptop.css";
-import "./ForgotPinMobile.css";
 
 const RESEND_SECONDS = 60;
 

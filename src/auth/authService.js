@@ -19,7 +19,6 @@ const USER_POOL_ID = "ap-southeast-2_XKEDA5qep";
 const CLIENT_ID = "3o16vpjbrc6kf5205pc3rtchm5";
 
 // API Gateway
-
 const PIN_API_URL =
   "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/pin";
 
@@ -29,8 +28,7 @@ const RESOLVE_LOGIN_API_URL =
 const REGISTRATION_STATUS_API_URL =
   "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/registration-status";
 
-// NEW: Authenticated user profile endpoint
-
+// Authenticated user profile endpoint
 const PROFILE_API_URL =
   "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com/profile";
 
@@ -152,22 +150,15 @@ export async function startGoogleLogin(
   const params =
     new URLSearchParams({
       response_type: "code",
-
       client_id: CLIENT_ID,
-
       redirect_uri:
         getGoogleRedirectUri(
           redirectPath
         ),
-
       identity_provider: "Google",
-
       scope: GOOGLE_OAUTH_SCOPES,
-
       state,
-
       code_challenge: codeChallenge,
-
       code_challenge_method: "S256",
     });
 
@@ -256,16 +247,12 @@ export async function completeGoogleLogin(
   const body =
     new URLSearchParams({
       grant_type: "authorization_code",
-
       client_id: CLIENT_ID,
-
       code,
-
       redirect_uri:
         getGoogleRedirectUri(
           redirectPath
         ),
-
       code_verifier: codeVerifier,
     });
 
@@ -274,12 +261,10 @@ export async function completeGoogleLogin(
       `${COGNITO_DOMAIN}/oauth2/token`,
       {
         method: "POST",
-
         headers: {
           "Content-Type":
             "application/x-www-form-urlencoded",
         },
-
         body: body.toString(),
       }
     );
@@ -345,22 +330,16 @@ export async function completeGoogleLogin(
   return {
     accessToken:
       result.access_token,
-
     idToken:
       result.id_token || null,
-
     refreshToken:
       result.refresh_token || null,
-
     expiresIn:
       result.expires_in || null,
-
     tokenType:
       result.token_type || null,
-
     email:
       userInfo?.email || "",
-
     name:
       userInfo?.name ||
       userInfo?.given_name ||
@@ -397,13 +376,10 @@ export async function signUpWithEmail(
   const command =
     new SignUpCommand({
       ClientId: CLIENT_ID,
-
       Username: normalizedEmail,
-
       UserAttributes: [
         {
           Name: "email",
-
           Value: normalizedEmail,
         },
       ],
@@ -417,10 +393,8 @@ export async function signUpWithEmail(
   return {
     userSub:
       response.UserSub || null,
-
     userConfirmed:
       response.UserConfirmed || false,
-
     session:
       response.Session || null,
   };
@@ -461,12 +435,9 @@ export async function confirmEmail(
   const command =
     new ConfirmSignUpCommand({
       ClientId: CLIENT_ID,
-
       Username: normalizedEmail,
-
       ConfirmationCode:
         normalizedCode,
-
       ...(signUpSession
         ? {
             Session: signUpSession,
@@ -512,13 +483,10 @@ export async function completeSignupAuthentication(
   const command =
     new InitiateAuthCommand({
       ClientId: CLIENT_ID,
-
       AuthFlow: "USER_AUTH",
-
       AuthParameters: {
         USERNAME: normalizedEmail,
       },
-
       Session: confirmationSession,
     });
 
@@ -558,15 +526,11 @@ export async function completeSignupAuthentication(
 
   return {
     accessToken,
-
     idToken,
-
     refreshToken,
-
     expiresIn:
       authenticationResult.ExpiresIn ||
       null,
-
     tokenType:
       authenticationResult.TokenType ||
       null,
@@ -592,7 +556,6 @@ export async function resendVerificationCode(
   const command =
     new ResendConfirmationCodeCommand({
       ClientId: CLIENT_ID,
-
       Username: normalizedEmail,
     });
 
@@ -604,7 +567,6 @@ export async function resendVerificationCode(
 // ======================================================
 // STORE FAMILYKIT 4-DIGIT PIN
 //
-// UPDATED:
 // Store the personal name entered under "Your Name".
 //
 // Existing authentication and PIN validation preserved.
@@ -629,7 +591,7 @@ export async function storeFamilyKitPin(
     );
   }
 
-  // NEW: Validate the registered personal name.
+  // Validate the registered personal name.
 
   const cleanYourName =
     typeof yourName === "string"
@@ -647,16 +609,14 @@ export async function storeFamilyKitPin(
       PIN_API_URL,
       {
         method: "POST",
-
         headers: {
           "Content-Type":
             "application/json",
-
           Authorization:
             `Bearer ${accessToken}`,
         },
 
-        // UPDATED: Send PIN and personal name.
+        // Send PIN and personal name.
         // The userId is still obtained from the JWT.
 
         body:
@@ -721,7 +681,6 @@ export async function getRegistrationStatus(
       REGISTRATION_STATUS_API_URL,
       {
         method: "GET",
-
         headers: {
           Authorization:
             `Bearer ${accessToken}`,
@@ -791,7 +750,6 @@ async function resolveLoginUsername(
       RESOLVE_LOGIN_API_URL,
       {
         method: "POST",
-
         headers: {
           "Content-Type":
             "application/json",
@@ -851,9 +809,7 @@ export async function startPinLogin(
   const command =
     new InitiateAuthCommand({
       ClientId: CLIENT_ID,
-
       AuthFlow: "CUSTOM_AUTH",
-
       AuthParameters: {
         USERNAME:
           cognitoUsername,
@@ -889,10 +845,8 @@ export async function startPinLogin(
   return {
     challengeName:
       response.ChallengeName,
-
     session:
       response.Session,
-
     challengeParameters:
       response.ChallengeParameters ||
       {},
@@ -939,17 +893,13 @@ export async function respondToPinChallenge(
   const command =
     new RespondToAuthChallengeCommand({
       ClientId: CLIENT_ID,
-
       ChallengeName:
         "CUSTOM_CHALLENGE",
-
       Session:
         session,
-
       ChallengeResponses: {
         USERNAME:
           cognitoUsername,
-
         ANSWER:
           pin,
       },
@@ -991,21 +941,15 @@ export async function respondToPinChallenge(
     return {
       success:
         true,
-
       accessToken,
-
       idToken,
-
       refreshToken,
-
       expiresIn:
         authenticationResult.ExpiresIn ||
         null,
-
       tokenType:
         authenticationResult.TokenType ||
         null,
-
       session:
         null,
     };
@@ -1023,14 +967,11 @@ export async function respondToPinChallenge(
     return {
       success:
         false,
-
       wrongPin:
         true,
-
       session:
         response.Session ||
         null,
-
       challengeName:
         response.ChallengeName,
     };
@@ -1113,7 +1054,7 @@ export async function loginWithFamilyKitPin(
 }
 
 // ======================================================
-// NEW: GET FAMILYKIT PROFILE FROM AWS
+// GET FAMILYKIT PROFILE FROM AWS
 //
 // Returns the name entered in "Your Name" during signup.
 //
@@ -1137,7 +1078,6 @@ export async function getFamilyKitProfile(
       PROFILE_API_URL,
       {
         method: "GET",
-
         headers: {
           Authorization:
             `Bearer ${accessToken}`,
@@ -1183,10 +1123,8 @@ export async function getFamilyKitProfile(
 export const cognitoConfig = {
   region:
     REGION,
-
   userPoolId:
     USER_POOL_ID,
-
   clientId:
     CLIENT_ID,
 };
@@ -1194,14 +1132,175 @@ export const cognitoConfig = {
 export const apiConfig = {
   pinApiUrl:
     PIN_API_URL,
-
   resolveLoginApiUrl:
     RESOLVE_LOGIN_API_URL,
-
   registrationStatusApiUrl:
     REGISTRATION_STATUS_API_URL,
-
-  // NEW
   profileApiUrl:
     PROFILE_API_URL,
 };
+
+// ======================================================
+// NEW: FORGOT PIN API INTEGRATION
+//
+// These functions are additions only.
+// Existing signup, Google login, Cognito PIN login,
+// profile retrieval and configuration remain unchanged.
+// ======================================================
+
+const PIN_RESET_API_BASE =
+  "https://gwy0jd7fs1.execute-api.ap-southeast-2.amazonaws.com";
+
+// Shared helper for Forgot PIN requests.
+async function callPinResetApi(endpoint, payload) {
+  const response = await fetch(
+    `${PIN_RESET_API_BASE}${endpoint}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  let result = null;
+
+  try {
+    result = await response.json();
+  } catch {
+    result = null;
+  }
+
+  if (!response.ok || result?.success !== true) {
+    throw new Error(
+      result?.message ||
+        `PIN recovery failed. Server returned ${response.status}.`
+    );
+  }
+
+  return result;
+}
+
+// ======================================================
+// FORGOT PIN - STEP 1
+// REQUEST EMAIL OTP
+// ======================================================
+
+export async function requestPinReset(email) {
+  const normalizedEmail =
+    String(email ?? "").trim().toLowerCase();
+
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      normalizedEmail
+    )
+  ) {
+    throw new Error(
+      "Please enter a valid email address."
+    );
+  }
+
+  return await callPinResetApi(
+    "/pin-reset/request",
+    {
+      email: normalizedEmail,
+    }
+  );
+}
+
+// ======================================================
+// FORGOT PIN - STEP 2
+// VERIFY 6-DIGIT EMAIL OTP
+// ======================================================
+
+export async function verifyPinResetOtp(email, otp) {
+  const normalizedEmail =
+    String(email ?? "").trim().toLowerCase();
+
+  const normalizedOtp =
+    String(otp ?? "").trim();
+
+  if (!normalizedEmail) {
+    throw new Error(
+      "Email address is required."
+    );
+  }
+
+  if (!/^\d{6}$/.test(normalizedOtp)) {
+    throw new Error(
+      "Verification code must contain exactly 6 digits."
+    );
+  }
+
+  const result = await callPinResetApi(
+    "/pin-reset/verify",
+    {
+      email: normalizedEmail,
+      otp: normalizedOtp,
+    }
+  );
+
+  if (!result.resetToken) {
+    throw new Error(
+      "Verification token missing. Please request a new OTP."
+    );
+  }
+
+  return result;
+}
+
+// ======================================================
+// FORGOT PIN - STEP 3
+// SET NEW 4-DIGIT PIN
+// ======================================================
+
+export async function resetFamilyKitPin(
+  email,
+  newPin,
+  confirmPin,
+  resetToken
+) {
+  const normalizedEmail =
+    String(email ?? "").trim().toLowerCase();
+
+  const normalizedNewPin =
+    String(newPin ?? "").trim();
+
+  const normalizedConfirmPin =
+    String(confirmPin ?? "").trim();
+
+  if (!normalizedEmail) {
+    throw new Error(
+      "Email address is required."
+    );
+  }
+
+  if (!/^\d{4}$/.test(normalizedNewPin)) {
+    throw new Error(
+      "New PIN must contain exactly 4 digits."
+    );
+  }
+
+  if (normalizedNewPin !== normalizedConfirmPin) {
+    throw new Error(
+      "New PIN and Confirm PIN do not match."
+    );
+  }
+
+  if (!resetToken) {
+    throw new Error(
+      "Reset session is missing. Please verify your OTP again."
+    );
+  }
+
+  return await callPinResetApi(
+    "/pin-reset/reset",
+    {
+      email: normalizedEmail,
+      newPin: normalizedNewPin,
+      confirmPin: normalizedConfirmPin,
+      resetToken,
+    }
+  );
+}
