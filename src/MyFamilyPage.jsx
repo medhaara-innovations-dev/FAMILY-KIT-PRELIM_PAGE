@@ -120,6 +120,7 @@ function FamilyMemberItem({ member, onOpen }) {
         <ProfileAvatar
           memberId={profileId}
           name={member.name}
+          className="fk-dash-family-avatar-content"
         >
           {member.name?.charAt(0)?.toUpperCase() || "?"}
         </ProfileAvatar>

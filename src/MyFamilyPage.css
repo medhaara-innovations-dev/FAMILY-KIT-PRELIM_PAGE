@@ -700,3 +700,23 @@
     transform: translateX(-50%);
   }
 }
+
+
+/* Keep Home > My Family photos inside their existing circular avatars. */
+.fk-dash-family-avatar-content {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f9f6ff;
+}
+
+.fk-dash-family-avatar-content > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
