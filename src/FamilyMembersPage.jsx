@@ -13,11 +13,13 @@ import {
 } from "lucide-react";
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
+import { getFamilyKitProfile } from "./auth/authService.js";
 import "./FamilyMembersPage.css";
 
 export default function FamilyMembersPage() {
   const navigate = useNavigate();
 
+  const [primaryUser, setPrimaryUser] = useState(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,14 +29,80 @@ export default function FamilyMembersPage() {
     setError("");
 
     try {
-      const result = await getFamilyMembers();
-      setMembers(result);
+      const accessToken = sessionStorage.getItem(
+        "familykit_access_token"
+      );
+
+      if (!accessToken) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      // Fetch the registered user and additional family members.
+      const [profileResult, familyResult] = await Promise.allSettled([
+        getFamilyKitProfile(accessToken),
+        getFamilyMembers(),
+      ]);
+
+      if (profileResult.status === "fulfilled") {
+        const response = profileResult.value;
+
+        const profile =
+          response?.profile ??
+          response?.user ??
+          response?.data?.profile ??
+          response?.data?.user ??
+          response?.data ??
+          response;
+
+        const registeredName =
+          profile?.name ||
+          profile?.fullName ||
+          profile?.full_name ||
+          profile?.displayName ||
+          profile?.given_name ||
+          "";
+
+        setPrimaryUser({
+          name: String(registeredName).trim(),
+          relationship: "Me",
+        });
+      } else {
+        setPrimaryUser(null);
+      }
+
+      if (familyResult.status === "fulfilled") {
+        setMembers(
+          Array.isArray(familyResult.value)
+            ? familyResult.value
+            : []
+        );
+      } else {
+        setMembers([]);
+      }
+
+      if (
+        profileResult.status === "rejected" ||
+        familyResult.status === "rejected"
+      ) {
+        const errors = [];
+
+        if (profileResult.status === "rejected") {
+          errors.push("Unable to load your registered profile.");
+        }
+
+        if (familyResult.status === "rejected") {
+          errors.push("Unable to load additional family members.");
+        }
+
+        setError(errors.join(" "));
+      }
     } catch (err) {
       setError(err.message || "Unable to load family members.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     loadMembers();
@@ -58,7 +126,7 @@ export default function FamilyMembersPage() {
     event.stopPropagation();
     if (!mobile) return;
 
-    const number = mobile.replace(/\D/g, "");
+    const number = String(mobile).replace(/\D/g, "");
     const whatsappNumber =
       number.length === 10 ? `91${number}` : number;
 
@@ -68,6 +136,9 @@ export default function FamilyMembersPage() {
       "noopener,noreferrer"
     );
   };
+
+  // The primary user is counted only when their profile is loaded.
+  const totalMembers = members.length + (primaryUser ? 1 : 0);
 
   return (
     <div className="fk-family-page">
@@ -104,8 +175,8 @@ export default function FamilyMembersPage() {
           <p>
             {loading
               ? "Loading family members..."
-              : `${members.length} family ${
-                  members.length === 1 ? "member" : "members"
+              : `${totalMembers} family ${
+                  totalMembers === 1 ? "member" : "members"
                 }`}
           </p>
         </section>
@@ -114,37 +185,17 @@ export default function FamilyMembersPage() {
           <div className="fk-family-state" role="status">
             Loading your family...
           </div>
-        ) : error ? (
-          <div className="fk-family-state" role="alert">
-            <p>{error}</p>
-            <button type="button" onClick={loadMembers}>
-              Try Again
-            </button>
-          </div>
-        ) : members.length === 0 ? (
-          <section className="fk-family-empty">
-            <div className="fk-family-tree-placeholder">
-              <UsersRound size={58} strokeWidth={1.2} />
-            </div>
-
-            <h3>Bring your family together</h3>
-
-            <p>
-              Invite your family members and keep their
-              important information organized in one place.
-            </p>
-
-            <button
-              type="button"
-              className="fk-family-primary-button"
-              onClick={openAddMember}
-            >
-              <Plus size={20} />
-              Add Family Member
-            </button>
-          </section>
         ) : (
           <>
+            {error && (
+              <div className="fk-family-state" role="alert">
+                <p>{error}</p>
+                <button type="button" onClick={loadMembers}>
+                  Try Again
+                </button>
+              </div>
+            )}
+
             <section className="fk-family-tree-placeholder">
               <UsersRound size={50} strokeWidth={1.2} />
               <p>Your Family Tree</p>
@@ -165,6 +216,30 @@ export default function FamilyMembersPage() {
               </div>
 
               <div className="fk-family-list">
+                {/* Primary registered user always comes first. */}
+                {primaryUser && (
+                  <article
+                    className="fk-family-member-card"
+                    key="primary-user"
+                  >
+                    <div className="fk-family-member-details">
+                      <span className="fk-family-avatar">
+                        {primaryUser.name
+                          ?.charAt(0)
+                          ?.toUpperCase() || "?"}
+                      </span>
+
+                      <span className="fk-family-member-info">
+                        <strong>
+                          {primaryUser.name || "Registered User"}
+                        </strong>
+                        <small>Me · Primary Profile</small>
+                      </span>
+                    </div>
+                  </article>
+                )}
+
+                {/* Additional members are loaded from DynamoDB. */}
                 {members.map((member) => (
                   <article
                     className="fk-family-member-card"
@@ -176,7 +251,9 @@ export default function FamilyMembersPage() {
                       onClick={() => openMember(member.memberId)}
                     >
                       <span className="fk-family-avatar">
-                        {member.name?.charAt(0)?.toUpperCase() || "?"}
+                        {member.name
+                          ?.charAt(0)
+                          ?.toUpperCase() || "?"}
                       </span>
 
                       <span className="fk-family-member-info">
@@ -217,6 +294,26 @@ export default function FamilyMembersPage() {
                   </article>
                 ))}
               </div>
+
+              {members.length === 0 && (
+                <section className="fk-family-empty">
+                  <h3>Bring your family together</h3>
+
+                  <p>
+                    Add your family members and keep their
+                    important information organized in one place.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="fk-family-primary-button"
+                    onClick={openAddMember}
+                  >
+                    <Plus size={20} />
+                    Add Family Member
+                  </button>
+                </section>
+              )}
             </section>
           </>
         )}
