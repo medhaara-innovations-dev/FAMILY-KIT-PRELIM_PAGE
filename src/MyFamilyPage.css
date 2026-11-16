@@ -69,8 +69,9 @@
   min-width: 43px;
   border: 1.7px solid #6840bf;
   border-radius: 50%;
-  background: #f9f7ff;
+  background: #ffffff;
   box-shadow: 0 2px 7px rgba(50, 19, 109, 0.08);
+  overflow: hidden;
 }
 
 .fk-dash-user-details {
@@ -445,6 +446,10 @@
   white-space: nowrap;
 }
 
+/* =========================================
+   MY FAMILY — CIRCULAR AVATARS
+   ========================================= */
+
 .fk-dash-family-avatar,
 .fk-dash-family-add {
   width: 64px;
@@ -458,13 +463,44 @@
 
 .fk-dash-family-avatar {
   border: 1.5px solid #7145c3;
-  background: #f9f6ff;
+  background: #ffffff;
+  overflow: hidden;
+  padding: 0;
 }
 
 .fk-dash-family-add {
   border: none;
   background: #e9e0fb;
   color: #371188;
+}
+
+/* ProfileAvatar component used by member and owner */
+
+.fk-dash-family-avatar-content {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.fk-dash-family-avatar-content > img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+
+  border-radius: 50%;
+  display: block;
+  background: #ffffff;
 }
 
 .fk-dash-family-name {
@@ -699,24 +735,4 @@
     right: auto;
     transform: translateX(-50%);
   }
-}
-
-
-/* Keep Home > My Family photos inside their existing circular avatars. */
-.fk-dash-family-avatar-content {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #f9f6ff;
-}
-
-.fk-dash-family-avatar-content > img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
 }
