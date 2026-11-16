@@ -62,9 +62,6 @@ export default function ProfileAvatar({
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        width: "100%",
-        height: "100%",
-        borderRadius: "inherit",
       }}
     >
       {photoUrl ? (
@@ -73,8 +70,6 @@ export default function ProfileAvatar({
           alt={name ? `${name}'s profile` : "Profile"}
           onError={() => setPhotoUrl(null)}
           style={{
-            position: "absolute",
-            inset: 0,
             width: "100%",
             height: "100%",
             objectFit: "cover",
