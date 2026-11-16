@@ -1,6 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   ArrowLeft,
   UsersRound,
@@ -14,6 +15,7 @@ import {
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { getFamilyKitProfile } from "./auth/authService.js";
+
 import "./FamilyMembersPage.css";
 
 export default function FamilyMembersPage() {
@@ -23,6 +25,10 @@ export default function FamilyMembersPage() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // =====================================================
+  // LOAD REGISTERED USER + FAMILY MEMBERS
+  // =====================================================
 
   const loadMembers = useCallback(async () => {
     setLoading(true);
@@ -38,67 +44,69 @@ export default function FamilyMembersPage() {
         return;
       }
 
-      // Fetch the registered user and additional family members.
-      const [profileResult, familyResult] = await Promise.allSettled([
-        getFamilyKitProfile(accessToken),
-        getFamilyMembers(),
-      ]);
+      const [profileResult, familyResult] =
+        await Promise.allSettled([
+          getFamilyKitProfile(accessToken),
+          getFamilyMembers(),
+        ]);
+
+      // -------------------------------------------------
+      // PRIMARY USER: NAME ENTERED DURING SIGNUP
+      // -------------------------------------------------
 
       if (profileResult.status === "fulfilled") {
-        const response = profileResult.value;
+        const profile = profileResult.value;
 
-        const profile =
-          response?.profile ??
-          response?.user ??
-          response?.data?.profile ??
-          response?.data?.user ??
-          response?.data ??
-          response;
-
+        // getFamilyKitProfile() returns { yourName: "..." }
         const registeredName =
-          profile?.name ||
-          profile?.fullName ||
-          profile?.full_name ||
-          profile?.displayName ||
-          profile?.given_name ||
-          "";
+          typeof profile?.yourName === "string"
+            ? profile.yourName.trim()
+            : "";
 
-        setPrimaryUser({
-          name: String(registeredName).trim(),
-          relationship: "Me",
-        });
+        if (registeredName) {
+          setPrimaryUser({
+            name: registeredName,
+            relationship: "Me",
+          });
+        } else {
+          setPrimaryUser(null);
+          setError(
+            "Your registered name could not be retrieved."
+          );
+        }
       } else {
         setPrimaryUser(null);
+        setError(
+          "Unable to load your registered profile."
+        );
       }
 
+      // -------------------------------------------------
+      // ADDITIONAL MEMBERS: DYNAMODB
+      // -------------------------------------------------
+
       if (familyResult.status === "fulfilled") {
+        const familyData = familyResult.value;
+
         setMembers(
-          Array.isArray(familyResult.value)
-            ? familyResult.value
-            : []
+          Array.isArray(familyData) ? familyData : []
         );
       } else {
         setMembers([]);
-      }
 
-      if (
-        profileResult.status === "rejected" ||
-        familyResult.status === "rejected"
-      ) {
-        const errors = [];
-
-        if (profileResult.status === "rejected") {
-          errors.push("Unable to load your registered profile.");
-        }
-
-        if (familyResult.status === "rejected") {
-          errors.push("Unable to load additional family members.");
-        }
-
-        setError(errors.join(" "));
+        setError((previous) =>
+          [
+            previous,
+            "Unable to load additional family members.",
+          ]
+            .filter(Boolean)
+            .join(" ")
+        );
       }
     } catch (err) {
-      setError(err.message || "Unable to load family members.");
+      setError(
+        err.message || "Unable to load family members."
+      );
     } finally {
       setLoading(false);
     }
@@ -108,25 +116,43 @@ export default function FamilyMembersPage() {
     loadMembers();
   }, [loadMembers]);
 
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
+
   const openAddMember = () => {
     navigate("/family/add");
   };
 
   const openMember = (memberId) => {
-    navigate(`/family/${encodeURIComponent(memberId)}`);
+    navigate(
+      `/family/${encodeURIComponent(memberId)}`
+    );
   };
+
+  // =====================================================
+  // PHONE
+  // =====================================================
 
   const openPhone = (event, mobile) => {
     event.stopPropagation();
+
     if (!mobile) return;
+
     window.location.href = `tel:${mobile}`;
   };
 
+  // =====================================================
+  // WHATSAPP
+  // =====================================================
+
   const openWhatsApp = (event, mobile) => {
     event.stopPropagation();
+
     if (!mobile) return;
 
     const number = String(mobile).replace(/\D/g, "");
+
     const whatsappNumber =
       number.length === 10 ? `91${number}` : number;
 
@@ -137,11 +163,21 @@ export default function FamilyMembersPage() {
     );
   };
 
-  // The primary user is counted only when their profile is loaded.
-  const totalMembers = members.length + (primaryUser ? 1 : 0);
+  // =====================================================
+  // TOTAL MEMBERS
+  // =====================================================
+
+  const totalMembers =
+    members.length + (primaryUser ? 1 : 0);
+
+  // =====================================================
+  // UI
+  // =====================================================
 
   return (
     <div className="fk-family-page">
+      {/* HEADER */}
+
       <header className="fk-family-header">
         <button
           type="button"
@@ -164,7 +200,11 @@ export default function FamilyMembersPage() {
         </button>
       </header>
 
+      {/* MAIN */}
+
       <main className="fk-family-main">
+        {/* SUMMARY */}
+
         <section className="fk-family-summary">
           <div className="fk-family-summary-icon">
             <UsersRound size={32} />
@@ -176,30 +216,54 @@ export default function FamilyMembersPage() {
             {loading
               ? "Loading family members..."
               : `${totalMembers} family ${
-                  totalMembers === 1 ? "member" : "members"
+                  totalMembers === 1
+                    ? "member"
+                    : "members"
                 }`}
           </p>
         </section>
 
+        {/* LOADING */}
+
         {loading ? (
-          <div className="fk-family-state" role="status">
+          <div
+            className="fk-family-state"
+            role="status"
+          >
             Loading your family...
           </div>
         ) : (
           <>
+            {/* ERROR */}
+
             {error && (
-              <div className="fk-family-state" role="alert">
+              <div
+                className="fk-family-state"
+                role="alert"
+              >
                 <p>{error}</p>
-                <button type="button" onClick={loadMembers}>
+
+                <button
+                  type="button"
+                  onClick={loadMembers}
+                >
                   Try Again
                 </button>
               </div>
             )}
 
+            {/* FAMILY TREE */}
+
             <section className="fk-family-tree-placeholder">
-              <UsersRound size={50} strokeWidth={1.2} />
+              <UsersRound
+                size={50}
+                strokeWidth={1.2}
+              />
+
               <p>Your Family Tree</p>
             </section>
+
+            {/* FAMILY MEMBERS */}
 
             <section className="fk-family-list-section">
               <div className="fk-family-list-heading">
@@ -216,7 +280,10 @@ export default function FamilyMembersPage() {
               </div>
 
               <div className="fk-family-list">
-                {/* Primary registered user always comes first. */}
+                {/* ===================================== */}
+                {/* PRIMARY REGISTERED USER              */}
+                {/* ===================================== */}
+
                 {primaryUser && (
                   <article
                     className="fk-family-member-card"
@@ -225,21 +292,25 @@ export default function FamilyMembersPage() {
                     <div className="fk-family-member-details">
                       <span className="fk-family-avatar">
                         {primaryUser.name
-                          ?.charAt(0)
-                          ?.toUpperCase() || "?"}
+                          .charAt(0)
+                          .toUpperCase()}
                       </span>
 
                       <span className="fk-family-member-info">
                         <strong>
-                          {primaryUser.name || "Registered User"}
+                          {primaryUser.name}
                         </strong>
-                        <small>Me · Primary Profile</small>
+
+                        <small>Me</small>
                       </span>
                     </div>
                   </article>
                 )}
 
-                {/* Additional members are loaded from DynamoDB. */}
+                {/* ===================================== */}
+                {/* ADDITIONAL FAMILY MEMBERS           */}
+                {/* ===================================== */}
+
                 {members.map((member) => (
                   <article
                     className="fk-family-member-card"
@@ -248,7 +319,9 @@ export default function FamilyMembersPage() {
                     <button
                       type="button"
                       className="fk-family-member-details"
-                      onClick={() => openMember(member.memberId)}
+                      onClick={() =>
+                        openMember(member.memberId)
+                      }
                     >
                       <span className="fk-family-avatar">
                         {member.name
@@ -257,9 +330,13 @@ export default function FamilyMembersPage() {
                       </span>
 
                       <span className="fk-family-member-info">
-                        <strong>{member.name}</strong>
+                        <strong>
+                          {member.name}
+                        </strong>
+
                         <small>
-                          {member.relationship || "Family Member"}
+                          {member.relationship ||
+                            "Family Member"}
                         </small>
                       </span>
 
@@ -271,7 +348,10 @@ export default function FamilyMembersPage() {
                         <button
                           type="button"
                           onClick={(event) =>
-                            openPhone(event, member.mobile)
+                            openPhone(
+                              event,
+                              member.mobile
+                            )
                           }
                           aria-label={`Call ${member.name}`}
                         >
@@ -282,7 +362,10 @@ export default function FamilyMembersPage() {
                         <button
                           type="button"
                           onClick={(event) =>
-                            openWhatsApp(event, member.mobile)
+                            openWhatsApp(
+                              event,
+                              member.mobile
+                            )
                           }
                           aria-label={`WhatsApp ${member.name}`}
                         >
@@ -295,13 +378,18 @@ export default function FamilyMembersPage() {
                 ))}
               </div>
 
+              {/* NO ADDITIONAL MEMBERS */}
+
               {members.length === 0 && (
                 <section className="fk-family-empty">
-                  <h3>Bring your family together</h3>
+                  <h3>
+                    Bring your family together
+                  </h3>
 
                   <p>
-                    Add your family members and keep their
-                    important information organized in one place.
+                    Add your family members and keep
+                    their important information
+                    organized in one place.
                   </p>
 
                   <button
@@ -319,10 +407,14 @@ export default function FamilyMembersPage() {
         )}
       </main>
 
+      {/* BOTTOM NAVIGATION */}
+
       <nav className="fk-family-bottom-nav">
         <button
           type="button"
-          onClick={() => navigate("/my-family")}
+          onClick={() =>
+            navigate("/my-family")
+          }
         >
           <House size={22} />
           <span>Home</span>
@@ -331,7 +423,9 @@ export default function FamilyMembersPage() {
         <button
           type="button"
           className="active"
-          onClick={() => navigate("/family")}
+          onClick={() =>
+            navigate("/family")
+          }
           aria-current="page"
         >
           <UsersRound size={22} />
