@@ -1,0 +1,377 @@
+
+/* FamilyKit — My Family Page */
+/* Scoped styles: does not affect the landing page */
+
+.fk-family-page {
+  --fk-purple: #2D0B84;
+  --fk-purple-dark: #130438;
+  --fk-lavender: #EBE6F7;
+  --fk-text: #050011;
+  --fk-muted: #4D485A;
+  --fk-border: #EDEAF3;
+
+  min-height: 100vh;
+  background: #faf9ff;
+  color: var(--fk-text);
+  font-family: "Mulish", sans-serif;
+  padding-bottom: 100px;
+}
+
+.fk-family-page *,
+.fk-family-page *::before,
+.fk-family-page *::after {
+  box-sizing: border-box;
+}
+
+.fk-family-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--fk-border);
+}
+
+.fk-family-header h1 {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--fk-purple);
+}
+
+.fk-family-icon-button {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fk-lavender);
+  color: var(--fk-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fk-family-main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.fk-family-summary {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.fk-family-summary-icon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--fk-lavender);
+  color: var(--fk-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fk-family-summary h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 30px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--fk-purple-dark);
+}
+
+.fk-family-summary p {
+  font-size: 16px;
+  color: var(--fk-muted);
+  margin: 0;
+}
+
+.fk-family-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--fk-muted);
+}
+
+.fk-family-state button {
+  margin-top: 16px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--fk-purple);
+  color: #fff;
+  cursor: pointer;
+}
+
+.fk-family-empty {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+  background: #fff;
+  padding: 28px 24px 36px;
+  border-radius: 22px;
+  border: 1px solid var(--fk-border);
+}
+
+.fk-family-tree-placeholder {
+  min-height: 210px;
+  background: linear-gradient(160deg, #f2edff, #ffffff);
+  border: 1px solid var(--fk-border);
+  border-radius: 20px;
+  color: var(--fk-purple);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.fk-family-tree-placeholder p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.fk-family-empty h3 {
+  font-family: "Poppins", sans-serif;
+  font-size: 23px;
+  color: var(--fk-purple-dark);
+  margin: 0 0 12px;
+}
+
+.fk-family-empty > p {
+  color: var(--fk-muted);
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0 0 24px;
+}
+
+.fk-family-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+  padding: 15px 24px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--fk-purple);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fk-family-list-section {
+  background: #fff;
+  border: 1px solid var(--fk-border);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.fk-family-list-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.fk-family-list-heading h3 {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 22px;
+  color: var(--fk-purple-dark);
+}
+
+.fk-family-add-small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: var(--fk-lavender);
+  color: var(--fk-purple);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fk-family-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fk-family-member-card {
+  border: 1px solid var(--fk-border);
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.fk-family-member-details {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: var(--fk-text);
+  cursor: pointer;
+}
+
+.fk-family-avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--fk-lavender);
+  color: var(--fk-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.fk-family-member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.fk-family-member-info strong {
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.fk-family-member-info small {
+  font-size: 14px;
+  color: var(--fk-muted);
+}
+
+.fk-family-contact-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 14px 82px;
+}
+
+.fk-family-contact-actions button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: var(--fk-lavender);
+  color: var(--fk-purple);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fk-family-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 8px;
+  min-height: 76px;
+  padding: 10px 16px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1px solid var(--fk-border);
+  z-index: 50;
+}
+
+.fk-family-bottom-nav > button {
+  border: 0;
+  background: transparent;
+  color: var(--fk-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.fk-family-bottom-nav > button.active {
+  color: var(--fk-purple);
+  font-weight: 700;
+}
+
+.fk-family-bottom-nav > .fk-family-bottom-add {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--fk-purple);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .fk-family-header {
+    padding: 14px 16px;
+  }
+
+  .fk-family-header h1 {
+    font-size: 21px;
+  }
+
+  .fk-family-main {
+    padding: 24px 16px;
+  }
+
+  .fk-family-summary h2 {
+    font-size: 25px;
+  }
+
+  .fk-family-empty {
+    padding: 20px 16px 28px;
+  }
+
+  .fk-family-empty h3 {
+    font-size: 20px;
+  }
+
+  .fk-family-tree-placeholder {
+    min-height: 190px;
+  }
+
+  .fk-family-list-section {
+    padding: 16px;
+  }
+
+  .fk-family-list-heading h3 {
+    font-size: 19px;
+  }
+
+  .fk-family-member-details {
+    padding: 13px;
+    gap: 11px;
+  }
+
+  .fk-family-avatar {
+    width: 46px;
+    height: 46px;
+    font-size: 20px;
+  }
+
+  .fk-family-contact-actions {
+    padding-left: 70px;
+  }
+}

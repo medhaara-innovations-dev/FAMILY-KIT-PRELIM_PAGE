@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import { getFamilyKitProfile } from "./auth/authService.js";
+import { getFamilyMembers } from "./api/familyMembersApi.js";
 import "./MyFamilyPage.css";
 
 // =====================================================
@@ -92,14 +93,20 @@ function NavItem({ icon: Icon, label, active, onClick }) {
 // MY FAMILY PROFILE ITEM
 // =====================================================
 
-function FamilyMemberItem({ member }) {
+function FamilyMemberItem({ member, onOpen }) {
   return (
     <div className="fk-dash-family-person">
       <span className="fk-dash-family-top-label">
         {member.relationship || "\u00A0"}
       </span>
 
-      <span className="fk-dash-family-avatar" />
+      <button
+        type="button"
+        className="fk-dash-family-avatar"
+        aria-label={`View ${member.name} profile`}
+        onClick={onOpen}
+        style={{ cursor: "pointer" }}
+      />
 
       <span
         className="fk-dash-family-name"
@@ -127,14 +134,17 @@ export default function MyFamilyPage() {
   const [profileError, setProfileError] = useState("");
   const [searchText, setSearchText] = useState("");
 
-  // Family members will come from the backend later.
-  // For now, only the account owner is displayed.
+  const [savedMembers, setSavedMembers] = useState([]);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [membersError, setMembersError] = useState("");
+
+  // The account owner appears first; additional members come from DynamoDB.
   const familyMembers = [
-    {
-      id: "me",
-      name: "Me",
-      relationship: "",
-    },
+    { id: "me", name: yourName || "Me", relationship: "" },
+    ...savedMembers.map((member) => ({
+      ...member,
+      id: member.memberId,
+    })),
   ];
 
   // =====================================================
@@ -192,6 +202,33 @@ export default function MyFamilyPage() {
     return () => {
       active = false;
     };
+  }, [accessToken]);
+
+  // =====================================================
+  // LOAD FAMILY MEMBERS FROM DYNAMODB
+  // =====================================================
+
+  useEffect(() => {
+    if (!accessToken) return;
+
+    let active = true;
+
+    async function loadMembers() {
+      try {
+        const members = await getFamilyMembers();
+        if (!active) return;
+        setSavedMembers(members);
+        setMembersError("");
+      } catch (error) {
+        if (!active) return;
+        setMembersError(error.message || "Unable to load family members.");
+      } finally {
+        if (active) setMembersLoading(false);
+      }
+    }
+
+    loadMembers();
+    return () => { active = false; };
   }, [accessToken]);
 
   // =====================================================
@@ -414,7 +451,9 @@ export default function MyFamilyPage() {
            ========================================= */}
 
         <section className="fk-dash-section">
-          <SectionTitle title="My Family" />
+          <SectionTitle title="My Family" onViewAll={() => navigate("/family")} />
+          {membersLoading && <p role="status">Loading family members...</p>}
+          {membersError && <p role="alert" className="fk-dash-profile-error">{membersError}</p>}
 
           <div className="fk-dash-family-card">
             <div className="fk-dash-family-scroll">
@@ -424,6 +463,7 @@ export default function MyFamilyPage() {
                 <FamilyMemberItem
                   key={member.id}
                   member={member}
+                  onOpen={() => navigate(member.id === "me" ? "/family" : `/family/${encodeURIComponent(member.id)}`)}
                 />
               ))}
 
@@ -437,7 +477,7 @@ export default function MyFamilyPage() {
                   type="button"
                   className="fk-dash-family-add"
                   aria-label="Add family member"
-                  disabled
+                  onClick={() => navigate("/family/add")}
                 >
                   <Plus size={27} />
                 </button>
@@ -516,13 +556,14 @@ export default function MyFamilyPage() {
         <NavItem
           icon={UsersRound}
           label="My Family"
+          onClick={() => navigate("/family")}
         />
 
         <button
           type="button"
           className="fk-dash-center-add"
-          aria-label="Add new"
-          disabled
+          aria-label="Add new family member"
+          onClick={() => navigate("/family/add")}
         >
           <Plus size={30} />
         </button>
