@@ -15,6 +15,8 @@ import {
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { getFamilyKitProfile } from "./auth/authService.js";
+import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
+import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
 import "./FamilyMembersPage.css";
 
@@ -51,14 +53,11 @@ export default function FamilyMembersPage() {
           getFamilyMembers(),
         ]);
 
-      // -------------------------------------------------
       // PRIMARY USER: NAME ENTERED DURING SIGNUP
-      // -------------------------------------------------
 
       if (profileResult.status === "fulfilled") {
         const profile = profileResult.value;
 
-        // Retrieve registered family name from profile API.
         const registeredFamilyName =
           typeof profile?.familyName === "string"
             ? profile.familyName.trim()
@@ -66,7 +65,6 @@ export default function FamilyMembersPage() {
 
         setFamilyName(registeredFamilyName);
 
-        // getFamilyKitProfile() returns yourName and familyName.
         const registeredName =
           typeof profile?.yourName === "string"
             ? profile.yourName.trim()
@@ -74,6 +72,7 @@ export default function FamilyMembersPage() {
 
         if (registeredName) {
           setPrimaryUser({
+            memberId: SELF_PROFILE_ID,
             name: registeredName,
             relationship: "Me",
           });
@@ -91,9 +90,7 @@ export default function FamilyMembersPage() {
         );
       }
 
-      // -------------------------------------------------
       // ADDITIONAL MEMBERS: DYNAMODB
-      // -------------------------------------------------
 
       if (familyResult.status === "fulfilled") {
         const familyData = familyResult.value;
@@ -294,9 +291,7 @@ export default function FamilyMembersPage() {
               </div>
 
               <div className="fk-family-list">
-                {/* ===================================== */}
-                {/* PRIMARY REGISTERED USER              */}
-                {/* ===================================== */}
+                {/* PRIMARY REGISTERED USER */}
 
                 {primaryUser && (
                   <article
@@ -304,11 +299,15 @@ export default function FamilyMembersPage() {
                     key="primary-user"
                   >
                     <div className="fk-family-member-details">
-                      <span className="fk-family-avatar">
+                      <ProfileAvatar
+                        memberId={SELF_PROFILE_ID}
+                        name={primaryUser.name}
+                        className="fk-family-avatar"
+                      >
                         {primaryUser.name
                           .charAt(0)
                           .toUpperCase()}
-                      </span>
+                      </ProfileAvatar>
 
                       <span className="fk-family-member-info">
                         <strong>
@@ -321,9 +320,7 @@ export default function FamilyMembersPage() {
                   </article>
                 )}
 
-                {/* ===================================== */}
-                {/* ADDITIONAL FAMILY MEMBERS           */}
-                {/* ===================================== */}
+                {/* ADDITIONAL FAMILY MEMBERS */}
 
                 {members.map((member) => (
                   <article
@@ -337,11 +334,15 @@ export default function FamilyMembersPage() {
                         openMember(member.memberId)
                       }
                     >
-                      <span className="fk-family-avatar">
+                      <ProfileAvatar
+                        memberId={member.memberId}
+                        name={member.name || ""}
+                        className="fk-family-avatar"
+                      >
                         {member.name
                           ?.charAt(0)
                           ?.toUpperCase() || "?"}
-                      </span>
+                      </ProfileAvatar>
 
                       <span className="fk-family-member-info">
                         <strong>

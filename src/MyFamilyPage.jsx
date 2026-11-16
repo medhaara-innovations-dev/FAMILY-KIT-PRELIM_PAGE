@@ -24,6 +24,9 @@ import {
 
 import { getFamilyKitProfile } from "./auth/authService.js";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
+import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
+import ProfileAvatar from "./components/ProfileAvatar.jsx";
+
 import "./MyFamilyPage.css";
 
 // =====================================================
@@ -94,6 +97,9 @@ function NavItem({ icon: Icon, label, active, onClick }) {
 // =====================================================
 
 function FamilyMemberItem({ member, onOpen }) {
+  const profileId =
+    member.memberId || SELF_PROFILE_ID;
+
   return (
     <div className="fk-dash-family-person">
       <span className="fk-dash-family-top-label">
@@ -105,8 +111,19 @@ function FamilyMemberItem({ member, onOpen }) {
         className="fk-dash-family-avatar"
         aria-label={`View ${member.name} profile`}
         onClick={onOpen}
-        style={{ cursor: "pointer" }}
-      />
+        style={{
+          cursor: "pointer",
+          padding: 0,
+          overflow: "hidden",
+        }}
+      >
+        <ProfileAvatar
+          memberId={profileId}
+          name={member.name}
+        >
+          {member.name?.charAt(0)?.toUpperCase() || "?"}
+        </ProfileAvatar>
+      </button>
 
       <span
         className="fk-dash-family-name"
@@ -138,9 +155,15 @@ export default function MyFamilyPage() {
   const [membersLoading, setMembersLoading] = useState(true);
   const [membersError, setMembersError] = useState("");
 
-  // The account owner appears first; additional members come from DynamoDB.
+  // The account owner appears first;
+  // additional members come from DynamoDB.
   const familyMembers = [
-    { id: "me", name: yourName || "Me", relationship: "" },
+    {
+      id: "me",
+      memberId: SELF_PROFILE_ID,
+      name: yourName || "Me",
+      relationship: "",
+    },
     ...savedMembers.map((member) => ({
       ...member,
       id: member.memberId,
@@ -216,19 +239,30 @@ export default function MyFamilyPage() {
     async function loadMembers() {
       try {
         const members = await getFamilyMembers();
+
         if (!active) return;
+
         setSavedMembers(members);
         setMembersError("");
       } catch (error) {
         if (!active) return;
-        setMembersError(error.message || "Unable to load family members.");
+
+        setMembersError(
+          error.message ||
+            "Unable to load family members."
+        );
       } finally {
-        if (active) setMembersLoading(false);
+        if (active) {
+          setMembersLoading(false);
+        }
       }
     }
 
     loadMembers();
-    return () => { active = false; };
+
+    return () => {
+      active = false;
+    };
   }, [accessToken]);
 
   // =====================================================
@@ -270,8 +304,13 @@ export default function MyFamilyPage() {
           <div className="fk-dash-user">
             <div
               className="fk-dash-avatar"
-              aria-hidden="true"
-            />
+              style={{ overflow: "hidden" }}
+            >
+              <ProfileAvatar
+                memberId={SELF_PROFILE_ID}
+                name={yourName || "Me"}
+              />
+            </div>
 
             <div className="fk-dash-user-details">
               <h1>
@@ -451,9 +490,25 @@ export default function MyFamilyPage() {
            ========================================= */}
 
         <section className="fk-dash-section">
-          <SectionTitle title="My Family" onViewAll={() => navigate("/family")} />
-          {membersLoading && <p role="status">Loading family members...</p>}
-          {membersError && <p role="alert" className="fk-dash-profile-error">{membersError}</p>}
+          <SectionTitle
+            title="My Family"
+            onViewAll={() => navigate("/family")}
+          />
+
+          {membersLoading && (
+            <p role="status">
+              Loading family members...
+            </p>
+          )}
+
+          {membersError && (
+            <p
+              role="alert"
+              className="fk-dash-profile-error"
+            >
+              {membersError}
+            </p>
+          )}
 
           <div className="fk-dash-family-card">
             <div className="fk-dash-family-scroll">
@@ -463,7 +518,15 @@ export default function MyFamilyPage() {
                 <FamilyMemberItem
                   key={member.id}
                   member={member}
-                  onOpen={() => navigate(member.id === "me" ? "/family" : `/family/${encodeURIComponent(member.id)}`)}
+                  onOpen={() =>
+                    navigate(
+                      member.id === "me"
+                        ? "/family"
+                        : `/family/${encodeURIComponent(
+                            member.id
+                          )}`
+                    )
+                  }
                 />
               ))}
 
@@ -477,7 +540,9 @@ export default function MyFamilyPage() {
                   type="button"
                   className="fk-dash-family-add"
                   aria-label="Add family member"
-                  onClick={() => navigate("/family/add")}
+                  onClick={() =>
+                    navigate("/family/add")
+                  }
                 >
                   <Plus size={27} />
                 </button>
@@ -550,20 +615,26 @@ export default function MyFamilyPage() {
           icon={House}
           label="Home"
           active
-          onClick={() => navigate("/my-family")}
+          onClick={() =>
+            navigate("/my-family")
+          }
         />
 
         <NavItem
           icon={UsersRound}
           label="My Family"
-          onClick={() => navigate("/family")}
+          onClick={() =>
+            navigate("/family")
+          }
         />
 
         <button
           type="button"
           className="fk-dash-center-add"
           aria-label="Add new family member"
-          onClick={() => navigate("/family/add")}
+          onClick={() =>
+            navigate("/family/add")
+          }
         >
           <Plus size={30} />
         </button>

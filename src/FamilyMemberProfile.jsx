@@ -1,6 +1,7 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import {
   ArrowLeft,
   UserRound,
@@ -13,12 +14,21 @@ import {
   CalendarDays,
   HeartPulse,
   FolderOpen,
+  Camera,
+  Trash2,
 } from "lucide-react";
 
 import {
   getFamilyMember,
   updateFamilyMember,
 } from "./api/familyMembersApi.js";
+
+import {
+  uploadProfilePicture,
+  deleteProfilePicture,
+} from "./api/profilePicturesApi.js";
+
+import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
 import "./FamilyMemberProfile.css";
 
@@ -50,6 +60,8 @@ export default function FamilyMemberProfile() {
   const navigate = useNavigate();
   const { memberId } = useParams();
 
+  const fileInputRef = useRef(null);
+
   const [member, setMember] = useState(null);
   const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
@@ -58,12 +70,22 @@ export default function FamilyMemberProfile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [photoRefreshKey, setPhotoRefreshKey] = useState(0);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState("");
+  const [photoSuccess, setPhotoSuccess] = useState("");
+
+  // =====================================================
+  // LOAD MEMBER
+  // =====================================================
+
   useEffect(() => {
     let active = true;
 
     async function loadMember() {
       setLoading(true);
       setError("");
+      setEditing(false);
 
       try {
         const result = await getFamilyMember(memberId);
@@ -73,6 +95,7 @@ export default function FamilyMemberProfile() {
         setMember(result);
 
         const initialForm = {};
+
         EDITABLE_FIELDS.forEach((field) => {
           initialForm[field] = result?.[field] || "";
         });
@@ -80,28 +103,117 @@ export default function FamilyMemberProfile() {
         setForm(initialForm);
       } catch (err) {
         if (active) {
+          setMember(null);
           setError(err.message || "Unable to load member.");
         }
       } finally {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
 
-    loadMember();
+    if (memberId) {
+      loadMember();
+    } else {
+      setMember(null);
+      setLoading(false);
+      setError("Member ID is missing.");
+    }
 
     return () => {
       active = false;
     };
   }, [memberId]);
 
+  // =====================================================
+  // PROFILE PHOTO — UPLOAD OR REPLACE
+  // =====================================================
+
+  const handlePhotoChange = async (event) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file || !memberId || photoBusy) return;
+
+    setPhotoError("");
+    setPhotoSuccess("");
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      setPhotoError("Only JPG and PNG images are allowed.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setPhotoError("Profile picture must not exceed 5 MB.");
+      return;
+    }
+
+    setPhotoBusy(true);
+
+    try {
+      await uploadProfilePicture(memberId, file);
+
+      setPhotoRefreshKey((previous) => previous + 1);
+      setPhotoSuccess("Profile picture updated successfully.");
+    } catch (err) {
+      setPhotoError(
+        err.message || "Unable to upload profile picture."
+      );
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
+  // =====================================================
+  // PROFILE PHOTO — DELETE
+  // =====================================================
+
+  const handleDeletePhoto = async () => {
+    if (!memberId || photoBusy) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to remove this profile picture?"
+    );
+
+    if (!confirmed) return;
+
+    setPhotoBusy(true);
+    setPhotoError("");
+    setPhotoSuccess("");
+
+    try {
+      await deleteProfilePicture(memberId);
+
+      setPhotoRefreshKey((previous) => previous + 1);
+      setPhotoSuccess("Profile picture removed successfully.");
+    } catch (err) {
+      setPhotoError(
+        err.message || "Unable to remove profile picture."
+      );
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
+  // =====================================================
+  // UPDATE FIELDS
+  // =====================================================
+
   const updateField = (field, value) => {
     setForm((previous) => ({
       ...previous,
       [field]: value,
     }));
+
     setError("");
     setSuccess("");
   };
+
+  // =====================================================
+  // CANCEL EDIT
+  // =====================================================
 
   const cancelEdit = () => {
     const original = {};
@@ -114,6 +226,10 @@ export default function FamilyMemberProfile() {
     setEditing(false);
     setError("");
   };
+
+  // =====================================================
+  // SAVE MEMBER DETAILS
+  // =====================================================
 
   const saveChanges = async () => {
     if (!form.name.trim()) {
@@ -159,6 +275,10 @@ export default function FamilyMemberProfile() {
     }
   };
 
+  // =====================================================
+  // DETAILS COMPONENT
+  // =====================================================
+
   const detail = (label, value, Icon) => (
     <div className="fk-profile-detail" key={label}>
       <div className="fk-profile-detail-icon">
@@ -171,6 +291,10 @@ export default function FamilyMemberProfile() {
       </div>
     </div>
   );
+
+  // =====================================================
+  // UI
+  // =====================================================
 
   return (
     <div className="fk-profile-page">
@@ -205,13 +329,101 @@ export default function FamilyMemberProfile() {
         </main>
       ) : (
         <main className="fk-profile-main">
+          {/* PROFILE HERO */}
+
           <section className="fk-profile-hero">
-            <div className="fk-profile-avatar">
-              <UserRound size={48} />
+            <div
+              className="fk-profile-avatar"
+              style={{
+                overflow: "hidden",
+                position: "relative",
+              }}
+            >
+              <ProfileAvatar
+                memberId={memberId}
+                name={member.name}
+                refreshKey={photoRefreshKey}
+              >
+                <UserRound size={48} />
+              </ProfileAvatar>
             </div>
 
             <h2>{member.name}</h2>
             <p>{member.relationship}</p>
+
+            {/* HIDDEN FILE INPUT */}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png"
+              onChange={handlePhotoChange}
+              style={{ display: "none" }}
+              disabled={photoBusy}
+            />
+
+            {/* PROFILE PICTURE ACTIONS */}
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                flexWrap: "wrap",
+                marginTop: "12px",
+              }}
+            >
+              <button
+                type="button"
+                className="fk-profile-edit-button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={photoBusy}
+              >
+                <Camera size={17} />
+
+                {photoBusy
+                  ? "Processing..."
+                  : "Upload / Change Photo"}
+              </button>
+
+              <button
+                type="button"
+                className="fk-profile-edit-button"
+                onClick={handleDeletePhoto}
+                disabled={photoBusy}
+              >
+                <Trash2 size={17} />
+                Remove Photo
+              </button>
+            </div>
+
+            <small
+              style={{
+                display: "block",
+                marginTop: "8px",
+              }}
+            >
+              JPG or PNG · Maximum 5 MB
+            </small>
+
+            {photoError && (
+              <p
+                className="fk-profile-error"
+                role="alert"
+              >
+                {photoError}
+              </p>
+            )}
+
+            {photoSuccess && (
+              <p
+                className="fk-profile-success"
+                role="status"
+              >
+                {photoSuccess}
+              </p>
+            )}
 
             {!editing && (
               <button
@@ -228,17 +440,27 @@ export default function FamilyMemberProfile() {
             )}
           </section>
 
+          {/* MEMBER UPDATE MESSAGES */}
+
           {error && (
-            <p className="fk-profile-error" role="alert">
+            <p
+              className="fk-profile-error"
+              role="alert"
+            >
               {error}
             </p>
           )}
 
           {success && (
-            <p className="fk-profile-success" role="status">
+            <p
+              className="fk-profile-success"
+              role="status"
+            >
               {success}
             </p>
           )}
+
+          {/* EDIT OR VIEW */}
 
           {editing ? (
             <section className="fk-profile-card">
@@ -311,6 +533,8 @@ export default function FamilyMemberProfile() {
             </section>
           ) : (
             <>
+              {/* PERSONAL DETAILS */}
+
               <section className="fk-profile-card">
                 <h3>Personal Details</h3>
 
@@ -374,6 +598,8 @@ export default function FamilyMemberProfile() {
                   )}
                 </div>
               </section>
+
+              {/* DOCUMENTS */}
 
               <section className="fk-profile-card">
                 <h3>Documents</h3>
