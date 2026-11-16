@@ -11,14 +11,14 @@
   min-height: 100vh;
   min-height: 100dvh;
   width: 100%;
-  background:
-    linear-gradient(
-      180deg,
-      #d7c9f7 0%,
-      #e4dafa 38%,
-      #f2edff 76%,
-      #f7f5fc 100%
-    );
+
+  background: linear-gradient(
+    180deg,
+    #d7c9f7 0%,
+    #e4dafa 38%,
+    #f2edff 76%,
+    #f7f5fc 100%
+  );
 
   color: var(--fk-text);
   font-family: "Mulish", Arial, sans-serif;
@@ -43,7 +43,9 @@
   padding: 27px 19px 125px;
 }
 
-/* HEADER */
+/* =========================================
+   HEADER
+   ========================================= */
 
 .fk-dash-header {
   display: flex;
@@ -127,7 +129,9 @@
   color: #a32740;
 }
 
-/* SEARCH */
+/* =========================================
+   SEARCH
+   ========================================= */
 
 .fk-dash-search {
   height: 56px;
@@ -181,7 +185,9 @@
   justify-content: center;
 }
 
-/* SECTIONS */
+/* =========================================
+   SECTIONS
+   ========================================= */
 
 .fk-dash-section {
   margin-bottom: 29px;
@@ -217,7 +223,9 @@
   opacity: 0.48;
 }
 
-/* NEED ATTENTION */
+/* =========================================
+   NEED ATTENTION
+   ========================================= */
 
 .fk-dash-attention-card {
   min-height: 163px;
@@ -266,7 +274,9 @@
   font-weight: 800;
 }
 
-/* EVENTS */
+/* =========================================
+   EVENTS
+   ========================================= */
 
 .fk-dash-events-card {
   background: #fff;
@@ -309,7 +319,9 @@
   font-weight: 700;
 }
 
-/* QUICK ACTIONS */
+/* =========================================
+   QUICK ACTIONS
+   ========================================= */
 
 .fk-dash-actions-grid {
   display: grid;
@@ -363,24 +375,57 @@
   color: #ee9543;
 }
 
-/* MY FAMILY */
+/* =========================================
+   MY FAMILY — SCROLLABLE
+   ========================================= */
 
 .fk-dash-family-card {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.55);
   border-radius: 15px;
   padding: 16px 7px 13px;
 }
 
+.fk-dash-family-scroll {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
+  scrollbar-color: #b49be9 transparent;
+}
+
+.fk-dash-family-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.fk-dash-family-scroll::-webkit-scrollbar-thumb {
+  background: #b49be9;
+  border-radius: 10px;
+}
+
 .fk-dash-family-person {
+  flex: 0 0 105px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
   gap: 7px;
-  min-width: 0;
   position: relative;
+  padding: 0 10px 5px;
 }
 
 .fk-dash-family-person:not(:last-child)::after {
@@ -388,7 +433,7 @@
   position: absolute;
   right: 0;
   top: 16px;
-  bottom: 0;
+  bottom: 5px;
   width: 1px;
   background: #e4d8f5;
 }
@@ -397,12 +442,14 @@
   font-size: 10px;
   color: #5b5266;
   min-height: 13px;
+  white-space: nowrap;
 }
 
 .fk-dash-family-avatar,
 .fk-dash-family-add {
   width: 45px;
   height: 45px;
+  flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -421,12 +468,18 @@
 }
 
 .fk-dash-family-name {
+  width: 100%;
   font-size: 11px;
   color: #44354f;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* SMART SUGGESTIONS */
+/* =========================================
+   SMART SUGGESTIONS
+   ========================================= */
 
 .fk-dash-last-section {
   margin-bottom: 22px;
@@ -478,7 +531,9 @@
   flex-shrink: 0;
 }
 
-/* LOGOUT */
+/* =========================================
+   LOGOUT
+   ========================================= */
 
 .fk-dash-logout {
   display: flex;
@@ -494,7 +549,9 @@
   font-weight: 700;
 }
 
-/* FIXED BOTTOM NAVIGATION */
+/* =========================================
+   FIXED BOTTOM NAVIGATION
+   ========================================= */
 
 .fk-dash-bottom-nav {
   position: fixed;
@@ -509,10 +566,12 @@
   border: 1.5px solid #7953d2;
   border-bottom: none;
   border-radius: 20px 20px 0 0;
+
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: center;
   gap: 3px;
+
   box-shadow: 0 -3px 15px rgba(56, 26, 108, 0.08);
 }
 
@@ -568,13 +627,17 @@
   box-shadow: 0 4px 9px rgba(53, 16, 131, 0.25);
 }
 
-/* Preserve intended colors for unavailable actions */
+/* =========================================
+   DISABLED ACTIONS
+   ========================================= */
 
 .fk-dash-page button:disabled {
   cursor: default;
 }
 
-/* MOBILE RESPONSIVENESS */
+/* =========================================
+   SMALL MOBILE DEVICES
+   ========================================= */
 
 @media (max-width: 390px) {
   .fk-dash-container {
@@ -597,6 +660,10 @@
     font-size: 9px;
   }
 
+  .fk-dash-family-person {
+    flex-basis: 90px;
+  }
+
   .fk-dash-family-avatar,
   .fk-dash-family-add {
     width: 40px;
@@ -617,7 +684,9 @@
   }
 }
 
-/* DESKTOP: DASHBOARD ONLY */
+/* =========================================
+   DESKTOP DASHBOARD VIEW
+   ========================================= */
 
 @media (min-width: 768px) {
   .fk-dash-container {

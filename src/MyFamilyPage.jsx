@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   Bell,
   CalendarDays,
@@ -24,10 +25,15 @@ import {
 import { getFamilyKitProfile } from "./auth/authService.js";
 import "./MyFamilyPage.css";
 
+// =====================================================
+// SECTION HEADING
+// =====================================================
+
 function SectionTitle({ title, onViewAll }) {
   return (
     <div className="fk-dash-section-title">
       <h2>{title}</h2>
+
       <button
         type="button"
         disabled={!onViewAll}
@@ -38,6 +44,10 @@ function SectionTitle({ title, onViewAll }) {
     </div>
   );
 }
+
+// =====================================================
+// QUICK ACTION
+// =====================================================
 
 function QuickAction({ icon: Icon, label, tone, onClick }) {
   return (
@@ -50,10 +60,15 @@ function QuickAction({ icon: Icon, label, tone, onClick }) {
       <span className={`fk-dash-action-icon ${tone}`}>
         <Icon size={23} strokeWidth={1.8} />
       </span>
+
       <span>{label}</span>
     </button>
   );
 }
+
+// =====================================================
+// BOTTOM NAVIGATION ITEM
+// =====================================================
 
 function NavItem({ icon: Icon, label, active, onClick }) {
   return (
@@ -67,10 +82,38 @@ function NavItem({ icon: Icon, label, active, onClick }) {
       <span className="fk-dash-nav-icon">
         <Icon size={20} strokeWidth={1.8} />
       </span>
+
       <span>{label}</span>
     </button>
   );
 }
+
+// =====================================================
+// MY FAMILY PROFILE ITEM
+// =====================================================
+
+function FamilyMemberItem({ member }) {
+  return (
+    <div className="fk-dash-family-person">
+      <span className="fk-dash-family-top-label">
+        {member.relationship || "\u00A0"}
+      </span>
+
+      <span className="fk-dash-family-avatar" />
+
+      <span
+        className="fk-dash-family-name"
+        title={member.name}
+      >
+        {member.name}
+      </span>
+    </div>
+  );
+}
+
+// =====================================================
+// HOME DASHBOARD
+// =====================================================
 
 export default function MyFamilyPage() {
   const navigate = useNavigate();
@@ -84,14 +127,32 @@ export default function MyFamilyPage() {
   const [profileError, setProfileError] = useState("");
   const [searchText, setSearchText] = useState("");
 
-  // Keep the existing login protection.
+  // Family members will come from the backend later.
+  // For now, only the account owner is displayed.
+  const familyMembers = [
+    {
+      id: "me",
+      name: "Me",
+      relationship: "",
+    },
+  ];
+
+  // =====================================================
+  // AUTHENTICATION PROTECTION
+  // =====================================================
+
   useEffect(() => {
     if (!accessToken) {
-      navigate("/login", { replace: true });
+      navigate("/login", {
+        replace: true,
+      });
     }
   }, [accessToken, navigate]);
 
-  // Retrieve the registered user's name from AWS.
+  // =====================================================
+  // LOAD REGISTERED NAME FROM AWS
+  // =====================================================
+
   useEffect(() => {
     if (!accessToken) return;
 
@@ -99,7 +160,9 @@ export default function MyFamilyPage() {
 
     async function loadProfile() {
       try {
-        const profile = await getFamilyKitProfile(accessToken);
+        const profile = await getFamilyKitProfile(
+          accessToken
+        );
 
         if (!active) return;
 
@@ -108,11 +171,19 @@ export default function MyFamilyPage() {
       } catch (error) {
         if (!active) return;
 
+        console.error(
+          "Unable to retrieve FamilyKit profile:",
+          error
+        );
+
         setProfileError(
-          error.message || "Unable to load your profile."
+          error.message ||
+            "Unable to load your profile."
         );
       } finally {
-        if (active) setProfileLoading(false);
+        if (active) {
+          setProfileLoading(false);
+        }
       }
     }
 
@@ -123,24 +194,47 @@ export default function MyFamilyPage() {
     };
   }, [accessToken]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("familykit_access_token");
-    sessionStorage.removeItem("familykit_id_token");
-    sessionStorage.removeItem("familykit_refresh_token");
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
-    navigate("/", { replace: true });
+  const handleLogout = () => {
+    sessionStorage.removeItem(
+      "familykit_access_token"
+    );
+
+    sessionStorage.removeItem(
+      "familykit_id_token"
+    );
+
+    sessionStorage.removeItem(
+      "familykit_refresh_token"
+    );
+
+    navigate("/", {
+      replace: true,
+    });
   };
 
-  if (!accessToken) return null;
+  // Prevent protected content appearing before redirect.
+  if (!accessToken) {
+    return null;
+  }
 
   return (
     <div className="fk-dash-page">
       <div className="fk-dash-container">
 
-        {/* PROFILE HEADER */}
+        {/* =========================================
+            PROFILE HEADER
+           ========================================= */}
+
         <header className="fk-dash-header">
           <div className="fk-dash-user">
-            <div className="fk-dash-avatar" aria-hidden="true" />
+            <div
+              className="fk-dash-avatar"
+              aria-hidden="true"
+            />
 
             <div className="fk-dash-user-details">
               <h1>
@@ -148,6 +242,7 @@ export default function MyFamilyPage() {
                   ? "Loading..."
                   : yourName || "FamilyKit User"}
               </h1>
+
               <p>Welcome Back!</p>
             </div>
           </div>
@@ -169,27 +264,39 @@ export default function MyFamilyPage() {
               disabled
             >
               <Bell size={19} />
+
               <span className="fk-dash-notification-dot" />
             </button>
           </div>
         </header>
 
         {profileError && (
-          <p className="fk-dash-profile-error" role="alert">
+          <p
+            className="fk-dash-profile-error"
+            role="alert"
+          >
             {profileError}
           </p>
         )}
 
-        {/* SEARCH */}
+        {/* =========================================
+            SEARCH
+           ========================================= */}
+
         <div className="fk-dash-search">
-          <Search size={21} className="fk-dash-search-icon" />
+          <Search
+            size={21}
+            className="fk-dash-search-icon"
+          />
 
           <input
             type="search"
             placeholder="Search Aadhaar Card"
             aria-label="Search documents"
             value={searchText}
-            onChange={(event) => setSearchText(event.target.value)}
+            onChange={(event) =>
+              setSearchText(event.target.value)
+            }
           />
 
           <button
@@ -211,13 +318,19 @@ export default function MyFamilyPage() {
           </button>
         </div>
 
-        {/* NEED ATTENTION */}
+        {/* =========================================
+            NEED ATTENTION
+           ========================================= */}
+
         <section className="fk-dash-section">
           <SectionTitle title="Need Attention" />
 
           <div className="fk-dash-attention-card">
             <div className="fk-dash-attention-symbol">
-              <Bell size={31} fill="currentColor" />
+              <Bell
+                size={31}
+                fill="currentColor"
+              />
             </div>
 
             <h3>No Reminders created yet</h3>
@@ -238,7 +351,10 @@ export default function MyFamilyPage() {
           </div>
         </section>
 
-        {/* UPCOMING EVENTS */}
+        {/* =========================================
+            UPCOMING EVENTS
+           ========================================= */}
+
         <section className="fk-dash-section">
           <SectionTitle title="Upcoming Events" />
 
@@ -259,7 +375,10 @@ export default function MyFamilyPage() {
           </div>
         </section>
 
-        {/* QUICK ACTIONS */}
+        {/* =========================================
+            QUICK ACTIONS
+           ========================================= */}
+
         <section className="fk-dash-section">
           <SectionTitle title="Quick Actions" />
 
@@ -290,58 +409,71 @@ export default function MyFamilyPage() {
           </div>
         </section>
 
-        {/* MY FAMILY */}
+        {/* =========================================
+            MY FAMILY — DYNAMIC SCROLLABLE LAYOUT
+           ========================================= */}
+
         <section className="fk-dash-section">
           <SectionTitle title="My Family" />
 
           <div className="fk-dash-family-card">
-            <div className="fk-dash-family-person">
-              <span className="fk-dash-family-top-label">
-                &nbsp;
-              </span>
+            <div className="fk-dash-family-scroll">
 
-              <span className="fk-dash-family-avatar" />
-              <span className="fk-dash-family-name">Me</span>
-            </div>
+              {/* EXISTING FAMILY MEMBERS */}
+              {familyMembers.map((member) => (
+                <FamilyMemberItem
+                  key={member.id}
+                  member={member}
+                />
+              ))}
 
-            {[1, 2, 3].map((item) => (
-              <div
-                className="fk-dash-family-person"
-                key={item}
-              >
+              {/* ONLY ONE ADD BUTTON */}
+              <div className="fk-dash-family-person">
                 <span className="fk-dash-family-top-label">
-                  Relation
+                  Add Member
                 </span>
 
                 <button
                   type="button"
                   className="fk-dash-family-add"
-                  aria-label={`Add family member ${item}`}
+                  aria-label="Add family member"
                   disabled
                 >
                   <Plus size={27} />
                 </button>
 
                 <span className="fk-dash-family-name">
-                  Name
+                  Add
                 </span>
               </div>
-            ))}
+
+            </div>
           </div>
         </section>
 
-        {/* SMART SUGGESTIONS */}
+        {/* =========================================
+            SMART SUGGESTIONS
+           ========================================= */}
+
         <section className="fk-dash-section fk-dash-last-section">
           <SectionTitle title="Smart Suggestions" />
 
           <div className="fk-dash-suggestion-card">
             <div className="fk-dash-suggestion-icon">
-              <Sparkles size={23} fill="currentColor" />
+              <Sparkles
+                size={23}
+                fill="currentColor"
+              />
             </div>
 
             <div className="fk-dash-suggestion-text">
-              <h3>Smart AI Suggestions for you</h3>
-              <p>FamilyKit AI is Waiting for you</p>
+              <h3>
+                Smart AI Suggestions for you
+              </h3>
+
+              <p>
+                FamilyKit AI is Waiting for you
+              </p>
             </div>
 
             <ChevronRight
@@ -351,7 +483,10 @@ export default function MyFamilyPage() {
           </div>
         </section>
 
-        {/* LOGOUT */}
+        {/* =========================================
+            LOGOUT
+           ========================================= */}
+
         <button
           type="button"
           className="fk-dash-logout"
@@ -360,9 +495,13 @@ export default function MyFamilyPage() {
           <LogOut size={16} />
           Log out
         </button>
+
       </div>
 
-      {/* FIXED BOTTOM NAVIGATION */}
+      {/* =========================================
+          FIXED BOTTOM NAVIGATION
+         ========================================= */}
+
       <nav
         className="fk-dash-bottom-nav"
         aria-label="Dashboard navigation"
