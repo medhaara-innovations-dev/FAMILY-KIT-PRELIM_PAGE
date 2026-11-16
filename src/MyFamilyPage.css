@@ -447,8 +447,8 @@
 
 .fk-dash-family-avatar,
 .fk-dash-family-add {
-  width: 45px;
-  height: 45px;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
   border-radius: 50%;
   display: flex;
@@ -666,8 +666,8 @@
 
   .fk-dash-family-avatar,
   .fk-dash-family-add {
-    width: 40px;
-    height: 40px;
+    width: 58px;
+    height: 58px;
   }
 
   .fk-dash-user-details h1 {
