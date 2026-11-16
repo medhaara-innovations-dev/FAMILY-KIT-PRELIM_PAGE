@@ -1,15 +1,29 @@
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./MyFamilyPage.css";
 import familyKitLogo from "./assets/images/Family kit Logo.png";
 
+import { getFamilyKitProfile } from "./auth/authService.js";
+
 export default function MyFamilyPage() {
   const navigate = useNavigate();
 
-  const accessToken = sessionStorage.getItem("familykit_access_token");
+  // Existing Cognito authentication token
+  const accessToken = sessionStorage.getItem(
+    "familykit_access_token"
+  );
 
-  // Protect the page from unauthenticated access
+  // Registered user profile
+  const [yourName, setYourName] = useState("");
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileError, setProfileError] = useState("");
+
+  // =====================================================
+  // AUTHENTICATION PROTECTION
+  // =====================================================
+
   useEffect(() => {
     if (!accessToken) {
       navigate("/login", {
@@ -18,17 +32,76 @@ export default function MyFamilyPage() {
     }
   }, [accessToken, navigate]);
 
+  // =====================================================
+  // FETCH REGISTERED USER NAME FROM AWS
+  // =====================================================
+
+  useEffect(() => {
+    if (!accessToken) {
+      return;
+    }
+
+    let active = true;
+
+    async function loadUserProfile() {
+      try {
+        const profile = await getFamilyKitProfile(
+          accessToken
+        );
+
+        if (!active) return;
+
+        setYourName(profile.yourName || "");
+        setProfileError("");
+      } catch (error) {
+        if (!active) return;
+
+        console.error(
+          "Unable to retrieve FamilyKit profile:",
+          error
+        );
+
+        setProfileError(
+          error.message ||
+            "Unable to load your profile."
+        );
+      } finally {
+        if (active) {
+          setProfileLoading(false);
+        }
+      }
+    }
+
+    loadUserProfile();
+
+    return () => {
+      active = false;
+    };
+  }, [accessToken]);
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
   const handleLogout = () => {
-    sessionStorage.removeItem("familykit_access_token");
-    sessionStorage.removeItem("familykit_id_token");
-    sessionStorage.removeItem("familykit_refresh_token");
+    sessionStorage.removeItem(
+      "familykit_access_token"
+    );
+
+    sessionStorage.removeItem(
+      "familykit_id_token"
+    );
+
+    sessionStorage.removeItem(
+      "familykit_refresh_token"
+    );
 
     navigate("/", {
       replace: true,
     });
   };
 
-  // Prevent protected content from appearing before redirect
+  // Prevent protected content appearing before redirect
   if (!accessToken) {
     return null;
   }
@@ -62,13 +135,24 @@ export default function MyFamilyPage() {
             YOUR FAMILYKIT
           </p>
 
+          {/* REGISTERED USER NAME */}
           <h1>
-            Welcome to your FamilyKit
+            {profileLoading
+              ? "Loading your profile..."
+              : yourName || "Your FamilyKit"}
           </h1>
 
+          <p>Welcome Back!</p>
+
+          {profileError && (
+            <p role="alert" className="my-family-description">
+              {profileError}
+            </p>
+          )}
+
           <p className="my-family-description">
-            Keep your family's important information organized,
-            secure, and ready when you need it.
+            Keep your family's important information
+            organized, secure, and ready when you need it.
           </p>
         </section>
 
@@ -88,15 +172,17 @@ export default function MyFamilyPage() {
             </h2>
 
             <p>
-              Add your family information and begin organizing
-              the things that matter most.
+              Add your family information and begin
+              organizing the things that matter most.
             </p>
 
             <button
               type="button"
               className="my-family-primary-button"
               onClick={() => {
-                alert("Family setup will be connected next.");
+                alert(
+                  "Family setup will be connected next."
+                );
               }}
             >
               Get started
@@ -116,8 +202,8 @@ export default function MyFamilyPage() {
             </h3>
 
             <p>
-              Your FamilyKit account is authenticated and ready
-              to use.
+              Your FamilyKit account is authenticated
+              and ready to use.
             </p>
           </article>
 
@@ -131,8 +217,8 @@ export default function MyFamilyPage() {
             </h3>
 
             <p>
-              Your family members and important details will
-              appear here.
+              Your family members and important
+              details will appear here.
             </p>
           </article>
 
@@ -146,8 +232,9 @@ export default function MyFamilyPage() {
             </h3>
 
             <p>
-              Add documents, important dates, tasks, notes,
-              and other family information.
+              Add documents, important dates,
+              tasks, notes, and other family
+              information.
             </p>
           </article>
         </section>
