@@ -1,53 +1,105 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import "./MyFamilyPage.css";
-import familyKitLogo from "./assets/images/Family kit Logo.png";
+import {
+  Bell,
+  CalendarDays,
+  Search,
+  Mic,
+  AudioLines,
+  Plus,
+  ChevronRight,
+  ContactRound,
+  BookMarked,
+  StickyNote,
+  CalendarPlus,
+  Sparkles,
+  House,
+  UsersRound,
+  LayoutGrid,
+  CreditCard,
+  LogOut,
+} from "lucide-react";
 
 import { getFamilyKitProfile } from "./auth/authService.js";
+import "./MyFamilyPage.css";
+
+function SectionTitle({ title, onViewAll }) {
+  return (
+    <div className="fk-dash-section-title">
+      <h2>{title}</h2>
+      <button
+        type="button"
+        disabled={!onViewAll}
+        onClick={onViewAll}
+      >
+        View All
+      </button>
+    </div>
+  );
+}
+
+function QuickAction({ icon: Icon, label, tone, onClick }) {
+  return (
+    <button
+      type="button"
+      className="fk-dash-action"
+      onClick={onClick}
+      disabled={!onClick}
+    >
+      <span className={`fk-dash-action-icon ${tone}`}>
+        <Icon size={23} strokeWidth={1.8} />
+      </span>
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function NavItem({ icon: Icon, label, active, onClick }) {
+  return (
+    <button
+      type="button"
+      className={`fk-dash-nav-item ${active ? "active" : ""}`}
+      onClick={onClick}
+      disabled={!onClick}
+      aria-current={active ? "page" : undefined}
+    >
+      <span className="fk-dash-nav-icon">
+        <Icon size={20} strokeWidth={1.8} />
+      </span>
+      <span>{label}</span>
+    </button>
+  );
+}
 
 export default function MyFamilyPage() {
   const navigate = useNavigate();
 
-  // Existing Cognito authentication token
   const accessToken = sessionStorage.getItem(
     "familykit_access_token"
   );
 
-  // Registered user profile
   const [yourName, setYourName] = useState("");
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
+  const [searchText, setSearchText] = useState("");
 
-  // =====================================================
-  // AUTHENTICATION PROTECTION
-  // =====================================================
-
+  // Keep the existing login protection.
   useEffect(() => {
     if (!accessToken) {
-      navigate("/login", {
-        replace: true,
-      });
+      navigate("/login", { replace: true });
     }
   }, [accessToken, navigate]);
 
-  // =====================================================
-  // FETCH REGISTERED USER NAME FROM AWS
-  // =====================================================
-
+  // Retrieve the registered user's name from AWS.
   useEffect(() => {
-    if (!accessToken) {
-      return;
-    }
+    if (!accessToken) return;
 
     let active = true;
 
-    async function loadUserProfile() {
+    async function loadProfile() {
       try {
-        const profile = await getFamilyKitProfile(
-          accessToken
-        );
+        const profile = await getFamilyKitProfile(accessToken);
 
         if (!active) return;
 
@@ -56,189 +108,296 @@ export default function MyFamilyPage() {
       } catch (error) {
         if (!active) return;
 
-        console.error(
-          "Unable to retrieve FamilyKit profile:",
-          error
-        );
-
         setProfileError(
-          error.message ||
-            "Unable to load your profile."
+          error.message || "Unable to load your profile."
         );
       } finally {
-        if (active) {
-          setProfileLoading(false);
-        }
+        if (active) setProfileLoading(false);
       }
     }
 
-    loadUserProfile();
+    loadProfile();
 
     return () => {
       active = false;
     };
   }, [accessToken]);
 
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
   const handleLogout = () => {
-    sessionStorage.removeItem(
-      "familykit_access_token"
-    );
+    sessionStorage.removeItem("familykit_access_token");
+    sessionStorage.removeItem("familykit_id_token");
+    sessionStorage.removeItem("familykit_refresh_token");
 
-    sessionStorage.removeItem(
-      "familykit_id_token"
-    );
-
-    sessionStorage.removeItem(
-      "familykit_refresh_token"
-    );
-
-    navigate("/", {
-      replace: true,
-    });
+    navigate("/", { replace: true });
   };
 
-  // Prevent protected content appearing before redirect
-  if (!accessToken) {
-    return null;
-  }
+  if (!accessToken) return null;
 
   return (
-    <div className="my-family-page">
-      {/* HEADER */}
-      <header className="my-family-header">
-        <div className="my-family-brand">
-          <img
-            src={familyKitLogo}
-            alt="FamilyKit"
-            className="my-family-logo"
-          />
-        </div>
+    <div className="fk-dash-page">
+      <div className="fk-dash-container">
 
-        <button
-          type="button"
-          className="my-family-logout"
-          onClick={handleLogout}
-        >
-          Log out
-        </button>
-      </header>
+        {/* PROFILE HEADER */}
+        <header className="fk-dash-header">
+          <div className="fk-dash-user">
+            <div className="fk-dash-avatar" aria-hidden="true" />
 
-      {/* MAIN CONTENT */}
-      <main className="my-family-main">
-        {/* WELCOME */}
-        <section className="my-family-welcome">
-          <p className="my-family-eyebrow">
-            YOUR FAMILYKIT
-          </p>
-
-          {/* REGISTERED USER NAME */}
-          <h1>
-            {profileLoading
-              ? "Loading your profile..."
-              : yourName || "Your FamilyKit"}
-          </h1>
-
-          <p>Welcome Back!</p>
-
-          {profileError && (
-            <p role="alert" className="my-family-description">
-              {profileError}
-            </p>
-          )}
-
-          <p className="my-family-description">
-            Keep your family's important information
-            organized, secure, and ready when you need it.
-          </p>
-        </section>
-
-        {/* FAMILY CARD */}
-        <section className="my-family-card">
-          <div className="my-family-card-icon">
-            ♡
+            <div className="fk-dash-user-details">
+              <h1>
+                {profileLoading
+                  ? "Loading..."
+                  : yourName || "FamilyKit User"}
+              </h1>
+              <p>Welcome Back!</p>
+            </div>
           </div>
 
-          <div className="my-family-card-content">
-            <p className="my-family-card-label">
-              YOUR FAMILY
-            </p>
+          <div className="fk-dash-header-actions">
+            <button
+              type="button"
+              className="fk-dash-round-button"
+              aria-label="Calendar"
+              disabled
+            >
+              <CalendarDays size={19} />
+            </button>
 
-            <h2>
-              Start building your FamilyKit
-            </h2>
+            <button
+              type="button"
+              className="fk-dash-round-button fk-dash-bell-button"
+              aria-label="Notifications"
+              disabled
+            >
+              <Bell size={19} />
+              <span className="fk-dash-notification-dot" />
+            </button>
+          </div>
+        </header>
+
+        {profileError && (
+          <p className="fk-dash-profile-error" role="alert">
+            {profileError}
+          </p>
+        )}
+
+        {/* SEARCH */}
+        <div className="fk-dash-search">
+          <Search size={21} className="fk-dash-search-icon" />
+
+          <input
+            type="search"
+            placeholder="Search Aadhaar Card"
+            aria-label="Search documents"
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+          />
+
+          <button
+            type="button"
+            className="fk-dash-mic"
+            aria-label="Voice search"
+            disabled
+          >
+            <Mic size={20} />
+          </button>
+
+          <button
+            type="button"
+            className="fk-dash-voice"
+            aria-label="AI voice assistant"
+            disabled
+          >
+            <AudioLines size={19} />
+          </button>
+        </div>
+
+        {/* NEED ATTENTION */}
+        <section className="fk-dash-section">
+          <SectionTitle title="Need Attention" />
+
+          <div className="fk-dash-attention-card">
+            <div className="fk-dash-attention-symbol">
+              <Bell size={31} fill="currentColor" />
+            </div>
+
+            <h3>No Reminders created yet</h3>
 
             <p>
-              Add your family information and begin
-              organizing the things that matter most.
+              Set reminders for bills, renewals and
+              important dates.
             </p>
 
             <button
               type="button"
-              className="my-family-primary-button"
-              onClick={() => {
-                alert(
-                  "Family setup will be connected next."
-                );
-              }}
+              className="fk-dash-outline-button"
+              disabled
             >
-              Get started
+              <Plus size={16} />
+              Add Document
             </button>
           </div>
         </section>
 
-        {/* INFORMATION CARDS */}
-        <section className="my-family-grid">
-          <article className="my-family-info-card">
-            <div className="my-family-info-icon">
-              ✓
+        {/* UPCOMING EVENTS */}
+        <section className="fk-dash-section">
+          <SectionTitle title="Upcoming Events" />
+
+          <div className="fk-dash-events-card">
+            <div className="fk-dash-events-message">
+              <CalendarDays size={20} />
+              <span>No Events Created Yet</span>
             </div>
 
-            <h3>
-              Signed in securely
-            </h3>
-
-            <p>
-              Your FamilyKit account is authenticated
-              and ready to use.
-            </p>
-          </article>
-
-          <article className="my-family-info-card">
-            <div className="my-family-info-icon">
-              ⌂
-            </div>
-
-            <h3>
-              Family information
-            </h3>
-
-            <p>
-              Your family members and important
-              details will appear here.
-            </p>
-          </article>
-
-          <article className="my-family-info-card">
-            <div className="my-family-info-icon">
-              +
-            </div>
-
-            <h3>
-              Build your FamilyKit
-            </h3>
-
-            <p>
-              Add documents, important dates,
-              tasks, notes, and other family
-              information.
-            </p>
-          </article>
+            <button
+              type="button"
+              className="fk-dash-event-button"
+              disabled
+            >
+              Add Event
+              <ChevronRight size={15} />
+            </button>
+          </div>
         </section>
-      </main>
+
+        {/* QUICK ACTIONS */}
+        <section className="fk-dash-section">
+          <SectionTitle title="Quick Actions" />
+
+          <div className="fk-dash-actions-grid">
+            <QuickAction
+              icon={ContactRound}
+              label="Important Contacts"
+              tone="coral"
+            />
+
+            <QuickAction
+              icon={BookMarked}
+              label="Diary"
+              tone="purple"
+            />
+
+            <QuickAction
+              icon={StickyNote}
+              label="Notes"
+              tone="green"
+            />
+
+            <QuickAction
+              icon={CalendarPlus}
+              label="Add Events"
+              tone="orange"
+            />
+          </div>
+        </section>
+
+        {/* MY FAMILY */}
+        <section className="fk-dash-section">
+          <SectionTitle title="My Family" />
+
+          <div className="fk-dash-family-card">
+            <div className="fk-dash-family-person">
+              <span className="fk-dash-family-top-label">
+                &nbsp;
+              </span>
+
+              <span className="fk-dash-family-avatar" />
+              <span className="fk-dash-family-name">Me</span>
+            </div>
+
+            {[1, 2, 3].map((item) => (
+              <div
+                className="fk-dash-family-person"
+                key={item}
+              >
+                <span className="fk-dash-family-top-label">
+                  Relation
+                </span>
+
+                <button
+                  type="button"
+                  className="fk-dash-family-add"
+                  aria-label={`Add family member ${item}`}
+                  disabled
+                >
+                  <Plus size={27} />
+                </button>
+
+                <span className="fk-dash-family-name">
+                  Name
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* SMART SUGGESTIONS */}
+        <section className="fk-dash-section fk-dash-last-section">
+          <SectionTitle title="Smart Suggestions" />
+
+          <div className="fk-dash-suggestion-card">
+            <div className="fk-dash-suggestion-icon">
+              <Sparkles size={23} fill="currentColor" />
+            </div>
+
+            <div className="fk-dash-suggestion-text">
+              <h3>Smart AI Suggestions for you</h3>
+              <p>FamilyKit AI is Waiting for you</p>
+            </div>
+
+            <ChevronRight
+              size={22}
+              className="fk-dash-suggestion-arrow"
+            />
+          </div>
+        </section>
+
+        {/* LOGOUT */}
+        <button
+          type="button"
+          className="fk-dash-logout"
+          onClick={handleLogout}
+        >
+          <LogOut size={16} />
+          Log out
+        </button>
+      </div>
+
+      {/* FIXED BOTTOM NAVIGATION */}
+      <nav
+        className="fk-dash-bottom-nav"
+        aria-label="Dashboard navigation"
+      >
+        <NavItem
+          icon={House}
+          label="Home"
+          active
+          onClick={() => navigate("/my-family")}
+        />
+
+        <NavItem
+          icon={UsersRound}
+          label="My Family"
+        />
+
+        <button
+          type="button"
+          className="fk-dash-center-add"
+          aria-label="Add new"
+          disabled
+        >
+          <Plus size={30} />
+        </button>
+
+        <NavItem
+          icon={LayoutGrid}
+          label="Category"
+        />
+
+        <NavItem
+          icon={CreditCard}
+          label="Pay & Renew"
+        />
+      </nav>
     </div>
   );
 }
