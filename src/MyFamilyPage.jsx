@@ -303,15 +303,19 @@ export default function MyFamilyPage() {
 
         <header className="fk-dash-header">
           <div className="fk-dash-user">
-            <div
+            <button
+              type="button"
               className="fk-dash-avatar"
-              style={{ overflow: "hidden" }}
+              onClick={() => navigate("/my-profile")}
+              aria-label="Open My Profile"
+              style={{ overflow: "hidden", padding: 0, cursor: "pointer" }}
             >
               <ProfileAvatar
                 memberId={SELF_PROFILE_ID}
                 name={yourName || "Me"}
+                className="fk-dash-family-avatar-content"
               />
-            </div>
+            </button>
 
             <div className="fk-dash-user-details">
               <h1>
@@ -522,7 +526,7 @@ export default function MyFamilyPage() {
                   onOpen={() =>
                     navigate(
                       member.id === "me"
-                        ? "/family"
+                        ? "/my-profile"
                         : `/family/${encodeURIComponent(
                             member.id
                           )}`
