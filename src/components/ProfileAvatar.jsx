@@ -72,12 +72,13 @@ export default function ProfileAvatar({
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "cover",
-            objectPosition: "50% 25%",
+            objectFit: "contain",
+            objectPosition: "center",
             borderRadius: "inherit",
             display: "block",
             opacity: 1,
             filter: "none",
+            backgroundColor: "transparent",
           }}
         />
       ) : (
