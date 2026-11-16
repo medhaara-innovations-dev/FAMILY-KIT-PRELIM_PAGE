@@ -29,9 +29,7 @@ export default function ProfileAvatar({
         if (!active) return;
 
         setPhotoUrl(
-          result.hasPhoto
-            ? result.photoUrl || null
-            : null
+          result.hasPhoto ? result.photoUrl || null : null
         );
       } catch (error) {
         console.error(
@@ -62,6 +60,7 @@ export default function ProfileAvatar({
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
+        isolation: "isolate",
       }}
     >
       {photoUrl ? (
@@ -70,12 +69,18 @@ export default function ProfileAvatar({
           alt={name ? `${name}'s profile` : "Profile"}
           onError={() => setPhotoUrl(null)}
           style={{
+            position: "absolute",
+            inset: 0,
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            objectPosition: "center",
+            objectPosition: "50% 25%",
             borderRadius: "inherit",
             display: "block",
+            opacity: 1,
+            filter: "none",
+            mixBlendMode: "normal",
+            transform: "none",
           }}
         />
       ) : (
