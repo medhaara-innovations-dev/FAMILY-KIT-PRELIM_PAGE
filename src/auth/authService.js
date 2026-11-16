@@ -136,7 +136,6 @@ export async function startGoogleLogin(
     createRandomUrlSafeString(32);
 
   // Store PKCE values temporarily.
-
   sessionStorage.setItem(
     GOOGLE_PKCE_VERIFIER_KEY,
     codeVerifier
@@ -187,7 +186,6 @@ export async function completeGoogleLogin(
     );
 
   // Check OAuth error.
-
   const oauthError =
     params.get("error");
 
@@ -199,7 +197,6 @@ export async function completeGoogleLogin(
   }
 
   // Get authorization code.
-
   const code =
     params.get("code");
 
@@ -213,7 +210,6 @@ export async function completeGoogleLogin(
   }
 
   // Load saved PKCE values.
-
   const expectedState =
     sessionStorage.getItem(
       GOOGLE_OAUTH_STATE_KEY
@@ -225,7 +221,6 @@ export async function completeGoogleLogin(
     );
 
   // Validate state.
-
   if (
     !returnedState ||
     !expectedState ||
@@ -243,7 +238,6 @@ export async function completeGoogleLogin(
   }
 
   // Exchange authorization code for Cognito tokens.
-
   const body =
     new URLSearchParams({
       grant_type: "authorization_code",
@@ -272,7 +266,8 @@ export async function completeGoogleLogin(
   let result = null;
 
   try {
-    result = await response.json();
+    result =
+      await response.json();
   } catch {
     result = null;
   }
@@ -292,7 +287,6 @@ export async function completeGoogleLogin(
   }
 
   // Remove temporary PKCE data.
-
   sessionStorage.removeItem(
     GOOGLE_PKCE_VERIFIER_KEY
   );
@@ -302,7 +296,6 @@ export async function completeGoogleLogin(
   );
 
   // Get Google / Cognito user information.
-
   let userInfo = null;
 
   try {
@@ -326,7 +319,6 @@ export async function completeGoogleLogin(
   }
 
   // Return Cognito tokens + profile.
-
   return {
     accessToken:
       result.access_token,
@@ -567,15 +559,16 @@ export async function resendVerificationCode(
 // ======================================================
 // STORE FAMILYKIT 4-DIGIT PIN
 //
-// Store the personal name entered under "Your Name".
+// UPDATED: Save both yourName and familyName.
 //
-// Existing authentication and PIN validation preserved.
+// The backend obtains userId from the authenticated JWT.
 // ======================================================
 
 export async function storeFamilyKitPin(
   accessToken,
   pin,
-  yourName
+  yourName,
+  familyName
 ) {
   if (!accessToken) {
     throw new Error(
@@ -592,7 +585,6 @@ export async function storeFamilyKitPin(
   }
 
   // Validate the registered personal name.
-
   const cleanYourName =
     typeof yourName === "string"
       ? yourName.trim()
@@ -601,6 +593,21 @@ export async function storeFamilyKitPin(
   if (!cleanYourName) {
     throw new Error(
       "Please enter your name."
+    );
+  }
+
+  // NEW: Validate the registered family name.
+  const cleanFamilyName =
+    typeof familyName === "string"
+      ? familyName.trim()
+      : "";
+
+  if (
+    !cleanFamilyName ||
+    cleanFamilyName.length > 100
+  ) {
+    throw new Error(
+      "Family Name must be between 1 and 100 characters."
     );
   }
 
@@ -616,13 +623,12 @@ export async function storeFamilyKitPin(
             `Bearer ${accessToken}`,
         },
 
-        // Send PIN and personal name.
-        // The userId is still obtained from the JWT.
-
+        // UPDATED: Send PIN, personal name and family name.
         body:
           JSON.stringify({
             pin,
             yourName: cleanYourName,
+            familyName: cleanFamilyName,
           }),
       }
     );
@@ -754,7 +760,6 @@ async function resolveLoginUsername(
           "Content-Type":
             "application/json",
         },
-
         body:
           JSON.stringify({
             email:
@@ -816,7 +821,6 @@ export async function startPinLogin(
 
         // Start directly with our
         // FamilyKit custom challenge.
-
         CHALLENGE_NAME:
           "CUSTOM_CHALLENGE",
       },
@@ -1022,21 +1026,18 @@ export async function loginWithFamilyKitPin(
   }
 
   // Resolve email to the actual Cognito username.
-
   const cognitoUsername =
     await resolveLoginUsername(
       normalizedEmail
     );
 
   // Start Cognito CUSTOM_AUTH with actual username.
-
   const loginStart =
     await startPinLogin(
       cognitoUsername
     );
 
   // Answer custom challenge using same Cognito username.
-
   const loginResult =
     await respondToPinChallenge(
       cognitoUsername,
@@ -1056,12 +1057,10 @@ export async function loginWithFamilyKitPin(
 // ======================================================
 // GET FAMILYKIT PROFILE FROM AWS
 //
-// Returns the name entered in "Your Name" during signup.
+// UPDATED: Returns both yourName and familyName.
 //
 // Uses the Cognito access token.
 // The backend identifies the user from the validated JWT.
-//
-// This is required for cross-device name retrieval.
 // ======================================================
 
 export async function getFamilyKitProfile(
@@ -1108,10 +1107,16 @@ export async function getFamilyKitProfile(
     );
   }
 
+  // UPDATED: Return both names from DynamoDB.
   return {
     yourName:
       typeof result.yourName === "string"
         ? result.yourName.trim()
+        : "",
+
+    familyName:
+      typeof result.familyName === "string"
+        ? result.familyName.trim()
         : "",
   };
 }
@@ -1141,7 +1146,7 @@ export const apiConfig = {
 };
 
 // ======================================================
-// NEW: FORGOT PIN API INTEGRATION
+// FORGOT PIN API INTEGRATION
 //
 // These functions are additions only.
 // Existing signup, Google login, Cognito PIN login,

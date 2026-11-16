@@ -22,6 +22,7 @@ export default function FamilyMembersPage() {
   const navigate = useNavigate();
 
   const [primaryUser, setPrimaryUser] = useState(null);
+  const [familyName, setFamilyName] = useState("");
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -57,7 +58,15 @@ export default function FamilyMembersPage() {
       if (profileResult.status === "fulfilled") {
         const profile = profileResult.value;
 
-        // getFamilyKitProfile() returns { yourName: "..." }
+        // Retrieve registered family name from profile API.
+        const registeredFamilyName =
+          typeof profile?.familyName === "string"
+            ? profile.familyName.trim()
+            : "";
+
+        setFamilyName(registeredFamilyName);
+
+        // getFamilyKitProfile() returns yourName and familyName.
         const registeredName =
           typeof profile?.yourName === "string"
             ? profile.yourName.trim()
@@ -76,6 +85,7 @@ export default function FamilyMembersPage() {
         }
       } else {
         setPrimaryUser(null);
+        setFamilyName("");
         setError(
           "Unable to load your registered profile."
         );
@@ -210,7 +220,11 @@ export default function FamilyMembersPage() {
             <UsersRound size={32} />
           </div>
 
-          <h2>My Family</h2>
+          <h2>
+            {familyName
+              ? `${familyName} Family`
+              : "My Family"}
+          </h2>
 
           <p>
             {loading

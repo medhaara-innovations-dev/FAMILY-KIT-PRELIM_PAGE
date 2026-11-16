@@ -610,14 +610,15 @@ export default function SignupPage() {
         await storeFamilyKitPin(
           accessToken,
           pin,
-          yourName.trim()
+          yourName.trim(),
+           familyName.trim()
         );
 
         // Cache the registered personal name for same-device welcome display.
         // The authenticated backend remains the source of truth for account data.
         try {
           localStorage.setItem(`familykit_profile_${email.trim().toLowerCase()}`,
-            JSON.stringify({ yourName: yourName.trim() }));
+            JSON.stringify({ yourName: yourName.trim(), familyName: familyName.trim() }));
         } catch { /* Storage may be unavailable; registration still succeeds. */ }
 
 
