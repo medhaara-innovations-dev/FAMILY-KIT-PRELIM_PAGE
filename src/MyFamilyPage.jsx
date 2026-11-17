@@ -26,6 +26,7 @@ import { getFamilyKitProfile } from "./auth/authService.js";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
+import FamilyCalendar from "./FamilyCalendar.jsx";
 
 import "./MyFamilyPage.css";
 
@@ -151,6 +152,7 @@ export default function MyFamilyPage() {
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const [savedMembers, setSavedMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
@@ -332,8 +334,8 @@ export default function MyFamilyPage() {
             <button
               type="button"
               className="fk-dash-round-button"
-              aria-label="Calendar"
-              disabled
+              aria-label="Open calendar"
+              onClick={() => setCalendarOpen(true)}
             >
               <CalendarDays size={19} />
             </button>
