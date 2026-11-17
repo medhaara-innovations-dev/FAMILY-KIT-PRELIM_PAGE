@@ -163,7 +163,7 @@ export default function MyFamilyPage() {
       id: "me",
       memberId: SELF_PROFILE_ID,
       name: yourName || "Me",
-      relationship: "",
+      relationship: "Me",
     },
     ...savedMembers.map((member) => ({
       ...member,
