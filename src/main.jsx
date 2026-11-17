@@ -1,3 +1,4 @@
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -11,6 +12,9 @@ import FamilyMembersPage from "./FamilyMembersPage.jsx";
 import AddFamilyMemberPage from "./AddFamilyMemberPage.jsx";
 import FamilyMemberProfile from "./FamilyMemberProfile.jsx";
 import MyProfile from "./MyProfile.jsx";
+
+// NEW: Events Calendar page
+import EventsCalendarPage from "./EventsCalendarPage.jsx";
 
 import "./App.css";
 
@@ -27,6 +31,9 @@ createRoot(document.getElementById("root")).render(
         <Route path="/family/add" element={<AddFamilyMemberPage />} />
         <Route path="/family/:memberId" element={<FamilyMemberProfile />} />
         <Route path="/my-profile" element={<MyProfile />} />
+
+        {/* NEW: Events Calendar */}
+        <Route path="/events" element={<EventsCalendarPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

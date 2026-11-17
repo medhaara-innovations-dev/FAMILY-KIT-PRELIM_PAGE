@@ -451,7 +451,7 @@ export default function MyFamilyPage() {
             <button
               type="button"
               className="fk-dash-event-button"
-              disabled
+              onClick={() => navigate("/events")}
             >
               Add Event
               <ChevronRight size={15} />
@@ -489,6 +489,7 @@ export default function MyFamilyPage() {
               icon={CalendarPlus}
               label="Add Events"
               tone="orange"
+              onClick={() => navigate("/events")}
             />
           </div>
         </section>
