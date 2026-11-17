@@ -429,7 +429,7 @@
   padding: 0 10px 5px;
 }
 
-.fk-dash-family-person:not(:last-child)::after {
+.fk-dash-family-person:first-child::after {
   content: "";
   position: absolute;
   right: 0;
