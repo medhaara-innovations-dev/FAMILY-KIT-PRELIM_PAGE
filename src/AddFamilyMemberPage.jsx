@@ -1385,55 +1385,7 @@ export default function AddFamilyMemberPage() {
 
 
 
-            <div className="fk-add-review">
-
-              {[
-
-                ["Full Name", form.name],
-
-                ["Relationship", form.relationship],
-
-                ["Mobile", form.mobile],
-
-                ["Email", form.email],
-
-                ["Blood Group", form.bloodGroup],
-
-                ["Date of Birth", form.dateOfBirth],
-
-                ["Height", form.height],
-
-                ["Weight", form.weight],
-
-                ["Address", form.address],
-
-              ].map(([label, value]) => (
-
-                <div
-
-                  className="fk-add-review-row"
-
-                  key={label}
-
-                >
-
-                  <span>{label}</span>
-
-                  <strong>
-
-                    {value || "Not provided"}
-
-                  </strong>
-
-                </div>
-
-              ))}
-
-            </div>
-
-
-
-                        {/* PHOTO PREVIEW AND EDITING ON REVIEW STEP */}
+            {/* PHOTO PREVIEW AND EDITING ON REVIEW STEP */}
             <div
               style={{
                 display: "flex",
@@ -1524,7 +1476,55 @@ export default function AddFamilyMemberPage() {
 
 
 
-            {saveError && (
+            <div className="fk-add-review">
+
+              {[
+
+                ["Full Name", form.name],
+
+                ["Relationship", form.relationship],
+
+                ["Mobile", form.mobile],
+
+                ["Email", form.email],
+
+                ["Blood Group", form.bloodGroup],
+
+                ["Date of Birth", form.dateOfBirth],
+
+                ["Height", form.height],
+
+                ["Weight", form.weight],
+
+                ["Address", form.address],
+
+              ].map(([label, value]) => (
+
+                <div
+
+                  className="fk-add-review-row"
+
+                  key={label}
+
+                >
+
+                  <span>{label}</span>
+
+                  <strong>
+
+                    {value || "Not provided"}
+
+                  </strong>
+
+                </div>
+
+              ))}
+
+            </div>
+
+
+
+                        {saveError && (
 
               <p
 
