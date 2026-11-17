@@ -28,6 +28,7 @@ import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyCalendar from "./FamilyCalendar.jsx";
 
+
 import "./MyFamilyPage.css";
 
 // =====================================================
@@ -656,6 +657,12 @@ export default function MyFamilyPage() {
           label="Pay & Renew"
         />
       </nav>
+        {/* LIVE CALENDAR POPUP */}
+      {calendarOpen && (
+        <FamilyCalendar
+          onClose={() => setCalendarOpen(false)}
+        />
+      )}
     </div>
   );
 }
