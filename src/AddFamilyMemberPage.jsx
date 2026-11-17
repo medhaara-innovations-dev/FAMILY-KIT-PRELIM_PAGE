@@ -35,6 +35,7 @@ import { uploadProfilePicture } from "./api/profilePicturesApi.js";
 
 
 import "./AddFamilyMemberPage.css";
+import ProfilePhotoCropper from "./ProfilePhotoCropper.jsx";
 
 
 
@@ -141,6 +142,7 @@ export default function AddFamilyMemberPage() {
 
 
   const [photoFile, setPhotoFile] = useState(null);
+  const [cropSourceFile, setCropSourceFile] = useState(null);
 
   const [photoPreview, setPhotoPreview] = useState(null);
 
@@ -266,14 +268,19 @@ export default function AddFamilyMemberPage() {
 
 
 
-    setPhotoFile(file);
-
-    setPhotoPreview(URL.createObjectURL(file));
+    setCropSourceFile(file);
     event.target.value = "";
 
   };
 
 
+
+  const confirmCroppedPhoto = (croppedFile) => {
+    setPhotoFile(croppedFile);
+    setPhotoPreview(URL.createObjectURL(croppedFile));
+    setCropSourceFile(null);
+    setPhotoError("");
+  };
 
   // =====================================================
 
@@ -286,6 +293,7 @@ export default function AddFamilyMemberPage() {
   const removeSelectedPhoto = () => {
 
     setPhotoFile(null);
+    setCropSourceFile(null);
 
     setPhotoPreview(null);
 
@@ -720,6 +728,13 @@ export default function AddFamilyMemberPage() {
   return (
 
     <div className="fk-add-page">
+      {cropSourceFile && (
+        <ProfilePhotoCropper
+          file={cropSourceFile}
+          onConfirm={confirmCroppedPhoto}
+          onCancel={() => setCropSourceFile(null)}
+        />
+      )}
 
       <header className="fk-add-header">
 
