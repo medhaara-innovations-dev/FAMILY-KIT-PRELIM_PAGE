@@ -70,10 +70,16 @@
   font-size: 13px;
 }
 .fk-calendar-today {
-  border: 2.5px solid #e02e42;
-  color: #b71c32;
-  font-weight: 800;
-  background: #fff5f5;
+   background: #4e1caa;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 .fk-calendar-footer {
   display: flex;
