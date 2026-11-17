@@ -8,6 +8,7 @@ import {
   deleteProfilePicture,
 } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
+import ProfilePhotoCropper from "./ProfilePhotoCropper.jsx";
 import "./MyProfile.css";
 
 export default function MyProfile() {
@@ -16,6 +17,7 @@ export default function MyProfile() {
   const [name, setName] = useState("Me");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [photoToCrop, setPhotoToCrop] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -41,7 +43,7 @@ export default function MyProfile() {
     return () => { active = false; };
   }, [navigate]);
 
-  async function handleUpload(event) {
+  function handleUpload(event) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file || busy) return;
@@ -55,13 +57,21 @@ export default function MyProfile() {
       setError("Photo must not exceed 5 MB.");
       return;
     }
+    setPhotoToCrop(file);
+  }
+
+  async function handleCropConfirm(croppedFile) {
+    if (busy) return;
     setBusy(true);
+    setError("");
+    setSuccess("");
     try {
-      await uploadProfilePicture(SELF_PROFILE_ID, file);
+      await uploadProfilePicture(SELF_PROFILE_ID, croppedFile);
       setRefreshKey((key) => key + 1);
       setSuccess("Profile photo updated successfully.");
+      setPhotoToCrop(null);
     } catch (err) {
-      setError(err.message || "Unable to upload photo.");
+      setError(err.message || "Unable to upload photo. Please try confirming again.");
     } finally {
       setBusy(false);
     }
@@ -116,6 +126,13 @@ export default function MyProfile() {
           {success && <p className="fk-my-profile-success" role="status">{success}</p>}
         </section>
       </main>
+      {photoToCrop && (
+        <ProfilePhotoCropper
+          file={photoToCrop}
+          onConfirm={handleCropConfirm}
+          onCancel={() => { if (!busy) setPhotoToCrop(null); }}
+        />
+      )}
     </div>
   );
 }
