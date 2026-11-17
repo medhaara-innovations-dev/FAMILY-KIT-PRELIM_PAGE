@@ -487,7 +487,7 @@ export default function MyFamilyPage() {
 
             <QuickAction
               icon={CalendarPlus}
-              label="Add Events"
+              label="Events"
               tone="orange"
               onClick={() => navigate("/events")}
             />
