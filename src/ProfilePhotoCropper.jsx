@@ -107,8 +107,6 @@ export default function ProfilePhotoCropper({ file, onConfirm, onCancel }) {
           <h2 style={{ margin: 0, fontSize: 22 }}>Crop Profile Photo</h2>
           <button type="button" aria-label="Cancel crop" onClick={onCancel} disabled={busy} style={{ background: "none", border: 0, color: "#2D0B84", padding: 6 }}><X size={23} /></button>
         </div>
-        <p style={{ fontSize: 13, color: "#4D485A", margin: "4px 0 12px" }}>Original photo (nothing has been changed yet)</p>
-        {source && <img src={source} alt="Complete original photo" style={{ width: "100%", height: 105, objectFit: "contain", background: "#f4f0fc", borderRadius: 10 }} />}
         <p style={{ fontSize: 13, color: "#4D485A", margin: "12px 0 8px" }}>Drag and zoom to position the face inside the circle.</p>
         <div onPointerDown={startDrag} onPointerMove={drag} onPointerUp={stopDrag} onPointerCancel={stopDrag} style={{ position: "relative", width: "min(280px, 100%)", aspectRatio: "1", margin: "0 auto", overflow: "hidden", touchAction: "none", background: "#eae4f4", cursor: "grab", borderRadius: 8 }}>
           {dimensions && <img src={source} alt="Photo being cropped" draggable={false} style={{ position: "absolute", width: displayWidth, height: displayHeight, maxWidth: "none", left: `calc(50% + ${currentX}px)`, top: `calc(50% + ${currentY}px)`, transform: "translate(-50%, -50%)", pointerEvents: "none", userSelect: "none" }} />}
