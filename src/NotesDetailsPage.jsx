@@ -12,14 +12,45 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-import { createNote } from "./api/notesApi";
+import {
+  createNote,
+  updateNote,
+} from "./api/notesApi";
+
 import "./NotesDetailsPage.css";
 
 export default function NotesDetailsPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // =====================================================
+  // NOTE DATA FROM EDITOR
+  // =====================================================
+
   const noteText = location.state?.noteText || "";
+
+  const noteId = location.state?.noteId || null;
+
+  const noteTitle =
+    location.state?.noteTitle || "Untitled Note";
+
+  const hasReminder =
+    location.state?.hasReminder === true;
+
+  const originalText =
+    location.state?.originalText ?? "";
+
+  const isEditing = Boolean(noteId);
+
+  // A new note is unsaved if it contains text.
+  // An existing note is unsaved only if modified.
+  const hasUnsavedChanges = isEditing
+    ? noteText !== originalText
+    : noteText.trim().length > 0;
+
+  // =====================================================
+  // STATE
+  // =====================================================
 
   const [modal, setModal] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -29,11 +60,37 @@ export default function NotesDetailsPage() {
   const savedRef = useRef(false);
   const savingRef = useRef(false);
 
-  // Warn before closing or refreshing the browser.
+  // =====================================================
+  // RETURN TO THE CORRECT EDITOR
+  // =====================================================
+
+  const editorPath = isEditing
+    ? `/notes/${encodeURIComponent(noteId)}/edit`
+    : "/notes/new";
+
+  const returnToEditor = () => {
+    leavingRef.current = true;
+    setModal(null);
+
+    navigate(editorPath, {
+      replace: true,
+      state: {
+        noteText,
+        noteTitle,
+        hasReminder,
+        originalText,
+      },
+    });
+  };
+
+  // =====================================================
+  // WARN BEFORE REFRESH / CLOSE
+  // =====================================================
+
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (
-        noteText.trim() &&
+        hasUnsavedChanges &&
         !savedRef.current &&
         !leavingRef.current
       ) {
@@ -53,9 +110,12 @@ export default function NotesDetailsPage() {
         handleBeforeUnload
       );
     };
-  }, [noteText]);
+  }, [hasUnsavedChanges]);
 
-  // Handle Android and browser back navigation.
+  // =====================================================
+  // BROWSER / ANDROID BACK
+  // =====================================================
+
   useEffect(() => {
     const guardId = `notes-details-${Date.now()}`;
 
@@ -75,13 +135,10 @@ export default function NotesDetailsPage() {
         return;
       }
 
-      if (savedRef.current) {
-        leavingRef.current = true;
-        navigate("/notes", { replace: true });
-        return;
-      }
-
-      if (noteText.trim()) {
+      if (
+        hasUnsavedChanges &&
+        !savedRef.current
+      ) {
         window.history.pushState(
           { familyKitNotesGuard: guardId },
           ""
@@ -89,10 +146,7 @@ export default function NotesDetailsPage() {
 
         setModal("unsaved");
       } else {
-        leavingRef.current = true;
-        navigate("/notes/new", {
-          replace: true,
-        });
+        returnToEditor();
       }
     };
 
@@ -107,36 +161,34 @@ export default function NotesDetailsPage() {
         handlePopState
       );
     };
-  }, [navigate, noteText]);
+  }, [hasUnsavedChanges, navigate, editorPath]);
+
+  // =====================================================
+  // APP BACK BUTTON
+  // =====================================================
 
   const handleBack = () => {
     if (savingRef.current) return;
 
-    if (noteText.trim() && !savedRef.current) {
+    if (
+      hasUnsavedChanges &&
+      !savedRef.current
+    ) {
       setModal("unsaved");
       return;
     }
 
-    leavingRef.current = true;
-
-    navigate("/notes/new", {
-      replace: true,
-      state: { noteText },
-    });
+    returnToEditor();
   };
 
-  const handleConfirmBack = () => {
-    leavingRef.current = true;
-    setModal(null);
-
-    navigate("/notes/new", {
-      replace: true,
-      state: { noteText },
-    });
-  };
+  // =====================================================
+  // SAVE NEW NOTE OR UPDATE EXISTING NOTE
+  // =====================================================
 
   const handleSave = async (withReminder) => {
-    if (savingRef.current) return;
+    if (savingRef.current || savedRef.current) {
+      return;
+    }
 
     if (!noteText.trim()) {
       setError("Please enter a note before saving.");
@@ -149,14 +201,30 @@ export default function NotesDetailsPage() {
     setModal(null);
 
     try {
-      const result = await createNote({
-        title: "Untitled Note",
-        content: noteText.trim(),
-        reminder: withReminder,
-      });
+      let result;
+
+      if (isEditing) {
+        // Update the SAME DynamoDB note.
+        result = await updateNote(noteId, {
+          title: noteTitle,
+          content: noteText.trim(),
+          reminder: withReminder,
+        });
+      } else {
+        // Create a new DynamoDB note.
+        result = await createNote({
+          title: noteTitle,
+          content: noteText.trim(),
+          reminder: withReminder,
+        });
+      }
 
       if (!result.success) {
-        throw new Error("Unable to save your note.");
+        throw new Error(
+          isEditing
+            ? "Unable to update your note."
+            : "Unable to save your note."
+        );
       }
 
       savedRef.current = true;
@@ -177,6 +245,10 @@ export default function NotesDetailsPage() {
     }
   };
 
+  // =====================================================
+  // SUCCESS → MY NOTES
+  // =====================================================
+
   const closeSuccess = () => {
     leavingRef.current = true;
     setModal(null);
@@ -186,9 +258,15 @@ export default function NotesDetailsPage() {
     });
   };
 
+  // =====================================================
+  // RENDER
+  // =====================================================
+
   return (
     <main className="fk-note-details-page">
       <div className="fk-note-details-container">
+
+        {/* HEADER */}
         <header className="fk-note-details-header">
           <button
             type="button"
@@ -203,9 +281,11 @@ export default function NotesDetailsPage() {
           <h1>AI Extracted Details</h1>
         </header>
 
+        {/* NOTE PREVIEW */}
         <section className="fk-note-details-card">
           <div className="fk-note-details-title">
             <FileText size={20} />
+
             <h2>Your Notes</h2>
           </div>
 
@@ -214,14 +294,19 @@ export default function NotesDetailsPage() {
           </div>
         </section>
 
+        {/* AI PLACEHOLDER */}
         <section className="fk-note-details-ai-card">
           <div className="fk-note-details-title">
             <Sparkles size={21} />
+
             <h2>AI Extracted Details</h2>
           </div>
 
           <div className="fk-note-details-extraction-box">
-            <Sparkles size={30} strokeWidth={1.5} />
+            <Sparkles
+              size={30}
+              strokeWidth={1.5}
+            />
 
             <p>
               AI summarisation and information extraction
@@ -234,6 +319,7 @@ export default function NotesDetailsPage() {
           </div>
         </section>
 
+        {/* ERROR */}
         {error && (
           <div
             className="fk-note-details-error"
@@ -244,29 +330,48 @@ export default function NotesDetailsPage() {
           </div>
         )}
 
+        {/* SAVE BUTTONS */}
         <div className="fk-note-details-actions">
           <button
             type="button"
             className="fk-note-details-reminder-btn"
             onClick={() => handleSave(true)}
-            disabled={saving || !noteText.trim()}
+            disabled={
+              saving ||
+              savedRef.current ||
+              !noteText.trim()
+            }
           >
             <Bell size={19} />
 
             {saving
               ? "Saving..."
+              : isEditing
+              ? "Update Notes & Add Reminder"
               : "Save Notes & Add Reminder"}
           </button>
 
           <button
             type="button"
             className="fk-note-details-save-btn"
-            onClick={() => handleSave(false)}
-            disabled={saving || !noteText.trim()}
+            onClick={() =>
+              handleSave(
+                isEditing ? hasReminder : false
+              )
+            }
+            disabled={
+              saving ||
+              savedRef.current ||
+              !noteText.trim()
+            }
           >
             <Save size={19} />
 
-            {saving ? "Saving..." : "Save Notes Only"}
+            {saving
+              ? "Saving..."
+              : isEditing
+              ? "Save Changes"
+              : "Save Notes Only"}
           </button>
         </div>
 
@@ -277,6 +382,7 @@ export default function NotesDetailsPage() {
         </p>
       </div>
 
+      {/* MODALS */}
       {modal && (
         <div className="fk-note-details-modal-overlay">
           <div
@@ -285,6 +391,7 @@ export default function NotesDetailsPage() {
             aria-modal="true"
             aria-labelledby="fk-note-modal-title"
           >
+            {/* UNSAVED WARNING */}
             {modal === "unsaved" && (
               <>
                 <div className="fk-note-details-modal-icon warning">
@@ -309,7 +416,7 @@ export default function NotesDetailsPage() {
                   <button
                     type="button"
                     className="fk-note-details-modal-primary"
-                    onClick={handleConfirmBack}
+                    onClick={returnToEditor}
                   >
                     Yes
                   </button>
@@ -317,6 +424,7 @@ export default function NotesDetailsPage() {
               </>
             )}
 
+            {/* SAVE SUCCESS */}
             {modal === "saveSuccess" && (
               <>
                 <div className="fk-note-details-modal-icon success">
@@ -324,11 +432,15 @@ export default function NotesDetailsPage() {
                 </div>
 
                 <h2 id="fk-note-modal-title">
-                  Notes Saved!
+                  {isEditing
+                    ? "Notes Updated!"
+                    : "Notes Saved!"}
                 </h2>
 
                 <p>
-                  Your note has been saved successfully.
+                  {isEditing
+                    ? "Your note has been updated successfully."
+                    : "Your note has been saved successfully."}
                 </p>
 
                 <button
@@ -341,6 +453,7 @@ export default function NotesDetailsPage() {
               </>
             )}
 
+            {/* REMINDER SUCCESS */}
             {modal === "reminderSuccess" && (
               <>
                 <div className="fk-note-details-modal-icon success">
@@ -348,7 +461,9 @@ export default function NotesDetailsPage() {
                 </div>
 
                 <h2 id="fk-note-modal-title">
-                  Note Saved!
+                  {isEditing
+                    ? "Note Updated!"
+                    : "Note Saved!"}
                 </h2>
 
                 <p>

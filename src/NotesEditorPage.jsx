@@ -1,6 +1,11 @@
 
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  useParams,
+} from "react-router-dom";
+
 import {
   ArrowLeft,
   Sparkles,
@@ -8,31 +13,116 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+import { getNote } from "./api/notesApi";
+
 import "./NotesEditorPage.css";
 import "./NotesDetailsPage.css";
 
 export default function NotesEditorPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { noteId } = useParams();
+
+  const isEditing = Boolean(noteId);
+
+  // Data returned when navigating back from details.
+  const returnedDraft = location.state || {};
 
   const [noteText, setNoteText] = useState(
-    location.state?.noteText || ""
+    returnedDraft.noteText || ""
   );
 
+  const [originalText, setOriginalText] = useState("");
+  const [noteTitle, setNoteTitle] = useState(
+    returnedDraft.noteTitle || "Untitled Note"
+  );
+  const [hasReminder, setHasReminder] = useState(
+    returnedDraft.hasReminder ?? false
+  );
+
+  const [loading, setLoading] = useState(isEditing);
+  const [error, setError] = useState("");
   const [showUnsavedPopup, setShowUnsavedPopup] =
     useState(false);
 
-  const noteTextRef = useRef(noteText);
   const leavingRef = useRef(false);
+  const dirtyRef = useRef(false);
 
-  noteTextRef.current = noteText;
+  const isDirty = isEditing
+    ? noteText !== originalText
+    : noteText.trim().length > 0;
 
-  // Warn if the user closes or reloads the browser.
+  dirtyRef.current = isDirty;
+
+  // =====================================================
+  // LOAD EXISTING NOTE FROM DYNAMODB
+  // =====================================================
+
+  useEffect(() => {
+    if (!isEditing) return;
+
+    let active = true;
+
+    async function loadExistingNote() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const result = await getNote(noteId);
+
+        if (!active) return;
+
+        const savedNote = result.note || result;
+
+        if (!savedNote || !savedNote.noteId) {
+          throw new Error("Note not found.");
+        }
+
+        const savedContent = savedNote.content || "";
+
+        // If returning from details, preserve the draft.
+        const draft =
+          returnedDraft.noteText !== undefined
+            ? returnedDraft.noteText
+            : savedContent;
+
+        setNoteText(draft);
+        setOriginalText(savedContent);
+
+        setNoteTitle(
+          savedNote.title || "Untitled Note"
+        );
+
+        setHasReminder(savedNote.reminder === true);
+      } catch (err) {
+        if (!active) return;
+
+        setError(
+          err.message || "Unable to load this note."
+        );
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadExistingNote();
+
+    return () => {
+      active = false;
+    };
+  }, [isEditing, noteId]);
+
+  // =====================================================
+  // WARN BEFORE REFRESH OR TAB CLOSE
+  // =====================================================
+
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (
-        !leavingRef.current &&
-        noteTextRef.current.trim()
+        dirtyRef.current &&
+        !leavingRef.current
       ) {
         event.preventDefault();
         event.returnValue = "";
@@ -52,7 +142,10 @@ export default function NotesEditorPage() {
     };
   }, []);
 
-  // Handle browser back and Android system back.
+  // =====================================================
+  // HANDLE BROWSER / ANDROID BACK
+  // =====================================================
+
   useEffect(() => {
     const guardId = `notes-editor-${Date.now()}`;
 
@@ -64,7 +157,7 @@ export default function NotesEditorPage() {
     const handlePopState = () => {
       if (leavingRef.current) return;
 
-      if (noteTextRef.current.trim()) {
+      if (dirtyRef.current) {
         window.history.pushState(
           { familyKitNotesGuard: guardId },
           ""
@@ -73,7 +166,10 @@ export default function NotesEditorPage() {
         setShowUnsavedPopup(true);
       } else {
         leavingRef.current = true;
-        navigate("/notes", { replace: true });
+
+        navigate("/notes", {
+          replace: true,
+        });
       }
     };
 
@@ -90,39 +186,63 @@ export default function NotesEditorPage() {
     };
   }, [navigate]);
 
+  // =====================================================
+  // APP BACK BUTTON
+  // =====================================================
+
   const handleBack = () => {
-    if (noteText.trim()) {
+    if (isDirty) {
       setShowUnsavedPopup(true);
       return;
     }
 
     leavingRef.current = true;
-    navigate("/notes", { replace: true });
+
+    navigate("/notes", {
+      replace: true,
+    });
   };
+
+  // =====================================================
+  // CONTINUE TO DETAILS
+  // =====================================================
 
   const handleContinue = () => {
     if (!noteText.trim()) {
-      alert("Please write your note before continuing.");
+      setError("Please write your note before continuing.");
       return;
     }
 
     leavingRef.current = true;
 
     navigate("/notes/details", {
-      state: { noteText },
+      state: {
+        noteText,
+        noteId: isEditing ? noteId : null,
+        noteTitle,
+        hasReminder,
+        originalText,
+      },
     });
   };
+
+  // =====================================================
+  // DISCARD UNSAVED CHANGES
+  // =====================================================
 
   const handleDiscard = () => {
     leavingRef.current = true;
     setShowUnsavedPopup(false);
 
-    navigate("/notes", { replace: true });
+    navigate("/notes", {
+      replace: true,
+    });
   };
 
   return (
     <main className="fk-note-editor-page">
       <div className="fk-note-editor-container">
+
         <header className="fk-note-editor-header">
           <button
             type="button"
@@ -133,46 +253,82 @@ export default function NotesEditorPage() {
             <ArrowLeft size={22} />
           </button>
 
-          <h1>Add Notes Today</h1>
+          <h1>
+            {isEditing ? "Edit Notes" : "Add Notes Today"}
+          </h1>
         </header>
 
-        <section className="fk-note-editor-card">
-          <div className="fk-note-editor-label">
-            <FileText size={20} />
-            <h2>Write Your Notes</h2>
-          </div>
+        {loading ? (
+          <section className="fk-note-editor-card">
+            <p>Loading your saved note...</p>
+          </section>
+        ) : error && !noteText ? (
+          <section className="fk-note-editor-card">
+            <p role="alert">{error}</p>
 
-          <textarea
-            className="fk-note-editor-textarea"
-            placeholder="Start writing your thoughts, important information, ideas or reminders here..."
-            value={noteText}
-            onChange={(event) =>
-              setNoteText(event.target.value)
-            }
-            maxLength={10000}
-          />
+            <button
+              type="button"
+              onClick={() => navigate("/notes")}
+            >
+              Back to My Notes
+            </button>
+          </section>
+        ) : (
+          <>
+            <section className="fk-note-editor-card">
+              <div className="fk-note-editor-label">
+                <FileText size={20} />
+                <h2>
+                  {isEditing
+                    ? "Edit Your Notes"
+                    : "Write Your Notes"}
+                </h2>
+              </div>
 
-          <div className="fk-note-editor-character-count">
-            {noteText.length} / 10000 characters
-          </div>
-        </section>
+              <textarea
+                className="fk-note-editor-textarea"
+                placeholder="Start writing your thoughts, important information, ideas or reminders here..."
+                value={noteText}
+                onChange={(event) => {
+                  setNoteText(event.target.value);
+                  setError("");
+                }}
+                maxLength={10000}
+              />
 
-        <div className="fk-note-editor-ai-message">
-          <Sparkles size={20} />
-          <p>
-            AI will summarise your data in the next page.
-          </p>
-        </div>
+              <div className="fk-note-editor-character-count">
+                {noteText.length} / 10000 characters
+              </div>
+            </section>
 
-        <button
-          type="button"
-          className="fk-note-editor-continue"
-          onClick={handleContinue}
-          disabled={!noteText.trim()}
-        >
-          <Sparkles size={19} />
-          Summarise with AI
-        </button>
+            <div className="fk-note-editor-ai-message">
+              <Sparkles size={20} />
+
+              <p>
+                AI will summarise your data in the next page.
+              </p>
+            </div>
+
+            {error && (
+              <p role="alert" style={{ color: "#b42323" }}>
+                {error}
+              </p>
+            )}
+
+            <button
+              type="button"
+              className="fk-note-editor-continue"
+              onClick={handleContinue}
+              disabled={!noteText.trim()}
+            >
+              <Sparkles size={19} />
+
+              {isEditing
+                ? "Continue to Save Changes"
+                : "Summarise with AI"}
+            </button>
+          </>
+        )}
       </div>
 
       {showUnsavedPopup && (

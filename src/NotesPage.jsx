@@ -44,7 +44,9 @@ export default function NotesPage() {
 
         setNotes(
           [...(result.notes || [])].sort((a, b) =>
-            (b.createdAt || "").localeCompare(a.createdAt || "")
+            (b.createdAt || "").localeCompare(
+              a.createdAt || ""
+            )
           )
         );
       } catch (err) {
@@ -68,6 +70,13 @@ export default function NotesPage() {
       .toLowerCase()
       .includes(searchText.toLowerCase())
   );
+
+  // Open the existing note using its DynamoDB noteId.
+  const handleOpenNote = (note) => {
+    navigate(
+      `/notes/${encodeURIComponent(note.noteId)}/edit`
+    );
+  };
 
   return (
     <main className="fk-notes-page">
@@ -101,6 +110,7 @@ export default function NotesPage() {
         {searchOpen && (
           <div className="fk-notes-search-panel">
             <Search size={18} />
+
             <input
               type="search"
               autoFocus
@@ -116,6 +126,7 @@ export default function NotesPage() {
         <section className="fk-notes-hero">
           <div className="fk-notes-hero-copy">
             <h2>Your thoughts, all in one place.</h2>
+
             <p>
               Capture important information, ideas and
               things you want to remember.
@@ -139,14 +150,20 @@ export default function NotesPage() {
         <section className="fk-notes-entries">
           <div className="fk-notes-section-heading">
             <h2>All Entries</h2>
+
             <span className="fk-notes-count">
-              {notes.length} {notes.length === 1 ? "Entry" : "Entries"}
+              {notes.length}{" "}
+              {notes.length === 1 ? "Entry" : "Entries"}
             </span>
           </div>
 
           {error && (
-            <div className="fk-notes-error" role="alert">
+            <div
+              className="fk-notes-error"
+              role="alert"
+            >
               {error}
+
               <button
                 type="button"
                 onClick={() => window.location.reload()}
@@ -157,13 +174,22 @@ export default function NotesPage() {
           )}
 
           {loading ? (
-            <p className="fk-notes-status">Loading your notes...</p>
+            <p className="fk-notes-status">
+              Loading your notes...
+            </p>
           ) : !error && filteredNotes.length === 0 ? (
             <div className="fk-notes-empty">
-              <StickyNote size={42} strokeWidth={1.4} />
+              <StickyNote
+                size={42}
+                strokeWidth={1.4}
+              />
+
               <h3>
-                {searchText ? "No matching notes" : "No notes yet"}
+                {searchText
+                  ? "No matching notes"
+                  : "No notes yet"}
               </h3>
+
               <p>
                 {searchText
                   ? "Try searching for something else."
@@ -173,11 +199,26 @@ export default function NotesPage() {
           ) : (
             <div className="fk-notes-grid">
               {filteredNotes.map((note) => (
-                <article
+                <button
+                  type="button"
                   className="fk-notes-card"
                   key={note.noteId}
+                  onClick={() => handleOpenNote(note)}
+                  aria-label={`Open ${
+                    note.title || "Untitled Note"
+                  } for editing`}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "left",
+                    font: "inherit",
+                    color: "inherit",
+                    cursor: "pointer",
+                  }}
                 >
-                  <h3>{note.title || "Untitled Note"}</h3>
+                  <h3>
+                    {note.title || "Untitled Note"}
+                  </h3>
 
                   <p className="fk-notes-preview">
                     {note.content}
@@ -197,14 +238,17 @@ export default function NotesPage() {
                       )}
                     </div>
                   )}
-                </article>
+                </button>
               ))}
             </div>
           )}
         </section>
       </div>
 
-      <nav className="fk-notes-bottom-nav" aria-label="Main navigation">
+      <nav
+        className="fk-notes-bottom-nav"
+        aria-label="Main navigation"
+      >
         <button
           type="button"
           onClick={() => navigate("/my-family")}

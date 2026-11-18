@@ -71,7 +71,17 @@ createRoot(document.getElementById("root")).render(
         {/* My Notes */}
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/notes/new" element={<NotesEditorPage />} />
-        <Route path="/notes/details" element={<NotesDetailsPage />} />
+
+        {/* Edit an existing saved note */}
+        <Route
+          path="/notes/:noteId/edit"
+          element={<NotesEditorPage />}
+        />
+
+        <Route
+          path="/notes/details"
+          element={<NotesDetailsPage />}
+        />
       </Routes>
     </BrowserRouter>
   </StrictMode>
