@@ -18,21 +18,13 @@ import { getNotes } from "./api/notesApi";
 import "./NotesPage.css";
 
 // =====================================================
-// IST TIMESTAMP HANDLING
+// IST DATE HANDLING
 // =====================================================
-
-// DynamoDB timestamps should ideally be ISO 8601,
-// for example: 2026-11-18T15:30:00+05:30.
-//
-// If the backend sends a timestamp without a timezone,
-// interpret it as IST rather than browser-local time.
 
 function parseISTTimestamp(timestamp) {
   if (!timestamp) return null;
 
   const value = String(timestamp).trim();
-
-  if (!value) return null;
 
   const normalized = value.replace(" ", "T");
 
@@ -43,58 +35,78 @@ function parseISTTimestamp(timestamp) {
     ? normalized
     : `${normalized}+05:30`;
 
-  const parsedDate = new Date(dateString);
+  const date = new Date(dateString);
 
-  return Number.isNaN(parsedDate.getTime())
+  return Number.isNaN(date.getTime())
     ? null
-    : parsedDate;
+    : date;
 }
 
 // =====================================================
-// RELATIVE TIME FORMATTER
+// FORMAT DATE AND TIME IN IST
+// =====================================================
+
+function formatISTDateTime(timestamp) {
+  const date = parseISTTimestamp(timestamp);
+
+  if (!date) return "";
+
+  const datePart = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+
+  const timePart = new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+
+  return `${datePart}, ${timePart}`;
+}
+
+// =====================================================
+// RELATIVE CREATION TIME
 // =====================================================
 
 function getRelativeTime(createdAt, now) {
-  const createdDate = parseISTTimestamp(createdAt);
+  const date = parseISTTimestamp(createdAt);
 
-  if (!createdDate) return "";
+  if (!date) return "";
 
-  const elapsedMilliseconds = Math.max(
+  const elapsed = Math.max(
     0,
-    now - createdDate.getTime()
+    now - date.getTime()
   );
 
-  const elapsedMinutes = Math.floor(
-    elapsedMilliseconds / (1000 * 60)
-  );
+  const minutes = Math.floor(elapsed / 60000);
 
-  if (elapsedMinutes < 1) {
+  if (minutes < 1) {
     return "Just now";
   }
 
-  if (elapsedMinutes < 60) {
-    return elapsedMinutes === 1
+  if (minutes < 60) {
+    return minutes === 1
       ? "1 minute ago"
-      : `${elapsedMinutes} minutes ago`;
+      : `${minutes} minutes ago`;
   }
 
-  const elapsedHours = Math.floor(
-    elapsedMilliseconds / (1000 * 60 * 60)
-  );
+  const hours = Math.floor(elapsed / 3600000);
 
-  if (elapsedHours < 24) {
-    return elapsedHours === 1
+  if (hours < 24) {
+    return hours === 1
       ? "1 hour ago"
-      : `${elapsedHours} hours ago`;
+      : `${hours} hours ago`;
   }
 
-  const elapsedDays = Math.floor(
-    elapsedMilliseconds / (1000 * 60 * 60 * 24)
-  );
+  const days = Math.floor(elapsed / 86400000);
 
-  return elapsedDays === 1
+  return days === 1
     ? "1 day ago"
-    : `${elapsedDays} days ago`;
+    : `${days} days ago`;
 }
 
 // =====================================================
@@ -111,11 +123,10 @@ export default function NotesPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  // Used to refresh relative timestamps.
   const [now, setNow] = useState(() => Date.now());
 
   // =====================================================
-  // LOAD ALL NOTES FROM DYNAMODB
+  // LOAD NOTES
   // =====================================================
 
   useEffect(() => {
@@ -138,13 +149,13 @@ export default function NotesPage() {
         const sortedNotes = [
           ...(result.notes || []),
         ].sort((a, b) => {
-          const firstTime =
-            parseISTTimestamp(a.createdAt)?.getTime() ?? 0;
+          const aTime =
+            parseISTTimestamp(a.createdAt)?.getTime() || 0;
 
-          const secondTime =
-            parseISTTimestamp(b.createdAt)?.getTime() ?? 0;
+          const bTime =
+            parseISTTimestamp(b.createdAt)?.getTime() || 0;
 
-          return secondTime - firstTime;
+          return bTime - aTime;
         });
 
         setNotes(sortedNotes);
@@ -170,7 +181,7 @@ export default function NotesPage() {
   }, [navigate]);
 
   // =====================================================
-  // AUTOMATIC TIMESTAMP REFRESH
+  // AUTOMATIC TIME UPDATE
   // =====================================================
 
   useEffect(() => {
@@ -184,7 +195,7 @@ export default function NotesPage() {
   }, []);
 
   // =====================================================
-  // SEARCH NOTES
+  // SEARCH
   // =====================================================
 
   const filteredNotes = notes.filter((note) =>
@@ -194,7 +205,7 @@ export default function NotesPage() {
   );
 
   // =====================================================
-  // OPEN READ-ONLY NOTES VIEW
+  // NAVIGATION
   // =====================================================
 
   const handleOpenNote = (note) => {
@@ -204,10 +215,6 @@ export default function NotesPage() {
       `/notes/${encodeURIComponent(note.noteId)}`
     );
   };
-
-  // =====================================================
-  // CREATE NEW NOTE
-  // =====================================================
 
   const handleAddNote = () => {
     navigate("/notes/new");
@@ -221,14 +228,11 @@ export default function NotesPage() {
     <main className="fk-notes-page">
       <div className="fk-notes-container">
 
-        {/* HEADER */}
         <header className="fk-notes-header">
           <button
             type="button"
             className="fk-notes-icon-button"
-            onClick={() =>
-              navigate("/my-family")
-            }
+            onClick={() => navigate("/my-family")}
             aria-label="Back to dashboard"
           >
             <ArrowLeft size={20} />
@@ -240,9 +244,7 @@ export default function NotesPage() {
             type="button"
             className="fk-notes-icon-button fk-notes-search-button"
             onClick={() => {
-              setSearchOpen(
-                (current) => !current
-              );
+              setSearchOpen((current) => !current);
               setSearchText("");
             }}
             aria-label="Search notes"
@@ -252,7 +254,6 @@ export default function NotesPage() {
           </button>
         </header>
 
-        {/* SEARCH */}
         {searchOpen && (
           <div className="fk-notes-search-panel">
             <Search size={18} />
@@ -269,7 +270,6 @@ export default function NotesPage() {
           </div>
         )}
 
-        {/* HERO SECTION */}
         <section className="fk-notes-hero">
           <div className="fk-notes-hero-copy">
             <h2>
@@ -299,7 +299,6 @@ export default function NotesPage() {
           </div>
         </section>
 
-        {/* ALL ENTRIES */}
         <section className="fk-notes-entries">
           <div className="fk-notes-section-heading">
             <h2>All Entries</h2>
@@ -312,7 +311,6 @@ export default function NotesPage() {
             </span>
           </div>
 
-          {/* ERROR */}
           {error && (
             <div
               className="fk-notes-error"
@@ -322,24 +320,19 @@ export default function NotesPage() {
 
               <button
                 type="button"
-                onClick={() =>
-                  window.location.reload()
-                }
+                onClick={() => window.location.reload()}
               >
                 Retry
               </button>
             </div>
           )}
 
-          {/* LOADING */}
           {loading ? (
             <p className="fk-notes-status">
               Loading your notes...
             </p>
           ) : !error &&
             filteredNotes.length === 0 ? (
-
-            /* EMPTY STATE */
             <div className="fk-notes-empty">
               <StickyNote
                 size={42}
@@ -359,8 +352,6 @@ export default function NotesPage() {
               </p>
             </div>
           ) : (
-
-            /* NOTES GRID */
             <div className="fk-notes-grid">
               {filteredNotes.map((note) => {
                 const relativeTime = getRelativeTime(
@@ -368,43 +359,42 @@ export default function NotesPage() {
                   now
                 );
 
+                const createdIST = formatISTDateTime(
+                  note.createdAt
+                );
+
                 return (
                   <button
                     type="button"
                     className="fk-notes-card"
                     key={note.noteId}
-                    onClick={() =>
-                      handleOpenNote(note)
-                    }
+                    onClick={() => handleOpenNote(note)}
                     aria-label={`Open ${
                       note.title || "Untitled Note"
                     } to view`}
                   >
-                    {/* NOTE TITLE */}
                     <h3>
-                      {note.title ||
-                        "Untitled Note"}
+                      {note.title || "Untitled Note"}
                     </h3>
 
-                    {/* NOTE CONTENT */}
                     <p className="fk-notes-preview">
                       {note.content}
                     </p>
 
-                    {/* CARD FOOTER */}
                     <div className="fk-notes-card-footer">
-
-                      {/* REMINDER BADGE */}
                       <div className="fk-notes-reminder-info">
                         {note.reminder === true && (
-                          <span className="fk-notes-reminder-badge">
+                          <span className="fk-notes-reminder-date">
                             <Bell size={13} />
-                            Reminder
+                            <span>
+                              {createdIST
+                                ? `Reminder on ${createdIST}`
+                                : "Reminder"}
+                            </span>
                           </span>
                         )}
                       </div>
 
-                      {/* RELATIVE CREATED TIME */}
                       <span className="fk-notes-relative-time">
                         {relativeTime}
                       </span>
@@ -417,16 +407,13 @@ export default function NotesPage() {
         </section>
       </div>
 
-      {/* BOTTOM NAVIGATION */}
       <nav
         className="fk-notes-bottom-nav"
         aria-label="Main navigation"
       >
         <button
           type="button"
-          onClick={() =>
-            navigate("/my-family")
-          }
+          onClick={() => navigate("/my-family")}
         >
           <House size={21} />
           <span>Home</span>
@@ -434,9 +421,7 @@ export default function NotesPage() {
 
         <button
           type="button"
-          onClick={() =>
-            navigate("/family")
-          }
+          onClick={() => navigate("/family")}
         >
           <UsersRound size={21} />
           <span>My Family</span>
@@ -451,10 +436,7 @@ export default function NotesPage() {
           <span>Features</span>
         </button>
 
-        <button
-          type="button"
-          disabled
-        >
+        <button type="button" disabled>
           <CreditCard size={21} />
           <span>Payments</span>
         </button>
