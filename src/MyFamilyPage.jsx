@@ -151,7 +151,6 @@ export default function MyFamilyPage() {
   const [yourName, setYourName] = useState("");
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
-  const [searchText, setSearchText] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const [savedMembers, setSavedMembers] = useState([]);
@@ -379,18 +378,18 @@ export default function MyFamilyPage() {
           <input
             type="search"
             placeholder="Search Aadhaar Card"
-            aria-label="Search documents"
-            value={searchText}
-            onChange={(event) =>
-              setSearchText(event.target.value)
-            }
+            aria-label="Open document search"
+            readOnly
+            onFocus={() => navigate("/search")}
+            onClick={() => navigate("/search")}
+            style={{ cursor: "pointer" }}
           />
 
           <button
             type="button"
             className="fk-dash-mic"
             aria-label="Voice search"
-            disabled
+            onClick={() => navigate("/search/voice")}
           >
             <Mic size={20} />
           </button>
@@ -399,7 +398,7 @@ export default function MyFamilyPage() {
             type="button"
             className="fk-dash-voice"
             aria-label="AI voice assistant"
-            disabled
+            onClick={() => navigate("/search/voice")}
           >
             <AudioLines size={19} />
           </button>

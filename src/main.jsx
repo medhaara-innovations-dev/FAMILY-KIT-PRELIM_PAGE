@@ -26,6 +26,10 @@ import NotesViewPage from "./NotesViewPage.jsx";
 import NotesEditorPage from "./NotesEditorPage.jsx";
 import NotesDetailsPage from "./NotesDetailsPage.jsx";
 
+// Search and Voice Search
+import SearchPage from "./SearchPage.jsx";
+import VoiceSearchPage from "./VoiceSearchPage.jsx";
+
 import "./App.css";
 
 createRoot(document.getElementById("root")).render(
@@ -66,9 +70,13 @@ createRoot(document.getElementById("root")).render(
         {/* My Notes */}
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/notes/new" element={<NotesEditorPage />} />
-        <Route path="/notes/:noteId" element={<NotesViewPage />} />
-        <Route path="/notes/:noteId/edit" element={<NotesEditorPage />} />
         <Route path="/notes/details" element={<NotesDetailsPage />} />
+        <Route path="/notes/:noteId/edit" element={<NotesEditorPage />} />
+        <Route path="/notes/:noteId" element={<NotesViewPage />} />
+
+        {/* Search */}
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/search/voice" element={<VoiceSearchPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

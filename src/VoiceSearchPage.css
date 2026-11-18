@@ -1,0 +1,121 @@
+
+.fk-voice-page {
+  --voice-purple: #2d0b84;
+  min-height: 100dvh;
+  background: #fdfcff;
+  font-family: "Mulish", sans-serif;
+  padding: 46px 20px 105px;
+  box-sizing: border-box;
+}
+
+.fk-voice-page * {
+  box-sizing: border-box;
+}
+
+.fk-voice-container {
+  width: min(100%, 720px);
+  min-height: calc(100dvh - 151px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.fk-voice-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 48px;
+  padding: 0 10px;
+  border: 1.5px solid #b294ff;
+  border-radius: 12px;
+  background: white;
+  color: #211b2d;
+  box-shadow: 0 3px 12px #2d0b8412;
+  cursor: pointer;
+  text-align: left;
+}
+
+.fk-voice-search-bar > span:not(.fk-voice-audio) {
+  flex: 1;
+  color: #aaa3b1;
+  font-size: 12px;
+}
+
+.fk-voice-audio {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b294ff, #7b3dc8);
+  color: white;
+}
+
+.fk-voice-listening {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  padding-bottom: 45px;
+  color: #ccccd0;
+}
+
+.fk-voice-listening p {
+  margin: 0;
+  color: #d0ccd3;
+  font-size: 14px;
+}
+
+.fk-voice-bottom-nav {
+  position: fixed;
+  z-index: 30;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 760px);
+  min-height: 78px;
+  padding: 9px 8px max(12px, env(safe-area-inset-bottom));
+  border: 1.5px solid #b598ff;
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.fk-voice-bottom-nav button {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #aaa4b0;
+  font: 600 10px "Mulish", sans-serif;
+  cursor: pointer;
+}
+
+.fk-voice-bottom-nav button.active {
+  color: var(--voice-purple);
+}
+
+.fk-voice-bottom-nav .fk-voice-bottom-add {
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--voice-purple);
+  color: white;
+}
+
+.fk-voice-bottom-nav button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
