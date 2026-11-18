@@ -477,6 +477,7 @@ export default function MyFamilyPage() {
               icon={BookMarked}
               label="Diary"
               tone="purple"
+              onClick={() => navigate("/diary")}
             />
 
             <QuickAction
