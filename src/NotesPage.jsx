@@ -17,14 +17,102 @@ import {
 import { getNotes } from "./api/notesApi";
 import "./NotesPage.css";
 
+// =====================================================
+// IST TIMESTAMP HANDLING
+// =====================================================
+
+// DynamoDB timestamps should ideally be ISO 8601,
+// for example: 2026-11-18T15:30:00+05:30.
+//
+// If the backend sends a timestamp without a timezone,
+// interpret it as IST rather than browser-local time.
+
+function parseISTTimestamp(timestamp) {
+  if (!timestamp) return null;
+
+  const value = String(timestamp).trim();
+
+  if (!value) return null;
+
+  const normalized = value.replace(" ", "T");
+
+  const hasTimezone =
+    /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized);
+
+  const dateString = hasTimezone
+    ? normalized
+    : `${normalized}+05:30`;
+
+  const parsedDate = new Date(dateString);
+
+  return Number.isNaN(parsedDate.getTime())
+    ? null
+    : parsedDate;
+}
+
+// =====================================================
+// RELATIVE TIME FORMATTER
+// =====================================================
+
+function getRelativeTime(createdAt, now) {
+  const createdDate = parseISTTimestamp(createdAt);
+
+  if (!createdDate) return "";
+
+  const elapsedMilliseconds = Math.max(
+    0,
+    now - createdDate.getTime()
+  );
+
+  const elapsedMinutes = Math.floor(
+    elapsedMilliseconds / (1000 * 60)
+  );
+
+  if (elapsedMinutes < 1) {
+    return "Just now";
+  }
+
+  if (elapsedMinutes < 60) {
+    return elapsedMinutes === 1
+      ? "1 minute ago"
+      : `${elapsedMinutes} minutes ago`;
+  }
+
+  const elapsedHours = Math.floor(
+    elapsedMilliseconds / (1000 * 60 * 60)
+  );
+
+  if (elapsedHours < 24) {
+    return elapsedHours === 1
+      ? "1 hour ago"
+      : `${elapsedHours} hours ago`;
+  }
+
+  const elapsedDays = Math.floor(
+    elapsedMilliseconds / (1000 * 60 * 60 * 24)
+  );
+
+  return elapsedDays === 1
+    ? "1 day ago"
+    : `${elapsedDays} days ago`;
+}
+
+// =====================================================
+// NOTES PAGE
+// =====================================================
+
 export default function NotesPage() {
   const navigate = useNavigate();
 
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+
+  // Used to refresh relative timestamps.
+  const [now, setNow] = useState(() => Date.now());
 
   // =====================================================
   // LOAD ALL NOTES FROM DYNAMODB
@@ -49,13 +137,18 @@ export default function NotesPage() {
 
         const sortedNotes = [
           ...(result.notes || []),
-        ].sort((a, b) =>
-          (b.createdAt || "").localeCompare(
-            a.createdAt || ""
-          )
-        );
+        ].sort((a, b) => {
+          const firstTime =
+            parseISTTimestamp(a.createdAt)?.getTime() ?? 0;
+
+          const secondTime =
+            parseISTTimestamp(b.createdAt)?.getTime() ?? 0;
+
+          return secondTime - firstTime;
+        });
 
         setNotes(sortedNotes);
+        setNow(Date.now());
       } catch (err) {
         if (active) {
           setError(
@@ -75,6 +168,20 @@ export default function NotesPage() {
       active = false;
     };
   }, [navigate]);
+
+  // =====================================================
+  // AUTOMATIC TIMESTAMP REFRESH
+  // =====================================================
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setNow(Date.now());
+    }, 10000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, []);
 
   // =====================================================
   // SEARCH NOTES
@@ -255,53 +362,56 @@ export default function NotesPage() {
 
             /* NOTES GRID */
             <div className="fk-notes-grid">
-              {filteredNotes.map((note) => (
-                <button
-                  type="button"
-                  className="fk-notes-card"
-                  key={note.noteId}
-                  onClick={() =>
-                    handleOpenNote(note)
-                  }
-                  aria-label={`Open ${
-                    note.title || "Untitled Note"
-                  } to view`}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    textAlign: "left",
-                    font: "inherit",
-                    color: "inherit",
-                    cursor: "pointer",
-                  }}
-                >
-                  <h3>
-                    {note.title ||
-                      "Untitled Note"}
-                  </h3>
+              {filteredNotes.map((note) => {
+                const relativeTime = getRelativeTime(
+                  note.createdAt,
+                  now
+                );
 
-                  <p className="fk-notes-preview">
-                    {note.content}
-                  </p>
+                return (
+                  <button
+                    type="button"
+                    className="fk-notes-card"
+                    key={note.noteId}
+                    onClick={() =>
+                      handleOpenNote(note)
+                    }
+                    aria-label={`Open ${
+                      note.title || "Untitled Note"
+                    } to view`}
+                  >
+                    {/* NOTE TITLE */}
+                    <h3>
+                      {note.title ||
+                        "Untitled Note"}
+                    </h3>
 
-                  {/* REMINDER INFORMATION */}
-                  {note.reminder === true && (
-                    <div className="fk-notes-reminder-info">
-                      <span className="fk-notes-reminder-badge">
-                        <Bell size={13} />
-                        Reminder
+                    {/* NOTE CONTENT */}
+                    <p className="fk-notes-preview">
+                      {note.content}
+                    </p>
+
+                    {/* CARD FOOTER */}
+                    <div className="fk-notes-card-footer">
+
+                      {/* REMINDER BADGE */}
+                      <div className="fk-notes-reminder-info">
+                        {note.reminder === true && (
+                          <span className="fk-notes-reminder-badge">
+                            <Bell size={13} />
+                            Reminder
+                          </span>
+                        )}
+                      </div>
+
+                      {/* RELATIVE CREATED TIME */}
+                      <span className="fk-notes-relative-time">
+                        {relativeTime}
                       </span>
-
-                      {note.createdDate && (
-                        <span className="fk-notes-created-date">
-                          Created on:{" "}
-                          {note.createdDate}
-                        </span>
-                      )}
                     </div>
-                  )}
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           )}
         </section>
