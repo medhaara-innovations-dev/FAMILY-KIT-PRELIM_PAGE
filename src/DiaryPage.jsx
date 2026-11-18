@@ -1,26 +1,23 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, BookHeart, Plus, Pencil,
-  Trash2, CalendarDays, RefreshCw
+  ArrowLeft, BookHeart, Pencil, Trash2, Search,
+  House, UsersRound, Plus, LayoutGrid, CreditCard
 } from "lucide-react";
-import {
-  getDiaryEntries,
-  deleteDiaryEntry
-} from "./api/diaryApi";
+import { getDiaryEntries, deleteDiaryEntry } from "./api/diaryApi";
 import "./DiaryPage.css";
 
-function formatDate(date) {
-  if (!date) return "";
-  const parsed = new Date(`${date}T12:00:00`);
-  return Number.isNaN(parsed.getTime())
-    ? date
-    : parsed.toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      });
+function getDateParts(value) {
+  if (!value) return { day: "--", monthYear: "", weekday: "" };
+  const parsed = new Date(`${value}T12:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return { day: "--", monthYear: value, weekday: "" };
+  }
+  return {
+    day: new Intl.DateTimeFormat("en-IN", { day: "2-digit" }).format(parsed),
+    monthYear: new Intl.DateTimeFormat("en-IN", { month: "short", year: "numeric" }).format(parsed).toUpperCase(),
+    weekday: new Intl.DateTimeFormat("en-IN", { weekday: "long" }).format(parsed),
+  };
 }
 
 export default function DiaryPage() {
@@ -29,11 +26,12 @@ export default function DiaryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   async function loadEntries() {
     setLoading(true);
     setError("");
-
     try {
       const result = await getDiaryEntries();
       setEntries(
@@ -54,19 +52,12 @@ export default function DiaryPage() {
   }, []);
 
   async function handleDelete(entry) {
-    const confirmed = window.confirm(
-      "Delete this diary entry permanently? This cannot be undone."
-    );
-    if (!confirmed) return;
-
+    if (!window.confirm("Delete this diary entry permanently? This cannot be undone.")) return;
     setDeletingId(entry.entryId);
     setError("");
-
     try {
       await deleteDiaryEntry(entry.entryId);
-      setEntries((current) =>
-        current.filter((item) => item.entryId !== entry.entryId)
-      );
+      setEntries((current) => current.filter((item) => item.entryId !== entry.entryId));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -74,133 +65,98 @@ export default function DiaryPage() {
     }
   }
 
+  const filteredEntries = entries.filter((entry) =>
+    `${entry.title || ""} ${entry.content || ""} ${entry.entryDate || ""}`
+      .toLowerCase().includes(searchText.toLowerCase())
+  );
+
   return (
     <main className="diary-page">
       <div className="diary-container">
         <header className="diary-topbar">
-          <button
-            className="diary-back"
-            onClick={() => navigate("/my-family")}
-            aria-label="Back to dashboard"
-          >
-            <ArrowLeft size={21} />
+          <button type="button" className="diary-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard">
+            <ArrowLeft size={18} />
           </button>
-          <span>My Diary</span>
+          <h1>Dear Diary</h1>
+          <button type="button" className="diary-search-button" aria-label="Search diary entries" aria-expanded={searchOpen} onClick={() => { setSearchOpen((current) => !current); setSearchText(""); }}>
+            <Search size={17} />
+          </button>
         </header>
 
-        <section className="diary-hero">
-          <div className="diary-hero-icon">
-            <BookHeart size={35} />
+        {searchOpen && (
+          <div className="diary-search-panel">
+            <Search size={17} />
+            <input type="search" autoFocus placeholder="Search your diary entries" aria-label="Search diary entries" value={searchText} onChange={(event) => setSearchText(event.target.value)} />
           </div>
-          <h1>Dear Diary</h1>
-          <p>
-            Start writing your thoughts in Dear Diary and
-            no one has access to your diary.
-          </p>
-          <button
-            className="diary-primary-btn"
-            onClick={() => navigate("/diary/new")}
-          >
-            <Plus size={19} />
-            Write Today's Diary
-          </button>
+        )}
+
+        <section className="diary-hero">
+          <div className="diary-hero-copy">
+            <p>Start writing your thoughts in Dear Diary and no one has access to your diary.</p>
+            <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new")}>
+              <Pencil size={13} /> Write Today's Diary
+            </button>
+          </div>
+          <div className="diary-hero-art" aria-hidden="true">
+            <span className="diary-art-sparkle">✦</span>
+            <BookHeart size={49} strokeWidth={1.8} />
+            <span className="diary-art-leaf">✿</span>
+          </div>
         </section>
 
         <section className="diary-list-section">
           <div className="diary-section-header">
-            <div>
-              <h2>All Entries</h2>
-              <p>
-                {loading
-                  ? "Loading your diary..."
-                  : `${entries.length} ${
-                      entries.length === 1 ? "entry" : "entries"
-                    }`}
-              </p>
-            </div>
-            <button
-              className="diary-refresh"
-              onClick={loadEntries}
-              disabled={loading}
-              aria-label="Refresh entries"
-            >
-              <RefreshCw size={19} />
-            </button>
+            <h2>All Entries</h2>
+            <span className="diary-entry-count">{loading ? "Loading..." : `${entries.length} ${entries.length === 1 ? "Entry" : "Entries"}`}</span>
           </div>
 
-          {error && (
-            <div className="diary-error" role="alert">
-              {error}
-            </div>
-          )}
+          {error && <div className="diary-error" role="alert">{error} <button type="button" onClick={loadEntries}>Retry</button></div>}
 
           {loading ? (
-            <p className="diary-message">Loading entries...</p>
-          ) : entries.length === 0 ? (
+            <p className="diary-message">Loading your diary...</p>
+          ) : filteredEntries.length === 0 ? (
             <div className="diary-empty">
-              <BookHeart size={43} />
-              <h3>Your diary is waiting</h3>
-              <p>
-                Your thoughts, memories and special moments
-                deserve a place of their own.
-              </p>
-              <button
-                className="diary-primary-btn"
-                onClick={() => navigate("/diary/new")}
-              >
-                Write Your First Entry
-              </button>
+              <BookHeart size={34} />
+              <h3>{searchText ? "No matching entries" : "Your diary is waiting"}</h3>
+              <p>{searchText ? "Try a different search." : "Your thoughts, memories and special moments deserve a place of their own."}</p>
+              {!searchText && <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new")}>Write Your First Entry</button>}
             </div>
           ) : (
             <div className="diary-entry-grid">
-              {entries.map((entry) => (
-                <article
-                  className="diary-entry-card"
-                  key={entry.entryId}
-                >
-                  <div className="diary-entry-date">
-                    <CalendarDays size={15} />
-                    {formatDate(entry.entryDate)}
-                    <span className="diary-entry-mood">
-                      {entry.mood || ""}
-                    </span>
-                  </div>
-
-                  <h3>{entry.title || "Untitled Entry"}</h3>
-                  <p className="diary-entry-preview">
-                    {entry.content}
-                  </p>
-
-                  <div className="diary-entry-actions">
-                    <button
-                      onClick={() =>
-                        navigate(`/diary/${entry.entryId}`)
-                      }
-                    >
-                      Read Entry
+              {filteredEntries.map((entry) => {
+                const date = getDateParts(entry.entryDate);
+                return (
+                  <article className="diary-entry-card" key={entry.entryId}>
+                    <button type="button" className="diary-entry-main" onClick={() => navigate(`/diary/${encodeURIComponent(entry.entryId)}`)} aria-label={`Read ${entry.title || "Untitled Entry"}`}>
+                      <div className="diary-entry-topline">
+                        <div className="diary-date-badge">
+                          <strong>{date.day}</strong>
+                          <span><b>{date.monthYear}</b><small>{date.weekday}</small></span>
+                        </div>
+                        {entry.mood && <span className="diary-entry-mood">{entry.mood}</span>}
+                      </div>
+                      <h3>{entry.title || "Untitled Entry"}</h3>
+                      <p className="diary-entry-preview">{entry.content}</p>
                     </button>
-                    <button
-                      aria-label="Edit entry"
-                      onClick={() =>
-                        navigate(`/diary/${entry.entryId}/edit`)
-                      }
-                    >
-                      <Pencil size={17} />
-                    </button>
-                    <button
-                      aria-label="Delete entry"
-                      disabled={deletingId === entry.entryId}
-                      onClick={() => handleDelete(entry)}
-                    >
-                      <Trash2 size={17} />
-                    </button>
-                  </div>
-                </article>
-              ))}
+                    <div className="diary-entry-actions">
+                      <button type="button" aria-label="Edit entry" onClick={() => navigate(`/diary/${encodeURIComponent(entry.entryId)}/edit`)}><Pencil size={15} /> Edit</button>
+                      <button type="button" aria-label="Delete entry" disabled={deletingId === entry.entryId} onClick={() => handleDelete(entry)}><Trash2 size={15} /> {deletingId === entry.entryId ? "Deleting..." : "Delete"}</button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </section>
       </div>
+
+      <nav className="diary-bottom-nav" aria-label="FamilyKit navigation">
+        <button type="button" onClick={() => navigate("/my-family")}><House size={20} /><span>Home</span></button>
+        <button type="button" onClick={() => navigate("/family")}><UsersRound size={20} /><span>My Family</span></button>
+        <button type="button" className="diary-bottom-add" onClick={() => navigate("/family/add")} aria-label="Add family member"><Plus size={25} /></button>
+        <button type="button" disabled aria-label="Category unavailable"><LayoutGrid size={20} /><span>Category</span></button>
+        <button type="button" disabled aria-label="Pay and Renew unavailable"><CreditCard size={20} /><span>Pay & Renew</span></button>
+      </nav>
     </main>
   );
 }
