@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   ArrowLeft,
   Search,
@@ -25,6 +26,10 @@ export default function NotesPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
 
+  // =====================================================
+  // LOAD ALL NOTES FROM DYNAMODB
+  // =====================================================
+
   useEffect(() => {
     if (!sessionStorage.getItem("familykit_access_token")) {
       navigate("/login", { replace: true });
@@ -42,19 +47,25 @@ export default function NotesPage() {
 
         if (!active) return;
 
-        setNotes(
-          [...(result.notes || [])].sort((a, b) =>
-            (b.createdAt || "").localeCompare(
-              a.createdAt || ""
-            )
+        const sortedNotes = [
+          ...(result.notes || []),
+        ].sort((a, b) =>
+          (b.createdAt || "").localeCompare(
+            a.createdAt || ""
           )
         );
+
+        setNotes(sortedNotes);
       } catch (err) {
         if (active) {
-          setError(err.message || "Unable to load notes.");
+          setError(
+            err.message || "Unable to load notes."
+          );
         }
       } finally {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
 
@@ -65,27 +76,52 @@ export default function NotesPage() {
     };
   }, [navigate]);
 
+  // =====================================================
+  // SEARCH NOTES
+  // =====================================================
+
   const filteredNotes = notes.filter((note) =>
     `${note.title || ""} ${note.content || ""}`
       .toLowerCase()
       .includes(searchText.toLowerCase())
   );
 
-  // Open the existing note using its DynamoDB noteId.
+  // =====================================================
+  // OPEN READ-ONLY NOTES VIEW
+  // =====================================================
+
   const handleOpenNote = (note) => {
+    if (!note.noteId) return;
+
     navigate(
-      `/notes/${encodeURIComponent(note.noteId)}/edit`
+      `/notes/${encodeURIComponent(note.noteId)}`
     );
   };
+
+  // =====================================================
+  // CREATE NEW NOTE
+  // =====================================================
+
+  const handleAddNote = () => {
+    navigate("/notes/new");
+  };
+
+  // =====================================================
+  // RENDER
+  // =====================================================
 
   return (
     <main className="fk-notes-page">
       <div className="fk-notes-container">
+
+        {/* HEADER */}
         <header className="fk-notes-header">
           <button
             type="button"
             className="fk-notes-icon-button"
-            onClick={() => navigate("/my-family")}
+            onClick={() =>
+              navigate("/my-family")
+            }
             aria-label="Back to dashboard"
           >
             <ArrowLeft size={20} />
@@ -97,7 +133,9 @@ export default function NotesPage() {
             type="button"
             className="fk-notes-icon-button fk-notes-search-button"
             onClick={() => {
-              setSearchOpen((current) => !current);
+              setSearchOpen(
+                (current) => !current
+              );
               setSearchText("");
             }}
             aria-label="Search notes"
@@ -107,6 +145,7 @@ export default function NotesPage() {
           </button>
         </header>
 
+        {/* SEARCH */}
         {searchOpen && (
           <div className="fk-notes-search-panel">
             <Search size={18} />
@@ -123,9 +162,12 @@ export default function NotesPage() {
           </div>
         )}
 
+        {/* HERO SECTION */}
         <section className="fk-notes-hero">
           <div className="fk-notes-hero-copy">
-            <h2>Your thoughts, all in one place.</h2>
+            <h2>
+              Your thoughts, all in one place.
+            </h2>
 
             <p>
               Capture important information, ideas and
@@ -135,7 +177,7 @@ export default function NotesPage() {
             <button
               type="button"
               className="fk-notes-primary-button"
-              onClick={() => navigate("/notes/new")}
+              onClick={handleAddNote}
             >
               <Plus size={17} />
               Add Notes Today
@@ -143,20 +185,27 @@ export default function NotesPage() {
           </div>
 
           <div className="fk-notes-hero-icon">
-            <StickyNote size={53} strokeWidth={1.5} />
+            <StickyNote
+              size={53}
+              strokeWidth={1.5}
+            />
           </div>
         </section>
 
+        {/* ALL ENTRIES */}
         <section className="fk-notes-entries">
           <div className="fk-notes-section-heading">
             <h2>All Entries</h2>
 
             <span className="fk-notes-count">
               {notes.length}{" "}
-              {notes.length === 1 ? "Entry" : "Entries"}
+              {notes.length === 1
+                ? "Entry"
+                : "Entries"}
             </span>
           </div>
 
+          {/* ERROR */}
           {error && (
             <div
               className="fk-notes-error"
@@ -166,18 +215,24 @@ export default function NotesPage() {
 
               <button
                 type="button"
-                onClick={() => window.location.reload()}
+                onClick={() =>
+                  window.location.reload()
+                }
               >
                 Retry
               </button>
             </div>
           )}
 
+          {/* LOADING */}
           {loading ? (
             <p className="fk-notes-status">
               Loading your notes...
             </p>
-          ) : !error && filteredNotes.length === 0 ? (
+          ) : !error &&
+            filteredNotes.length === 0 ? (
+
+            /* EMPTY STATE */
             <div className="fk-notes-empty">
               <StickyNote
                 size={42}
@@ -197,16 +252,20 @@ export default function NotesPage() {
               </p>
             </div>
           ) : (
+
+            /* NOTES GRID */
             <div className="fk-notes-grid">
               {filteredNotes.map((note) => (
                 <button
                   type="button"
                   className="fk-notes-card"
                   key={note.noteId}
-                  onClick={() => handleOpenNote(note)}
+                  onClick={() =>
+                    handleOpenNote(note)
+                  }
                   aria-label={`Open ${
                     note.title || "Untitled Note"
-                  } for editing`}
+                  } to view`}
                   style={{
                     display: "block",
                     width: "100%",
@@ -217,13 +276,15 @@ export default function NotesPage() {
                   }}
                 >
                   <h3>
-                    {note.title || "Untitled Note"}
+                    {note.title ||
+                      "Untitled Note"}
                   </h3>
 
                   <p className="fk-notes-preview">
                     {note.content}
                   </p>
 
+                  {/* REMINDER INFORMATION */}
                   {note.reminder === true && (
                     <div className="fk-notes-reminder-info">
                       <span className="fk-notes-reminder-badge">
@@ -233,7 +294,8 @@ export default function NotesPage() {
 
                       {note.createdDate && (
                         <span className="fk-notes-created-date">
-                          Created on: {note.createdDate}
+                          Created on:{" "}
+                          {note.createdDate}
                         </span>
                       )}
                     </div>
@@ -245,13 +307,16 @@ export default function NotesPage() {
         </section>
       </div>
 
+      {/* BOTTOM NAVIGATION */}
       <nav
         className="fk-notes-bottom-nav"
         aria-label="Main navigation"
       >
         <button
           type="button"
-          onClick={() => navigate("/my-family")}
+          onClick={() =>
+            navigate("/my-family")
+          }
         >
           <House size={21} />
           <span>Home</span>
@@ -259,7 +324,9 @@ export default function NotesPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/family")}
+          onClick={() =>
+            navigate("/family")
+          }
         >
           <UsersRound size={21} />
           <span>My Family</span>
@@ -274,7 +341,10 @@ export default function NotesPage() {
           <span>Features</span>
         </button>
 
-        <button type="button" disabled>
+        <button
+          type="button"
+          disabled
+        >
           <CreditCard size={21} />
           <span>Payments</span>
         </button>

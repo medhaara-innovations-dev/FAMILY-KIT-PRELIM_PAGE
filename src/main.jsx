@@ -22,6 +22,7 @@ import DiaryEditorPage from "./DiaryEditorPage.jsx";
 
 // My Notes
 import NotesPage from "./NotesPage.jsx";
+import NotesViewPage from "./NotesViewPage.jsx";
 import NotesEditorPage from "./NotesEditorPage.jsx";
 import NotesDetailsPage from "./NotesDetailsPage.jsx";
 
@@ -68,16 +69,31 @@ createRoot(document.getElementById("root")).render(
           element={<DiaryEditorPage />}
         />
 
-        {/* My Notes */}
-        <Route path="/notes" element={<NotesPage />} />
-        <Route path="/notes/new" element={<NotesEditorPage />} />
+        {/* My Notes - All Entries */}
+        <Route
+          path="/notes"
+          element={<NotesPage />}
+        />
 
-        {/* Edit an existing saved note */}
+        {/* Create a new note */}
+        <Route
+          path="/notes/new"
+          element={<NotesEditorPage />}
+        />
+
+        {/* View an existing note - READ ONLY */}
+        <Route
+          path="/notes/:noteId"
+          element={<NotesViewPage />}
+        />
+
+        {/* Edit an existing note */}
         <Route
           path="/notes/:noteId/edit"
           element={<NotesEditorPage />}
         />
 
+        {/* AI details and save */}
         <Route
           path="/notes/details"
           element={<NotesDetailsPage />}
