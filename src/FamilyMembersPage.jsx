@@ -213,9 +213,6 @@ export default function FamilyMembersPage() {
         {/* SUMMARY */}
 
         <section className="fk-family-summary">
-          <div className="fk-family-summary-icon">
-            <UsersRound size={32} />
-          </div>
 
           <h2>
             {familyName
