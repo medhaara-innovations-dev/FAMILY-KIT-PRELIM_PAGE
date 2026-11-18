@@ -1,7 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { ArrowLeft, Save, CalendarDays } from "lucide-react";
+import {
+  ChevronLeft, ChevronRight, Search, ChevronDown,
+  House, UsersRound, Plus, LayoutGrid, CreditCard
+} from "lucide-react";
 import {
   createDiaryEntry,
   getDiaryEntry,
@@ -10,26 +12,71 @@ import {
 import "./DiaryEditorPage.css";
 
 const MOODS = ["😊", "🥰", "😌", "😢", "😠", "😴", "🤩", "❤️"];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function todayIST() {
   const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
+    timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit"
   }).formatToParts(new Date());
-
-  const part = (type) =>
-    parts.find((item) => item.type === type)?.value;
-
+  const part = (type) => parts.find((item) => item.type === type)?.value;
   return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+function parseDate(value) {
+  const [year, month, day] = (value || todayIST()).split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function toDateValue(year, month, day) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function CalendarPopup({ value, onSelect, onClose }) {
+  const selected = parseDate(value);
+  const [view, setView] = useState(() => new Date(selected.getFullYear(), selected.getMonth(), 1));
+  const year = view.getFullYear();
+  const month = view.getMonth();
+  const offset = new Date(year, month, 1).getDay();
+  const days = new Date(year, month + 1, 0).getDate();
+  const cells = [...Array(offset).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
+
+  function changeMonth(amount) {
+    setView(new Date(year, month + amount, 1));
+  }
+
+  return (
+    <div className="diary-calendar-overlay" onClick={onClose}>
+      <div className="diary-calendar-popup" role="dialog" aria-modal="true" aria-label="Choose diary date" onClick={(event) => event.stopPropagation()}>
+        <div className="diary-calendar-heading">
+          <button type="button" aria-label="Previous month" onClick={() => changeMonth(-1)}><ChevronLeft size={19} /></button>
+          <span>{view.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</span>
+          <button type="button" aria-label="Next month" onClick={() => changeMonth(1)}><ChevronRight size={19} /></button>
+        </div>
+        <div className="diary-calendar-grid">
+          {WEEKDAYS.map((day) => <div className="diary-calendar-weekday" key={day}>{day}</div>)}
+          {cells.map((day, index) => {
+            const dateValue = day ? toDateValue(year, month, day) : "";
+            return day ? (
+              <button
+                type="button"
+                key={dateValue}
+                className={`diary-calendar-day ${dateValue === value ? "selected" : ""} ${dateValue === todayIST() ? "today" : ""}`}
+                aria-label={new Date(year, month, day).toDateString()}
+                aria-pressed={dateValue === value}
+                onClick={() => { onSelect(dateValue); onClose(); }}
+              >{day}</button>
+            ) : <span key={`empty-${index}`} />;
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function DiaryEditorPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { entryId } = useParams();
-
   const isNew = !entryId;
   const isEditing = location.pathname.endsWith("/edit");
   const readOnly = !isNew && !isEditing;
@@ -41,21 +88,18 @@ export default function DiaryEditorPage() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [moodsOpen, setMoodsOpen] = useState(false);
 
   useEffect(() => {
     if (!entryId) return;
-
     let active = true;
-
     async function loadEntry() {
       setLoading(true);
       setError("");
-
       try {
         const entry = await getDiaryEntry(entryId);
-
         if (!active) return;
-
         setEntryDate(entry.entryDate || todayIST());
         setTitle(entry.title || "");
         setContent(entry.content || "");
@@ -66,7 +110,6 @@ export default function DiaryEditorPage() {
         if (active) setLoading(false);
       }
     }
-
     loadEntry();
     return () => { active = false; };
   }, [entryId]);
@@ -74,28 +117,15 @@ export default function DiaryEditorPage() {
   async function handleSave(event) {
     event.preventDefault();
     setError("");
-
     if (!content.trim()) {
       setError("Please write something before saving.");
       return;
     }
-
     setSaving(true);
-
     try {
-      const payload = {
-        entryDate,
-        title: title.trim(),
-        content: content.trim(),
-        mood
-      };
-
-      if (isNew) {
-        await createDiaryEntry(payload);
-      } else {
-        await updateDiaryEntry(entryId, payload);
-      }
-
+      const payload = { entryDate, title: title.trim(), content: content.trim(), mood };
+      if (isNew) await createDiaryEntry(payload);
+      else await updateDiaryEntry(entryId, payload);
       navigate("/diary");
     } catch (err) {
       setError(err.message);
@@ -104,151 +134,80 @@ export default function DiaryEditorPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <main className="diary-editor-page">
-        <p className="diary-editor-status">Loading diary entry...</p>
-      </main>
-    );
-  }
+  const date = parseDate(entryDate);
 
   return (
     <main className="diary-editor-page">
       <div className="diary-editor-container">
         <header className="diary-editor-topbar">
-          <button
-            type="button"
-            className="diary-editor-back"
-            onClick={() => navigate("/diary")}
-            aria-label="Back to diary"
-          >
-            <ArrowLeft size={21} />
+          <button type="button" className="diary-editor-back" onClick={() => navigate("/diary")} aria-label="Back to diary">
+            <ChevronLeft size={19} />
           </button>
-          <span>
-            {isNew
-              ? "Write Today's Diary"
-              : readOnly
-                ? "My Diary Entry"
-                : "Edit Diary Entry"}
-          </span>
+          <span>Dear Diary</span>
+          <button type="button" className="diary-editor-search" aria-label="Search diary entries" onClick={() => navigate("/diary")}>
+            <Search size={16} />
+          </button>
         </header>
 
-        <div className="diary-editor-card">
-          <div className="diary-editor-heading">
-            <h1>
-              {isNew
-                ? "Dear Diary..."
-                : readOnly
-                  ? "My Memories"
-                  : "Edit Your Thoughts"}
-            </h1>
-            <p>
-              {readOnly
-                ? "A moment from your personal diary."
-                : "A little space just for your thoughts."}
-            </p>
-          </div>
-
-          <form onSubmit={handleSave}>
-            <label className="diary-field-label" htmlFor="diary-date">
-              <CalendarDays size={17} /> Entry Date
-            </label>
-            <input
-              id="diary-date"
-              type="date"
-              className="diary-input"
-              value={entryDate}
-              onChange={(e) => setEntryDate(e.target.value)}
-              required
-              disabled={readOnly}
-            />
-
-            <label className="diary-field-label" htmlFor="diary-title">
-              Title (Optional)
-            </label>
-            <input
-              id="diary-title"
-              type="text"
-              className="diary-input"
-              placeholder="Give today a title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={150}
-              readOnly={readOnly}
-            />
-
-            <label className="diary-field-label" htmlFor="diary-content">
-              Your Thoughts
-            </label>
-            <textarea
-              id="diary-content"
-              className="diary-textarea"
-              placeholder="Dear Diary, today..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              readOnly={readOnly}
-              required
-              rows={12}
-            />
-
-            <label className="diary-field-label">
-              How are you feeling?
-            </label>
-            <div className="diary-mood-row">
-              {MOODS.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  disabled={readOnly}
-                  className={`diary-mood-btn ${
-                    mood === emoji ? "selected" : ""
-                  }`}
-                  onClick={() => setMood(emoji)}
-                  aria-label={`Mood ${emoji}`}
-                  aria-pressed={mood === emoji}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-
-            {error && (
-              <div className="diary-editor-error" role="alert">
-                {error}
-              </div>
-            )}
-
-            <div className="diary-editor-actions">
+        {loading ? (
+          <p className="diary-editor-status">Loading diary entry...</p>
+        ) : (
+          <form className="diary-editor-form" onSubmit={handleSave}>
+            <div className="diary-editor-toolbar">
               <button
                 type="button"
-                className="diary-cancel-btn"
-                onClick={() => navigate("/diary")}
+                className="diary-date-badge"
+                onClick={() => !readOnly && setCalendarOpen(true)}
+                disabled={readOnly}
+                aria-label="Choose diary date"
               >
-                {readOnly ? "Back to Entries" : "Cancel"}
+                <strong>{String(date.getDate()).padStart(2, "0")}</strong>
+                <span className="diary-date-description">
+                  <span>{date.toLocaleDateString("en-IN", { month: "short", year: "numeric" }).toUpperCase()} <ChevronDown size={12} /></span>
+                  <small>{date.toLocaleDateString("en-IN", { weekday: "long" })}</small>
+                </span>
               </button>
+              <div className="diary-mood-container">
+                <button type="button" className="diary-current-mood" aria-label="Choose mood" disabled={readOnly} onClick={() => setMoodsOpen((open) => !open)}>{mood}</button>
+                {moodsOpen && !readOnly && (
+                  <div className="diary-mood-picker">
+                    {MOODS.map((emoji) => (
+                      <button type="button" key={emoji} className={mood === emoji ? "selected" : ""} onClick={() => { setMood(emoji); setMoodsOpen(false); }} aria-label={`Mood ${emoji}`}>{emoji}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
 
+            <label className="diary-visually-hidden" htmlFor="diary-title">Diary title</label>
+            <input id="diary-title" className="diary-editor-title" type="text" placeholder="Title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={150} readOnly={readOnly} />
+            <label className="diary-visually-hidden" htmlFor="diary-content">Diary content</label>
+            <textarea id="diary-content" className="diary-editor-content" placeholder="Write your diary here..." value={content} onChange={(event) => setContent(event.target.value)} readOnly={readOnly} required rows={12} />
+
+            {error && <div className="diary-editor-error" role="alert">{error}</div>}
+
+            <div className="diary-editor-save-area">
               {readOnly ? (
-                <button
-                  type="button"
-                  className="diary-save-btn"
-                  onClick={() => navigate(`/diary/${entryId}/edit`)}
-                >
-                  Edit Entry
-                </button>
+                <button type="button" className="diary-save-btn" onClick={() => navigate(`/diary/${entryId}/edit`)}>Edit Entry</button>
               ) : (
-                <button
-                  type="submit"
-                  className="diary-save-btn"
-                  disabled={saving}
-                >
-                  <Save size={18} />
-                  {saving ? "Saving..." : "Save Diary"}
-                </button>
+                <button type="submit" className="diary-save-btn" disabled={saving}>{saving ? "Saving..." : "Save Entry"}</button>
               )}
             </div>
           </form>
-        </div>
+        )}
       </div>
+
+      <nav className="diary-editor-bottom-nav" aria-label="FamilyKit navigation">
+        <button type="button" onClick={() => navigate("/my-family")}><House size={20} /><span>Home</span></button>
+        <button type="button" onClick={() => navigate("/family")}><UsersRound size={20} /><span>My Family</span></button>
+        <button type="button" className="diary-editor-add" onClick={() => navigate("/family/add")} aria-label="Add family member"><Plus size={24} /></button>
+        <button type="button" disabled><LayoutGrid size={20} /><span>Category</span></button>
+        <button type="button" disabled><CreditCard size={20} /><span>Pay & Renew</span></button>
+      </nav>
+
+      {calendarOpen && !readOnly && (
+        <CalendarPopup value={entryDate} onSelect={setEntryDate} onClose={() => setCalendarOpen(false)} />
+      )}
     </main>
   );
 }
