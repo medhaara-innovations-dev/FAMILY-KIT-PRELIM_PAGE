@@ -1,6 +1,7 @@
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
 import {
   ArrowLeft,
   Sparkles,
@@ -24,20 +25,125 @@ export default function NotesDetailsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const goToEditor = () => {
+  const leavingRef = useRef(false);
+  const savedRef = useRef(false);
+  const savingRef = useRef(false);
+
+  // Warn before closing or refreshing the browser.
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (
+        noteText.trim() &&
+        !savedRef.current &&
+        !leavingRef.current
+      ) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+
+    window.addEventListener(
+      "beforeunload",
+      handleBeforeUnload
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beforeunload",
+        handleBeforeUnload
+      );
+    };
+  }, [noteText]);
+
+  // Handle Android and browser back navigation.
+  useEffect(() => {
+    const guardId = `notes-details-${Date.now()}`;
+
+    window.history.pushState(
+      { familyKitNotesGuard: guardId },
+      ""
+    );
+
+    const handlePopState = () => {
+      if (leavingRef.current) return;
+
+      if (savingRef.current) {
+        window.history.pushState(
+          { familyKitNotesGuard: guardId },
+          ""
+        );
+        return;
+      }
+
+      if (savedRef.current) {
+        leavingRef.current = true;
+        navigate("/notes", { replace: true });
+        return;
+      }
+
+      if (noteText.trim()) {
+        window.history.pushState(
+          { familyKitNotesGuard: guardId },
+          ""
+        );
+
+        setModal("unsaved");
+      } else {
+        leavingRef.current = true;
+        navigate("/notes/new", {
+          replace: true,
+        });
+      }
+    };
+
+    window.addEventListener(
+      "popstate",
+      handlePopState
+    );
+
+    return () => {
+      window.removeEventListener(
+        "popstate",
+        handlePopState
+      );
+    };
+  }, [navigate, noteText]);
+
+  const handleBack = () => {
+    if (savingRef.current) return;
+
+    if (noteText.trim() && !savedRef.current) {
+      setModal("unsaved");
+      return;
+    }
+
+    leavingRef.current = true;
+
     navigate("/notes/new", {
+      replace: true,
+      state: { noteText },
+    });
+  };
+
+  const handleConfirmBack = () => {
+    leavingRef.current = true;
+    setModal(null);
+
+    navigate("/notes/new", {
+      replace: true,
       state: { noteText },
     });
   };
 
   const handleSave = async (withReminder) => {
-    if (saving) return;
+    if (savingRef.current) return;
 
     if (!noteText.trim()) {
       setError("Please enter a note before saving.");
       return;
     }
 
+    savingRef.current = true;
     setSaving(true);
     setError("");
     setModal(null);
@@ -53,26 +159,31 @@ export default function NotesDetailsPage() {
         throw new Error("Unable to save your note.");
       }
 
+      savedRef.current = true;
+
       setModal(
-        withReminder ? "reminderSuccess" : "saveSuccess"
+        withReminder
+          ? "reminderSuccess"
+          : "saveSuccess"
       );
     } catch (err) {
       setError(
-        err.message || "Unable to save your note. Please try again."
+        err.message ||
+          "Unable to save your note. Please try again."
       );
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   };
 
-  const handleSaveOnly = () => {
-    setError("");
-    setModal("confirmSaveOnly");
-  };
-
   const closeSuccess = () => {
+    leavingRef.current = true;
     setModal(null);
-    navigate("/notes", { replace: true });
+
+    navigate("/notes", {
+      replace: true,
+    });
   };
 
   return (
@@ -82,7 +193,7 @@ export default function NotesDetailsPage() {
           <button
             type="button"
             className="fk-note-details-back"
-            onClick={goToEditor}
+            onClick={handleBack}
             disabled={saving}
             aria-label="Back to note editor"
           >
@@ -124,7 +235,10 @@ export default function NotesDetailsPage() {
         </section>
 
         {error && (
-          <div className="fk-note-details-error" role="alert">
+          <div
+            className="fk-note-details-error"
+            role="alert"
+          >
             <AlertCircle size={19} />
             <span>{error}</span>
           </div>
@@ -138,6 +252,7 @@ export default function NotesDetailsPage() {
             disabled={saving || !noteText.trim()}
           >
             <Bell size={19} />
+
             {saving
               ? "Saving..."
               : "Save Notes & Add Reminder"}
@@ -146,11 +261,12 @@ export default function NotesDetailsPage() {
           <button
             type="button"
             className="fk-note-details-save-btn"
-            onClick={handleSaveOnly}
+            onClick={() => handleSave(false)}
             disabled={saving || !noteText.trim()}
           >
             <Save size={19} />
-            Save Notes Only
+
+            {saving ? "Saving..." : "Save Notes Only"}
           </button>
         </div>
 
@@ -162,48 +278,40 @@ export default function NotesDetailsPage() {
       </div>
 
       {modal && (
-        <div
-          className="fk-note-details-modal-overlay"
-          role="presentation"
-        >
+        <div className="fk-note-details-modal-overlay">
           <div
             className="fk-note-details-modal"
             role="dialog"
             aria-modal="true"
             aria-labelledby="fk-note-modal-title"
           >
-            {modal === "confirmSaveOnly" && (
+            {modal === "unsaved" && (
               <>
                 <div className="fk-note-details-modal-icon warning">
                   <AlertCircle size={34} />
                 </div>
 
                 <h2 id="fk-note-modal-title">
-                  Note Unsaved!
+                  Note unsaved!
                 </h2>
 
-                <p>
-                  Do you want to go back without saving?
-                </p>
+                <p>Do you want to go back?</p>
 
                 <div className="fk-note-details-modal-actions">
                   <button
                     type="button"
                     className="fk-note-details-modal-secondary"
-                    onClick={() => {
-                      setModal(null);
-                      handleSave(false);
-                    }}
+                    onClick={() => setModal(null)}
                   >
-                    No, Save Note
+                    No
                   </button>
 
                   <button
                     type="button"
                     className="fk-note-details-modal-primary"
-                    onClick={goToEditor}
+                    onClick={handleConfirmBack}
                   >
-                    Yes, Go Back
+                    Yes
                   </button>
                 </div>
               </>
