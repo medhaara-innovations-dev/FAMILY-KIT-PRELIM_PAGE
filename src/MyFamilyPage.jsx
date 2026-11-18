@@ -657,6 +657,7 @@ export default function MyFamilyPage() {
         <NavItem
           icon={LayoutGrid}
           label="Category"
+          onClick={() => navigate("/categories")}
         />
 
         <NavItem

@@ -1,4 +1,3 @@
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -12,6 +11,7 @@ import FamilyMembersPage from "./FamilyMembersPage.jsx";
 import AddFamilyMemberPage from "./AddFamilyMemberPage.jsx";
 import FamilyMemberProfile from "./FamilyMemberProfile.jsx";
 import MyProfile from "./MyProfile.jsx";
+import CategoriesPage from "./CategoriesPage.jsx";
 
 // Events Calendar
 import EventsCalendarPage from "./EventsCalendarPage.jsx";
@@ -46,13 +46,13 @@ createRoot(document.getElementById("root")).render(
         {/* Family Members */}
         <Route path="/family" element={<FamilyMembersPage />} />
         <Route path="/family/add" element={<AddFamilyMemberPage />} />
-        <Route
-          path="/family/:memberId"
-          element={<FamilyMemberProfile />}
-        />
+        <Route path="/family/:memberId" element={<FamilyMemberProfile />} />
 
         {/* My Profile */}
         <Route path="/my-profile" element={<MyProfile />} />
+
+        {/* Categories */}
+        <Route path="/categories" element={<CategoriesPage />} />
 
         {/* Events Calendar */}
         <Route path="/events" element={<EventsCalendarPage />} />
@@ -60,44 +60,15 @@ createRoot(document.getElementById("root")).render(
         {/* Dear Diary */}
         <Route path="/diary" element={<DiaryPage />} />
         <Route path="/diary/new" element={<DiaryEditorPage />} />
-        <Route
-          path="/diary/:entryId"
-          element={<DiaryEditorPage />}
-        />
-        <Route
-          path="/diary/:entryId/edit"
-          element={<DiaryEditorPage />}
-        />
+        <Route path="/diary/:entryId" element={<DiaryEditorPage />} />
+        <Route path="/diary/:entryId/edit" element={<DiaryEditorPage />} />
 
-        {/* My Notes - All Entries */}
-        <Route
-          path="/notes"
-          element={<NotesPage />}
-        />
-
-        {/* Create a new note */}
-        <Route
-          path="/notes/new"
-          element={<NotesEditorPage />}
-        />
-
-        {/* View an existing note - READ ONLY */}
-        <Route
-          path="/notes/:noteId"
-          element={<NotesViewPage />}
-        />
-
-        {/* Edit an existing note */}
-        <Route
-          path="/notes/:noteId/edit"
-          element={<NotesEditorPage />}
-        />
-
-        {/* AI details and save */}
-        <Route
-          path="/notes/details"
-          element={<NotesDetailsPage />}
-        />
+        {/* My Notes */}
+        <Route path="/notes" element={<NotesPage />} />
+        <Route path="/notes/new" element={<NotesEditorPage />} />
+        <Route path="/notes/:noteId" element={<NotesViewPage />} />
+        <Route path="/notes/:noteId/edit" element={<NotesEditorPage />} />
+        <Route path="/notes/details" element={<NotesDetailsPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
