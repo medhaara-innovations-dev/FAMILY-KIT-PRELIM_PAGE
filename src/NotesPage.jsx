@@ -388,7 +388,7 @@ export default function NotesPage() {
                             <Bell size={13} />
                             <span>
                               {createdIST
-                                ? `Reminder on ${createdIST}`
+                                ? `Reminder created on ${createdIST}`
                                 : "Reminder"}
                             </span>
                           </span>
