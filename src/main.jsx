@@ -20,6 +20,11 @@ import EventsCalendarPage from "./EventsCalendarPage.jsx";
 import DiaryPage from "./DiaryPage.jsx";
 import DiaryEditorPage from "./DiaryEditorPage.jsx";
 
+// My Notes
+import NotesPage from "./NotesPage.jsx";
+import NotesEditorPage from "./NotesEditorPage.jsx";
+import NotesDetailsPage from "./NotesDetailsPage.jsx";
+
 import "./App.css";
 
 createRoot(document.getElementById("root")).render(
@@ -62,6 +67,11 @@ createRoot(document.getElementById("root")).render(
           path="/diary/:entryId/edit"
           element={<DiaryEditorPage />}
         />
+
+        {/* My Notes */}
+        <Route path="/notes" element={<NotesPage />} />
+        <Route path="/notes/new" element={<NotesEditorPage />} />
+        <Route path="/notes/details" element={<NotesDetailsPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

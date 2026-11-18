@@ -1,0 +1,168 @@
+
+.fk-note-editor-page {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #e8ddfa 0,
+    #f5f3f8 190px,
+    #f5f3f8 100%
+  );
+  font-family: "Mulish", sans-serif;
+  color: #211b2d;
+  padding-bottom: 45px;
+}
+
+.fk-note-editor-page * {
+  box-sizing: border-box;
+}
+
+.fk-note-editor-container {
+  width: min(calc(100% - 36px), 760px);
+  margin: 0 auto;
+}
+
+.fk-note-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 30px 0 25px;
+}
+
+.fk-note-editor-header h1 {
+  margin: 0;
+  font: 600 23px "Poppins", sans-serif;
+}
+
+.fk-note-editor-back {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: #f4edff;
+  color: #6a5890;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.fk-note-editor-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 12px #2d0b8408;
+}
+
+.fk-note-editor-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 16px;
+  color: #2d0b84;
+}
+
+.fk-note-editor-label h2 {
+  margin: 0;
+  font: 600 17px "Poppins", sans-serif;
+}
+
+.fk-note-editor-textarea {
+  display: block;
+  width: 100%;
+  min-height: 350px;
+  resize: vertical;
+  border: 1px solid #e6e0ee;
+  border-radius: 12px;
+  outline: none;
+  padding: 17px;
+  background: #fcfbff;
+  color: #211b2d;
+  font: 15px/1.8 "Mulish", sans-serif;
+}
+
+.fk-note-editor-textarea:focus {
+  border-color: #8b65dc;
+  box-shadow: 0 0 0 3px #8b65dc18;
+}
+
+.fk-note-editor-textarea::placeholder {
+  color: #9b96a6;
+}
+
+.fk-note-editor-character-count {
+  text-align: right;
+  margin-top: 10px;
+  color: #91899e;
+  font-size: 12px;
+}
+
+.fk-note-editor-ai-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 25px;
+  padding: 17px;
+  border-radius: 12px;
+  background: #ebe5fa;
+  color: #5632a0;
+}
+
+.fk-note-editor-ai-message p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.fk-note-editor-ai-message svg {
+  flex-shrink: 0;
+}
+
+.fk-note-editor-continue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 25px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  background: #2d0b84;
+  color: white;
+  font: 600 15px "Poppins", sans-serif;
+  cursor: pointer;
+  box-shadow: inset 0 -3px 5px #13043833;
+}
+
+.fk-note-editor-continue:hover:not(:disabled) {
+  background: #3d2184;
+}
+
+.fk-note-editor-continue:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .fk-note-editor-header h1 {
+    font-size: 21px;
+  }
+
+  .fk-note-editor-card {
+    padding: 15px;
+  }
+
+  .fk-note-editor-textarea {
+    min-height: 390px;
+    font-size: 14px;
+    padding: 14px;
+  }
+
+  .fk-note-editor-ai-message {
+    padding: 14px;
+  }
+
+  .fk-note-editor-ai-message p {
+    font-size: 13px;
+  }
+}

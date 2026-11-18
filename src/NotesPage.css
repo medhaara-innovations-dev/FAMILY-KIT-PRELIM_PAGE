@@ -1,0 +1,340 @@
+
+.fk-notes-page {
+  --notes-purple: #2d0b84;
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #e8ddfa 0,
+    #f5f3f8 190px,
+    #f5f3f8 100%
+  );
+  color: #211b2d;
+  font-family: "Mulish", sans-serif;
+  padding-bottom: 110px;
+  box-sizing: border-box;
+}
+
+.fk-notes-page * {
+  box-sizing: border-box;
+}
+
+.fk-notes-container {
+  width: min(calc(100% - 36px), 760px);
+  margin: 0 auto;
+}
+
+.fk-notes-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 30px 0 24px;
+}
+
+.fk-notes-header h1 {
+  flex: 1;
+  margin: 0;
+  font: 600 23px "Poppins", sans-serif;
+}
+
+.fk-notes-icon-button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #f4edff;
+  color: #6a5890;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.fk-notes-search-button {
+  background: white;
+  color: var(--notes-purple);
+}
+
+.fk-notes-search-panel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  color: var(--notes-purple);
+}
+
+.fk-notes-search-panel input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: 14px "Mulish", sans-serif;
+}
+
+.fk-notes-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 150px;
+  background: white;
+  border-radius: 14px;
+  padding: 22px 20px;
+}
+
+.fk-notes-hero-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.fk-notes-hero-copy h2 {
+  margin: 0 0 7px;
+  font: 700 17px "Poppins", sans-serif;
+  color: #211b2d;
+}
+
+.fk-notes-hero-copy p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #686273;
+}
+
+.fk-notes-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: none;
+  border-radius: 20px;
+  padding: 11px 17px;
+  background: var(--notes-purple);
+  color: white;
+  font: 600 12px "Poppins", sans-serif;
+  cursor: pointer;
+}
+
+.fk-notes-primary-button:hover {
+  background: #3d2184;
+}
+
+.fk-notes-hero-icon {
+  flex: 0 0 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: #f0eaff;
+  color: #7550dc;
+}
+
+.fk-notes-entries {
+  margin-top: 25px;
+}
+
+.fk-notes-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.fk-notes-section-heading h2 {
+  margin: 0;
+  font: 700 20px "Poppins", sans-serif;
+}
+
+.fk-notes-count {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #ebe4ff;
+  color: #6945ba;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fk-notes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.fk-notes-card {
+  position: relative;
+  background: white;
+  border-radius: 13px;
+  padding: 18px 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px #2d0b8406;
+}
+
+.fk-notes-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: #b294ff;
+}
+
+.fk-notes-card h3 {
+  margin: 0 0 8px;
+  font: 700 16px "Poppins", sans-serif;
+}
+
+.fk-notes-preview {
+  margin: 0;
+  color: #686273;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.fk-notes-reminder-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.fk-notes-reminder-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #eee8ff;
+  color: #5932a3;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fk-notes-created-date {
+  color: #777080;
+  font-size: 11px;
+}
+
+.fk-notes-empty {
+  text-align: center;
+  background: white;
+  border-radius: 13px;
+  padding: 48px 22px;
+  color: var(--notes-purple);
+}
+
+.fk-notes-empty h3 {
+  margin: 12px 0 6px;
+  font: 700 18px "Poppins", sans-serif;
+}
+
+.fk-notes-empty p {
+  margin: 0;
+  color: #686273;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fk-notes-status {
+  text-align: center;
+  color: #716a80;
+  padding: 30px;
+}
+
+.fk-notes-error {
+  background: #fff1f1;
+  color: #a12222;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+.fk-notes-error button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.fk-notes-bottom-nav {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(100%, 760px);
+  min-height: 78px;
+  padding: 10px 12px max(12px, env(safe-area-inset-bottom));
+  border: 1.5px solid #b598ff;
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 -5px 20px #2d0b840b;
+}
+
+.fk-notes-bottom-nav button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #82778f;
+  font: 700 11px "Mulish", sans-serif;
+  cursor: pointer;
+}
+
+.fk-notes-bottom-nav button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.fk-notes-bottom-nav .fk-notes-nav-active {
+  color: var(--notes-purple);
+}
+
+@media (min-width: 768px) {
+  .fk-notes-hero {
+    padding: 28px;
+  }
+
+  .fk-notes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 390px) {
+  .fk-notes-hero {
+    padding: 16px;
+  }
+
+  .fk-notes-hero-icon {
+    flex-basis: 58px;
+    height: 58px;
+  }
+
+  .fk-notes-hero-icon svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .fk-notes-primary-button {
+    padding: 10px 12px;
+  }
+}

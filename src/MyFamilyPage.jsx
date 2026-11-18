@@ -28,7 +28,6 @@ import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyCalendar from "./FamilyCalendar.jsx";
 
-
 import "./MyFamilyPage.css";
 
 // =====================================================
@@ -311,7 +310,11 @@ export default function MyFamilyPage() {
               className="fk-dash-avatar"
               onClick={() => navigate("/my-profile")}
               aria-label="Open My Profile"
-              style={{ overflow: "hidden", padding: 0, cursor: "pointer" }}
+              style={{
+                overflow: "hidden",
+                padding: 0,
+                cursor: "pointer",
+              }}
             >
               <ProfileAvatar
                 memberId={SELF_PROFILE_ID}
@@ -480,10 +483,12 @@ export default function MyFamilyPage() {
               onClick={() => navigate("/diary")}
             />
 
+            {/* MY NOTES — ENABLED */}
             <QuickAction
               icon={StickyNote}
               label="Notes"
               tone="green"
+              onClick={() => navigate("/notes")}
             />
 
             <QuickAction
@@ -659,7 +664,8 @@ export default function MyFamilyPage() {
           label="Pay & Renew"
         />
       </nav>
-        {/* LIVE CALENDAR POPUP */}
+
+      {/* LIVE CALENDAR POPUP */}
       {calendarOpen && (
         <FamilyCalendar
           onClose={() => setCalendarOpen(false)}
