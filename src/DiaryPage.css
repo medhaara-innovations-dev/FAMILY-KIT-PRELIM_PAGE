@@ -476,3 +476,19 @@
     font-size: 9px;
   }
 }
+
+/* Force the requested golden-yellow date capsule */
+
+.diary-page .diary-entry-card .diary-date-badge {
+  background: rgba(242, 183, 5, 0.19) !important;
+  border: 0.75px solid #ffffff !important;
+  border-radius: 7.5px;
+  padding: 4px 4px 8px 8px;
+  color: #181818;
+}
+
+.diary-page .diary-entry-card .diary-date-badge strong,
+.diary-page .diary-entry-card .diary-date-badge b,
+.diary-page .diary-entry-card .diary-date-badge small {
+  color: #181818 !important;
+}
