@@ -13,8 +13,12 @@ import AddFamilyMemberPage from "./AddFamilyMemberPage.jsx";
 import FamilyMemberProfile from "./FamilyMemberProfile.jsx";
 import MyProfile from "./MyProfile.jsx";
 
-// NEW: Events Calendar page
+// Events Calendar
 import EventsCalendarPage from "./EventsCalendarPage.jsx";
+
+// Dear Diary
+import DiaryPage from "./DiaryPage.jsx";
+import DiaryEditorPage from "./DiaryEditorPage.jsx";
 
 import "./App.css";
 
@@ -22,18 +26,42 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
+        {/* Landing Page */}
         <Route path="/" element={<App />} />
+
+        {/* Authentication */}
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-pin" element={<ForgotPinPage />} />
+
+        {/* Dashboard */}
         <Route path="/my-family" element={<MyFamilyPage />} />
+
+        {/* Family Members */}
         <Route path="/family" element={<FamilyMembersPage />} />
         <Route path="/family/add" element={<AddFamilyMemberPage />} />
-        <Route path="/family/:memberId" element={<FamilyMemberProfile />} />
+        <Route
+          path="/family/:memberId"
+          element={<FamilyMemberProfile />}
+        />
+
+        {/* My Profile */}
         <Route path="/my-profile" element={<MyProfile />} />
 
-        {/* NEW: Events Calendar */}
+        {/* Events Calendar */}
         <Route path="/events" element={<EventsCalendarPage />} />
+
+        {/* Dear Diary */}
+        <Route path="/diary" element={<DiaryPage />} />
+        <Route path="/diary/new" element={<DiaryEditorPage />} />
+        <Route
+          path="/diary/:entryId"
+          element={<DiaryEditorPage />}
+        />
+        <Route
+          path="/diary/:entryId/edit"
+          element={<DiaryEditorPage />}
+        />
       </Routes>
     </BrowserRouter>
   </StrictMode>
