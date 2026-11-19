@@ -31,6 +31,7 @@ import SearchPage from "./SearchPage.jsx";
 import VoiceSearchPage from "./VoiceSearchPage.jsx";
 
 import "./App.css";
+import "./FamilyKitStickyHeaders.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
