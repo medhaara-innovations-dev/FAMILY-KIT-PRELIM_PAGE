@@ -151,3 +151,85 @@
 .diary-delete-cancel { border: 1px solid #e1dce9; background: #fff; color: #30263d; }
 .diary-delete-confirm { border: 0; background: #b42332; color: #fff; }
 .diary-delete-actions button:disabled { opacity: .6; cursor: wait; }
+/* ==========================================
+   FAMILYKIT DEAR DIARY
+   FIXED HEADER + SCROLLABLE CONTENT
+   ========================================== */
+
+/* Prevent the entire page from scrolling */
+.diary-editor-page {
+  height: 100dvh;
+  min-height: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+/* Header and diary form use separate layout areas */
+.diary-editor-container {
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Dear Diary header stays visible */
+.diary-editor-topbar {
+  position: relative;
+  z-index: 100;
+  flex: 0 0 72px;
+  height: 72px;
+
+  background: linear-gradient(
+    110deg,
+    #eee6ff 0%,
+    #e8e0f9 100%
+  );
+
+  border: none;
+  box-shadow: none;
+}
+
+/* Keep Back and Delete buttons visible */
+.diary-editor-back,
+.diary-editor-search {
+  flex-shrink: 0;
+}
+
+/* Only the diary content scrolls */
+.diary-editor-form {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Keep Save/Edit button at bottom of form */
+.diary-editor-save-area {
+  margin-top: auto;
+}
+
+/* Mobile screens */
+@media (max-width: 600px) {
+  .diary-editor-topbar {
+    flex-basis: 66px;
+    height: 66px;
+  }
+
+  .diary-editor-form {
+    min-height: 0;
+  }
+}
+
+/* Desktop screens */
+@media (min-width: 700px) {
+  .diary-editor-container {
+    min-height: 0;
+    height: 100dvh;
+  }
+}
