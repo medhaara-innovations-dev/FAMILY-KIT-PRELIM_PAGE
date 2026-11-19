@@ -2588,3 +2588,20 @@
     stroke-dashoffset: 0;
   }
 }
+
+/* PIN visibility eye — consistent size on Create and Confirm PIN screens */
+.signup-page--pin-step .signup-pin-toggle .signup-pin-eye {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  line-height: 1;
+}
+.signup-page--pin-step .signup-pin-toggle .signup-pin-eye svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}

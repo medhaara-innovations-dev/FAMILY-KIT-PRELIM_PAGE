@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 import {
   signUpWithEmail,
@@ -1145,7 +1146,7 @@ export default function SignupPage() {
                 <label htmlFor="create-pin-0">Your PIN</label>
                 <label className="signup-pin-toggle">
                   <input type="checkbox" checked={showPin} onChange={(event) => setShowPin(event.target.checked)} />
-                  <span aria-hidden="true">{showPin ? "◉" : "◎"}</span>
+                  <span className="signup-pin-eye" aria-hidden="true">{showPin ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}</span>
                   Show PIN
                 </label>
               </div>
@@ -1235,7 +1236,7 @@ export default function SignupPage() {
                 <label htmlFor="confirm-pin-0">Your PIN</label>
                 <label className="signup-pin-toggle">
                   <input type="checkbox" checked={showConfirmPin} onChange={(event) => setShowConfirmPin(event.target.checked)} />
-                  <span aria-hidden="true">{showConfirmPin ? "◉" : "◎"}</span>
+                  <span className="signup-pin-eye" aria-hidden="true">{showConfirmPin ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}</span>
                   Show PIN
                 </label>
               </div>
