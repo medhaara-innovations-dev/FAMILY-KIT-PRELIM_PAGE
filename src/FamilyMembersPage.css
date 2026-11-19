@@ -489,3 +489,50 @@
   .fk-family-member-details { gap: 9px; }
   .fk-family-avatar { width: 48px; height: 48px; flex-basis: 48px; }
 }
+
+
+/* ==========================================================
+   MY FAMILY: FIXED HEADER (screen-specific, no global CSS)
+   ========================================================== */
+.fk-family-page .fk-family-header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  width: 100%;
+  max-width: 560px;
+  min-height: 92px;
+  background: #ebe3fa;
+  border-bottom: 0;
+}
+
+/* Content starts below the fixed header; no overlapping. */
+.fk-family-page .fk-family-main {
+  padding-top: 110px;
+}
+
+/* Back arrow: simple arrow inside a small white circle. */
+.fk-family-page .fk-family-header .fk-family-back {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  background: #fff;
+  color: #2d0b84;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(45, 11, 132, 0.06);
+}
+.fk-family-page .fk-family-header .fk-family-back svg {
+  width: 19px;
+  height: 19px;
+}
+
+@media (max-width: 600px) {
+  .fk-family-page .fk-family-header {
+    min-height: 86px;
+  }
+  .fk-family-page .fk-family-main {
+    padding-top: 101px;
+  }
+}
