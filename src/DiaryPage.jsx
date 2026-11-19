@@ -50,7 +50,6 @@ export default function DiaryPage() {
     loadEntries();
   }, []);
 
-
   const filteredEntries = entries.filter((entry) =>
     `${entry.title || ""} ${entry.content || ""} ${entry.entryDate || ""}`
       .toLowerCase().includes(searchText.toLowerCase())
@@ -59,43 +58,47 @@ export default function DiaryPage() {
   return (
     <main className="diary-page">
       <div className="diary-container">
-        <header className="diary-topbar">
-          <button type="button" className="diary-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard">
-            <ArrowLeft size={18} />
-          </button>
-          <h1>Dear Diary</h1>
-          <button type="button" className="diary-search-button" aria-label="Search diary entries" aria-expanded={searchOpen} onClick={() => { setSearchOpen((current) => !current); setSearchText(""); }}>
-            <Search size={17} />
-          </button>
-        </header>
-
-        {searchOpen && (
-          <div className="diary-search-panel">
-            <Search size={17} />
-            <input type="search" autoFocus placeholder="Search your diary entries" aria-label="Search diary entries" value={searchText} onChange={(event) => setSearchText(event.target.value)} />
-          </div>
-        )}
-
-        <section className="diary-hero">
-          <div className="diary-hero-copy">
-            <p>Start writing your thoughts in Dear Diary and no one has access to your diary.</p>
-            <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new")}>
-              <Pencil size={13} /> Write Today's Diary
+        {/* This area stays visible while the diary cards scroll. */}
+        <div className="diary-fixed-content">
+          <header className="diary-topbar">
+            <button type="button" className="diary-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard">
+              <ArrowLeft size={18} />
             </button>
-          </div>
-          <div className="diary-hero-art" aria-hidden="true">
-            <span className="diary-art-sparkle">✦</span>
-            <BookHeart size={49} strokeWidth={1.8} />
-            <span className="diary-art-leaf">✿</span>
-          </div>
-        </section>
+            <h1>Dear Diary</h1>
+            <button type="button" className="diary-search-button" aria-label="Search diary entries" aria-expanded={searchOpen} onClick={() => { setSearchOpen((current) => !current); setSearchText(""); }}>
+              <Search size={17} />
+            </button>
+          </header>
 
-        <section className="diary-list-section">
+          {searchOpen && (
+            <div className="diary-search-panel">
+              <Search size={17} />
+              <input type="search" autoFocus placeholder="Search your diary entries" aria-label="Search diary entries" value={searchText} onChange={(event) => setSearchText(event.target.value)} />
+            </div>
+          )}
+
+          <section className="diary-hero">
+            <div className="diary-hero-copy">
+              <p>Start writing your thoughts in Dear Diary and no one has access to your diary.</p>
+              <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new")}>
+                <Pencil size={13} /> Write Today's Diary
+              </button>
+            </div>
+            <div className="diary-hero-art" aria-hidden="true">
+              <span className="diary-art-sparkle">✦</span>
+              <BookHeart size={49} strokeWidth={1.8} />
+              <span className="diary-art-leaf">✿</span>
+            </div>
+          </section>
+
           <div className="diary-section-header">
             <h2>All Entries</h2>
             <span className="diary-entry-count">{loading ? "Loading..." : `${entries.length} ${entries.length === 1 ? "Entry" : "Entries"}`}</span>
           </div>
+        </div>
 
+        {/* Only this list area scrolls. */}
+        <section className="diary-list-section" aria-label="Diary entries">
           {error && <div className="diary-error" role="alert">{error} <button type="button" onClick={loadEntries}>Retry</button></div>}
 
           {loading ? (
