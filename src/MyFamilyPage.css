@@ -793,3 +793,50 @@
   .fk-dash-sticky-top { padding-top: 35px; }
   .fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
 }
+
+/* =========================================
+   SMOOTH NAVIGATION AND SCREEN ENTRANCE
+   ========================================= */
+@keyframes fkScreenFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fkContentRiseIn {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* No transform on route wrapper: preserves position:fixed headers/navs. */
+.fk-screen-transition {
+  animation: fkScreenFadeIn 250ms ease-out both;
+}
+
+.fk-screen-transition .fk-dash-section {
+  animation: fkContentRiseIn 250ms ease-out both;
+}
+
+.fk-dash-nav-icon {
+  border-radius: 50%;
+  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
+}
+.fk-dash-nav-item { transition: color 220ms ease; }
+.fk-dash-nav-item.active .fk-dash-nav-icon { transform: scale(1.05); }
+.fk-dash-action,
+.fk-dash-center-add,
+.fk-dash-round-button {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.fk-dash-action:active,
+.fk-dash-center-add:active,
+.fk-dash-round-button:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fk-screen-transition,
+  .fk-screen-transition .fk-dash-section { animation: none; }
+  .fk-dash-nav-icon,
+  .fk-dash-nav-item,
+  .fk-dash-action,
+  .fk-dash-center-add,
+  .fk-dash-round-button { transition: none; }
+}

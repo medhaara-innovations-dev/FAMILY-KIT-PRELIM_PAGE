@@ -423,3 +423,28 @@
   height: 20px;
   flex-shrink: 0;
 }
+
+/* ==========================================
+   SMOOTH CATEGORY INTERACTIONS
+   ========================================== */
+.fk-screen-transition .fk-cat-content {
+  animation: fkContentRiseIn 250ms ease-out both;
+}
+.fk-cat-nav-icon {
+  border-radius: 50%;
+  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
+}
+.fk-cat-bottom-nav button { transition: color 220ms ease; }
+.fk-cat-nav-active .fk-cat-nav-icon { transform: scale(1.05); }
+.fk-cat-card { transition: transform 200ms ease, box-shadow 200ms ease; }
+.fk-cat-card:active { transform: scale(0.97); }
+.fk-cat-filter {
+  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fk-screen-transition .fk-cat-content { animation: none; }
+  .fk-cat-nav-icon,
+  .fk-cat-bottom-nav button,
+  .fk-cat-card,
+  .fk-cat-filter { transition: none; }
+}

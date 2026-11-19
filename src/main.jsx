@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import App from "./App.jsx";
 import SignupPage from "./auth/SignupPage.jsx";
@@ -32,10 +32,12 @@ import VoiceSearchPage from "./VoiceSearchPage.jsx";
 
 import "./App.css";
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <Routes>
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <div className="fk-screen-transition" key={location.pathname}>
+      <Routes location={location}>
         {/* Landing Page */}
         <Route path="/" element={<App />} />
 
@@ -78,6 +80,14 @@ createRoot(document.getElementById("root")).render(
         <Route path="/search" element={<SearchPage />} />
         <Route path="/search/voice" element={<VoiceSearchPage />} />
       </Routes>
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <AnimatedRoutes />
     </BrowserRouter>
   </StrictMode>
 );
