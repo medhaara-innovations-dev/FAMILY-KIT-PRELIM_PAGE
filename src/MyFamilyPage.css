@@ -736,3 +736,10 @@
     transform: translateX(-50%);
   }
 }
+
+/* Keep this screen's existing header visible during page scrolling. */
+.fk-dash-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
