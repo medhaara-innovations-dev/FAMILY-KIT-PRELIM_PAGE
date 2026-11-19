@@ -375,3 +375,117 @@
     padding-left: 70px;
   }
 }
+
+
+/* =====================================================
+   MY FAMILY — REFERENCE LAYOUT UPDATE (UI ONLY)
+   ===================================================== */
+.fk-family-page {
+  background: linear-gradient(180deg, #e8e0fc 0%, #f4f1fa 42%, #f8f7fb 100%);
+  padding-bottom: 115px;
+}
+.fk-family-header {
+  background: transparent;
+  border-bottom: 0;
+  padding: 44px 24px 28px;
+  gap: 14px;
+}
+.fk-family-header-left, .fk-family-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.fk-family-header h1 {
+  color: #211b2c;
+  font-size: 25px;
+  font-weight: 700;
+}
+.fk-family-icon-button {
+  background: rgba(255,255,255,.72);
+  color: #30253c;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  box-shadow: 0 2px 9px rgba(45,11,132,.06);
+}
+.fk-family-back { border: 1px solid #fff; background: transparent; }
+.fk-family-header-add { background: #2d0b84; color: white; }
+.fk-family-main { max-width: 560px; padding: 18px 20px 30px; }
+.fk-family-summary { margin-bottom: 16px; }
+.fk-family-summary h2 { font-size: 23px; color: #211b2c; margin-bottom: 6px; }
+.fk-family-summary p { font-size: 16px; color: #777181; }
+.fk-family-tree-placeholder {
+  width: 90%;
+  min-height: 310px;
+  margin: 0 auto 25px;
+  border: 1.5px solid #fff;
+  border-radius: 21px;
+  background: rgba(246,242,255,.8);
+  box-shadow: 0 9px 24px rgba(45,11,132,.06);
+}
+.fk-family-list-section { background: transparent; border: 0; padding: 0; }
+.fk-family-list-heading { margin: 0 0 13px; }
+.fk-family-list-heading h3 { font-size: 19px; color: #211442; }
+.fk-family-view-all { background: none; border: 0; color: #351083; font-size: 13px; cursor: pointer; }
+.fk-family-list { gap: 10px; }
+.fk-family-member-card {
+  display: flex;
+  align-items: center;
+  border: 0;
+  border-radius: 22px;
+  min-height: 74px;
+  padding: 7px 12px;
+  box-shadow: none;
+}
+.fk-family-member-details { flex: 1; min-width: 0; padding: 4px; gap: 12px; }
+.fk-family-avatar {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  background: #f7f5fd;
+  color: #a99cbf;
+  border: 1px solid #f1edf7;
+  overflow: hidden;
+}
+.fk-family-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.fk-family-member-info strong { color: #24173f; font-size: 15px; }
+.fk-family-member-info small { font-size: 12px; color: #777080; }
+.fk-family-member-trailing { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+.fk-family-contact-actions { display: flex; gap: 7px; padding: 0; }
+.fk-family-contact-actions button {
+  display: grid; place-items: center; padding: 0;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #f4f0ff; color: #351083;
+}
+.fk-family-contact-actions button.fk-family-whatsapp { background: #e8f8eb; color: #20ae51; }
+.fk-family-chevron-button { border: 0; background: transparent; color: #211b2c; display: grid; place-items: center; padding: 3px; }
+.fk-family-chevron { margin-left: auto; color: #211b2c; }
+.fk-family-bottom-nav {
+  left: 50%; right: auto; transform: translateX(-50%);
+  width: min(100%, 560px); min-height: 82px;
+  padding: 9px 7px max(11px, env(safe-area-inset-bottom));
+  border: 1.5px solid #7953d2; border-bottom: 0;
+  border-radius: 21px 21px 0 0;
+  display: grid; grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 2px; z-index: 100;
+}
+.fk-family-bottom-nav > button { min-width: 0; font-size: 10px; gap: 4px; }
+.fk-family-bottom-nav > button.active { color: #351083; }
+.fk-family-bottom-nav > button.active svg { background: #351083; color: white; border-radius: 50%; padding: 4px; width: 31px; height: 31px; }
+.fk-family-bottom-nav > .fk-family-bottom-add {
+  width: 49px; height: 49px; justify-self: center;
+  box-shadow: 0 4px 9px rgba(53,16,131,.25);
+}
+.fk-family-bottom-nav > button:disabled { opacity: .55; cursor: default; }
+@media (max-width: 600px) {
+  .fk-family-header { padding: 28px 16px 18px; }
+  .fk-family-header h1 { font-size: 22px; }
+  .fk-family-header-left, .fk-family-header-right { gap: 9px; }
+  .fk-family-icon-button { width: 38px; height: 38px; flex-basis: 38px; }
+  .fk-family-main { padding: 12px 16px 25px; }
+  .fk-family-summary h2 { font-size: 22px; }
+  .fk-family-tree-placeholder { min-height: 270px; }
+  .fk-family-member-card { padding: 7px 9px; }
+  .fk-family-member-details { gap: 9px; }
+  .fk-family-avatar { width: 48px; height: 48px; flex-basis: 48px; }
+}

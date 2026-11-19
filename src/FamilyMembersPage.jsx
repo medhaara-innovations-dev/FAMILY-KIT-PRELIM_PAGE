@@ -10,6 +10,9 @@ import {
   Phone,
   MessageCircle,
   RefreshCw,
+  LayoutGrid,
+  CreditCard,
+  UserRoundPlus,
   House,
 } from "lucide-react";
 
@@ -183,28 +186,25 @@ export default function FamilyMembersPage() {
 
   return (
     <div className="fk-family-page">
-      {/* HEADER */}
-
+      {/* HEADER — existing navigation and refresh behavior preserved */}
       <header className="fk-family-header">
-        <button
-          type="button"
-          className="fk-family-icon-button"
-          onClick={() => navigate("/my-family")}
-          aria-label="Back to dashboard"
-        >
-          <ArrowLeft size={22} />
-        </button>
-
-        <h1>My Family</h1>
-
-        <button
-          type="button"
-          className="fk-family-icon-button"
-          onClick={loadMembers}
-          aria-label="Refresh family members"
-        >
-          <RefreshCw size={21} />
-        </button>
+        <div className="fk-family-header-left">
+          <button type="button" className="fk-family-icon-button fk-family-back"
+            onClick={() => navigate("/my-family")} aria-label="Back to dashboard">
+            <ArrowLeft size={22} />
+          </button>
+          <h1>My Family</h1>
+        </div>
+        <div className="fk-family-header-right">
+          <button type="button" className="fk-family-icon-button fk-family-refresh"
+            onClick={loadMembers} aria-label="Refresh family members">
+            <RefreshCw size={19} />
+          </button>
+          <button type="button" className="fk-family-icon-button fk-family-header-add"
+            onClick={openAddMember} aria-label="Add family member">
+            <UserRoundPlus size={21} />
+          </button>
+        </div>
       </header>
 
       {/* MAIN */}
@@ -262,130 +262,68 @@ export default function FamilyMembersPage() {
 
             {/* FAMILY TREE */}
 
-            <section className="fk-family-tree-placeholder">
-              <UsersRound
-                size={50}
-                strokeWidth={1.2}
-              />
-
-              <p>Your Family Tree</p>
-            </section>
+            <section className="fk-family-tree-placeholder" aria-label="Family tree display area" />
 
             {/* FAMILY MEMBERS */}
 
             <section className="fk-family-list-section">
               <div className="fk-family-list-heading">
-                <h3>Family Members</h3>
-
-                <button
-                  type="button"
-                  onClick={openAddMember}
-                  className="fk-family-add-small"
-                >
-                  <Plus size={17} />
-                  Add
-                </button>
+                <h3>Family members</h3>
+                <button type="button" onClick={() =>
+                  document.getElementById("fk-family-member-list")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                } className="fk-family-view-all">View all</button>
               </div>
 
-              <div className="fk-family-list">
+              <div className="fk-family-list" id="fk-family-member-list">
                 {/* PRIMARY REGISTERED USER */}
 
                 {primaryUser && (
-                  <article
-                    className="fk-family-member-card"
-                    key="primary-user"
-                  >
-                    <div className="fk-family-member-details">
-                      <ProfileAvatar
-                        memberId={SELF_PROFILE_ID}
-                        name={primaryUser.name}
-                        className="fk-family-avatar"
-                      >
-                        {primaryUser.name
-                          .charAt(0)
-                          .toUpperCase()}
+                  <article className="fk-family-member-card" key="primary-user">
+                    <button type="button" className="fk-family-member-details"
+                      onClick={() => navigate("/my-profile")} aria-label="Open my profile">
+                      <ProfileAvatar memberId={SELF_PROFILE_ID} name={primaryUser.name}
+                        className="fk-family-avatar">
+                        {primaryUser.name.charAt(0).toUpperCase()}
                       </ProfileAvatar>
-
                       <span className="fk-family-member-info">
-                        <strong>
-                          {primaryUser.name}
-                        </strong>
-
+                        <strong>{primaryUser.name}</strong>
                         <small>Me</small>
                       </span>
-                    </div>
+                      <ChevronRight className="fk-family-chevron" size={20} />
+                    </button>
                   </article>
                 )}
 
                 {/* ADDITIONAL FAMILY MEMBERS */}
 
                 {members.map((member) => (
-                  <article
-                    className="fk-family-member-card"
-                    key={member.memberId}
-                  >
-                    <button
-                      type="button"
-                      className="fk-family-member-details"
-                      onClick={() =>
-                        openMember(member.memberId)
-                      }
-                    >
-                      <ProfileAvatar
-                        memberId={member.memberId}
-                        name={member.name || ""}
-                        className="fk-family-avatar"
-                      >
-                        {member.name
-                          ?.charAt(0)
-                          ?.toUpperCase() || "?"}
+                  <article className="fk-family-member-card" key={member.memberId}>
+                    <button type="button" className="fk-family-member-details"
+                      onClick={() => openMember(member.memberId)}>
+                      <ProfileAvatar memberId={member.memberId} name={member.name || ""}
+                        className="fk-family-avatar">
+                        {member.name?.charAt(0)?.toUpperCase() || "?"}
                       </ProfileAvatar>
-
                       <span className="fk-family-member-info">
-                        <strong>
-                          {member.name}
-                        </strong>
-
-                        <small>
-                          {member.relationship ||
-                            "Family Member"}
-                        </small>
+                        <strong>{member.name}</strong>
+                        <small>{member.relationship || "Family Member"}</small>
                       </span>
-
-                      <ChevronRight size={20} />
                     </button>
-
-                    {member.mobile && (
-                      <div className="fk-family-contact-actions">
-                        <button
-                          type="button"
-                          onClick={(event) =>
-                            openPhone(
-                              event,
-                              member.mobile
-                            )
-                          }
-                          aria-label={`Call ${member.name}`}
-                        >
-                          <Phone size={17} />
-                          Call
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={(event) =>
-                            openWhatsApp(
-                              event,
-                              member.mobile
-                            )
-                          }
-                          aria-label={`WhatsApp ${member.name}`}
-                        >
-                          <MessageCircle size={17} />
-                          WhatsApp
-                        </button>
-                      </div>
-                    )}
+                    <div className="fk-family-member-trailing">
+                      {member.mobile && (
+                        <div className="fk-family-contact-actions">
+                          <button type="button" onClick={(event) => openPhone(event, member.mobile)}
+                            aria-label={`Call ${member.name}`}><Phone size={18} /></button>
+                          <button type="button" className="fk-family-whatsapp"
+                            onClick={(event) => openWhatsApp(event, member.mobile)}
+                            aria-label={`WhatsApp ${member.name}`}><MessageCircle size={18} /></button>
+                        </div>
+                      )}
+                      <button type="button" className="fk-family-chevron-button"
+                        onClick={() => openMember(member.memberId)} aria-label={`Open ${member.name} profile`}>
+                        <ChevronRight size={20} />
+                      </button>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -420,37 +358,20 @@ export default function FamilyMembersPage() {
       </main>
 
       {/* BOTTOM NAVIGATION */}
-
-      <nav className="fk-family-bottom-nav">
-        <button
-          type="button"
-          onClick={() =>
-            navigate("/my-family")
-          }
-        >
-          <House size={22} />
-          <span>Home</span>
+      <nav className="fk-family-bottom-nav" aria-label="Main navigation">
+        <button type="button" onClick={() => navigate("/my-family")}>
+          <House size={22} /><span>Home</span>
         </button>
-
-        <button
-          type="button"
-          className="active"
-          onClick={() =>
-            navigate("/family")
-          }
-          aria-current="page"
-        >
-          <UsersRound size={22} />
-          <span>My Family</span>
+        <button type="button" className="active" onClick={() => navigate("/family")} aria-current="page">
+          <UsersRound size={22} /><span>My Family</span>
         </button>
-
-        <button
-          type="button"
-          className="fk-family-bottom-add"
-          onClick={openAddMember}
-          aria-label="Add family member"
-        >
-          <Plus size={25} />
+        <button type="button" className="fk-family-bottom-add" onClick={openAddMember}
+          aria-label="Add family member"><Plus size={28} /></button>
+        <button type="button" onClick={() => navigate("/categories")}>
+          <LayoutGrid size={22} /><span>Category</span>
+        </button>
+        <button type="button" disabled aria-label="Pay and Renew unavailable">
+          <CreditCard size={22} /><span>Pay & Renew</span>
         </button>
       </nav>
     </div>
