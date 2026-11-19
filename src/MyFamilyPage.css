@@ -22,7 +22,7 @@
 
   color: var(--fk-text);
   font-family: "Mulish", Arial, sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .fk-dash-page *,
@@ -737,9 +737,12 @@
   }
 }
 
-/* Keep this screen's existing header visible during page scrolling. */
-.fk-dash-header {
+/* Profile row and search bar stay together while the dashboard scrolls. */
+.fk-dash-sticky-top {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 101;
+  background: #d7c9f7;
+  isolation: isolate;
 }
+

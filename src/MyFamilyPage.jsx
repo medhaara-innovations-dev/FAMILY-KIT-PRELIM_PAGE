@@ -298,6 +298,7 @@ export default function MyFamilyPage() {
     <div className="fk-dash-page">
       <div className="fk-dash-container">
 
+        <div className="fk-dash-sticky-top">
         {/* =========================================
             PROFILE HEADER
            ========================================= */}
@@ -402,6 +403,8 @@ export default function MyFamilyPage() {
           >
             <AudioLines size={19} />
           </button>
+        </div>
+
         </div>
 
         {/* =========================================
