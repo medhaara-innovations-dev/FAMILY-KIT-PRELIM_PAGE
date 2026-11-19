@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, BookHeart, Pencil, Trash2, Search,
+  ArrowLeft, BookHeart, Pencil, Search,
   House, UsersRound, Plus, LayoutGrid, CreditCard
 } from "lucide-react";
-import { getDiaryEntries, deleteDiaryEntry } from "./api/diaryApi";
+import { getDiaryEntries } from "./api/diaryApi";
 import "./DiaryPage.css";
 
 function getDateParts(value) {
@@ -25,7 +25,6 @@ export default function DiaryPage() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [deletingId, setDeletingId] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
 
@@ -51,19 +50,6 @@ export default function DiaryPage() {
     loadEntries();
   }, []);
 
-  async function handleDelete(entry) {
-    if (!window.confirm("Delete this diary entry permanently? This cannot be undone.")) return;
-    setDeletingId(entry.entryId);
-    setError("");
-    try {
-      await deleteDiaryEntry(entry.entryId);
-      setEntries((current) => current.filter((item) => item.entryId !== entry.entryId));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setDeletingId(null);
-    }
-  }
 
   const filteredEntries = entries.filter((entry) =>
     `${entry.title || ""} ${entry.content || ""} ${entry.entryDate || ""}`
@@ -138,10 +124,6 @@ export default function DiaryPage() {
                       <h3>{entry.title || "Untitled Entry"}</h3>
                       <p className="diary-entry-preview">{entry.content}</p>
                     </button>
-                    <div className="diary-entry-actions">
-                      <button type="button" aria-label="Edit entry" onClick={() => navigate(`/diary/${encodeURIComponent(entry.entryId)}/edit`)}><Pencil size={15} /> Edit</button>
-                      <button type="button" aria-label="Delete entry" disabled={deletingId === entry.entryId} onClick={() => handleDelete(entry)}><Trash2 size={15} /> {deletingId === entry.entryId ? "Deleting..." : "Delete"}</button>
-                    </div>
                   </article>
                 );
               })}

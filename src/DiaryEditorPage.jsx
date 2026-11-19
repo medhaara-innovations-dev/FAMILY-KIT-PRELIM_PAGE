@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
-  ChevronLeft, ChevronRight, Search, ChevronDown,
-  House, UsersRound, Plus, LayoutGrid, CreditCard
+  ChevronLeft, ChevronRight, Search, Trash2, ChevronDown
 } from "lucide-react";
 import {
   createDiaryEntry,
   getDiaryEntry,
-  updateDiaryEntry
+  updateDiaryEntry,
+  deleteDiaryEntry
 } from "./api/diaryApi";
 import "./DiaryEditorPage.css";
 
@@ -90,6 +90,8 @@ export default function DiaryEditorPage() {
   const [error, setError] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [moodsOpen, setMoodsOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!entryId) return;
@@ -134,6 +136,22 @@ export default function DiaryEditorPage() {
     }
   }
 
+  async function handleDelete() {
+    if (!entryId || isNew || deleting) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await deleteDiaryEntry(entryId);
+      setConfirmDelete(false);
+      navigate("/diary", { replace: true });
+    } catch (err) {
+      setError(err?.message || "Unable to delete diary entry.");
+      setConfirmDelete(false);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   const date = parseDate(entryDate);
 
   return (
@@ -144,9 +162,15 @@ export default function DiaryEditorPage() {
             <ChevronLeft size={19} />
           </button>
           <span>Dear Diary</span>
-          <button type="button" className="diary-editor-search" aria-label="Search diary entries" onClick={() => navigate("/diary")}>
-            <Search size={16} />
-          </button>
+          {isEditing ? (
+            <button type="button" className="diary-editor-search diary-editor-delete" aria-label="Delete diary entry" onClick={() => setConfirmDelete(true)} disabled={loading || saving || deleting}>
+              <Trash2 size={18} />
+            </button>
+          ) : (
+            <button type="button" className="diary-editor-search" aria-label="Search diary entries" onClick={() => navigate("/diary")}>
+              <Search size={16} />
+            </button>
+          )}
         </header>
 
         {loading ? (
@@ -197,13 +221,19 @@ export default function DiaryEditorPage() {
         )}
       </div>
 
-      <nav className="diary-editor-bottom-nav" aria-label="FamilyKit navigation">
-        <button type="button" onClick={() => navigate("/my-family")}><House size={20} /><span>Home</span></button>
-        <button type="button" onClick={() => navigate("/family")}><UsersRound size={20} /><span>My Family</span></button>
-        <button type="button" className="diary-editor-add" onClick={() => navigate("/family/add")} aria-label="Add family member"><Plus size={24} /></button>
-        <button type="button" disabled><LayoutGrid size={20} /><span>Category</span></button>
-        <button type="button" disabled><CreditCard size={20} /><span>Pay & Renew</span></button>
-      </nav>
+      {confirmDelete && isEditing && (
+        <div className="diary-delete-overlay" onClick={() => { if (!deleting) setConfirmDelete(false); }}>
+          <div className="diary-delete-dialog" role="alertdialog" aria-modal="true" aria-labelledby="diary-delete-title" aria-describedby="diary-delete-description" onClick={(event) => event.stopPropagation()}>
+            <div className="diary-delete-icon"><Trash2 size={23} /></div>
+            <h2 id="diary-delete-title">Delete Diary Entry?</h2>
+            <p id="diary-delete-description">Are you sure you want to delete this diary entry? This action cannot be undone.</p>
+            <div className="diary-delete-actions">
+              <button type="button" className="diary-delete-cancel" disabled={deleting} onClick={() => setConfirmDelete(false)}>Cancel</button>
+              <button type="button" className="diary-delete-confirm" disabled={deleting} onClick={handleDelete}>{deleting ? "Deleting..." : "Delete Entry"}</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {calendarOpen && !readOnly && (
         <CalendarPopup value={entryDate} onSelect={setEntryDate} onClose={() => setCalendarOpen(false)} />

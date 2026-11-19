@@ -285,29 +285,6 @@
   overflow: hidden;
 }
 
-.diary-entry-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.diary-entry-actions button {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  border: 0;
-  background: transparent;
-  color: #766398;
-  font: 700 11px "Mulish", sans-serif;
-  cursor: pointer;
-  padding: 5px;
-}
-
-.diary-entry-actions button:disabled {
-  opacity: 0.5;
-  cursor: wait;
-}
 
 .diary-empty {
   text-align: center;
@@ -492,3 +469,7 @@
 .diary-page .diary-entry-card .diary-date-badge small {
   color: #181818 !important;
 }
+
+/* All Entries: the entire entry card is one clickable area. */
+.diary-entry-main { display: block; min-height: 100%; }
+.diary-entry-main:focus-visible { outline: 2px solid var(--diary-purple); outline-offset: 3px; border-radius: 7px; }
