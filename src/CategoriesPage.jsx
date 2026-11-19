@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -341,7 +340,9 @@ export default function CategoriesPage() {
           className="fk-cat-nav-active"
           aria-current="page"
         >
-          <LayoutGrid size={21} />
+          <span className="fk-cat-nav-icon">
+            <LayoutGrid size={21} strokeWidth={1.8} />
+          </span>
           <span>Category</span>
         </button>
 
