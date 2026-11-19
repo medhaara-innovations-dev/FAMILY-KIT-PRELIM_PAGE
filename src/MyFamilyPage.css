@@ -737,12 +737,33 @@
   }
 }
 
-/* Profile row and search bar stay together while the dashboard scrolls. */
+
+
+
+/* Dashboard only: pin the profile row AND search bar to the viewport. */
 .fk-dash-sticky-top {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 101;
+  width: 100%;
+  max-width: 560px;
+  padding: 27px 19px 0;
   background: #d7c9f7;
-  isolation: isolate;
 }
 
+/* Reserve the header's original space so Need Attention does not jump underneath. */
+.fk-dash-sticky-top + .fk-dash-section {
+  margin-top: 148px;
+}
+
+@media (max-width: 390px) {
+  .fk-dash-sticky-top { padding: 25px 14px 0; }
+  .fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
+}
+
+@media (min-width: 768px) {
+  .fk-dash-sticky-top { padding-top: 35px; }
+  .fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
+}
