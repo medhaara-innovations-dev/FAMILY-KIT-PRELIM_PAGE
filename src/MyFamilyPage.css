@@ -12,15 +12,13 @@
   min-height: 100dvh;
   width: 100%;
 
-  /* Screenshot reference: light top, lavender at Need Attention, light again below */
-  background: linear-gradient(
-    180deg,
+  /* Approved colors only: white-lavender to purple to light. */
+  background: linear-gradient(180deg,
     #F0EEF3 0px,
-    #EEEBF7 70px,
-    #C4ADFF 230px,
-    #DCCBF9 440px,
-    #E9E3F3 660px,
-    #F0EEF3 900px,
+    #F0EEF3 24px,
+    #C4ADFF 190px,
+    #C4ADFF 245px,
+    #F0EEF3 725px,
     #F0EEF3 100%
   );
 
@@ -745,27 +743,23 @@
 
 
 /* =========================================
-   DASHBOARD GRADIENT + FIGMA GLASS HEADER
-   The page gradient spans the full scrollable
-   document. The header remains translucent.
+   SHARED DASHBOARD BACKGROUND + GLASS HEADER
+   Only approved colors: #F0EEF3 and #C4ADFF
    ========================================= */
 
+/* The fixed header must not paint a different gradient from the page. */
 .fk-dash-page {
-  background-image: linear-gradient(
-    180deg,
+  background: linear-gradient(180deg,
     #F0EEF3 0px,
-    #EEEBF7 70px,
-    #C4ADFF 230px,
-    #DCCBF9 440px,
-    #E9E3F3 660px,
-    #F0EEF3 900px,
+    #F0EEF3 24px,
+    #C4ADFF 190px,
+    #C4ADFF 245px,
+    #F0EEF3 725px,
     #F0EEF3 100%
   );
-  /* Anchor the gradient to the viewport so it stays aligned
-     behind the fixed glass header while scrolling. */
-  background-attachment: fixed;
   background-repeat: no-repeat;
-  background-size: 100% max(900px, 100dvh);
+  background-attachment: fixed;
+  background-size: 100% 100vh;
 }
 
 .fk-dash-sticky-top {
@@ -777,17 +771,14 @@
   width: 100%;
   max-width: 560px;
   padding: 27px 19px 0;
-
-  /* The page gradient is visible through the header.
-     No second purple gradient can create a color boundary. */
   background: transparent;
   border: 0;
   box-shadow: none;
   isolation: isolate;
 }
 
-/* Apply the glass filter behind the header content, fading it out
-   at the bottom so saturation cannot create a purple color seam. */
+/* Glass stays at the top and fades before the search/header boundary.
+   It does not create a separate purple color field. */
 .fk-dash-sticky-top::before {
   content: "";
   position: absolute;
@@ -796,25 +787,17 @@
   pointer-events: none;
   -webkit-backdrop-filter: blur(12px) saturate(200%);
   backdrop-filter: blur(12px) saturate(200%);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
 }
 
-/* The existing search spacing is retained. */
-.fk-dash-sticky-top .fk-dash-search {
-  margin-bottom: 26px;
-}
-
-/* Keep the first section below the fixed header. */
-.fk-dash-sticky-top + .fk-dash-section {
-  margin-top: 148px;
-}
+.fk-dash-sticky-top .fk-dash-search { margin-bottom: 26px; }
+.fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
 
 @media (max-width: 390px) {
   .fk-dash-sticky-top { padding: 25px 14px 0; }
   .fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
 }
-
 @media (min-width: 768px) {
   .fk-dash-sticky-top { padding-top: 35px; }
   .fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
