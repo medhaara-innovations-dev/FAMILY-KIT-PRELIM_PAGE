@@ -348,7 +348,7 @@ export default function MyFamilyPage() {
               type="button"
               className="fk-dash-round-button fk-dash-bell-button"
               aria-label="Notifications"
-              disabled
+              onClick={() => navigate("/notifications")}
             >
               <Bell size={19} />
 

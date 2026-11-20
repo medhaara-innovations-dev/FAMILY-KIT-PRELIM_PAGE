@@ -1,0 +1,37 @@
+/* FamilyKit Notifications — fixed header/tabs/Today, scrollable cards only */
+.fk-notif-page { --notif-purple:#2d0b84; height:100dvh; min-height:0; width:100%; overflow:hidden; background:linear-gradient(180deg,#e8e1f5 0%,#eeebf5 58%,#f5f4f8 100%); color:#211a31; font-family:"Mulish",sans-serif; }
+.fk-notif-page * { box-sizing:border-box; }
+.fk-notif-shell { display:flex; flex-direction:column; height:100dvh; min-height:0; width:100%; max-width:560px; margin:0 auto; padding:45px 20px 0; }
+.fk-notif-fixed-top { flex:0 0 auto; z-index:2; }
+.fk-notif-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.fk-notif-header h1 { flex:1; margin:0; font:600 19px "Poppins",sans-serif; letter-spacing:-.4px; }
+.fk-notif-round { display:grid; place-items:center; width:29px; height:29px; padding:0; border:0; border-radius:50%; background:#f8f5fd; color:#76658e; cursor:pointer; }
+.fk-notif-filter { width:25px; height:25px; }
+.fk-notif-tabs { display:flex; align-items:center; gap:8px; margin-bottom:19px; }
+.fk-notif-tab { min-width:48px; height:28px; padding:0 15px; border:0; border-radius:20px; background:#f9f7fd; color:#6947a9; font:600 10px "Mulish",sans-serif; cursor:pointer; }
+.fk-notif-tab.is-active { background:var(--notif-purple); color:white; }
+.fk-notif-today-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:0 3px 12px; color:#898394; font-size:11px; }
+.fk-notif-today-row button { padding:0; border:0; background:transparent; color:#6744ac; font:600 10px "Mulish",sans-serif; cursor:pointer; }
+.fk-notif-scroll { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:10px; overflow-y:auto; overflow-x:hidden; padding:0 2px calc(96px + env(safe-area-inset-bottom)); overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.fk-notif-scroll::-webkit-scrollbar { display:none; }
+.fk-notif-card { display:flex; align-items:flex-start; gap:10px; position:relative; flex:0 0 auto; min-height:74px; padding:13px 13px 11px; border-radius:12px; background:white; box-shadow:0 3px 11px rgba(47,31,81,.08); }
+.fk-notif-card-icon { flex:0 0 27px; display:grid; place-items:center; width:27px; height:27px; border-radius:7px; }
+.fk-notif-card-icon.blue { background:#e9efff; color:#5887e7; }
+.fk-notif-card-icon.violet { background:#efe6ff; color:#8b62d9; }
+.fk-notif-card-icon.orange { background:#fff0e8; color:#ed8c5a; }
+.fk-notif-card-icon.pink { background:#fde8f8; color:#d76bb8; }
+.fk-notif-card-copy { min-width:0; flex:1; padding-right:10px; }
+.fk-notif-card-copy h3 { margin:0 0 5px; font-size:11px; line-height:1.3; font-weight:800; }
+.fk-notif-card-copy p { margin:0 0 4px; color:#7e7888; font-size:9px; line-height:1.4; }
+.fk-notif-card-copy time { display:block; color:#a9a2b2; font-size:8px; }
+.fk-notif-unread-dot { position:absolute; right:13px; top:13px; width:6px; height:6px; border-radius:50%; background:#3b0a96; }
+.fk-notif-earlier { flex:0 0 auto; margin:8px 2px 1px; color:#898394; font-size:11px; font-weight:600; }
+.fk-notif-empty { margin:25px 0; text-align:center; color:#81778f; font-size:12px; }
+.fk-notif-bottom-nav { position:fixed; z-index:100; bottom:0; left:50%; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); align-items:center; gap:2px; width:min(100%,560px); min-height:77px; padding:9px 7px max(9px,env(safe-area-inset-bottom)); border:1.5px solid #7953d2; border-bottom:0; border-radius:19px 19px 0 0; background:#fff; box-shadow:0 -3px 14px rgba(56,26,108,.07); }
+.fk-notif-nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-width:0; padding:3px 0; border:0; background:transparent; color:#aaa4b4; font:600 9px "Mulish",sans-serif; cursor:pointer; }
+.fk-notif-nav-item:disabled { cursor:default; }
+.fk-notif-nav-icon { display:grid; place-items:center; width:31px; height:31px; border-radius:50%; }
+.fk-notif-nav-active { color:var(--notif-purple); font-weight:800; }
+.fk-notif-nav-active .fk-notif-nav-icon { background:var(--notif-purple); color:white; }
+.fk-notif-center-add { display:grid; place-items:center; justify-self:center; width:48px; height:48px; padding:0; border:0; border-radius:50%; background:var(--notif-purple); color:white; box-shadow:0 3px 9px rgba(45,11,132,.25); cursor:pointer; }
+@media(max-width:390px) { .fk-notif-shell { padding-left:14px; padding-right:14px; } }

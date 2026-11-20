@@ -22,6 +22,7 @@ import NotesDetailsPage from "./NotesDetailsPage.jsx";
 import SearchPage from "./SearchPage.jsx";
 import VoiceSearchPage from "./VoiceSearchPage.jsx";
 import SmartSuggestionsPage from "./SmartSuggestionsPage.jsx";
+import NotificationsPage from "./NotificationsPage.jsx";
 import "./App.css";
 
 createRoot(document.getElementById("root")).render(
@@ -51,6 +52,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/search" element={<SearchPage />} />
         <Route path="/search/voice" element={<VoiceSearchPage />} />
         <Route path="/smart-suggestions" element={<SmartSuggestionsPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
