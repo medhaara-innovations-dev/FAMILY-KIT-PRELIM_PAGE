@@ -31,3 +31,37 @@
 .fk-ss-nav-active .fk-ss-nav-icon { background: var(--ss-purple); color: #fff; }
 .fk-ss-center-add { display: grid; place-items: center; justify-self: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; background: var(--ss-purple); color: #fff; box-shadow: 0 3px 9px rgba(45,11,132,.25); cursor: pointer; }
 @media (max-width: 390px) { .fk-ss-shell { padding-left: 14px; padding-right: 14px; } .fk-ss-card { padding-left: 10px; padding-right: 10px; } .fk-ss-card-copy h2 { font-size: 11px; } }
+/* ==========================================
+   SMART SUGGESTIONS - FIXED COMPACT HEADER
+   ========================================== */
+
+/* Reduce the large space above the header */
+.fk-smart-page {
+  padding-top: 0;
+}
+
+/* Keep the header fixed at the top */
+.fk-smart-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+
+  padding-top: 14px;
+  padding-bottom: 12px;
+
+  background: #e9e1f5;
+}
+
+/* Keep back arrow, heading and search aligned */
+.fk-smart-header h1 {
+  margin: 0;
+}
+
+/* Suggestion cards scroll normally */
+.fk-smart-content {
+  position: relative;
+  padding-bottom: 110px;
+}
