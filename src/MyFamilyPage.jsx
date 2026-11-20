@@ -578,7 +578,10 @@ export default function MyFamilyPage() {
            ========================================= */}
 
         <section className="fk-dash-section fk-dash-last-section">
-          <SectionTitle title="Smart Suggestions" />
+          <SectionTitle
+            title="Smart Suggestions"
+            onViewAll={() => navigate("/smart-suggestions")}
+          />
 
           <div className="fk-dash-suggestion-card">
             <div className="fk-dash-suggestion-icon">
