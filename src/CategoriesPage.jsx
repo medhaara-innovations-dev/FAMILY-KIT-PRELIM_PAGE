@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +28,10 @@ import notesIcon from "./assets/images/Notes.png";
 import propertyIcon from "./assets/images/Housing.png";
 
 import "./CategoriesPage.css";
+
+// ==========================================
+// CATEGORY DATA
+// ==========================================
 
 const categories = [
   {
@@ -118,6 +123,10 @@ const categories = [
   },
 ];
 
+// ==========================================
+// FAMILY FILTERS
+// ==========================================
+
 const familyFilters = [
   "All Family",
   "Self(Me)",
@@ -129,17 +138,28 @@ const familyFilters = [
   "Other",
 ];
 
+// ==========================================
+// CATEGORIES PAGE
+// ==========================================
+
 export default function CategoriesPage() {
   const navigate = useNavigate();
 
   const [selectedFamily, setSelectedFamily] =
     useState("All Family");
 
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [searchOpen, setSearchOpen] =
+    useState(false);
+
+  const [searchText, setSearchText] =
+    useState("");
 
   const [showAddMessage, setShowAddMessage] =
     useState(false);
+
+  // ==========================================
+  // SEARCH FILTER
+  // ==========================================
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -148,10 +168,15 @@ export default function CategoriesPage() {
         .includes(searchText.toLowerCase())
   );
 
+  // ==========================================
+  // CATEGORY NAVIGATION
+  // ==========================================
+
   const handleCategoryClick = (category) => {
     if (category.route) {
       navigate(category.route);
     }
+
     // Remaining category pages will be connected
     // when their respective screens are created.
   };
@@ -160,7 +185,10 @@ export default function CategoriesPage() {
     <main className="fk-cat-page">
       <div className="fk-cat-container">
 
-        {/* HEADER */}
+        {/* ==========================================
+            HEADER
+            ========================================== */}
+
         <header className="fk-cat-header">
           <button
             type="button"
@@ -197,7 +225,10 @@ export default function CategoriesPage() {
           </div>
         </header>
 
-        {/* SEARCH */}
+        {/* ==========================================
+            SEARCH
+            ========================================== */}
+
         {searchOpen && (
           <div className="fk-cat-search-panel">
             <Search size={17} />
@@ -214,7 +245,10 @@ export default function CategoriesPage() {
           </div>
         )}
 
-        {/* FAMILY FILTERS */}
+        {/* ==========================================
+            FAMILY FILTERS
+            ========================================== */}
+
         <section className="fk-cat-filter-section">
           <p className="fk-cat-filter-label">
             View Records of
@@ -237,7 +271,15 @@ export default function CategoriesPage() {
                   selectedFamily === filter
                 }
               >
-                {selectedFamily !== filter && (
+                {/* 
+                  All Family: Never display circle.
+
+                  All other filters:
+                  Always display circle,
+                  even when selected.
+                */}
+
+                {filter !== "All Family" && (
                   <span className="fk-cat-radio" />
                 )}
 
@@ -247,7 +289,10 @@ export default function CategoriesPage() {
           </div>
         </section>
 
-        {/* CATEGORY GRID */}
+        {/* ==========================================
+            CATEGORY GRID
+            ========================================== */}
+
         <section className="fk-cat-content">
           <h2>All Categories</h2>
 
@@ -305,7 +350,10 @@ export default function CategoriesPage() {
         </section>
       </div>
 
-      {/* BOTTOM NAVIGATION */}
+      {/* ==========================================
+          BOTTOM NAVIGATION
+          ========================================== */}
+
       <nav
         className="fk-cat-bottom-nav"
         aria-label="Main navigation"
@@ -341,27 +389,42 @@ export default function CategoriesPage() {
           aria-current="page"
         >
           <span className="fk-cat-nav-icon">
-            <LayoutGrid size={21} strokeWidth={1.8} />
+            <LayoutGrid
+              size={21}
+              strokeWidth={1.8}
+            />
           </span>
+
           <span>Category</span>
         </button>
 
-        <button type="button" disabled>
+        <button
+          type="button"
+          disabled
+        >
           <CreditCard size={21} />
           <span>Pay & Renew</span>
         </button>
       </nav>
 
+      {/* ==========================================
+          ADD PLACEHOLDER MODAL
+          ========================================== */}
+
       {showAddMessage && (
         <div
           className="fk-cat-modal-overlay"
-          onClick={() => setShowAddMessage(false)}
+          onClick={() =>
+            setShowAddMessage(false)
+          }
         >
           <div
             className="fk-cat-modal"
             role="dialog"
             aria-modal="true"
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) =>
+              event.stopPropagation()
+            }
           >
             <h2>Add New Item</h2>
 
