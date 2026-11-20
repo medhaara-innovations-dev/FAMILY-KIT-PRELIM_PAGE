@@ -786,14 +786,13 @@
   pointer-events: none;
   -webkit-backdrop-filter: blur(12px) saturate(200%);
   backdrop-filter: blur(12px) saturate(200%);
-  background-image: linear-gradient(
-    180deg,
-   
-    #C4ADFF 0%, #F0EEF3 50%);
+  background-image: linear-gradient(#EEEBF7
+ 100%, #FFFFFF 0%);
  background-image: linear-gradient(
     180deg,
    
-    #C4ADFF 0%, #F0EEF3 50%);
+   #EEEBF7
+ 100%, #FFFFFF 0%);
 }
 
 /* The existing search spacing is retained. */
