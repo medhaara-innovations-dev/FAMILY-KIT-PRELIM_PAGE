@@ -786,10 +786,7 @@
   pointer-events: none;
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  -webkit-mask-image: linear-gradient(180deg, #EEEBF7
- 100%, #FFFFFF 0%, transparent 100%);
-  mask-image: linear-gradient(180deg, #EEEBF7
- 100%, #FFFFFF 0%,transparent 100%);
+  
 }
 
 /* The existing search spacing is retained. */
