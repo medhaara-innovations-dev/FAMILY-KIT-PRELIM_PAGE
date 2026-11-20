@@ -595,3 +595,56 @@
   outline: 2px solid #2d0b84;
   outline-offset: 3px;
 }
+
+
+/* ==========================================
+   FIXED MY NOTES HEADER + HERO + ENTRIES TITLE
+   ONLY NOTE ENTRIES SCROLL
+   ========================================== */
+.fk-notes-page {
+  height: 100dvh;
+  min-height: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.fk-notes-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fk-notes-header,
+.fk-notes-search-panel,
+.fk-notes-hero {
+  flex: 0 0 auto;
+}
+
+.fk-notes-entries {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fk-notes-section-heading {
+  flex: 0 0 auto;
+}
+
+.fk-notes-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: calc(105px + env(safe-area-inset-bottom));
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.fk-notes-scroll::-webkit-scrollbar {
+  display: none;
+}

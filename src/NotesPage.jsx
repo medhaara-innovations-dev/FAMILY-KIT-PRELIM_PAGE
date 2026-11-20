@@ -311,6 +311,7 @@ export default function NotesPage() {
             </span>
           </div>
 
+          <div className="fk-notes-scroll">
           {error && (
             <div
               className="fk-notes-error"
@@ -404,6 +405,7 @@ export default function NotesPage() {
               })}
             </div>
           )}
+          </div>
         </section>
       </div>
 
