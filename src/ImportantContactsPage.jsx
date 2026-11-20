@@ -1,58 +1,43 @@
-
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
-  Plus,
-  Search,
-  Phone,
-  Mail,
-  Pencil,
-  Trash2,
-  X,
-  ContactRound,
+  ArrowLeft, Plus, Search, Phone, Mail, Pencil, Trash2, X,
+  ContactRound, AlertTriangle, ShieldCheck, HeartPulse, UsersRound,
+  Scale, GraduationCap, Landmark, Wallet, Home, LayoutGrid,
+  ChevronDown, MessageCircle, Check, RefreshCw,
 } from "lucide-react";
-
 import {
-  getImportantContacts,
-  getContactCategories,
-  addImportantContact,
-  updateImportantContact,
-  deleteImportantContact,
+  getImportantContacts, getContactCategories, addImportantContact,
+  updateImportantContact, deleteImportantContact,
 } from "./api/importantContactsApi";
-
 import "./ImportantContactsPage.css";
 
-const EMPTY_FORM = {
-  name: "",
-  category: "Emergency",
-  role: "Emergency Contact",
-  mobileNumber: "",
-  email: "",
+const CATEGORY_ORDER = ["Emergency", "Insurance", "Medical", "Nominees", "Legal", "Education", "Finance"];
+const CATEGORY_ICONS = {
+  Emergency: AlertTriangle, Insurance: ShieldCheck, Medical: HeartPulse,
+  Nominees: UsersRound, Legal: Scale, Education: GraduationCap, Finance: Landmark,
 };
+const EMPTY_FORM = { name: "", category: "", role: "", mobileNumber: "", email: "" };
 
-// Convert a stored +91 number into its 10-digit input value.
-function toIndianMobileInput(value = "") {
+function localMobile(value = "") {
   const digits = String(value).replace(/\D/g, "");
-
-  if (digits.length === 12 && digits.startsWith("91")) {
-    return digits.slice(2);
-  }
-
-  return digits.slice(0, 10);
+  return digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits.slice(0, 10);
+}
+function whatsAppUrl(number) {
+  return `https://wa.me/${String(number || "").replace(/\D/g, "")}`;
 }
 
 export default function ImportantContactsPage() {
   const navigate = useNavigate();
-
   const [contacts, setContacts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] =
-    useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -60,608 +45,190 @@ export default function ImportantContactsPage() {
   const loadData = useCallback(async () => {
     setLoading(true);
     setError("");
-
     try {
-      const [contactData, categoryData] =
-        await Promise.all([
-          getImportantContacts(),
-          getContactCategories(),
-        ]);
-
-      setContacts(contactData);
-      setCategories(categoryData);
+      const [items, available] = await Promise.all([getImportantContacts(), getContactCategories()]);
+      setContacts(Array.isArray(items) ? items : []);
+      setCategories(Array.isArray(available) ? available.filter((c) => CATEGORY_ORDER.includes(c.name)) : []);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Unable to load contacts.");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  useEffect(() => { loadData(); }, [loadData]);
 
-  const emergencyCount = contacts.filter(
-    (contact) => contact.category === "Emergency"
-  ).length;
-
-  const filteredContacts = contacts.filter((contact) => {
-    const matchesCategory =
-      selectedCategory === "All" ||
-      contact.category === selectedCategory;
-
-    const text = [
-      contact.name,
-      contact.role,
-      contact.mobileNumber,
-      contact.email,
-    ]
-      .join(" ")
-      .toLowerCase();
-
-    return (
-      matchesCategory &&
-      text.includes(search.toLowerCase().trim())
-    );
+  const categoryNames = useMemo(() => CATEGORY_ORDER.filter((name) => categories.some((c) => c.name === name)), [categories]);
+  const availableRoles = categories.find((c) => c.name === form.category)?.roles || [];
+  const emergencyCount = contacts.filter((c) => c.category === "Emergency").length;
+  const visibleContacts = contacts.filter((c) => {
+    const categoryMatch = selectedCategory === "All" || c.category === selectedCategory;
+    const q = search.trim().toLowerCase();
+    return categoryMatch && (!q || [c.name, c.role, c.category, c.email, c.mobileNumber].join(" ").toLowerCase().includes(q));
   });
 
-  const availableRoles =
-    categories.find(
-      (category) => category.name === form.category
-    )?.roles || [];
-
-  const openAdd = () => {
-    const category =
-      selectedCategory === "All"
-        ? "Emergency"
-        : selectedCategory;
-
-    const roles =
-      categories.find((item) => item.name === category)
-        ?.roles || [];
-
+  function openAdd() {
     setEditingId(null);
-
-    setForm({
-      ...EMPTY_FORM,
-      category,
-      role: roles[0] || "",
-    });
-
-    setError("");
+    // The reference design starts with an explicit category selection.
+    setForm({ ...EMPTY_FORM, category: selectedCategory === "All" ? "" : selectedCategory });
+    setFormError("");
     setModalOpen(true);
-  };
-
-  const openEdit = (contact) => {
+  }
+  function openEdit(contact) {
     setEditingId(contact.contactId);
-
-    setForm({
-      name: contact.name,
-      category: contact.category,
-      role: contact.role,
-      mobileNumber: toIndianMobileInput(
-        contact.mobileNumber
-      ),
-      email: contact.email || "",
-    });
-
-    setError("");
+    setForm({ name: contact.name || "", category: contact.category || "", role: contact.role || "", mobileNumber: localMobile(contact.mobileNumber), email: contact.email || "" });
+    setFormError("");
     setModalOpen(true);
-  };
-
-  const changeField = (field, value) => {
-    setForm((previous) => {
-      if (field === "category") {
-        const roles =
-          categories.find(
-            (category) => category.name === value
-          )?.roles || [];
-
-        return {
-          ...previous,
-          category: value,
-          role: roles[0] || "",
-        };
-      }
-
-      return {
-        ...previous,
-        [field]: value,
-      };
-    });
-  };
-
-  const handleSave = async (event) => {
-    event.preventDefault();
-
+  }
+  function changeField(field, value) {
+    setForm((old) => field === "category" ? { ...old, category: value, role: "" } : { ...old, [field]: value });
+  }
+  function closeForm() {
     if (saving) return;
+    setModalOpen(false);
+    setFormError("");
+  }
 
-    setError("");
-
-    // Mandatory field validation.
+  async function handleSave(event) {
+    event.preventDefault();
+    if (saving) return;
+    setFormError("");
     const name = form.name.trim();
     const category = form.category;
     const role = form.role;
-    const mobileDigits = toIndianMobileInput(
-      form.mobileNumber
-    );
+    const mobileNumber = localMobile(form.mobileNumber);
     const email = form.email.trim();
-
-    if (!name) {
-      setError("Name is mandatory.");
-      return;
+    if (!name || name.length > 100) return setFormError("Enter a name (up to 100 characters).");
+    if (!categoryNames.includes(category)) return setFormError("Select a category.");
+    if (!availableRoles.includes(role)) return setFormError("Select a role.");
+    if (!/^[6-9]\d{9}$/.test(mobileNumber)) return setFormError("Enter a valid 10-digit Indian mobile number.");
+    const previous = contacts.find((c) => c.contactId === editingId);
+    if (category === "Emergency" && previous?.category !== "Emergency" && emergencyCount >= 2) {
+      return setFormError("Only two Emergency contacts are allowed.");
     }
-
-    if (name.length > 100) {
-      setError("Name must not exceed 100 characters.");
-      return;
-    }
-
-    if (
-      !category ||
-      !categories.some((item) => item.name === category)
-    ) {
-      setError("Please select a valid category.");
-      return;
-    }
-
-    const validRoles =
-      categories.find((item) => item.name === category)
-        ?.roles || [];
-
-    if (!role || !validRoles.includes(role)) {
-      setError("Please select a valid role.");
-      return;
-    }
-
-    if (!/^[6-9]\d{9}$/.test(mobileDigits)) {
-      setError(
-        "Please enter a valid 10-digit Indian mobile number."
-      );
-      return;
-    }
-
-    const wasEmergency = editingId
-      ? contacts.some(
-          (contact) =>
-            contact.contactId === editingId &&
-            contact.category === "Emergency"
-        )
-      : false;
-
-    if (
-      category === "Emergency" &&
-      !wasEmergency &&
-      emergencyCount >= 2
-    ) {
-      setError(
-        "Only two Emergency contacts are allowed."
-      );
-      return;
-    }
-
-    // The user enters 10 digits.
-    // The backend receives the international format.
-    const payload = {
-      name,
-      category,
-      role,
-      mobileNumber: `+91${mobileDigits}`,
-      email,
-    };
-
     setSaving(true);
-
     try {
-      if (editingId) {
-        await updateImportantContact(
-          editingId,
-          payload
-        );
-      } else {
-        await addImportantContact(payload);
-      }
-
+      const payload = { name, category, role, mobileNumber: `+91${mobileNumber}`, email };
+      if (editingId) await updateImportantContact(editingId, payload);
+      else await addImportantContact(payload);
       setModalOpen(false);
       setEditingId(null);
-
+      setSelectedCategory("All");
+      setSearch("");
+      setSearchOpen(false);
       await loadData();
     } catch (err) {
-      setError(err.message);
+      setFormError(err.message || "Unable to save contact.");
     } finally {
       setSaving(false);
     }
-  };
+  }
 
-  const handleDelete = async (contact) => {
-    const confirmed = window.confirm(
-      `Delete ${contact.name} from Important Contacts?`
-    );
-
-    if (!confirmed) return;
-
-    setError("");
-
+  async function handleDelete(contact) {
+    if (!window.confirm(`Delete ${contact.name} from Important Contacts?`)) return;
     try {
       await deleteImportantContact(contact.contactId);
       await loadData();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Unable to delete contact.");
     }
-  };
+  }
 
   return (
     <main className="fk-ic-page">
       <div className="fk-ic-container">
         <header className="fk-ic-header">
-          <button
-            type="button"
-            className="fk-ic-icon-btn"
-            onClick={() => navigate("/my-family")}
-            aria-label="Back to dashboard"
-          >
-            <ArrowLeft size={20} />
-          </button>
-
+          <button type="button" className="fk-ic-round fk-ic-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard"><ArrowLeft size={19} /></button>
           <h1>Important Contacts</h1>
-
-          <button
-            type="button"
-            className="fk-ic-add-btn"
-            onClick={openAdd}
-            disabled={
-              loading || categories.length === 0
-            }
-            aria-label="Add contact"
-          >
-            <Plus size={20} />
-          </button>
+          <button type="button" className="fk-ic-round fk-ic-search-toggle" onClick={() => { setSearchOpen((v) => !v); setSearch(""); }} aria-label="Search contacts"><Search size={19} /></button>
+          <button type="button" className="fk-ic-round fk-ic-plus" onClick={openAdd} disabled={loading || categories.length === 0} aria-label="Add contact"><Plus size={19} /></button>
         </header>
 
-        <section className="fk-ic-summary">
-          <div className="fk-ic-summary-icon">
-            <ContactRound size={26} />
-          </div>
-
-          <div>
-            <h2>Your Important Contacts</h2>
-            <p>
-              Keep essential people and services
-              within reach.
-            </p>
-          </div>
-
-          <span className="fk-ic-total">
-            {contacts.length}
-          </span>
-        </section>
-
-        <div className="fk-ic-search">
-          <Search size={18} />
-
-          <input
-            type="search"
-            placeholder="Search contacts..."
-            value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
-          />
-        </div>
-
-        <nav
-          className="fk-ic-filters"
-          aria-label="Contact categories"
-        >
-          {[
-            "All",
-            ...categories.map((category) => category.name),
-          ].map((category) => (
-            <button
-              key={category}
-              type="button"
-              className={
-                selectedCategory === category
-                  ? "fk-ic-filter active"
-                  : "fk-ic-filter"
-              }
-              onClick={() =>
-                setSelectedCategory(category)
-              }
-            >
-              {category}
-            </button>
-          ))}
+        <div className="fk-ic-filter-label">Contacts Categories</div>
+        <nav className="fk-ic-filters" aria-label="Contact categories">
+          {["All", ...categoryNames].map((category) => {
+            const Icon = CATEGORY_ICONS[category];
+            return (
+              <button key={category} type="button" className={`fk-ic-filter ${selectedCategory === category ? "active" : ""} ${category === "Emergency" ? "emergency" : ""}`} onClick={() => setSelectedCategory(category)} aria-pressed={selectedCategory === category}>
+                {Icon && <Icon size={16} strokeWidth={1.9} />}<span>{category}</span>
+              </button>
+            );
+          })}
         </nav>
 
-        {error && !modalOpen && (
-          <div
-            className="fk-ic-error"
-            role="alert"
-          >
-            {error}
-          </div>
+        {searchOpen && (
+          <div className="fk-ic-search"><Search size={17} /><input type="search" autoFocus placeholder="Search contacts" value={search} onChange={(e) => setSearch(e.target.value)} /><button type="button" onClick={() => { setSearch(""); setSearchOpen(false); }} aria-label="Close search"><X size={16} /></button></div>
         )}
 
-        <section className="fk-ic-list">
-          {loading ? (
-            <p className="fk-ic-empty">
-              Loading contacts...
-            </p>
-          ) : filteredContacts.length === 0 ? (
-            <div className="fk-ic-empty">
-              <ContactRound size={36} />
+        {error && <div className="fk-ic-error" role="alert">{error}<button type="button" onClick={loadData}><RefreshCw size={15} /> Retry</button></div>}
 
-              <h3>No contacts found</h3>
-
-              <p>
-                Add a contact to keep important
-                information in one place.
-              </p>
+        {loading ? (
+          <div className="fk-ic-loading">Loading contacts...</div>
+        ) : visibleContacts.length === 0 ? (
+          <section className="fk-ic-empty">
+            <div className="fk-ic-empty-inner">
+              <span className="fk-ic-empty-icon"><ContactRound size={29} /></span>
+              <h2>{contacts.length === 0 ? "No Important Contacts yet" : "No contacts found"}</h2>
+              <p>{contacts.length === 0 ? "Add someone you may need to reach quickly." : "Try another category or search."}</p>
+              <button type="button" className="fk-ic-empty-add" onClick={openAdd} disabled={categories.length === 0}><Plus size={16} /> Add Contact</button>
             </div>
-          ) : (
-            filteredContacts.map((contact) => (
-              <article
-                className="fk-ic-card"
-                key={contact.contactId}
-              >
-                <div className="fk-ic-card-top">
-                  <div className="fk-ic-avatar">
-                    {contact.name
-                      .charAt(0)
-                      .toUpperCase()}
+          </section>
+        ) : (
+          <section className="fk-ic-results">
+            <div className="fk-ic-list-heading"><h2>{selectedCategory === "All" ? "All Contacts" : `${selectedCategory} Contacts`}</h2><span>{visibleContacts.length} {visibleContacts.length === 1 ? "contact" : "contacts"}</span></div>
+            <div className="fk-ic-list">
+              {visibleContacts.map((contact) => (
+                <article className="fk-ic-card" key={contact.contactId}>
+                  <div className="fk-ic-card-main">
+                    <div className="fk-ic-avatar" aria-hidden="true">{(contact.name || "?").slice(0, 1).toUpperCase()}</div>
+                    <div className="fk-ic-card-info">
+                      <div className="fk-ic-name-row"><h3>{contact.name}</h3><span className="fk-ic-role">{contact.role}</span></div>
+                      {contact.email && <p className="fk-ic-email">Mail: {contact.email}</p>}
+                      <span className={`fk-ic-category ${contact.category === "Emergency" ? "is-emergency" : ""}`}>{contact.category}</span>
+                    </div>
+                    <div className="fk-ic-card-actions"><button type="button" onClick={() => openEdit(contact)} aria-label={`Edit ${contact.name}`}><Pencil size={15} /></button><button type="button" onClick={() => handleDelete(contact)} aria-label={`Delete ${contact.name}`}><Trash2 size={15} /></button></div>
                   </div>
-
-                  <div className="fk-ic-card-info">
-                    <h3>{contact.name}</h3>
-                    <p>{contact.role}</p>
-
-                    <span className="fk-ic-category">
-                      {contact.category}
-                    </span>
+                  <div className="fk-ic-card-links">
+                    <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><MessageCircle size={17} /> WhatsApp</a>
+                    <a className="fk-ic-call" href={`tel:${contact.mobileNumber}`} aria-label={`Call ${contact.name}`}><Phone size={16} /> Call</a>
                   </div>
-
-                  <div className="fk-ic-card-actions">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openEdit(contact)
-                      }
-                      aria-label={`Edit ${contact.name}`}
-                    >
-                      <Pencil size={17} />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDelete(contact)
-                      }
-                      aria-label={`Delete ${contact.name}`}
-                    >
-                      <Trash2 size={17} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="fk-ic-card-links">
-                  <a
-                    href={`tel:${contact.mobileNumber}`}
-                  >
-                    <Phone size={16} />
-                    {contact.mobileNumber}
-                  </a>
-
-                  {contact.email && (
-                    <a
-                      href={`mailto:${contact.email}`}
-                    >
-                      <Mail size={16} />
-                      {contact.email}
-                    </a>
-                  )}
-                </div>
-              </article>
-            ))
-          )}
-        </section>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
+      <nav className="fk-ic-bottom-nav" aria-label="Main navigation">
+        <button type="button" onClick={() => navigate("/my-family")}><Home size={20} /><span>Home</span></button>
+        <button type="button" onClick={() => navigate("/family")}><UsersRound size={20} /><span>My Family</span></button>
+        <button type="button" className="fk-ic-bottom-plus" onClick={openAdd} disabled={loading || categories.length === 0} aria-label="Add important contact"><Plus size={23} /></button>
+        <button type="button" className="fk-ic-bottom-active" onClick={() => navigate("/categories")}><LayoutGrid size={20} /><span>Category</span></button>
+        <button type="button" disabled title="Pay & Renew route is not connected yet"><Wallet size={20} /><span>Pay &amp; Renew</span></button>
+      </nav>
+
       {modalOpen && (
-        <div
-          className="fk-ic-overlay"
-          role="presentation"
-        >
-          <div
-            className="fk-ic-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="fk-ic-modal-title"
-          >
-            <div className="fk-ic-modal-header">
-              <h2 id="fk-ic-modal-title">
-                {editingId
-                  ? "Edit Contact"
-                  : "Add Contact"}
-              </h2>
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (!saving) {
-                    setModalOpen(false);
-                    setError("");
-                  }
-                }}
-                disabled={saving}
-                aria-label="Close"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
+        <div className="fk-ic-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}>
+          <div className="fk-ic-modal" role="dialog" aria-modal="true" aria-labelledby="fk-ic-modal-title">
+            <div className="fk-ic-modal-header"><h2 id="fk-ic-modal-title">{editingId ? "Edit Contact" : "Add Contact"}</h2><button type="button" onClick={closeForm} disabled={saving} aria-label="Close form"><X size={19} /></button></div>
             <form onSubmit={handleSave}>
-              {/* Mandatory Name */}
-              <label>
-                Name *
-                <input
-                  required
-                  maxLength={100}
-                  value={form.name}
-                  onChange={(event) =>
-                    changeField(
-                      "name",
-                      event.target.value
-                    )
-                  }
-                  placeholder="Contact name"
-                />
-              </label>
+              <label htmlFor="fk-ic-name">Name<span className="fk-ic-required">*</span></label>
+              <input id="fk-ic-name" required maxLength={100} placeholder="Enter contact name" value={form.name} onChange={(e) => changeField("name", e.target.value)} />
 
-              {/* Mandatory Category */}
-              <label>
-                Category *
-                <select
-                  required
-                  value={form.category}
-                  onChange={(event) =>
-                    changeField(
-                      "category",
-                      event.target.value
-                    )
-                  }
-                >
-                  {categories.map((category) => (
-                    <option
-                      key={category.name}
-                      value={category.name}
-                    >
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <label htmlFor="fk-ic-category">Category<span className="fk-ic-required">*</span></label>
+              <div className="fk-ic-select-wrap"><select id="fk-ic-category" required value={form.category} onChange={(e) => changeField("category", e.target.value)}><option value="">Select Category</option>{categoryNames.map((name) => <option key={name} value={name}>{name}</option>)}</select><ChevronDown size={17} /></div>
 
-              {/* Mandatory Role */}
-              <label>
-                Role *
-                <select
-                  required
-                  value={form.role}
-                  onChange={(event) =>
-                    changeField(
-                      "role",
-                      event.target.value
-                    )
-                  }
-                >
-                  <option value="">
-                    Select role
-                  </option>
+              <label htmlFor="fk-ic-role">Role<span className="fk-ic-required">*</span></label>
+              <div className="fk-ic-select-wrap"><select id="fk-ic-role" required value={form.role} disabled={!form.category} onChange={(e) => changeField("role", e.target.value)}><option value="">Select Role</option>{availableRoles.map((role) => <option key={role} value={role}>{role}</option>)}</select><ChevronDown size={17} /></div>
 
-                  {availableRoles.map((role) => (
-                    <option
-                      key={role}
-                      value={role}
-                    >
-                      {role}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <label htmlFor="fk-ic-mobile">Mobile Number<span className="fk-ic-required">*</span></label>
+              <div className="fk-ic-phone-field"><span>+91</span><input id="fk-ic-mobile" required type="tel" inputMode="numeric" autoComplete="tel-national" maxLength={10} pattern="[6-9][0-9]{9}" title="Enter a valid 10-digit Indian mobile number" placeholder="10-digit mobile number" value={form.mobileNumber} onChange={(e) => changeField("mobileNumber", e.target.value.replace(/\D/g, "").slice(0, 10))} /></div>
 
-              {/* Mandatory Mobile Number */}
-              <label>
-                Mobile Number *
+              <label htmlFor="fk-ic-email">Email Address <span className="fk-ic-optional">(Optional)</span></label>
+              <input id="fk-ic-email" type="email" maxLength={254} placeholder="personname@gmail.com" value={form.email} onChange={(e) => changeField("email", e.target.value)} />
 
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    width: "100%",
-                  }}
-                >
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: "44px",
-                      padding: "0 12px",
-                      background: "#EBE6F7",
-                      color: "#2D0B84",
-                      borderRadius: "10px",
-                      fontWeight: 700,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    +91
-                  </span>
-
-                  <input
-                    required
-                    type="tel"
-                    inputMode="numeric"
-                    autoComplete="tel-national"
-                    maxLength={10}
-                    pattern="[6-9][0-9]{9}"
-                    title="Enter a valid 10-digit Indian mobile number"
-                    placeholder="10-digit mobile number"
-                    value={form.mobileNumber}
-                    onChange={(event) =>
-                      changeField(
-                        "mobileNumber",
-                        event.target.value
-                          .replace(/\D/g, "")
-                          .slice(0, 10)
-                      )
-                    }
-                    style={{
-                      flex: 1,
-                      minWidth: 0,
-                    }}
-                  />
-                </div>
-              </label>
-
-              {/* Optional Email */}
-              <label>
-                Email (Optional)
-                <input
-                  type="email"
-                  maxLength={254}
-                  value={form.email}
-                  onChange={(event) =>
-                    changeField(
-                      "email",
-                      event.target.value
-                    )
-                  }
-                  placeholder="name@example.com"
-                />
-              </label>
-
-              {error && (
-                <p
-                  className="fk-ic-form-error"
-                  role="alert"
-                >
-                  {error}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                className="fk-ic-save"
-                disabled={saving}
-              >
-                {saving
-                  ? "Saving..."
-                  : editingId
-                    ? "Update Contact"
-                    : "Save Contact"}
-              </button>
+              {formError && <p className="fk-ic-form-error" role="alert">{formError}</p>}
+              <button className="fk-ic-save" type="submit" disabled={saving}><Check size={17} /> {saving ? "Saving..." : editingId ? "Update Contact" : "Save"}</button>
             </form>
           </div>
         </div>
