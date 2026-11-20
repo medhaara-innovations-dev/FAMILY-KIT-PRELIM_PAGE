@@ -766,19 +766,32 @@
   max-width: 560px;
   padding: 27px 19px 0;
 
-  /* Approved header: light white-lavender at top, purple at bottom. */
+  /* White at the top; transparent at the bottom so the
+     dashboard's ORIGINAL purple shows through unchanged. */
   background: linear-gradient(
     180deg,
-    rgba(240, 238, 243, 0.96) 0%,
-    rgba(238, 235, 247, 0.94) 25%,
-    rgba(220, 203, 249, 0.93) 65%,
-    rgba(196, 173, 255, 0.96) 100%
+    rgba(240, 238, 243, 0.98) 0%,
+    rgba(238, 235, 247, 0.85) 25%,
+    rgba(220, 203, 249, 0.32) 65%,
+    rgba(196, 173, 255, 0) 100%
   );
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  backdrop-filter: blur(12px) saturate(200%);
-
   border: 0;
   box-shadow: none;
+  isolation: isolate;
+}
+
+/* Apply the glass filter behind the header content, fading it out
+   at the bottom so saturation cannot create a purple color seam. */
+.fk-dash-sticky-top::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
 }
 
 /* The existing search spacing is retained. */
