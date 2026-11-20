@@ -1,10 +1,15 @@
+
 /* ==========================================
    FAMILYKIT CATEGORIES PAGE
    ========================================== */
 
 .fk-cat-page {
   --cat-purple: #2d0b84;
-  min-height: 100dvh;
+
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+
   background: linear-gradient(
     180deg,
     #eee7ff 0px,
@@ -12,33 +17,54 @@
     #f6f5f9 340px,
     #f6f5f9 100%
   );
+
   color: #211b2d;
   font-family: "Mulish", sans-serif;
-  padding-bottom: 105px;
+
+  padding-bottom: 0;
+  overflow: hidden;
 }
 
 .fk-cat-page * {
   box-sizing: border-box;
 }
 
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+
 .fk-cat-container {
+  display: flex;
+  flex-direction: column;
+
   width: 100%;
   max-width: 760px;
+
+  height: 100dvh;
+  max-height: 100dvh;
+
   margin: 0 auto;
+  overflow: hidden;
 }
 
-/* HEADER */
+/* ==========================================
+   HEADER - STATIONARY
+   ========================================== */
 
 .fk-cat-header {
   display: flex;
   align-items: center;
   gap: 10px;
+
+  flex: 0 0 auto;
+
   padding: 24px 18px 14px;
 }
 
 .fk-cat-header h1 {
   flex: 1;
   margin: 0;
+
   font-family: "Poppins", sans-serif;
   font-size: 22px;
   font-weight: 600;
@@ -49,7 +75,9 @@
 .fk-cat-add-btn {
   display: grid;
   place-items: center;
+
   flex-shrink: 0;
+
   border: 0;
   cursor: pointer;
 }
@@ -57,6 +85,7 @@
 .fk-cat-back {
   width: 32px;
   height: 32px;
+
   border-radius: 50%;
   background: #f6f0ff;
   color: #6b5b89;
@@ -71,6 +100,7 @@
 .fk-cat-search-btn {
   width: 29px;
   height: 29px;
+
   border-radius: 50%;
   background: white;
   color: #5a488a;
@@ -79,20 +109,28 @@
 .fk-cat-add-btn {
   width: 32px;
   height: 32px;
+
   border-radius: 50%;
   background: var(--cat-purple);
   color: white;
+
   box-shadow: 0 3px 9px #2d0b8429;
 }
 
-/* SEARCH */
+/* ==========================================
+   SEARCH - STATIONARY WHEN OPEN
+   ========================================== */
 
 .fk-cat-search-panel {
   display: flex;
   align-items: center;
   gap: 9px;
+
+  flex: 0 0 auto;
+
   margin: 0 18px 12px;
   padding: 10px 12px;
+
   background: white;
   border-radius: 12px;
   color: var(--cat-purple);
@@ -101,33 +139,47 @@
 .fk-cat-search-panel input {
   flex: 1;
   min-width: 0;
+
   border: 0;
   outline: 0;
   background: transparent;
+
   font: 13px "Mulish", sans-serif;
 }
 
-/* FAMILY FILTERS */
+/* ==========================================
+   FAMILY FILTERS - STATIONARY
+   ========================================== */
 
 .fk-cat-filter-section {
+  flex: 0 0 auto;
+  min-height: 0;
   padding-top: 2px;
 }
 
 .fk-cat-filter-label {
   margin: 0 0 8px;
   padding: 0 24px;
+
   color: #575066;
   font-size: 11px;
   font-weight: 600;
 }
 
+/* Horizontal scrolling is still enabled */
+
 .fk-cat-filter-scroll {
   display: flex;
   align-items: center;
   gap: 7px;
+
   overflow-x: auto;
+  overflow-y: hidden;
+
   padding: 0 18px 9px;
+
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fk-cat-filter-scroll::-webkit-scrollbar {
@@ -139,16 +191,27 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+
   flex: 0 0 auto;
+
   min-height: 34px;
   padding: 5px 12px;
+
   border: 1px solid #ded5ef;
   border-radius: 20px;
+
   background: white;
   color: #30283c;
+
   font: 600 12px "Mulish", sans-serif;
   white-space: nowrap;
+
   cursor: pointer;
+
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
 }
 
 .fk-cat-filter-active {
@@ -159,51 +222,114 @@
 .fk-cat-radio {
   width: 23px;
   height: 23px;
+
   border: 1.5px solid #b9a0e7;
   border-radius: 50%;
+
   background: #faf8ff;
 }
 
-/* CATEGORY SECTION */
+/* ==========================================
+   CATEGORY SECTION
+   ========================================== */
 
 .fk-cat-content {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+  min-height: 0;
+
   padding: 9px 18px 20px;
+
+  overflow: hidden;
 }
 
+/* ==========================================
+   ALL CATEGORIES HEADING - STATIONARY
+   ========================================== */
+
 .fk-cat-content h2 {
+  flex: 0 0 auto;
+
   margin: 0 0 10px 8px;
+
   font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 600;
+
   color: #292334;
 }
 
+/* ==========================================
+   CATEGORY GRID - ONLY SCROLLABLE AREA
+   ========================================== */
+
 .fk-cat-grid {
   display: grid;
+
   grid-template-columns: repeat(3, minmax(0, 1fr));
+
   gap: 10px;
-  align-items: stretch;
+  align-items: start;
+  align-content: start;
+
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Keeps final cards accessible above bottom nav */
+  padding-bottom: calc(
+    105px + env(safe-area-inset-bottom)
+  );
+
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
 }
 
-/* CATEGORY CARDS */
+.fk-cat-grid::-webkit-scrollbar {
+  display: none;
+}
+
+/* ==========================================
+   CATEGORY CARDS
+   ========================================== */
 
 .fk-cat-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
   width: 100%;
   min-width: 0;
+
   height: 113px;
   padding: 10px 5px 8px;
+
   border: 1px solid #e0dbe7;
   border-radius: 12px;
+
   background: white;
   box-shadow: 0 3px 8px #211b2d13;
+
   cursor: pointer;
   text-align: center;
+
   color: #211b2d;
   font-family: "Mulish", sans-serif;
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.fk-cat-card:active {
+  transform: scale(0.97);
 }
 
 .fk-cat-card:focus-visible {
@@ -211,69 +337,106 @@
   outline-offset: 2px;
 }
 
+/* ==========================================
+   CATEGORY ICON BOX
+   ========================================== */
+
 .fk-cat-icon-box {
   display: flex;
   align-items: center;
   justify-content: center;
+
   flex-shrink: 0;
+
   width: 44px;
   height: 44px;
+
   border-radius: 12px;
   margin-bottom: 7px;
 }
 
 .fk-cat-image-icon {
   display: block;
+
   width: 28px;
   height: 28px;
+
   object-fit: contain;
 }
 
+/* ==========================================
+   CATEGORY CARD TEXT
+   ========================================== */
+
 .fk-cat-card-name {
   display: -webkit-box;
+
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+
   overflow: hidden;
+
   width: 100%;
+
   font-size: 12px;
   font-weight: 600;
   line-height: 1.25;
+
   min-height: 15px;
 }
 
 .fk-cat-card-count {
   margin-top: auto;
   padding-top: 3px;
+
   color: #a7a0aa;
+
   font-size: 10px;
   line-height: 1.2;
 }
 
 .fk-cat-no-results {
   padding: 30px 10px;
+
   text-align: center;
   font-size: 13px;
+
   color: #716a80;
 }
 
-/* BOTTOM NAVIGATION */
+/* ==========================================
+   BOTTOM NAVIGATION - FIXED
+   ========================================== */
 
 .fk-cat-bottom-nav {
   position: fixed;
-  z-index: 30;
+
+  z-index: 100;
+
   left: 50%;
   bottom: 0;
+
   transform: translateX(-50%);
+
   display: flex;
   align-items: center;
   justify-content: space-around;
+
   width: min(100%, 760px);
   min-height: 83px;
-  padding: 10px 8px max(12px, env(safe-area-inset-bottom));
+
+  padding:
+    10px
+    8px
+    max(12px, env(safe-area-inset-bottom));
+
   border: 1.5px solid #b598ff;
   border-bottom: 0;
+
   border-radius: 18px 18px 0 0;
+
   background: white;
+
   box-shadow: 0 -4px 14px #2d0b840b;
 }
 
@@ -281,16 +444,26 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
+
   gap: 4px;
+
   min-width: 0;
+
   padding: 4px 0;
+
   border: 0;
   background: transparent;
+
   color: #aaa4b0;
+
   font: 600 10px "Mulish", sans-serif;
+
   cursor: pointer;
+
+  transition: color 220ms ease;
 }
 
 .fk-cat-bottom-nav button:disabled {
@@ -303,59 +476,123 @@
   font-weight: 800;
 }
 
+/* ==========================================
+   CENTER ADD BUTTON
+   ========================================== */
+
 .fk-cat-bottom-nav .fk-cat-center-add {
   flex: 0 0 48px;
+
   width: 48px;
   height: 48px;
+
   padding: 0;
+
   border-radius: 50%;
+
   background: var(--cat-purple);
   color: white;
+
   box-shadow: 0 3px 10px #2d0b8440;
 }
 
-/* ADD PLACEHOLDER */
+/* ==========================================
+   ACTIVE CATEGORY NAVIGATION ICON BUBBLE
+   ========================================== */
+
+.fk-cat-bottom-nav
+.fk-cat-nav-active
+.fk-cat-nav-icon {
+  width: 31px;
+  height: 31px;
+
+  flex: 0 0 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--cat-purple);
+  color: #fff;
+
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    transform 220ms ease;
+
+  transform: scale(1.05);
+}
+
+.fk-cat-bottom-nav
+.fk-cat-nav-active
+.fk-cat-nav-icon svg {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   ADD PLACEHOLDER MODAL
+   ========================================== */
 
 .fk-cat-modal-overlay {
   position: fixed;
-  z-index: 100;
+
+  z-index: 1000;
   inset: 0;
+
   display: grid;
   place-items: center;
+
   padding: 20px;
+
   background: #211b2d70;
 }
 
 .fk-cat-modal {
   width: min(100%, 340px);
+
   padding: 24px;
+
   border-radius: 16px;
+
   background: white;
   text-align: center;
 }
 
 .fk-cat-modal h2 {
   margin: 0 0 10px;
+
   font: 600 19px "Poppins", sans-serif;
 }
 
 .fk-cat-modal p {
   font-size: 13px;
   line-height: 1.6;
+
   color: #686273;
 }
 
 .fk-cat-modal button {
   margin-top: 12px;
+
   padding: 10px 25px;
+
   border: 0;
   border-radius: 20px;
+
   background: var(--cat-purple);
   color: white;
+
   cursor: pointer;
 }
 
-/* RESPONSIVE */
+/* ==========================================
+   DESKTOP RESPONSIVE
+   ========================================== */
 
 @media (min-width: 768px) {
   .fk-cat-container {
@@ -370,6 +607,10 @@
     height: 125px;
   }
 }
+
+/* ==========================================
+   SMALL MOBILE DEVICES
+   ========================================== */
 
 @media (max-width: 390px) {
   .fk-cat-header {
@@ -402,49 +643,35 @@
 }
 
 /* ==========================================
-   ACTIVE CATEGORY NAVIGATION ICON BUBBLE
-   Matches the Dashboard Home active icon
-   ========================================== */
-
-.fk-cat-bottom-nav .fk-cat-nav-active .fk-cat-nav-icon {
-  width: 31px;
-  height: 31px;
-  flex: 0 0 31px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--cat-purple);
-  color: #fff;
-}
-
-.fk-cat-bottom-nav .fk-cat-nav-active .fk-cat-nav-icon svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-/* ==========================================
    SMOOTH CATEGORY INTERACTIONS
    ========================================== */
+
 .fk-screen-transition .fk-cat-content {
   animation: fkContentRiseIn 250ms ease-out both;
 }
+
 .fk-cat-nav-icon {
   border-radius: 50%;
-  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
+
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    transform 220ms ease;
 }
-.fk-cat-bottom-nav button { transition: color 220ms ease; }
-.fk-cat-nav-active .fk-cat-nav-icon { transform: scale(1.05); }
-.fk-cat-card { transition: transform 200ms ease, box-shadow 200ms ease; }
-.fk-cat-card:active { transform: scale(0.97); }
-.fk-cat-filter {
-  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
-}
+
+/* ==========================================
+   REDUCED MOTION ACCESSIBILITY
+   ========================================== */
+
 @media (prefers-reduced-motion: reduce) {
-  .fk-screen-transition .fk-cat-content { animation: none; }
+  .fk-screen-transition .fk-cat-content {
+    animation: none;
+  }
+
   .fk-cat-nav-icon,
   .fk-cat-bottom-nav button,
   .fk-cat-card,
-  .fk-cat-filter { transition: none; }
+  .fk-cat-filter {
+    transition: none;
+  }
 }
