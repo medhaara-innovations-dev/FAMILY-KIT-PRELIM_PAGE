@@ -31,6 +31,17 @@ const EMPTY_FORM = {
   email: "",
 };
 
+// Convert a stored +91 number into its 10-digit input value.
+function toIndianMobileInput(value = "") {
+  const digits = String(value).replace(/\D/g, "");
+
+  if (digits.length === 12 && digits.startsWith("91")) {
+    return digits.slice(2);
+  }
+
+  return digits.slice(0, 10);
+}
+
 export default function ImportantContactsPage() {
   const navigate = useNavigate();
 
@@ -100,44 +111,115 @@ export default function ImportantContactsPage() {
     )?.roles || [];
 
   const openAdd = () => {
+    const category =
+      selectedCategory === "All"
+        ? "Emergency"
+        : selectedCategory;
+
+    const roles =
+      categories.find((item) => item.name === category)
+        ?.roles || [];
+
     setEditingId(null);
+
     setForm({
       ...EMPTY_FORM,
-      category:
-        selectedCategory === "All"
-          ? "Emergency"
-          : selectedCategory,
-      role: "",
+      category,
+      role: roles[0] || "",
     });
+
     setError("");
     setModalOpen(true);
   };
 
   const openEdit = (contact) => {
     setEditingId(contact.contactId);
+
     setForm({
       name: contact.name,
       category: contact.category,
       role: contact.role,
-      mobileNumber: contact.mobileNumber,
+      mobileNumber: toIndianMobileInput(
+        contact.mobileNumber
+      ),
       email: contact.email || "",
     });
+
     setError("");
     setModalOpen(true);
   };
 
   const changeField = (field, value) => {
-    setForm((previous) => ({
-      ...previous,
-      [field]: value,
-      ...(field === "category" ? { role: "" } : {}),
-    }));
+    setForm((previous) => {
+      if (field === "category") {
+        const roles =
+          categories.find(
+            (category) => category.name === value
+          )?.roles || [];
+
+        return {
+          ...previous,
+          category: value,
+          role: roles[0] || "",
+        };
+      }
+
+      return {
+        ...previous,
+        [field]: value,
+      };
+    });
   };
 
   const handleSave = async (event) => {
     event.preventDefault();
 
     if (saving) return;
+
+    setError("");
+
+    // Mandatory field validation.
+    const name = form.name.trim();
+    const category = form.category;
+    const role = form.role;
+    const mobileDigits = toIndianMobileInput(
+      form.mobileNumber
+    );
+    const email = form.email.trim();
+
+    if (!name) {
+      setError("Name is mandatory.");
+      return;
+    }
+
+    if (name.length > 100) {
+      setError("Name must not exceed 100 characters.");
+      return;
+    }
+
+    if (
+      !category ||
+      !categories.some((item) => item.name === category)
+    ) {
+      setError("Please select a valid category.");
+      return;
+    }
+
+    const validRoles =
+      categories.find((item) => item.name === category)
+        ?.roles || [];
+
+    if (!role || !validRoles.includes(role)) {
+      setError("Please select a valid role.");
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(mobileDigits)) {
+      setError(
+        "Please enter a valid 10-digit Indian mobile number."
+      );
+      return;
+    }
 
     const wasEmergency = editingId
       ? contacts.some(
@@ -148,26 +230,41 @@ export default function ImportantContactsPage() {
       : false;
 
     if (
-      form.category === "Emergency" &&
+      category === "Emergency" &&
       !wasEmergency &&
       emergencyCount >= 2
     ) {
-      setError("Only two Emergency contacts are allowed.");
+      setError(
+        "Only two Emergency contacts are allowed."
+      );
       return;
     }
 
+    // The user enters 10 digits.
+    // The backend receives the international format.
+    const payload = {
+      name,
+      category,
+      role,
+      mobileNumber: `+91${mobileDigits}`,
+      email,
+    };
+
     setSaving(true);
-    setError("");
 
     try {
       if (editingId) {
-        await updateImportantContact(editingId, form);
+        await updateImportantContact(
+          editingId,
+          payload
+        );
       } else {
-        await addImportantContact(form);
+        await addImportantContact(payload);
       }
 
       setModalOpen(false);
       setEditingId(null);
+
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -200,8 +297,8 @@ export default function ImportantContactsPage() {
           <button
             type="button"
             className="fk-ic-icon-btn"
-            onClick={() => navigate("/categories")}
-            aria-label="Back to categories"
+            onClick={() => navigate("/my-family")}
+            aria-label="Back to dashboard"
           >
             <ArrowLeft size={20} />
           </button>
@@ -212,7 +309,9 @@ export default function ImportantContactsPage() {
             type="button"
             className="fk-ic-add-btn"
             onClick={openAdd}
-            disabled={loading || categories.length === 0}
+            disabled={
+              loading || categories.length === 0
+            }
             aria-label="Add contact"
           >
             <Plus size={20} />
@@ -223,6 +322,7 @@ export default function ImportantContactsPage() {
           <div className="fk-ic-summary-icon">
             <ContactRound size={26} />
           </div>
+
           <div>
             <h2>Your Important Contacts</h2>
             <p>
@@ -230,6 +330,7 @@ export default function ImportantContactsPage() {
               within reach.
             </p>
           </div>
+
           <span className="fk-ic-total">
             {contacts.length}
           </span>
@@ -237,6 +338,7 @@ export default function ImportantContactsPage() {
 
         <div className="fk-ic-search">
           <Search size={18} />
+
           <input
             type="search"
             placeholder="Search contacts..."
@@ -251,28 +353,32 @@ export default function ImportantContactsPage() {
           className="fk-ic-filters"
           aria-label="Contact categories"
         >
-          {["All", ...categories.map((c) => c.name)].map(
-            (category) => (
-              <button
-                key={category}
-                type="button"
-                className={
-                  selectedCategory === category
-                    ? "fk-ic-filter active"
-                    : "fk-ic-filter"
-                }
-                onClick={() =>
-                  setSelectedCategory(category)
-                }
-              >
-                {category}
-              </button>
-            )
-          )}
+          {[
+            "All",
+            ...categories.map((category) => category.name),
+          ].map((category) => (
+            <button
+              key={category}
+              type="button"
+              className={
+                selectedCategory === category
+                  ? "fk-ic-filter active"
+                  : "fk-ic-filter"
+              }
+              onClick={() =>
+                setSelectedCategory(category)
+              }
+            >
+              {category}
+            </button>
+          ))}
         </nav>
 
         {error && !modalOpen && (
-          <div className="fk-ic-error" role="alert">
+          <div
+            className="fk-ic-error"
+            role="alert"
+          >
             {error}
           </div>
         )}
@@ -285,7 +391,9 @@ export default function ImportantContactsPage() {
           ) : filteredContacts.length === 0 ? (
             <div className="fk-ic-empty">
               <ContactRound size={36} />
+
               <h3>No contacts found</h3>
+
               <p>
                 Add a contact to keep important
                 information in one place.
@@ -299,12 +407,15 @@ export default function ImportantContactsPage() {
               >
                 <div className="fk-ic-card-top">
                   <div className="fk-ic-avatar">
-                    {contact.name.charAt(0).toUpperCase()}
+                    {contact.name
+                      .charAt(0)
+                      .toUpperCase()}
                   </div>
 
                   <div className="fk-ic-card-info">
                     <h3>{contact.name}</h3>
                     <p>{contact.role}</p>
+
                     <span className="fk-ic-category">
                       {contact.category}
                     </span>
@@ -313,7 +424,9 @@ export default function ImportantContactsPage() {
                   <div className="fk-ic-card-actions">
                     <button
                       type="button"
-                      onClick={() => openEdit(contact)}
+                      onClick={() =>
+                        openEdit(contact)
+                      }
                       aria-label={`Edit ${contact.name}`}
                     >
                       <Pencil size={17} />
@@ -321,7 +434,9 @@ export default function ImportantContactsPage() {
 
                     <button
                       type="button"
-                      onClick={() => handleDelete(contact)}
+                      onClick={() =>
+                        handleDelete(contact)
+                      }
                       aria-label={`Delete ${contact.name}`}
                     >
                       <Trash2 size={17} />
@@ -330,13 +445,17 @@ export default function ImportantContactsPage() {
                 </div>
 
                 <div className="fk-ic-card-links">
-                  <a href={`tel:${contact.mobileNumber}`}>
+                  <a
+                    href={`tel:${contact.mobileNumber}`}
+                  >
                     <Phone size={16} />
                     {contact.mobileNumber}
                   </a>
 
                   {contact.email && (
-                    <a href={`mailto:${contact.email}`}>
+                    <a
+                      href={`mailto:${contact.email}`}
+                    >
                       <Mail size={16} />
                       {contact.email}
                     </a>
@@ -361,7 +480,9 @@ export default function ImportantContactsPage() {
           >
             <div className="fk-ic-modal-header">
               <h2 id="fk-ic-modal-title">
-                {editingId ? "Edit Contact" : "Add Contact"}
+                {editingId
+                  ? "Edit Contact"
+                  : "Add Contact"}
               </h2>
 
               <button
@@ -380,21 +501,26 @@ export default function ImportantContactsPage() {
             </div>
 
             <form onSubmit={handleSave}>
+              {/* Mandatory Name */}
               <label>
-                Name
+                Name *
                 <input
                   required
                   maxLength={100}
                   value={form.name}
                   onChange={(event) =>
-                    changeField("name", event.target.value)
+                    changeField(
+                      "name",
+                      event.target.value
+                    )
                   }
                   placeholder="Contact name"
                 />
               </label>
 
+              {/* Mandatory Category */}
               <label>
-                Category
+                Category *
                 <select
                   required
                   value={form.category}
@@ -416,42 +542,90 @@ export default function ImportantContactsPage() {
                 </select>
               </label>
 
+              {/* Mandatory Role */}
               <label>
-                Role
+                Role *
                 <select
                   required
                   value={form.role}
                   onChange={(event) =>
-                    changeField("role", event.target.value)
+                    changeField(
+                      "role",
+                      event.target.value
+                    )
                   }
                 >
-                  <option value="">Select role</option>
+                  <option value="">
+                    Select role
+                  </option>
+
                   {availableRoles.map((role) => (
-                    <option key={role} value={role}>
+                    <option
+                      key={role}
+                      value={role}
+                    >
                       {role}
                     </option>
                   ))}
                 </select>
               </label>
 
+              {/* Mandatory Mobile Number */}
               <label>
-                Mobile Number
-                <input
-                  required
-                  type="tel"
-                  value={form.mobileNumber}
-                  onChange={(event) =>
-                    changeField(
-                      "mobileNumber",
-                      event.target.value
-                    )
-                  }
-                  placeholder="+919876543210"
-                  pattern="\+[1-9][0-9]{7,14}"
-                  title="Enter international format, e.g. +919876543210"
-                />
+                Mobile Number *
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    width: "100%",
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      minHeight: "44px",
+                      padding: "0 12px",
+                      background: "#EBE6F7",
+                      color: "#2D0B84",
+                      borderRadius: "10px",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    +91
+                  </span>
+
+                  <input
+                    required
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    maxLength={10}
+                    pattern="[6-9][0-9]{9}"
+                    title="Enter a valid 10-digit Indian mobile number"
+                    placeholder="10-digit mobile number"
+                    value={form.mobileNumber}
+                    onChange={(event) =>
+                      changeField(
+                        "mobileNumber",
+                        event.target.value
+                          .replace(/\D/g, "")
+                          .slice(0, 10)
+                      )
+                    }
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                    }}
+                  />
+                </div>
               </label>
 
+              {/* Optional Email */}
               <label>
                 Email (Optional)
                 <input
@@ -459,14 +633,20 @@ export default function ImportantContactsPage() {
                   maxLength={254}
                   value={form.email}
                   onChange={(event) =>
-                    changeField("email", event.target.value)
+                    changeField(
+                      "email",
+                      event.target.value
+                    )
                   }
                   placeholder="name@example.com"
                 />
               </label>
 
               {error && (
-                <p className="fk-ic-form-error" role="alert">
+                <p
+                  className="fk-ic-form-error"
+                  role="alert"
+                >
                   {error}
                 </p>
               )}
