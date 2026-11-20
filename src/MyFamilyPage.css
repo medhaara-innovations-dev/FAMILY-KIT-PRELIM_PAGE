@@ -12,15 +12,18 @@
   min-height: 100dvh;
   width: 100%;
 
-  /* Approved colors only: white-lavender to purple to light. */
+  /* Single approved two-color background. */
   background: linear-gradient(180deg,
-    #F0EEF3 0px,
-    #F0EEF3 24px,
-    #C4ADFF 190px,
-    #C4ADFF 245px,
-    #F0EEF3 725px,
+    #F0EEF3 0%,
+    #F0EEF3 5%,
+    #C4ADFF 25%,
+    #C4ADFF 32%,
+    #F0EEF3 88%,
     #F0EEF3 100%
   );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: 100% 100vh;
 
   color: var(--fk-text);
   font-family: "Mulish", Arial, sans-serif;
@@ -746,21 +749,6 @@
    SHARED DASHBOARD BACKGROUND + GLASS HEADER
    Only approved colors: #F0EEF3 and #C4ADFF
    ========================================= */
-
-/* The fixed header must not paint a different gradient from the page. */
-.fk-dash-page {
-  background: linear-gradient(180deg,
-    #F0EEF3 0px,
-    #F0EEF3 24px,
-    #C4ADFF 190px,
-    #C4ADFF 245px,
-    #F0EEF3 725px,
-    #F0EEF3 100%
-  );
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: 100% 100vh;
-}
 
 .fk-dash-sticky-top {
   position: fixed;
