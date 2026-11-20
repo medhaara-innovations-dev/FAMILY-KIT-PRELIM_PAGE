@@ -12,10 +12,15 @@
   min-height: 100dvh;
   width: 100%;
 
-  /* Figma dashboard: purple at the top, fading down the full page */
+  /* Screenshot reference: light top, lavender at Need Attention, light again below */
   background: linear-gradient(
     180deg,
-    #C4ADFF 0%,
+    #F0EEF3 0px,
+    #EEEBF7 70px,
+    #C4ADFF 230px,
+    #DCCBF9 440px,
+    #E9E3F3 660px,
+    #F0EEF3 900px,
     #F0EEF3 100%
   );
 
@@ -748,7 +753,12 @@
 .fk-dash-page {
   background-image: linear-gradient(
     180deg,
-    #C4ADFF 0%,
+    #F0EEF3 0px,
+    #EEEBF7 70px,
+    #C4ADFF 230px,
+    #DCCBF9 440px,
+    #E9E3F3 660px,
+    #F0EEF3 900px,
     #F0EEF3 100%
   );
   background-attachment: scroll;
@@ -766,13 +776,13 @@
   max-width: 560px;
   padding: 27px 19px 0;
 
-  /* White at the top; transparent at the bottom so the
-     dashboard's ORIGINAL purple shows through unchanged. */
+  /* Header glass overlay fades away at the bottom, revealing the
+     exact same page gradient underneath without a color seam. */
   background: linear-gradient(
     180deg,
-    rgba(240, 238, 243, 0.98) 50%,
-    rgba(238, 235, 247, 0.85) 65%,
-    rgba(220, 203, 249, 0.32) 80%,
+    rgba(240, 238, 243, 0.80) 0%,
+    rgba(240, 238, 243, 0.52) 50%,
+    rgba(238, 235, 247, 0.20) 75%,
     rgba(196, 173, 255, 0) 100%
   );
   border: 0;
