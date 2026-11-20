@@ -762,21 +762,9 @@
   background: transparent;
   border: 0;
   box-shadow: none;
-  isolation: isolate;
-}
-
-/* Glass stays at the top and fades before the search/header boundary.
-   It does not create a separate purple color field. */
-.fk-dash-sticky-top::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
+  /* Glass effect applied directly to the fixed header. */
   -webkit-backdrop-filter: blur(12px) saturate(200%);
   backdrop-filter: blur(12px) saturate(200%);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
 }
 
 .fk-dash-sticky-top .fk-dash-search { margin-bottom: 26px; }
