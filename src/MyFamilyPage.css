@@ -761,9 +761,11 @@
     #F0EEF3 900px,
     #F0EEF3 100%
   );
-  background-attachment: scroll;
+  /* Anchor the gradient to the viewport so it stays aligned
+     behind the fixed glass header while scrolling. */
+  background-attachment: fixed;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 100% max(900px, 100dvh);
 }
 
 .fk-dash-sticky-top {
@@ -776,15 +778,9 @@
   max-width: 560px;
   padding: 27px 19px 0;
 
-  /* Header glass overlay fades away at the bottom, revealing the
-     exact same page gradient underneath without a color seam. */
-  background: linear-gradient(
-    180deg,
-    rgba(240, 238, 243, 0.80) 0%,
-    rgba(240, 238, 243, 0.52) 50%,
-    rgba(238, 235, 247, 0.20) 75%,
-    rgba(196, 173, 255, 0) 100%
-  );
+  /* The page gradient is visible through the header.
+     No second purple gradient can create a color boundary. */
+  background: transparent;
   border: 0;
   box-shadow: none;
   isolation: isolate;
