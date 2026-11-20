@@ -12,13 +12,7 @@
   min-height: 100dvh;
   width: 100%;
 
-  background: linear-gradient(
-    180deg,
-    #d7c9f7 0%,
-    #e4dafa 38%,
-    #f2edff 76%,
-    #f7f5fc 100%
-  );
+  background: linear-gradient(90deg, #C4ADFF 0%, #F0EEF3 100%);
 
   color: var(--fk-text);
   font-family: "Mulish", Arial, sans-serif;
@@ -747,7 +741,14 @@
    the scrolling page and the fixed header.
    ========================================= */
 
-.fk-dash-page,
+/* The page uses the exact Figma left-to-right gradient. */
+.fk-dash-page {
+  background: linear-gradient(90deg, #C4ADFF 0%, #F0EEF3 100%);
+  background-attachment: fixed;
+}
+
+/* A translucent surface lets scrolling cards blur behind the fixed header. */
+
 .fk-dash-sticky-top {
   background-image: linear-gradient(
     180deg,
@@ -759,6 +760,11 @@
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: 100% 100dvh;
+  background: rgba(224, 211, 249, 0.48);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+
 }
 
 .fk-dash-sticky-top {
@@ -841,48 +847,11 @@
   .fk-dash-round-button { transition: none; }
 }
 
-
-/* =========================================
-   FROSTED GLASS FIXED DASHBOARD HEADER
-   ========================================= */
-.fk-dash-sticky-top {
-  position: fixed;
-  z-index: 101;
-  background-image: none;
-  background-attachment: initial;
-  background-color: rgba(224, 213, 249, 0.82);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  transition: background-color 250ms ease, backdrop-filter 250ms ease;
-  border: 0;
-  box-shadow: none;
-}
-
-.fk-dash-sticky-top .fk-dash-header,
-.fk-dash-sticky-top .fk-dash-search {
-  position: relative;
-  z-index: 1;
-}
-
+/* Respect reduced-transparency accessibility preferences. */
 @media (prefers-reduced-transparency: reduce) {
   .fk-dash-sticky-top {
-    background-color: #e4dafa;
+    background: #E5DDF5;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-}
-/* VISIBLE FROSTED GLASS HEADER */
-
-.fk-dash-sticky-top {
-  position: fixed;
-  z-index: 101;
-
-  background: rgba(215, 201, 247, 0.35);
-
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  backdrop-filter: blur(24px) saturate(160%);
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
-
-  box-shadow: 0 8px 24px rgba(45, 11, 132, 0.08);
 }
