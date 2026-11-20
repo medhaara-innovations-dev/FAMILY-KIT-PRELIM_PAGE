@@ -1,3 +1,4 @@
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -23,6 +24,10 @@ import SearchPage from "./SearchPage.jsx";
 import VoiceSearchPage from "./VoiceSearchPage.jsx";
 import SmartSuggestionsPage from "./SmartSuggestionsPage.jsx";
 import NotificationsPage from "./NotificationsPage.jsx";
+
+// Important Contacts integration
+import ImportantContactsPage from "./ImportantContactsPage.jsx";
+
 import "./App.css";
 
 createRoot(document.getElementById("root")).render(
@@ -53,6 +58,12 @@ createRoot(document.getElementById("root")).render(
         <Route path="/search/voice" element={<VoiceSearchPage />} />
         <Route path="/smart-suggestions" element={<SmartSuggestionsPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+
+        {/* Important Contacts */}
+        <Route
+          path="/important-contacts"
+          element={<ImportantContactsPage />}
+        />
       </Routes>
     </BrowserRouter>
   </StrictMode>

@@ -476,6 +476,7 @@ export default function MyFamilyPage() {
               icon={ContactRound}
               label="Important Contacts"
               tone="coral"
+              onClick={() => navigate("/important-contacts")}
             />
 
             <QuickAction
