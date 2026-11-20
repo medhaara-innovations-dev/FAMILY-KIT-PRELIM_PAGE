@@ -770,9 +770,9 @@
      dashboard's ORIGINAL purple shows through unchanged. */
   background: linear-gradient(
     180deg,
-    rgba(240, 238, 243, 0.98) 0%,
-    rgba(238, 235, 247, 0.85) 25%,
-    rgba(220, 203, 249, 0.32) 65%,
+    rgba(240, 238, 243, 0.98) 50%,
+    rgba(238, 235, 247, 0.85) 65%,
+    rgba(220, 203, 249, 0.32) 80%,
     rgba(196, 173, 255, 0) 100%
   );
   border: 0;
