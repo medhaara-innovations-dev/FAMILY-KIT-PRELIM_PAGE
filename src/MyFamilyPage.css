@@ -1,7 +1,5 @@
 
-/* =========================================
-   FAMILYKIT MOBILE HOME DASHBOARD
-   ========================================= */
+
 
 .fk-dash-page {
   --fk-purple: #2d0b84;
@@ -15,13 +13,11 @@
   /* Screenshot reference: light top, lavender at Need Attention, light again below */
   background: linear-gradient(
     180deg,
-    #F0EEF3 0px,
-    #EEEBF7 70px,
-    #C4ADFF 230px,
-    #DCCBF9 440px,
-    #E9E3F3 660px,
-    #F0EEF3 900px,
-    #F0EEF3 100%
+     #C4ADFF 0%
+    #F0EEF3 50%,
+  
+   
+   
   );
 
   color: var(--fk-text);
@@ -753,14 +749,8 @@
 .fk-dash-page {
   background-image: linear-gradient(
     180deg,
-    #F0EEF3 0px,
-    #EEEBF7 70px,
-    #C4ADFF 230px,
-    #DCCBF9 440px,
-    #E9E3F3 660px,
-    #F0EEF3 900px,
-    #F0EEF3 100%
-  );
+   
+    #C4ADFF 0%, #F0EEF3 50%);
   /* Anchor the gradient to the viewport so it stays aligned
      behind the fixed glass header while scrolling. */
   background-attachment: fixed;
