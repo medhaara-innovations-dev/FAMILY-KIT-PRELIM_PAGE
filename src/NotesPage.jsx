@@ -232,7 +232,7 @@ export default function NotesPage() {
         <header className="fk-notes-header">
           <button
             type="button"
-           
+            className="fk-notes-icon-button"
             onClick={() => navigate("/categories")}
             aria-label="Back to Categories"
           >
