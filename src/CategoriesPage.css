@@ -244,17 +244,16 @@
   display: flex;
   flex-direction: column;
 
-  padding: 9px 18px 20px;
+  padding: 0 18px 20px;
 }
 
 /* ==========================================
    ALL CATEGORIES HEADING
    ========================================== */
 
-.fk-cat-content h2 {
-  flex: 0 0 auto;
-
-  margin: 0 0 10px 8px;
+.fk-cat-grid-heading {
+  margin: 0;
+  padding: 9px 18px 10px 26px;
 
   font-family: "Poppins", sans-serif;
   font-size: 17px;
@@ -572,6 +571,10 @@
   .fk-cat-content {
     padding-left: 14px;
     padding-right: 14px;
+  }
+
+  .fk-cat-grid-heading {
+    padding-left: 22px;
   }
 
   .fk-cat-grid {

@@ -332,15 +332,17 @@ export default function CategoriesPage() {
               </p>
             )}
           </section>
+
+          <h2 id="all-categories-heading" className="fk-cat-grid-heading">
+            All Categories
+          </h2>
         </div>
 
         {/* ==========================================
             CATEGORY GRID
             ========================================== */}
 
-        <section className="fk-cat-content">
-          <h2>All Categories</h2>
-
+        <section className="fk-cat-content" aria-labelledby="all-categories-heading">
           <div className="fk-cat-grid">
             {filteredCategories.map((category) => {
               const Icon = category.Icon;
