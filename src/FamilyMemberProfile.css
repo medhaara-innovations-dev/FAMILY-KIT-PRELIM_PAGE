@@ -423,3 +423,17 @@
     flex: 1;
   }
 }
+
+/* =========================================
+   REMOVE THE STRIP BELOW THE PROFILE HEADER
+   Keep existing colours, avatar, cards and layout.
+   ========================================= */
+.fk-profile-page .fk-profile-header {
+  margin-bottom: 0;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.fk-profile-page .fk-profile-main {
+  padding-top: 0;
+}
