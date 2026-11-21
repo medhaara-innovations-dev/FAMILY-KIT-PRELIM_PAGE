@@ -35,7 +35,7 @@ export default function EventsCalendarPage(){
   function changeMonth(delta){setFollowingToday(false);setDisplayMonth(value=>value+delta)}
   return <div className="fk-events-page">
     <main className="fk-events-content">
-      <div className="fk-events-heading"><button type="button" aria-label="Go back" onClick={()=>navigate(-1)}><ArrowLeft size={19}/></button><h1>Calendar</h1></div>
+      <div className="fk-events-heading"><button type="button" aria-label="Back to Categories" onClick={()=>navigate("/categories")}><ArrowLeft size={19}/></button><h1>Calendar</h1></div>
       <section className="fk-events-calendar" aria-label="Events calendar">
         <header className="fk-events-calendar-header">
           <button type="button" aria-label="Previous month" onClick={()=>changeMonth(-1)}><ChevronLeft size={19}/></button>
@@ -53,7 +53,7 @@ export default function EventsCalendarPage(){
       <BottomItem Icon={House} label="Home" onClick={()=>navigate("/my-family")}/>
       <BottomItem Icon={UsersRound} label="My Family" onClick={()=>navigate("/family")}/>
       <button type="button" className="fk-events-nav-add" aria-label="Add family member" onClick={()=>navigate("/family/add")}><Plus size={26}/></button>
-      <BottomItem Icon={LayoutGrid} label="Category"/>
+      <BottomItem Icon={LayoutGrid} label="Category" onClick={()=>navigate("/categories")}/>
       <BottomItem Icon={CreditCard} label="Pay & Renew"/>
     </nav>
   </div>

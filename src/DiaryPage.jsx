@@ -61,7 +61,7 @@ export default function DiaryPage() {
         {/* This area stays visible while the diary cards scroll. */}
         <div className="diary-fixed-content">
           <header className="diary-topbar">
-            <button type="button" className="diary-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard">
+            <button type="button" className="diary-back" onClick={() => navigate("/categories")} aria-label="Back to Categories">
               <ArrowLeft size={18} />
             </button>
             <h1>Dear Diary</h1>
@@ -139,7 +139,7 @@ export default function DiaryPage() {
         <button type="button" onClick={() => navigate("/my-family")}><House size={20} /><span>Home</span></button>
         <button type="button" onClick={() => navigate("/family")}><UsersRound size={20} /><span>My Family</span></button>
         <button type="button" className="diary-bottom-add" onClick={() => navigate("/family/add")} aria-label="Add family member"><Plus size={25} /></button>
-        <button type="button" disabled aria-label="Category unavailable"><LayoutGrid size={20} /><span>Category</span></button>
+        <button type="button" onClick={() => navigate("/categories")}><LayoutGrid size={20} /><span>Category</span></button>
         <button type="button" disabled aria-label="Pay and Renew unavailable"><CreditCard size={20} /><span>Pay & Renew</span></button>
       </nav>
     </main>

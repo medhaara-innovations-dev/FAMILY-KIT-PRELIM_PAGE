@@ -233,8 +233,8 @@ export default function NotesPage() {
           <button
             type="button"
             className="fk-notes-icon-button"
-            onClick={() => navigate("/my-family")}
-            aria-label="Back to dashboard"
+            onClick={() => navigate("/categories")}
+            aria-label="Back to Categories"
           >
             <ArrowLeft size={20} />
           </button>
@@ -433,7 +433,7 @@ export default function NotesPage() {
         <button
           type="button"
           className="fk-notes-nav-active"
-          aria-current="page"
+          onClick={() => navigate("/categories")}
         >
           <LayoutGrid size={21} />
           <span>Features</span>
