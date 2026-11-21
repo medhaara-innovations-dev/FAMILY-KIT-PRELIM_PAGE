@@ -1,31 +1,30 @@
+/*
+ * FamilyKit - Important Contacts API
+ *
+ * Includes automatic Cognito token refresh
+ * through the centralized session manager.
+ */
+
+import { authenticatedFetch } from "../auth/sessionManager.js";
+
+// ======================================================
+// API CONFIGURATION
+// ======================================================
 
 const API_BASE_URL =
   "https://09ngtow570.execute-api.ap-southeast-2.amazonaws.com";
 
-function getAccessToken() {
-  const token = sessionStorage.getItem(
-    "familykit_access_token"
-  );
-
-  if (!token) {
-    throw new Error(
-      "Session expired. Please log in again."
-    );
-  }
-
-  return token;
-}
+// ======================================================
+// SHARED AUTHENTICATED API REQUEST
+// ======================================================
 
 async function apiRequest(path, options = {}) {
-  const token = getAccessToken();
-
-  const response = await fetch(
+  const response = await authenticatedFetch(
     `${API_BASE_URL}${path}`,
     {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
         ...options.headers,
       },
     }
@@ -55,7 +54,10 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
-// GET: All contacts or category-filtered contacts
+// ======================================================
+// GET: ALL CONTACTS OR CATEGORY-FILTERED CONTACTS
+// ======================================================
+
 export async function getImportantContacts(
   category = "All"
 ) {
@@ -72,7 +74,10 @@ export async function getImportantContacts(
   return data.contacts || [];
 }
 
-// GET: Categories and their available roles
+// ======================================================
+// GET: CATEGORIES AND THEIR AVAILABLE ROLES
+// ======================================================
+
 export async function getContactCategories() {
   const data = await apiRequest(
     "/contacts/categories",
@@ -82,7 +87,10 @@ export async function getContactCategories() {
   return data.categories || [];
 }
 
-// GET: Individual contact
+// ======================================================
+// GET: INDIVIDUAL CONTACT
+// ======================================================
+
 export async function getImportantContact(contactId) {
   const data = await apiRequest(
     `/contacts/${encodeURIComponent(contactId)}`,
@@ -92,7 +100,10 @@ export async function getImportantContact(contactId) {
   return data.contact;
 }
 
-// POST: Create contact
+// ======================================================
+// POST: CREATE CONTACT
+// ======================================================
+
 export async function addImportantContact(contactData) {
   const data = await apiRequest("/contacts", {
     method: "POST",
@@ -102,7 +113,10 @@ export async function addImportantContact(contactData) {
   return data.contact;
 }
 
-// PUT: Update contact
+// ======================================================
+// PUT: UPDATE CONTACT
+// ======================================================
+
 export async function updateImportantContact(
   contactId,
   contactData
@@ -118,7 +132,10 @@ export async function updateImportantContact(
   return data.contact;
 }
 
-// DELETE: Remove contact
+// ======================================================
+// DELETE: REMOVE CONTACT
+// ======================================================
+
 export async function deleteImportantContact(contactId) {
   return apiRequest(
     `/contacts/${encodeURIComponent(contactId)}`,

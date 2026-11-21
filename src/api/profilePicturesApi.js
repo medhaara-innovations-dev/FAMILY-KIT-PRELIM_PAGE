@@ -1,15 +1,21 @@
-
 /*
  * FamilyKit - Profile Pictures API
  *
  * Upload, confirm, retrieve and delete
  * profile pictures using AWS Lambda + S3.
+ *
+ * Includes automatic Cognito token refresh.
  */
 
-// Replace this URL only if the profile-picture
-// routes are hosted in a different API Gateway.
+import { authenticatedFetch } from "../auth/sessionManager.js";
+
+// ======================================================
+// CONFIGURATION
+// ======================================================
+
 const PROFILE_API_BASE_URL =
   "https://a8h5fl7bi0.execute-api.ap-southeast-2.amazonaws.com";
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const ALLOWED_TYPES = [
@@ -17,31 +23,17 @@ const ALLOWED_TYPES = [
   "image/png",
 ];
 
-function getAccessToken() {
-  const token = sessionStorage.getItem(
-    "familykit_access_token"
-  );
+// ======================================================
+// SHARED AUTHENTICATED API REQUEST
+// ======================================================
 
-  if (!token) {
-    throw new Error(
-      "Session expired. Please log in again."
-    );
-  }
-
-  return token;
-}
-
-// Call authenticated Lambda endpoints
 async function apiRequest(path, options = {}) {
-  const token = getAccessToken();
-
-  const response = await fetch(
+  const response = await authenticatedFetch(
     `${PROFILE_API_BASE_URL}${path}`,
     {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
         ...options.headers,
       },
     }
@@ -60,15 +52,18 @@ async function apiRequest(path, options = {}) {
   if (!response.ok || data.error) {
     throw new Error(
       data.error ||
-      data.message ||
-      `Request failed: ${response.status}`
+        data.message ||
+        `Request failed: ${response.status}`
     );
   }
 
   return data;
 }
 
-// Validate selected image
+// ======================================================
+// VALIDATE SELECTED IMAGE
+// ======================================================
+
 function validateImage(file) {
   if (!file) {
     throw new Error("Please select an image.");
@@ -87,7 +82,10 @@ function validateImage(file) {
   }
 }
 
-// STEP 1: Request S3 upload authorization
+// ======================================================
+// STEP 1: REQUEST S3 UPLOAD AUTHORIZATION
+// ======================================================
+
 export async function requestProfilePictureUpload(
   memberId,
   file
@@ -107,7 +105,10 @@ export async function requestProfilePictureUpload(
   });
 }
 
-// STEP 2: Upload image directly to S3
+// ======================================================
+// STEP 2: UPLOAD IMAGE DIRECTLY TO S3
+// ======================================================
+
 async function uploadFileToS3(upload, file) {
   if (!upload?.url || !upload?.fields) {
     throw new Error(
@@ -126,6 +127,8 @@ async function uploadFileToS3(upload, file) {
   // The file must be appended last.
   formData.append("file", file, file.name);
 
+  // Direct presigned S3 upload.
+  // Cognito Authorization header is not required here.
   const response = await fetch(upload.url, {
     method: "POST",
     body: formData,
@@ -140,7 +143,10 @@ async function uploadFileToS3(upload, file) {
   return true;
 }
 
-// STEP 3: Confirm image and save reference
+// ======================================================
+// STEP 3: CONFIRM IMAGE AND SAVE REFERENCE
+// ======================================================
+
 export async function confirmProfilePicture(
   memberId,
   profilePictureKey
@@ -154,14 +160,17 @@ export async function confirmProfilePicture(
   });
 }
 
+// ======================================================
 // COMPLETE UPLOAD FLOW
+// ======================================================
+
 export async function uploadProfilePicture(
   memberId,
   file
 ) {
   validateImage(file);
 
-  // Request presigned S3 upload form
+  // Request presigned S3 upload form.
   const authorization =
     await requestProfilePictureUpload(
       memberId,
@@ -177,13 +186,13 @@ export async function uploadProfilePicture(
     );
   }
 
-  // Upload image to Amazon S3
+  // Upload image to Amazon S3.
   await uploadFileToS3(
     authorization.upload,
     file
   );
 
-  // Save image reference in DynamoDB
+  // Save image reference in DynamoDB.
   const confirmation =
     await confirmProfilePicture(
       memberId,
@@ -193,7 +202,10 @@ export async function uploadProfilePicture(
   return confirmation;
 }
 
-// GET: Retrieve profile picture
+// ======================================================
+// GET: RETRIEVE PROFILE PICTURE
+// ======================================================
+
 export async function getProfilePicture(
   memberId
 ) {
@@ -209,7 +221,10 @@ export async function getProfilePicture(
   );
 }
 
-// GET: Return photo URL or null
+// ======================================================
+// GET: RETURN PHOTO URL OR NULL
+// ======================================================
+
 export async function getProfilePictureUrl(
   memberId
 ) {
@@ -223,7 +238,10 @@ export async function getProfilePictureUrl(
   return result.photoUrl || null;
 }
 
-// DELETE: Remove profile picture
+// ======================================================
+// DELETE: REMOVE PROFILE PICTURE
+// ======================================================
+
 export async function deleteProfilePicture(
   memberId
 ) {
@@ -239,5 +257,8 @@ export async function deleteProfilePicture(
   });
 }
 
+// ======================================================
 // MAIN USER PROFILE
+// ======================================================
+
 export const SELF_PROFILE_ID = "PROFILE#SELF";

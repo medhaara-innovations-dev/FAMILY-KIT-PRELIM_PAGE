@@ -18,6 +18,11 @@ import {
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { getFamilyKitProfile } from "./auth/authService.js";
+import {
+  getStoredAccessToken,
+  getStoredRefreshToken,
+  getValidAccessToken,
+} from "./auth/sessionManager.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
@@ -41,14 +46,12 @@ export default function FamilyMembersPage() {
     setError("");
 
     try {
-      const accessToken = sessionStorage.getItem(
-        "familykit_access_token"
-      );
-
-      if (!accessToken) {
+      if (!getStoredAccessToken() && !getStoredRefreshToken()) {
         navigate("/login", { replace: true });
         return;
       }
+
+      const accessToken = await getValidAccessToken();
 
       const [profileResult, familyResult] =
         await Promise.allSettled([

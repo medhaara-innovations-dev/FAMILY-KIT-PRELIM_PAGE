@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import { getFamilyKitProfile } from "./auth/authService.js";
+import { getValidAccessToken, clearFamilyKitSession } from "./auth/sessionManager.js";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
@@ -144,8 +145,9 @@ function FamilyMemberItem({ member, onOpen }) {
 export default function MyFamilyPage() {
   const navigate = useNavigate();
 
-  const accessToken = sessionStorage.getItem(
-    "familykit_access_token"
+  const hasSession = Boolean(
+    sessionStorage.getItem("familykit_access_token") ||
+    sessionStorage.getItem("familykit_refresh_token")
   );
 
   const [yourName, setYourName] = useState("");
@@ -177,27 +179,27 @@ export default function MyFamilyPage() {
   // =====================================================
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!hasSession) {
       navigate("/login", {
         replace: true,
       });
     }
-  }, [accessToken, navigate]);
+  }, [hasSession, navigate]);
 
   // =====================================================
   // LOAD REGISTERED NAME FROM AWS
   // =====================================================
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!hasSession) return;
 
     let active = true;
 
     async function loadProfile() {
       try {
-        const profile = await getFamilyKitProfile(
-          accessToken
-        );
+        const validToken = await getValidAccessToken();
+        if (!active) return;
+        const profile = await getFamilyKitProfile(validToken);
 
         if (!active) return;
 
@@ -227,14 +229,14 @@ export default function MyFamilyPage() {
     return () => {
       active = false;
     };
-  }, [accessToken]);
+  }, [hasSession]);
 
   // =====================================================
   // LOAD FAMILY MEMBERS FROM DYNAMODB
   // =====================================================
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!hasSession) return;
 
     let active = true;
 
@@ -265,24 +267,14 @@ export default function MyFamilyPage() {
     return () => {
       active = false;
     };
-  }, [accessToken]);
+  }, [hasSession]);
 
   // =====================================================
   // LOGOUT
   // =====================================================
 
   const handleLogout = () => {
-    sessionStorage.removeItem(
-      "familykit_access_token"
-    );
-
-    sessionStorage.removeItem(
-      "familykit_id_token"
-    );
-
-    sessionStorage.removeItem(
-      "familykit_refresh_token"
-    );
+    clearFamilyKitSession();
 
     navigate("/", {
       replace: true,
@@ -290,7 +282,7 @@ export default function MyFamilyPage() {
   };
 
   // Prevent protected content appearing before redirect.
-  if (!accessToken) {
+  if (!hasSession) {
     return null;
   }
 

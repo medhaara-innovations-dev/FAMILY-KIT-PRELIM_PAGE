@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { getNote } from "./api/notesApi";
+import { getStoredAccessToken, getStoredRefreshToken } from "./auth/sessionManager.js";
 import "./NotesViewPage.css";
 
 export default function NotesViewPage() {
@@ -26,7 +27,7 @@ export default function NotesViewPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!sessionStorage.getItem("familykit_access_token")) {
+    if (!getStoredAccessToken() && !getStoredRefreshToken()) {
       navigate("/login", { replace: true });
       return;
     }

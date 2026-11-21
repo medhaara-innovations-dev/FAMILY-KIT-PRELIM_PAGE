@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Camera, Trash2 } from "lucide-react";
 import { getFamilyKitProfile } from "./auth/authService.js";
+import { getValidAccessToken } from "./auth/sessionManager.js";
 import {
   SELF_PROFILE_ID,
   uploadProfilePicture,
@@ -24,13 +25,18 @@ export default function MyProfile() {
 
   useEffect(() => {
     let active = true;
-    const token = sessionStorage.getItem("familykit_access_token");
-    if (!token) {
+    const hasSession = Boolean(
+      sessionStorage.getItem("familykit_access_token") ||
+      sessionStorage.getItem("familykit_refresh_token")
+    );
+    if (!hasSession) {
       navigate("/login", { replace: true });
       return () => { active = false; };
     }
     async function load() {
       try {
+        const token = await getValidAccessToken();
+        if (!active) return;
         const profile = await getFamilyKitProfile(token);
         if (active) setName(profile.yourName || "Me");
       } catch (err) {

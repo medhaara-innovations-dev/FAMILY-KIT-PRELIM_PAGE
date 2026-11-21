@@ -127,6 +127,11 @@ export default function LoginPage() {
       );
     }
 
+    // Clear previous account tokens before storing a fresh login.
+    sessionStorage.removeItem("familykit_access_token");
+    sessionStorage.removeItem("familykit_id_token");
+    sessionStorage.removeItem("familykit_refresh_token");
+
     sessionStorage.setItem(
       "familykit_access_token",
       result.accessToken
