@@ -410,38 +410,25 @@ export default function NotesPage() {
         </section>
       </div>
 
-      <nav
-        className="fk-notes-bottom-nav"
-        aria-label="Main navigation"
-      >
-        <button
-          type="button"
-          onClick={() => navigate("/my-family")}
-        >
-          <House size={21} />
+      <nav className="fk-notes-bottom-nav" aria-label="FamilyKit navigation">
+        <button type="button" className="fk-notes-nav-item" onClick={() => navigate("/my-family")}>
+          <span className="fk-notes-nav-icon"><House size={20} strokeWidth={1.8} /></span>
           <span>Home</span>
         </button>
-
-        <button
-          type="button"
-          onClick={() => navigate("/family")}
-        >
-          <UsersRound size={21} />
+        <button type="button" className="fk-notes-nav-item" onClick={() => navigate("/family")}>
+          <span className="fk-notes-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span>
           <span>My Family</span>
         </button>
-
-        <button
-          type="button"
-          className="fk-notes-nav-active"
-          onClick={() => navigate("/categories")}
-        >
-          <LayoutGrid size={21} />
-          <span>Features</span>
+        <button type="button" className="fk-notes-nav-center-add" onClick={() => navigate("/family/add")} aria-label="Add family member">
+          <Plus size={30} />
         </button>
-
-        <button type="button" disabled>
-          <CreditCard size={21} />
-          <span>Payments</span>
+        <button type="button" className="fk-notes-nav-item active" onClick={() => navigate("/categories")} aria-current="page">
+          <span className="fk-notes-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span>
+          <span>Category</span>
+        </button>
+        <button type="button" className="fk-notes-nav-item" disabled aria-label="Pay and Renew unavailable">
+          <span className="fk-notes-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span>
+          <span>Pay &amp; Renew</span>
         </button>
       </nav>
     </main>
