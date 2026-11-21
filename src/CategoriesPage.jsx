@@ -354,56 +354,25 @@ export default function CategoriesPage() {
           BOTTOM NAVIGATION
           ========================================== */}
 
-      <nav
-        className="fk-cat-bottom-nav"
-        aria-label="Main navigation"
-      >
-        <button
-          type="button"
-          onClick={() => navigate("/my-family")}
-        >
-          <House size={21} />
+      <nav className="fk-cat-bottom-nav" aria-label="Main navigation">
+        <button type="button" className="fk-cat-nav-item" onClick={() => navigate("/my-family")}>
+          <span className="fk-cat-nav-icon"><House size={20} strokeWidth={1.8} /></span>
           <span>Home</span>
         </button>
-
-        <button
-          type="button"
-          onClick={() => navigate("/family")}
-        >
-          <UsersRound size={21} />
+        <button type="button" className="fk-cat-nav-item" onClick={() => navigate("/family")}>
+          <span className="fk-cat-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span>
           <span>My Family</span>
         </button>
-
-        <button
-          type="button"
-          className="fk-cat-center-add"
-          onClick={() => setShowAddMessage(true)}
-          aria-label="Add new item"
-        >
-          <Plus size={26} />
+        <button type="button" className="fk-cat-center-add" onClick={() => navigate("/family/add")} aria-label="Add family member">
+          <Plus size={30} />
         </button>
-
-        <button
-          type="button"
-          className="fk-cat-nav-active"
-          aria-current="page"
-        >
-          <span className="fk-cat-nav-icon">
-            <LayoutGrid
-              size={21}
-              strokeWidth={1.8}
-            />
-          </span>
-
+        <button type="button" className="fk-cat-nav-item active" aria-current="page">
+          <span className="fk-cat-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span>
           <span>Category</span>
         </button>
-
-        <button
-          type="button"
-          disabled
-        >
-          <CreditCard size={21} />
-          <span>Pay & Renew</span>
+        <button type="button" className="fk-cat-nav-item" disabled>
+          <span className="fk-cat-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span>
+          <span>Pay &amp; Renew</span>
         </button>
       </nav>
 
