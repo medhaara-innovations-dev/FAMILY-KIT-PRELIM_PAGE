@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  ArrowLeft,
+  ChevronLeft,
   Search,
   StickyNote,
   Plus,
@@ -236,7 +236,7 @@ export default function NotesPage() {
             onClick={() => navigate("/categories")}
             aria-label="Back to Categories"
           >
-            <ArrowLeft size={20} />
+            <ChevronLeft size={20} />
           </button>
 
           <h1>My Notes</h1>

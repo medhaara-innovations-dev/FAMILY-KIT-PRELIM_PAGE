@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 
 import {
   signUpWithEmail,
@@ -762,7 +762,7 @@ export default function SignupPage() {
           <section className="signup-welcome-panel">
             <div className="signup-mobile-topbar">
               <button type="button" className="signup-mobile-back" aria-label="Go back" onClick={() => { window.location.assign("/"); }}>
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
+                <ChevronLeft size={15} strokeWidth={1.8} aria-hidden="true" />
               </button>
               <span className="signup-mobile-brand">FamilyKit</span>
             </div>
@@ -844,7 +844,7 @@ export default function SignupPage() {
           <section className="signup-welcome-panel">
             <div className="signup-mobile-topbar">
               <button type="button" className="signup-mobile-back" aria-label="Back to email signup" onClick={() => { setError(""); setStep(1); }}>
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
+                <ChevronLeft size={15} strokeWidth={1.8} aria-hidden="true" />
               </button>
               <span className="signup-mobile-brand">Verify email address</span>
             </div>
@@ -961,7 +961,7 @@ export default function SignupPage() {
           <section className="signup-welcome-panel">
             <div className="signup-mobile-family-topbar">
               <button type="button" className="signup-mobile-family-back" aria-label="Back to verification" onClick={() => { setError(""); setStep(2); }}>
-                <span aria-hidden="true">‹</span>
+                <ChevronLeft size={20} aria-hidden="true" />
               </button>
               <span className="signup-mobile-family-title">Create your family</span>
             </div>
@@ -1064,7 +1064,7 @@ export default function SignupPage() {
           <section className="signup-welcome-panel">
             <div className="signup-mobile-review-topbar">
               <button type="button" className="signup-mobile-review-back" aria-label="Back to family details" onClick={() => { setError(""); setStep(3); }}>
-                <span aria-hidden="true">‹</span>
+                <ChevronLeft size={20} aria-hidden="true" />
               </button>
               <span className="signup-mobile-review-title">Your Family</span>
             </div>
@@ -1132,7 +1132,7 @@ export default function SignupPage() {
 
           <section className="signup-welcome-panel">
             <div className="signup-mobile-pin-topbar">
-              <button type="button" className="signup-mobile-pin-back" aria-label="Go back" onClick={() => { setError(""); setStep(4); }}>‹</button>
+              <button type="button" className="signup-mobile-pin-back" aria-label="Go back" onClick={() => { setError(""); setStep(4); }}><ChevronLeft size={20} aria-hidden="true" /></button>
               <span className="signup-mobile-pin-title">App lock</span>
               <span className="signup-mobile-pin-progress">1 of 2</span>
             </div>
@@ -1222,7 +1222,7 @@ export default function SignupPage() {
 
           <section className="signup-welcome-panel">
             <div className="signup-mobile-pin-topbar">
-              <button type="button" className="signup-mobile-pin-back" aria-label="Go back" onClick={() => { setError(""); setStep(5); }}>‹</button>
+              <button type="button" className="signup-mobile-pin-back" aria-label="Go back" onClick={() => { setError(""); setStep(5); }}><ChevronLeft size={20} aria-hidden="true" /></button>
               <span className="signup-mobile-pin-title">App lock</span>
               <span className="signup-mobile-pin-progress">2 of 2</span>
             </div>

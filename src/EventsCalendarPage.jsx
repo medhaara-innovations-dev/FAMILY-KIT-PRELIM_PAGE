@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, CalendarPlus, House, UsersRound, Plus, LayoutGrid, CreditCard } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarPlus, House, UsersRound, Plus, LayoutGrid, CreditCard } from "lucide-react";
 import "./EventsCalendarPage.css";
 
 const dateParts = new Intl.DateTimeFormat("en-GB", {timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"});
@@ -35,7 +35,7 @@ export default function EventsCalendarPage(){
   function changeMonth(delta){setFollowingToday(false);setDisplayMonth(value=>value+delta)}
   return <div className="fk-events-page">
     <main className="fk-events-content">
-      <div className="fk-events-heading"><button type="button" aria-label="Back to Categories" onClick={()=>navigate("/categories")}><ArrowLeft size={19}/></button><h1>Calendar</h1></div>
+      <div className="fk-events-heading"><button type="button" aria-label="Back to Categories" onClick={()=>navigate("/categories")}><ChevronLeft size={19}/></button><h1>Calendar</h1></div>
       <section className="fk-events-calendar" aria-label="Events calendar">
         <header className="fk-events-calendar-header">
           <button type="button" aria-label="Previous month" onClick={()=>changeMonth(-1)}><ChevronLeft size={19}/></button>

@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
 
-  ArrowLeft,
 
   ArrowRight,
 
@@ -632,7 +631,7 @@ export default function AddFamilyMemberPage() {
             onClick={() => navigate("/family")}
             aria-label="Back to My Family"
           >
-            <ArrowLeft size={22} />
+            <ChevronLeft size={22} />
           </button>
           <h1>Add Family Member</h1>
           <span aria-hidden="true" />
@@ -769,7 +768,7 @@ export default function AddFamilyMemberPage() {
 
         >
 
-          <ArrowLeft size={22} />
+          <ChevronLeft size={22} />
 
         </button>
 

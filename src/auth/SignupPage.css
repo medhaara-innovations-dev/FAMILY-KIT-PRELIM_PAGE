@@ -2414,8 +2414,9 @@
   }
   .signup-page--mobile-pin .signup-mobile-pin-back {
     position: absolute; left: 0; top: 34px; width: 32px; height: 32px;
+    display: grid; place-items: center;
     border: 0; border-radius: 50%; background: rgba(255,255,255,.5);
-    color: #766A91; font: 26px/28px Mulish,sans-serif; cursor: pointer;
+    color: #766A91; cursor: pointer;
   }
   .signup-page--mobile-pin .signup-mobile-pin-title { color: #2D0B84; font: 600 13px/20px Poppins,sans-serif; }
   .signup-page--mobile-pin .signup-mobile-pin-progress {

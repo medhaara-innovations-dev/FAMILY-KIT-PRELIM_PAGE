@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, BookHeart, Pencil, Search,
+  ChevronLeft, BookHeart, Pencil, Search,
   House, UsersRound, Plus, LayoutGrid, CreditCard
 } from "lucide-react";
 import { getDiaryEntries } from "./api/diaryApi";
@@ -62,7 +62,7 @@ export default function DiaryPage() {
         <div className="diary-fixed-content">
           <header className="diary-topbar">
             <button type="button" className="diary-back" onClick={() => navigate("/categories")} aria-label="Back to Categories">
-              <ArrowLeft size={18} />
+              <ChevronLeft size={18} />
             </button>
             <h1>Dear Diary</h1>
             <button type="button" className="diary-search-button" aria-label="Search diary entries" aria-expanded={searchOpen} onClick={() => { setSearchOpen((current) => !current); setSearchText(""); }}>

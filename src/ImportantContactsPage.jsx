@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Search, Phone, Mail, Pencil, Trash2, X,
+  ChevronLeft, Plus, Search, Phone, Mail, Pencil, Trash2, X,
   ContactRound, AlertTriangle, ShieldCheck, HeartPulse, UsersRound,
   Scale, GraduationCap, Landmark, CreditCard, House, LayoutGrid,
   ChevronDown, MessageCircle, Check, RefreshCw,
@@ -138,7 +138,7 @@ export default function ImportantContactsPage() {
     <main className="fk-ic-page">
       <div className="fk-ic-container">
         <header className="fk-ic-header">
-          <button type="button" className="fk-ic-round fk-ic-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard"><ArrowLeft size={19} /></button>
+          <button type="button" className="fk-ic-round fk-ic-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard"><ChevronLeft size={19} /></button>
           <h1>Important Contacts</h1>
           <button type="button" className="fk-ic-round fk-ic-search-toggle" onClick={() => { setSearchOpen((v) => !v); setSearch(""); }} aria-label="Search contacts"><Search size={19} /></button>
           <button type="button" className="fk-ic-round fk-ic-plus" onClick={openAdd} disabled={loading || categories.length === 0} aria-label="Add contact"><Plus size={19} /></button>

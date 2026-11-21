@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  ArrowLeft,
+  ChevronLeft,
   ListFilter,
   ShieldCheck,
   UsersRound,
@@ -185,7 +185,7 @@ export default function NotificationsPage() {
               aria-label="Go back"
               onClick={() => navigate(-1)}
             >
-              <ArrowLeft size={18} />
+              <ChevronLeft size={18} />
             </button>
 
             <h1>Notifications</h1>

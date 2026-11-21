@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
-  ArrowLeft,
+  ChevronLeft,
   Sparkles,
   FileText,
   Bell,
@@ -275,7 +275,7 @@ export default function NotesDetailsPage() {
             disabled={saving}
             aria-label="Back to note editor"
           >
-            <ArrowLeft size={22} />
+            <ChevronLeft size={22} />
           </button>
 
           <h1>AI Extracted Details</h1>

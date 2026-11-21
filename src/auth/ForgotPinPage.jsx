@@ -1,3 +1,4 @@
+import { ChevronLeft } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -262,7 +263,7 @@ export default function ForgotPinPage() {
               onClick={() => navigate("/login")}
               aria-label="Back to login"
             >
-              <span aria-hidden="true">←</span>
+              <ChevronLeft size={20} aria-hidden="true" />
             </button>
 
             <span className="forgot-pin-mobile-brand">

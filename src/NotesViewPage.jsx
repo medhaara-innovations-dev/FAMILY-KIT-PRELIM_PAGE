@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import {
-  ArrowLeft,
+  ChevronLeft,
   SquarePen,
   FileText,
   Sparkles,
@@ -95,7 +95,7 @@ export default function NotesViewPage() {
             onClick={handleBack}
             aria-label="Back to All Entries"
           >
-            <ArrowLeft size={21} />
+            <ChevronLeft size={21} />
           </button>
 
           <h1>My Notes</h1>

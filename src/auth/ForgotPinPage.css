@@ -66,6 +66,8 @@
 }
 
 .forgot-pin-back {
+  display: grid;
+  place-items: center;
   width: 42px;
   height: 42px;
   border: 1px solid var(--fp-border);

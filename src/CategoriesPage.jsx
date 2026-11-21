@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  ArrowLeft,
+  ChevronLeft,
   Search,
   Plus,
   CalendarDays,
@@ -234,7 +234,7 @@ export default function CategoriesPage() {
               onClick={() => navigate("/my-family")}
               aria-label="Back to dashboard"
             >
-              <ArrowLeft size={19} />
+              <ChevronLeft size={19} />
             </button>
 
             <h1>Categories</h1>

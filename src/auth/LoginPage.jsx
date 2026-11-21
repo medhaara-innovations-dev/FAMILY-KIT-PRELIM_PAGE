@@ -1,3 +1,4 @@
+import { ChevronLeft } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -623,7 +624,7 @@ export default function LoginPage() {
               onClick={() => navigate(-1)}
               aria-label="Go back"
             >
-              ‹
+              <ChevronLeft size={20} aria-hidden="true" />
             </button>
 
             <span>FamilyKit</span>

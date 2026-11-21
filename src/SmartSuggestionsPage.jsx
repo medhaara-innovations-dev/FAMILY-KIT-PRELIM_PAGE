@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Search, Sparkles, FileText, CarFront, Landmark,
+  ChevronLeft, Search, Sparkles, FileText, CarFront, Landmark,
   UserRoundCheck, ChevronRight, House, UsersRound, Plus,
   LayoutGrid, CreditCard,
 } from "lucide-react";
@@ -41,7 +41,7 @@ export default function SmartSuggestionsPage() {
     <div className="fk-ss-page">
       <div className="fk-ss-shell">
         <header className="fk-ss-header">
-          <button type="button" className="fk-ss-header-button" aria-label="Go back" onClick={() => navigate(-1)}><ArrowLeft size={19} /></button>
+          <button type="button" className="fk-ss-header-button" aria-label="Go back" onClick={() => navigate(-1)}><ChevronLeft size={19} /></button>
           <h1>Smart Suggestions</h1>
           <button type="button" className="fk-ss-search-button" aria-label="Search" onClick={() => navigate("/search")}><Search size={17} /></button>
         </header>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Trash2 } from "lucide-react";
+import { ChevronLeft, Camera, Trash2 } from "lucide-react";
 import { getFamilyKitProfile } from "./auth/authService.js";
 import { getValidAccessToken, clearFamilyKitSession } from "./auth/sessionManager.js";
 import {
@@ -109,7 +109,7 @@ export default function MyProfile() {
     <div className="fk-my-profile-page">
       <header className="fk-my-profile-header fk-glass-header">
         <button type="button" aria-label="Back to dashboard" onClick={() => navigate("/my-family")}>
-          <ArrowLeft size={22} />
+          <ChevronLeft size={22} />
         </button>
         <h1>My Profile</h1>
         <span />

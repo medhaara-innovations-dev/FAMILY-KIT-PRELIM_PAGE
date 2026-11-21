@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 import {
-  ArrowLeft,
+  ChevronLeft,
   Sparkles,
   FileText,
   AlertCircle,
@@ -250,7 +250,7 @@ export default function NotesEditorPage() {
             onClick={handleBack}
             aria-label="Back to My Notes"
           >
-            <ArrowLeft size={22} />
+            <ChevronLeft size={22} />
           </button>
 
           <h1>

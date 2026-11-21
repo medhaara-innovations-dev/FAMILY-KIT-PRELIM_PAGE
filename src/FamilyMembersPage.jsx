@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  ArrowLeft,
+  ChevronLeft,
   UsersRound,
   Plus,
   ChevronRight,
@@ -194,7 +194,7 @@ export default function FamilyMembersPage() {
         <div className="fk-family-header-left">
           <button type="button" className="fk-family-icon-button fk-family-back"
             onClick={() => navigate("/my-family")} aria-label="Back to dashboard">
-            <ArrowLeft size={22} />
+            <ChevronLeft size={22} />
           </button>
           <h1>My Family</h1>
         </div>

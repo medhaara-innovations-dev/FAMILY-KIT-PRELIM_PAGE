@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import {
 
-  ArrowLeft,
+  ChevronLeft,
 
   UserRound,
 
@@ -567,7 +567,7 @@ export default function FamilyMemberProfile() {
 
         >
 
-          <ArrowLeft size={22} />
+          <ChevronLeft size={22} />
 
         </button>
 
