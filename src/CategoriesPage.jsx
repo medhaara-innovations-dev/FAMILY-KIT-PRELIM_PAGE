@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -27,6 +27,8 @@ import insuranceIcon from "./assets/images/Insurance.png";
 import notesIcon from "./assets/images/Notes.png";
 import propertyIcon from "./assets/images/Housing.png";
 
+import { getFamilyMembers } from "./api/familyMembersApi.js";
+import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import "./CategoriesPage.css";
 
 // ==========================================
@@ -127,16 +129,32 @@ const categories = [
 // FAMILY FILTERS
 // ==========================================
 
-const familyFilters = [
-  "All Family",
-  "Self(Me)",
-  "Spouse",
-  "Mother",
-  "Father",
-  "Son",
-  "Daughter",
-  "Other",
+const DEFAULT_FAMILY_FILTERS = [
+  { id: "all-family", label: "All Family" },
+  { id: SELF_PROFILE_ID, label: "Me" },
 ];
+
+function buildFamilyFilters(members) {
+  const valid = (Array.isArray(members) ? members : []).filter(
+    (member) => member?.memberId && member.memberId !== SELF_PROFILE_ID
+  );
+  const relationshipOf = (member) =>
+    String(member.relationship || "Family Member").trim() || "Family Member";
+  const counts = new Map();
+  valid.forEach((member) => {
+    const key = relationshipOf(member).toLowerCase();
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  return [...DEFAULT_FAMILY_FILTERS, ...valid.map((member) => {
+    const relationship = relationshipOf(member);
+    return {
+      id: member.memberId,
+      label: counts.get(relationship.toLowerCase()) > 1 && member.name
+        ? `${relationship} (${member.name})`
+        : relationship,
+    };
+  })];
+}
 
 // ==========================================
 // CATEGORIES PAGE
@@ -146,7 +164,26 @@ export default function CategoriesPage() {
   const navigate = useNavigate();
 
   const [selectedFamily, setSelectedFamily] =
-    useState("All Family");
+    useState("all-family");
+  const [familyFilters, setFamilyFilters] = useState(DEFAULT_FAMILY_FILTERS);
+  const [familyError, setFamilyError] = useState("");
+  const [familyRetry, setFamilyRetry] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setFamilyError("");
+    getFamilyMembers().then((members) => {
+      if (cancelled) return;
+      const filters = buildFamilyFilters(members);
+      setFamilyFilters(filters);
+      setSelectedFamily((previous) =>
+        filters.some((filter) => filter.id === previous) ? previous : "all-family"
+      );
+    }).catch(() => {
+      if (!cancelled) setFamilyError("Unable to load family members.");
+    });
+    return () => { cancelled = true; };
+  }, [familyRetry]);
 
   const [searchOpen, setSearchOpen] =
     useState(false);
@@ -257,18 +294,18 @@ export default function CategoriesPage() {
           <div className="fk-cat-filter-scroll">
             {familyFilters.map((filter) => (
               <button
-                key={filter}
+                key={filter.id}
                 type="button"
                 className={`fk-cat-filter ${
-                  selectedFamily === filter
+                  selectedFamily === filter.id
                     ? "fk-cat-filter-active"
                     : ""
                 }`}
                 onClick={() =>
-                  setSelectedFamily(filter)
+                  setSelectedFamily(filter.id)
                 }
                 aria-pressed={
-                  selectedFamily === filter
+                  selectedFamily === filter.id
                 }
               >
                 {/* 
@@ -279,14 +316,20 @@ export default function CategoriesPage() {
                   even when selected.
                 */}
 
-                {filter !== "All Family" && (
+                {filter.id !== "all-family" && (
                   <span className="fk-cat-radio" />
                 )}
 
-                <span>{filter}</span>
+                <span>{filter.label}</span>
               </button>
             ))}
           </div>
+          {familyError && (
+            <p className="fk-cat-filter-label" role="alert">
+              {familyError}{" "}
+              <button type="button" onClick={() => setFamilyRetry((n) => n + 1)}>Retry</button>
+            </p>
+          )}
         </section>
 
         {/* ==========================================
