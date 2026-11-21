@@ -280,49 +280,6 @@
   cursor: pointer;
 }
 
-.fk-family-bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 8px;
-  min-height: 76px;
-  padding: 10px 16px;
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
-  background: #fff;
-  border-top: 1px solid var(--fk-border);
-  z-index: 50;
-}
-
-.fk-family-bottom-nav > button {
-  border: 0;
-  background: transparent;
-  color: var(--fk-muted);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.fk-family-bottom-nav > button.active {
-  color: var(--fk-purple);
-  font-weight: 700;
-}
-
-.fk-family-bottom-nav > .fk-family-bottom-add {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background: var(--fk-purple);
-  color: #fff;
-}
-
 @media (max-width: 600px) {
   .fk-family-header {
     padding: 14px 16px;
@@ -460,23 +417,6 @@
 .fk-family-contact-actions button.fk-family-whatsapp { background: #e8f8eb; color: #20ae51; }
 .fk-family-chevron-button { border: 0; background: transparent; color: #211b2c; display: grid; place-items: center; padding: 3px; }
 .fk-family-chevron { margin-left: auto; color: #211b2c; }
-.fk-family-bottom-nav {
-  left: 50%; right: auto; transform: translateX(-50%);
-  width: min(100%, 560px); min-height: 82px;
-  padding: 9px 7px max(11px, env(safe-area-inset-bottom));
-  border: 1.5px solid #7953d2; border-bottom: 0;
-  border-radius: 21px 21px 0 0;
-  display: grid; grid-template-columns: repeat(5, minmax(0,1fr));
-  gap: 2px; z-index: 100;
-}
-.fk-family-bottom-nav > button { min-width: 0; font-size: 10px; gap: 4px; }
-.fk-family-bottom-nav > button.active { color: #351083; }
-.fk-family-bottom-nav > button.active svg { background: #351083; color: white; border-radius: 50%; padding: 4px; width: 31px; height: 31px; }
-.fk-family-bottom-nav > .fk-family-bottom-add {
-  width: 49px; height: 49px; justify-self: center;
-  box-shadow: 0 4px 9px rgba(53,16,131,.25);
-}
-.fk-family-bottom-nav > button:disabled { opacity: .55; cursor: default; }
 @media (max-width: 600px) {
   .fk-family-header { padding: 28px 16px 18px; }
   .fk-family-header h1 { font-size: 22px; }
@@ -535,4 +475,93 @@
   .fk-family-page .fk-family-main {
     padding-top: 101px;
   }
+}
+
+/* Bottom navigation: Home Dashboard master */
+.fk-family-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  width: 100%;
+  min-height: 79px;
+  padding: 9px 9px max(9px, env(safe-area-inset-bottom));
+  background: #fff;
+  border: 1.5px solid #7953d2;
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  gap: 3px;
+
+  box-shadow: 0 -3px 15px rgba(56, 26, 108, 0.08);
+}
+
+.fk-family-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: #aaa4b4;
+  padding: 3px 0;
+}
+
+.fk-family-nav-item > span:last-child {
+  font-size: 9px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.fk-family-nav-item.active {
+  color: #351083;
+  font-weight: 800;
+}
+
+.fk-family-nav-icon {
+  width: 31px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fk-family-nav-item.active .fk-family-nav-icon {
+  background: #351083;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.fk-family-bottom-add {
+  width: 49px;
+  height: 49px;
+  border: none;
+  border-radius: 50%;
+  background: #351083;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  box-shadow: 0 4px 9px rgba(53, 16, 131, 0.25);
+}
+
+.fk-family-bottom-nav button { font-family: "Mulish", Arial, sans-serif; cursor: pointer; }
+.fk-family-bottom-nav button:disabled { cursor: default; }
+.fk-family-nav-icon { border-radius: 50%; transition: background-color 220ms ease, color 220ms ease, transform 220ms ease; }
+.fk-family-nav-item { transition: color 220ms ease; }
+.fk-family-nav-item.active .fk-family-nav-icon { transform: scale(1.05); }
+.fk-family-bottom-add { transition: transform 180ms ease, box-shadow 180ms ease; }
+.fk-family-bottom-add:active { transform: scale(0.96); }
+@media (min-width: 768px) {
+  .fk-family-bottom-nav { max-width: 560px; left: 50%; right: auto; transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fk-family-nav-icon, .fk-family-nav-item, .fk-family-bottom-add { transition: none; }
 }

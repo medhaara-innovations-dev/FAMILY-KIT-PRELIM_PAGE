@@ -362,19 +362,19 @@ export default function FamilyMembersPage() {
 
       {/* BOTTOM NAVIGATION */}
       <nav className="fk-family-bottom-nav" aria-label="Main navigation">
-        <button type="button" onClick={() => navigate("/my-family")}>
-          <House size={22} /><span>Home</span>
+        <button type="button" className="fk-family-nav-item" onClick={() => navigate("/my-family")}>
+          <span className="fk-family-nav-icon"><House size={20} strokeWidth={1.8} /></span><span>Home</span>
         </button>
-        <button type="button" className="active" onClick={() => navigate("/family")} aria-current="page">
-          <UsersRound size={22} /><span>My Family</span>
+        <button type="button" className="fk-family-nav-item active" onClick={() => navigate("/family")} aria-current="page">
+          <span className="fk-family-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span><span>My Family</span>
         </button>
         <button type="button" className="fk-family-bottom-add" onClick={openAddMember}
-          aria-label="Add family member"><Plus size={28} /></button>
-        <button type="button" onClick={() => navigate("/categories")}>
-          <LayoutGrid size={22} /><span>Category</span>
+          aria-label="Add family member"><Plus size={30} /></button>
+        <button type="button" className="fk-family-nav-item" onClick={() => navigate("/categories")}>
+          <span className="fk-family-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span><span>Category</span>
         </button>
-        <button type="button" disabled aria-label="Pay and Renew unavailable">
-          <CreditCard size={22} /><span>Pay & Renew</span>
+        <button type="button" className="fk-family-nav-item" disabled aria-label="Pay and Renew unavailable">
+          <span className="fk-family-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span><span>Pay & Renew</span>
         </button>
       </nav>
     </div>
