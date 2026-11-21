@@ -555,7 +555,7 @@ export default function FamilyMemberProfile() {
 
     <div className="fk-profile-page">
 
-      <header className="fk-profile-header">
+      <header className="fk-profile-header fk-glass-header">
 
         <button
 

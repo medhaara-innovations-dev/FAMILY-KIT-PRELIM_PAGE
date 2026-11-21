@@ -736,7 +736,7 @@ export default function AddFamilyMemberPage() {
         />
       )}
 
-      <header className="fk-add-header">
+      <header className="fk-add-header fk-glass-header">
 
         <button
 

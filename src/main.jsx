@@ -30,6 +30,7 @@ import ImportantContactsPage from "./ImportantContactsPage.jsx";
 
 import "./App.css";
 import "./AppScreenBackground.css";
+import "./components/GlassHeader.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

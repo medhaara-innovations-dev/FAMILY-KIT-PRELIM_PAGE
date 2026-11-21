@@ -107,7 +107,7 @@ export default function MyProfile() {
 
   return (
     <div className="fk-my-profile-page">
-      <header className="fk-my-profile-header">
+      <header className="fk-my-profile-header fk-glass-header">
         <button type="button" aria-label="Back to dashboard" onClick={() => navigate("/my-family")}>
           <ArrowLeft size={22} />
         </button>

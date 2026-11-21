@@ -190,7 +190,7 @@ export default function FamilyMembersPage() {
   return (
     <div className="fk-family-page">
       {/* HEADER — existing navigation and refresh behavior preserved */}
-      <header className="fk-family-header">
+      <header className="fk-family-header fk-glass-header">
         <div className="fk-family-header-left">
           <button type="button" className="fk-family-icon-button fk-family-back"
             onClick={() => navigate("/my-family")} aria-label="Back to dashboard">

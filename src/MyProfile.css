@@ -1,7 +1,7 @@
 /* Registered account owner's profile only */
 .fk-my-profile-page { min-height: 100vh; background: #faf9ff; color: #050011; font-family: "Mulish", sans-serif; }
 .fk-my-profile-page *, .fk-my-profile-page *::before, .fk-my-profile-page *::after { box-sizing: border-box; }
-.fk-my-profile-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #fff; border-bottom: 1px solid #edeaf3; }
+.fk-my-profile-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #edeaf3; }
 .fk-my-profile-header h1 { margin: 0; font-family: "Poppins", sans-serif; font-size: 24px; color: #2d0b84; }
 .fk-my-profile-header button { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: #ebe6f7; color: #2d0b84; cursor: pointer; }
 .fk-my-profile-header > span { width: 42px; }

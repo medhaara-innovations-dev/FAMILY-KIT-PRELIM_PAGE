@@ -277,7 +277,7 @@ export default function MyFamilyPage() {
     <div className="fk-dash-page">
       <div className="fk-dash-container">
 
-        <div className="fk-dash-sticky-top">
+        <div className="fk-dash-sticky-top fk-glass-header">
         {/* =========================================
             PROFILE HEADER
            ========================================= */}

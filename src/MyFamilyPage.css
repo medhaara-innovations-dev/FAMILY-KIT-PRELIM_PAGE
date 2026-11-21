@@ -751,20 +751,6 @@
   background: transparent;
   border: 0;
   box-shadow: none;
-  isolation: isolate;
-}
-
-/* Apply the glass filter behind the header content, fading it out
-   at the bottom so saturation cannot create a purple color seam. */
-.fk-dash-sticky-top::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  
 }
 
 /* The existing search spacing is retained. */
