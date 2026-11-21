@@ -21,6 +21,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = [
   "image/jpeg",
   "image/png",
+  "image/svg+xml",
 ];
 
 // ======================================================
@@ -71,7 +72,7 @@ function validateImage(file) {
 
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error(
-      "Only JPG and PNG images are allowed."
+      "Only JPG, PNG and SVG images are allowed."
     );
   }
 

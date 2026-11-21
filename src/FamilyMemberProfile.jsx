@@ -270,8 +270,8 @@ export default function FamilyMemberProfile() {
     if (!file || !memberId || photoBusy) return;
     setPhotoError("");
     setPhotoSuccess("");
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
-      setPhotoError("Only JPG and PNG images are allowed.");
+    if (!["image/jpeg", "image/png", "image/svg+xml"].includes(file.type)) {
+      setPhotoError("Only JPG, PNG and SVG images are allowed.");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -678,7 +678,7 @@ export default function FamilyMemberProfile() {
 
               type="file"
 
-              accept="image/jpeg,image/png"
+              accept="image/jpeg,image/png,image/svg+xml,.svg"
 
               onChange={handlePhotoChange}
 
@@ -774,7 +774,7 @@ export default function FamilyMemberProfile() {
 
             >
 
-              JPG or PNG · Maximum 5 MB
+              JPG, PNG or SVG · Maximum 5 MB
 
             </small>
 

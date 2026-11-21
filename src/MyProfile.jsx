@@ -55,8 +55,8 @@ export default function MyProfile() {
     if (!file || busy) return;
     setError("");
     setSuccess("");
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
-      setError("Only JPG and PNG images are allowed.");
+    if (!["image/jpeg", "image/png", "image/svg+xml"].includes(file.type)) {
+      setError("Only JPG, PNG and SVG images are allowed.");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -124,7 +124,7 @@ export default function MyProfile() {
           />
           <h2>{loading ? "Loading..." : name}</h2>
           <p>Registered User</p>
-          <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" onChange={handleUpload} disabled={busy} hidden />
+          <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/svg+xml,.svg" onChange={handleUpload} disabled={busy} hidden />
           <div className="fk-my-profile-actions">
             <button type="button" onClick={() => fileInputRef.current?.click()} disabled={busy}>
               <Camera size={18} /> {busy ? "Processing..." : "Upload / Change Photo"}
@@ -133,7 +133,7 @@ export default function MyProfile() {
               <Trash2 size={18} /> Remove Photo
             </button>
           </div>
-          <small>JPG or PNG · Maximum 5 MB</small>
+          <small>JPG, PNG or SVG · Maximum 5 MB</small>
           {error && <p className="fk-my-profile-error" role="alert">{error}</p>}
           {success && <p className="fk-my-profile-success" role="status">{success}</p>}
           <button type="button" className="profile-logout-btn" onClick={handleLogout} disabled={busy}>

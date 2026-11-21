@@ -243,9 +243,9 @@ export default function AddFamilyMemberPage() {
 
 
 
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
+    if (!["image/jpeg", "image/png", "image/svg+xml"].includes(file.type)) {
 
-      setPhotoError("Only JPG and PNG images are allowed.");
+      setPhotoError("Only JPG, PNG and SVG images are allowed.");
 
       event.target.value = "";
 
@@ -810,7 +810,7 @@ export default function AddFamilyMemberPage() {
 
               type="file"
 
-              accept="image/png,image/jpeg"
+              accept="image/jpeg,image/png,image/svg+xml,.svg"
 
               onChange={handlePhotoChange}
 
@@ -1006,7 +1006,7 @@ export default function AddFamilyMemberPage() {
 
             <small>
 
-              JPG or PNG · Maximum 5 MB
+              JPG, PNG or SVG · Maximum 5 MB
 
             </small>
 
@@ -1493,7 +1493,7 @@ export default function AddFamilyMemberPage() {
                   </button>
                 )}
               </div>
-              <small>JPG or PNG · Maximum 5 MB</small>
+              <small>JPG, PNG or SVG · Maximum 5 MB</small>
               {photoError && (
                 <p className="fk-add-save-error" role="alert">
                   {photoError}
