@@ -1,22 +1,128 @@
 /* Registered account owner's profile only */
-.fk-my-profile-page { --fk-fixed-header-height: 83px; min-height: 100vh; background: #faf9ff; color: #050011; font-family: "Mulish", sans-serif; }
-.fk-my-profile-page *, .fk-my-profile-page *::before, .fk-my-profile-page *::after { box-sizing: border-box; }
-.fk-my-profile-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #edeaf3; }
-.fk-my-profile-header h1 { margin: 0; font-family: "Poppins", sans-serif; font-size: 24px; color: #2d0b84; }
-.fk-my-profile-header button { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: #ebe6f7; color: #2d0b84; cursor: pointer; }
+.fk-my-profile-page {
+  --fk-fixed-header-height: 83px;
+  min-height: 100vh;
+  background: #C4ADFF;
+  color: #050011;
+  font-family: "Mulish", sans-serif;
+}
+
+.fk-my-profile-page *,
+.fk-my-profile-page *::before,
+.fk-my-profile-page *::after {
+  box-sizing: border-box;
+}
+
+.fk-my-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: none;
+}
+
+/* Keep shared glass-header effects, but remove the pale dividing edge. */
+.fk-my-profile-page .fk-my-profile-header.fk-glass-header {
+  border-bottom: none;
+  box-shadow: none;
+  margin-bottom: 0;
+}
+
+.fk-my-profile-header h1 {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 24px;
+  color: #2d0b84;
+}
+
+.fk-my-profile-header button {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: #ebe6f7;
+  color: #2d0b84;
+  cursor: pointer;
+}
+
 .fk-my-profile-header > span { width: 42px; }
-.fk-my-profile-main { max-width: 700px; margin: 0 auto; padding: 36px 20px; }
-.fk-my-profile-card { display: flex; flex-direction: column; align-items: center; padding: 36px 20px; border: 1px solid #edeaf3; border-radius: 20px; background: #fff; text-align: center; }
-.fk-my-profile-avatar { width: 160px; height: 160px; border: 3px solid #7145c3; border-radius: 50%; background: #ebe6f7; color: #2d0b84; font-size: 48px; font-weight: 700; }
-.fk-my-profile-avatar > img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
-.fk-my-profile-card h2 { margin: 20px 0 6px; font-family: "Poppins", sans-serif; font-size: 25px; color: #130438; }
+
+.fk-my-profile-main {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 36px 20px;
+  background: transparent;
+}
+
+.fk-my-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 20px;
+  border: 1px solid #edeaf3;
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+}
+
+.fk-my-profile-avatar {
+  width: 160px;
+  height: 160px;
+  border: 3px solid #7145c3;
+  border-radius: 50%;
+  background: #ebe6f7;
+  color: #2d0b84;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.fk-my-profile-avatar > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+.fk-my-profile-card h2 {
+  margin: 20px 0 6px;
+  font-family: "Poppins", sans-serif;
+  font-size: 25px;
+  color: #130438;
+}
+
 .fk-my-profile-card > p { margin: 0 0 22px; color: #4d485a; }
-.fk-my-profile-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-.fk-my-profile-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border: 0; border-radius: 12px; background: #ebe6f7; color: #2d0b84; font-weight: 700; cursor: pointer; }
+
+.fk-my-profile-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.fk-my-profile-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 12px;
+  background: #ebe6f7;
+  color: #2d0b84;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .fk-my-profile-actions button:disabled { opacity: .6; cursor: not-allowed; }
 .fk-my-profile-card small { color: #4d485a; }
 .fk-my-profile-error { color: #b42318 !important; margin-top: 16px !important; }
 .fk-my-profile-success { color: #18794e !important; margin-top: 16px !important; }
+
 @media (max-width: 600px) {
   .fk-my-profile-page { --fk-fixed-header-height: 71px; }
   .fk-my-profile-header { padding: 14px 16px; }
@@ -24,10 +130,8 @@
   .fk-my-profile-main { padding: 24px 16px; }
   .fk-my-profile-card { padding: 28px 16px; }
 }
-/* =====================================================
-   REGISTERED USER - LOG OUT BUTTON
-   ===================================================== */
 
+/* REGISTERED USER - LOG OUT BUTTON */
 .fk-my-profile-card .profile-logout-btn {
   display: flex;
   align-items: center;
