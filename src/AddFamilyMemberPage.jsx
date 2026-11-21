@@ -625,13 +625,26 @@ export default function AddFamilyMemberPage() {
 
       <div className="fk-add-page">
 
+        <header className="fk-add-header fk-glass-header">
+          <button
+            type="button"
+            className="fk-add-back"
+            onClick={() => navigate("/family")}
+            aria-label="Back to My Family"
+          >
+            <ArrowLeft size={22} />
+          </button>
+          <h1>Add Family Member</h1>
+          <span aria-hidden="true" />
+        </header>
+
         <main className="fk-add-success">
 
           <CheckCircle2 size={82} />
 
 
 
-          <h1>Member Added Successfully!</h1>
+          <h2>Member Added Successfully!</h2>
 
 
 

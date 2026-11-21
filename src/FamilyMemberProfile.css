@@ -3,6 +3,7 @@
 /* Scoped styles to protect existing pages */
 
 .fk-profile-page {
+  --fk-fixed-header-height: 79px;
   --fk-profile-purple: #2D0B84;
   --fk-profile-dark: #130438;
   --fk-profile-lavender: #EBE6F7;
@@ -376,6 +377,10 @@
    ========================================= */
 
 @media (max-width: 600px) {
+  .fk-profile-page {
+    --fk-fixed-header-height: 67px;
+  }
+
   .fk-profile-header {
     padding: 12px 16px;
   }

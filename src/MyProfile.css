@@ -1,5 +1,5 @@
 /* Registered account owner's profile only */
-.fk-my-profile-page { min-height: 100vh; background: #faf9ff; color: #050011; font-family: "Mulish", sans-serif; }
+.fk-my-profile-page { --fk-fixed-header-height: 83px; min-height: 100vh; background: #faf9ff; color: #050011; font-family: "Mulish", sans-serif; }
 .fk-my-profile-page *, .fk-my-profile-page *::before, .fk-my-profile-page *::after { box-sizing: border-box; }
 .fk-my-profile-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #edeaf3; }
 .fk-my-profile-header h1 { margin: 0; font-family: "Poppins", sans-serif; font-size: 24px; color: #2d0b84; }
@@ -18,6 +18,7 @@
 .fk-my-profile-error { color: #b42318 !important; margin-top: 16px !important; }
 .fk-my-profile-success { color: #18794e !important; margin-top: 16px !important; }
 @media (max-width: 600px) {
+  .fk-my-profile-page { --fk-fixed-header-height: 71px; }
   .fk-my-profile-header { padding: 14px 16px; }
   .fk-my-profile-header h1 { font-size: 21px; }
   .fk-my-profile-main { padding: 24px 16px; }

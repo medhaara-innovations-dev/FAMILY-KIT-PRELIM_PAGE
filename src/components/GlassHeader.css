@@ -1,8 +1,18 @@
 :where(.fk-glass-header) {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 100;
   isolation: isolate;
+}
+
+:where(.fk-add-page, .fk-profile-page, .fk-my-profile-page) {
+  padding-top: var(--fk-fixed-header-height);
+}
+
+:where(.fk-add-header, .fk-profile-header, .fk-my-profile-header) {
+  height: var(--fk-fixed-header-height);
 }
 
 .fk-glass-header::before {
