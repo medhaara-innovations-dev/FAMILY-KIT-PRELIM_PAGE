@@ -112,7 +112,7 @@
 .diary-calendar-day.selected { background: #e8dcff; color: #2d0b84; font-weight: 900; }
 .diary-calendar-day:hover { background: #f0e9ff; }
 @media (min-width: 700px) {
-  .diary-editor-container { background: #fff; min-height: calc(100dvh - 70px); }
+  .diary-editor-container { min-height: calc(100dvh - 70px); }
   .diary-editor-page { background: #f7f5fb; }
   .diary-editor-form { padding: 24px 35px; }
 }

@@ -1,0 +1,21 @@
+.fk-dash-page,
+.fk-family-page,
+.fk-add-page,
+.fk-profile-page,
+.fk-my-profile-page,
+.fk-cat-page,
+.fk-events-page,
+.diary-page,
+.diary-editor-page,
+.fk-notes-page,
+.fk-note-editor-page,
+.fk-note-details-page,
+.fk-note-view-page,
+.fk-search-page,
+.fk-voice-page,
+.fk-ss-page,
+.fk-notif-page,
+.fk-ic-page {
+  background: #f0eef3 linear-gradient(180deg, #c4adff 0%, #f0eef3 50%)
+    top center / 100% max(900px, 100dvh) no-repeat fixed;
+}

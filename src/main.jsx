@@ -29,6 +29,7 @@ import NotificationsPage from "./NotificationsPage.jsx";
 import ImportantContactsPage from "./ImportantContactsPage.jsx";
 
 import "./App.css";
+import "./AppScreenBackground.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
