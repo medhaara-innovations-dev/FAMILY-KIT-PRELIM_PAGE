@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Camera, Trash2 } from "lucide-react";
 import { getFamilyKitProfile } from "./auth/authService.js";
-import { getValidAccessToken } from "./auth/sessionManager.js";
+import { getValidAccessToken, clearFamilyKitSession } from "./auth/sessionManager.js";
 import {
   SELF_PROFILE_ID,
   uploadProfilePicture,
@@ -99,6 +99,12 @@ export default function MyProfile() {
     }
   }
 
+  function handleLogout() {
+    if (busy || !window.confirm("Are you sure you want to log out?")) return;
+    clearFamilyKitSession();
+    navigate("/login", { replace: true });
+  }
+
   return (
     <div className="fk-my-profile-page">
       <header className="fk-my-profile-header">
@@ -130,6 +136,9 @@ export default function MyProfile() {
           <small>JPG or PNG · Maximum 5 MB</small>
           {error && <p className="fk-my-profile-error" role="alert">{error}</p>}
           {success && <p className="fk-my-profile-success" role="status">{success}</p>}
+          <button type="button" className="profile-logout-btn" onClick={handleLogout} disabled={busy}>
+            Log Out
+          </button>
         </section>
       </main>
       {photoToCrop && (

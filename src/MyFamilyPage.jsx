@@ -19,11 +19,10 @@ import {
   UsersRound,
   LayoutGrid,
   CreditCard,
-  LogOut,
 } from "lucide-react";
 
 import { getFamilyKitProfile } from "./auth/authService.js";
-import { getValidAccessToken, clearFamilyKitSession } from "./auth/sessionManager.js";
+import { getValidAccessToken } from "./auth/sessionManager.js";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
@@ -268,18 +267,6 @@ export default function MyFamilyPage() {
       active = false;
     };
   }, [hasSession]);
-
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
-  const handleLogout = () => {
-    clearFamilyKitSession();
-
-    navigate("/", {
-      replace: true,
-    });
-  };
 
   // Prevent protected content appearing before redirect.
   if (!hasSession) {
@@ -601,18 +588,6 @@ export default function MyFamilyPage() {
           </div>
         </section>
 
-        {/* =========================================
-            LOGOUT
-           ========================================= */}
-
-        <button
-          type="button"
-          className="fk-dash-logout"
-          onClick={handleLogout}
-        >
-          <LogOut size={16} />
-          Log out
-        </button>
 
       </div>
 
