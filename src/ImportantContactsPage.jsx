@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Plus, Search, Phone, Mail, Pencil, Trash2, X,
   ContactRound, AlertTriangle, ShieldCheck, HeartPulse, UsersRound,
-  Scale, GraduationCap, Landmark, Wallet, Home, LayoutGrid,
+  Scale, GraduationCap, Landmark, CreditCard, House, LayoutGrid,
   ChevronDown, MessageCircle, Check, RefreshCw,
 } from "lucide-react";
 import {
@@ -200,11 +200,25 @@ export default function ImportantContactsPage() {
       </div>
 
       <nav className="fk-ic-bottom-nav" aria-label="Main navigation">
-        <button type="button" onClick={() => navigate("/my-family")}><Home size={20} /><span>Home</span></button>
-        <button type="button" onClick={() => navigate("/family")}><UsersRound size={20} /><span>My Family</span></button>
-        <button type="button" className="fk-ic-bottom-plus" onClick={openAdd} disabled={loading || categories.length === 0} aria-label="Add important contact"><Plus size={23} /></button>
-        <button type="button" className="fk-ic-bottom-active" onClick={() => navigate("/categories")}><LayoutGrid size={20} /><span>Category</span></button>
-        <button type="button" disabled title="Pay & Renew route is not connected yet"><Wallet size={20} /><span>Pay &amp; Renew</span></button>
+        <button type="button" className="fk-ic-nav-item" onClick={() => navigate("/my-family")}>
+          <span className="fk-ic-nav-icon"><House size={20} strokeWidth={1.8} /></span>
+          <span>Home</span>
+        </button>
+        <button type="button" className="fk-ic-nav-item" onClick={() => navigate("/family")}>
+          <span className="fk-ic-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span>
+          <span>My Family</span>
+        </button>
+        <button type="button" className="fk-ic-bottom-plus" onClick={() => navigate("/family/add")} aria-label="Add family member">
+          <Plus size={30} />
+        </button>
+        <button type="button" className="fk-ic-nav-item" onClick={() => navigate("/categories")}>
+          <span className="fk-ic-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span>
+          <span>Category</span>
+        </button>
+        <button type="button" className="fk-ic-nav-item" disabled title="Pay & Renew route is not connected yet">
+          <span className="fk-ic-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span>
+          <span>Pay &amp; Renew</span>
+        </button>
       </nav>
 
       {modalOpen && (
