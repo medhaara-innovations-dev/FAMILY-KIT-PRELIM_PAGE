@@ -10,7 +10,7 @@ function istToday() {
   return {year:p.year,month:p.month-1,day:p.day};
 }
 const keyOf = d => d.year*12+d.month;
-function BottomItem({Icon,label,active,onClick}) {return <button type="button" className={`fk-events-nav-item ${active?"active":""}`} onClick={onClick} disabled={!onClick}><Icon size={19}/><span>{label}</span></button>}
+function BottomItem({Icon,label,active,onClick}) {return <button type="button" className={`fk-events-nav-item ${active?"active":""}`} onClick={onClick} disabled={!onClick} aria-current={active ? "page" : undefined}><span className="fk-events-nav-icon"><Icon size={20} strokeWidth={1.8}/></span><span>{label}</span></button>}
 export default function EventsCalendarPage(){
   const navigate=useNavigate();
   const [today,setToday]=useState(istToday);
@@ -52,7 +52,7 @@ export default function EventsCalendarPage(){
     <nav className="fk-events-bottom-nav" aria-label="Dashboard navigation">
       <BottomItem Icon={House} label="Home" onClick={()=>navigate("/my-family")}/>
       <BottomItem Icon={UsersRound} label="My Family" onClick={()=>navigate("/family")}/>
-      <button type="button" className="fk-events-nav-add" aria-label="Add family member" onClick={()=>navigate("/family/add")}><Plus size={26}/></button>
+      <button type="button" className="fk-events-nav-add" aria-label="Add family member" onClick={()=>navigate("/family/add")}><Plus size={30}/></button>
       <BottomItem Icon={LayoutGrid} label="Category" onClick={()=>navigate("/categories")}/>
       <BottomItem Icon={CreditCard} label="Pay & Renew"/>
     </nav>

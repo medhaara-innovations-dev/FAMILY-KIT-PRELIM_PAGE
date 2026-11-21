@@ -338,63 +338,11 @@
   cursor: pointer;
 }
 
-.diary-bottom-nav {
-  position: fixed;
-  z-index: 30;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: min(100%, 760px);
-  min-height: 78px;
-  padding: 10px 12px max(12px, env(safe-area-inset-bottom));
-  border: 1.5px solid #b598ff;
-  border-bottom: 0;
-  border-radius: 18px 18px 0 0;
-  background: #fff;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  box-shadow: 0 -5px 20px #2d0b840b;
-}
-
-.diary-bottom-nav > button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-width: 55px;
-  border: 0;
-  background: transparent;
-  color: #9b97a5;
-  cursor: pointer;
-  padding: 5px 2px;
-}
-
-.diary-bottom-nav > button span {
-  font-size: 10px;
-  white-space: nowrap;
-}
-
-.diary-bottom-nav > button:first-child { color: var(--diary-purple); }
-.diary-bottom-nav > button:disabled { opacity: 0.65; cursor: default; }
-
-.diary-bottom-nav > .diary-bottom-add {
-  min-width: 51px;
-  width: 51px;
-  height: 51px;
-  border-radius: 50%;
-  background: var(--diary-purple);
-  color: white;
-  box-shadow: 0 4px 12px #2d0b8438;
-  padding: 0;
-}
-
 /* Keep the scrolling cards completely clear of the bottom navigation. */
-.diary-container { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
+.diary-container { padding-bottom: calc(79px + env(safe-area-inset-bottom)); }
 
 @media (max-width: 600px) {
-  .diary-container { width: calc(100% - 38px); padding-bottom: calc(73px + env(safe-area-inset-bottom)); }
+  .diary-container { width: calc(100% - 38px); padding-bottom: calc(79px + env(safe-area-inset-bottom)); }
   .diary-topbar { padding: 32px 0 24px; }
   .diary-topbar h1 { font-size: 20px; }
   .diary-hero { min-height: 94px; padding: 13px 16px; }
@@ -404,14 +352,14 @@
   .diary-hero-art svg { width: 40px; }
   .diary-section-header h2 { font-size: 18px; }
   .diary-entry-card { min-height: 138px; }
-  .diary-bottom-nav { min-height: 73px; }
+
 }
 
 @media (max-width: 360px) {
   .diary-container { width: calc(100% - 28px); }
-  .diary-bottom-nav { padding-left: 5px; padding-right: 5px; }
-  .diary-bottom-nav > button { min-width: 48px; }
-  .diary-bottom-nav > button span { font-size: 9px; }
+
+
+
 }
 
 /* Force the requested golden-yellow date capsule */
@@ -428,3 +376,90 @@
 .diary-page .diary-entry-card .diary-date-badge small {
   color: #181818 !important;
 }
+
+/* Home Dashboard navigation standard */
+.diary-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  width: 100%;
+  min-height: 79px;
+  padding: 9px 9px max(9px, env(safe-area-inset-bottom));
+  background: #fff;
+  border: 1.5px solid #7953d2;
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  gap: 3px;
+
+  box-shadow: 0 -3px 15px rgba(56, 26, 108, 0.08);
+}
+
+.diary-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: #aaa4b4;
+  padding: 3px 0;
+}
+
+.diary-nav-item > span:last-child {
+  font-size: 9px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.diary-nav-item.active {
+  color: #351083;
+  font-weight: 800;
+}
+
+.diary-nav-icon {
+  width: 31px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diary-nav-item.active .diary-nav-icon {
+  background: #351083;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.diary-bottom-add {
+  width: 49px;
+  height: 49px;
+  border: none;
+  border-radius: 50%;
+  background: #351083;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  box-shadow: 0 4px 9px rgba(53, 16, 131, 0.25);
+}
+
+
+.diary-bottom-nav, .diary-bottom-nav * { box-sizing: border-box; }
+.diary-bottom-nav button { font-family: "Mulish", Arial, sans-serif; }
+.diary-bottom-nav button:disabled { cursor: default; opacity: 1; }
+.diary-nav-icon { border-radius: 50%; transition: background-color 220ms ease, color 220ms ease, transform 220ms ease; }
+.diary-nav-item { transition: color 220ms ease; }
+.diary-nav-item.active .diary-nav-icon { transform: scale(1.05); }
+.diary-bottom-add { transition: transform 180ms ease, box-shadow 180ms ease; }
+.diary-bottom-add:active { transform: scale(0.96); }
+@media (min-width: 768px) { .diary-bottom-nav { max-width: 560px; left: 50%; right: auto; transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .diary-nav-icon, .diary-nav-item, .diary-bottom-add { transition: none; } }
