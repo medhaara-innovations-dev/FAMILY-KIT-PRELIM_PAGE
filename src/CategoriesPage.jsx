@@ -221,116 +221,118 @@ export default function CategoriesPage() {
   return (
     <main className="fk-cat-page">
       <div className="fk-cat-container">
+        <div className="fk-cat-top fk-glass-header">
 
-        {/* ==========================================
-            HEADER
-            ========================================== */}
+          {/* ==========================================
+              HEADER
+              ========================================== */}
 
-        <header className="fk-cat-header">
-          <button
-            type="button"
-            className="fk-cat-back"
-            onClick={() => navigate("/my-family")}
-            aria-label="Back to dashboard"
-          >
-            <ArrowLeft size={19} />
-          </button>
-
-          <h1>Categories</h1>
-
-          <div className="fk-cat-header-actions">
+          <header className="fk-cat-header">
             <button
               type="button"
-              className="fk-cat-search-btn"
-              onClick={() => {
-                setSearchOpen((previous) => !previous);
-                setSearchText("");
-              }}
-              aria-label="Search categories"
+              className="fk-cat-back"
+              onClick={() => navigate("/my-family")}
+              aria-label="Back to dashboard"
             >
-              <Search size={17} />
+              <ArrowLeft size={19} />
             </button>
 
-            <button
-              type="button"
-              className="fk-cat-add-btn"
-              onClick={() => setShowAddMessage(true)}
-              aria-label="Add category"
-            >
-              <Plus size={20} />
-            </button>
-          </div>
-        </header>
+            <h1>Categories</h1>
 
-        {/* ==========================================
-            SEARCH
-            ========================================== */}
-
-        {searchOpen && (
-          <div className="fk-cat-search-panel">
-            <Search size={17} />
-
-            <input
-              type="search"
-              placeholder="Search categories..."
-              value={searchText}
-              onChange={(event) =>
-                setSearchText(event.target.value)
-              }
-              autoFocus
-            />
-          </div>
-        )}
-
-        {/* ==========================================
-            FAMILY FILTERS
-            ========================================== */}
-
-        <section className="fk-cat-filter-section">
-          <p className="fk-cat-filter-label">
-            View Records of
-          </p>
-
-          <div className="fk-cat-filter-scroll">
-            {familyFilters.map((filter) => (
+            <div className="fk-cat-header-actions">
               <button
-                key={filter.id}
                 type="button"
-                className={`fk-cat-filter ${
-                  selectedFamily === filter.id
-                    ? "fk-cat-filter-active"
-                    : ""
-                }`}
-                onClick={() =>
-                  setSelectedFamily(filter.id)
-                }
-                aria-pressed={
-                  selectedFamily === filter.id
-                }
+                className="fk-cat-search-btn"
+                onClick={() => {
+                  setSearchOpen((previous) => !previous);
+                  setSearchText("");
+                }}
+                aria-label="Search categories"
               >
-                {/* 
-                  All Family: Never display circle.
-
-                  All other filters:
-                  Always display circle,
-                  even when selected.
-                */}
-
-                {filter.id !== "all-family" && (
-                  <span className="fk-cat-radio" />
-                )}
-
-                <span>{filter.label}</span>
+                <Search size={17} />
               </button>
-            ))}
-          </div>
-          {familyError && (
-            <p className="fk-cat-filter-label" role="alert">
-              {familyError}{" "}
-              <button type="button" onClick={() => setFamilyRetry((n) => n + 1)}>Retry</button>
-            </p>
+
+              <button
+                type="button"
+                className="fk-cat-add-btn"
+                onClick={() => setShowAddMessage(true)}
+                aria-label="Add category"
+              >
+                <Plus size={20} />
+              </button>
+            </div>
+          </header>
+
+          {/* ==========================================
+              SEARCH
+              ========================================== */}
+
+          {searchOpen && (
+            <div className="fk-cat-search-panel">
+              <Search size={17} />
+
+              <input
+                type="search"
+                placeholder="Search categories..."
+                value={searchText}
+                onChange={(event) =>
+                  setSearchText(event.target.value)
+                }
+                autoFocus
+              />
+            </div>
           )}
-        </section>
+
+          {/* ==========================================
+              FAMILY FILTERS
+              ========================================== */}
+
+          <section className="fk-cat-filter-section">
+            <p className="fk-cat-filter-label">
+              View Records of
+            </p>
+
+            <div className="fk-cat-filter-scroll">
+              {familyFilters.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  className={`fk-cat-filter ${
+                    selectedFamily === filter.id
+                      ? "fk-cat-filter-active"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    setSelectedFamily(filter.id)
+                  }
+                  aria-pressed={
+                    selectedFamily === filter.id
+                  }
+                >
+                  {/*
+                    All Family: Never display circle.
+
+                    All other filters:
+                    Always display circle,
+                    even when selected.
+                  */}
+
+                  {filter.id !== "all-family" && (
+                    <span className="fk-cat-radio" />
+                  )}
+
+                  <span>{filter.label}</span>
+                </button>
+              ))}
+            </div>
+            {familyError && (
+              <p className="fk-cat-filter-label" role="alert">
+                {familyError}{" "}
+                <button type="button" onClick={() => setFamilyRetry((n) => n + 1)}>Retry</button>
+              </p>
+            )}
+          </section>
+        </div>
 
         {/* ==========================================
             CATEGORY GRID

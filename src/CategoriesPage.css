@@ -44,12 +44,19 @@
   max-height: 100dvh;
 
   margin: 0 auto;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
 }
 
 /* ==========================================
    HEADER - STATIONARY
    ========================================== */
+
+.fk-cat-top {
+  position: sticky;
+  flex: 0 0 auto;
+}
 
 .fk-cat-header {
   display: flex;
@@ -237,16 +244,11 @@
   display: flex;
   flex-direction: column;
 
-  flex: 1;
-  min-height: 0;
-
   padding: 9px 18px 20px;
-
-  overflow: hidden;
 }
 
 /* ==========================================
-   ALL CATEGORIES HEADING - STATIONARY
+   ALL CATEGORIES HEADING
    ========================================== */
 
 .fk-cat-content h2 {
@@ -262,7 +264,7 @@
 }
 
 /* ==========================================
-   CATEGORY GRID - ONLY SCROLLABLE AREA
+   CATEGORY GRID
    ========================================== */
 
 .fk-cat-grid {
@@ -274,25 +276,10 @@
   align-items: start;
   align-content: start;
 
-  flex: 1;
-  min-height: 0;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
   /* Keeps final cards accessible above bottom nav */
   padding-bottom: calc(
     105px + env(safe-area-inset-bottom)
   );
-
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-
-  scrollbar-width: none;
-}
-
-.fk-cat-grid::-webkit-scrollbar {
-  display: none;
 }
 
 /* ==========================================
@@ -559,7 +546,7 @@
    ========================================== */
 
 @media (min-width: 768px) {
-  .fk-cat-container {
+  .fk-cat-top {
     padding-top: 12px;
   }
 
