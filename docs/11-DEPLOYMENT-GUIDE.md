@@ -30,7 +30,13 @@ After explicit Step 4C approval, verify the branch and remote head. Stage exactl
 
 ## Documented Lambda procedure
 
-The [backend README](../backend/README.md) describes a separate ZIP workflow. Before any approved code-only release, verify account, Region, function, current revision and rollback package. Review the matching directory and [API contract](08-API-CONTRACTS.md), then package only its `lambda_function.py` at the ZIP root. Release to the specified function only with explicit deployment approval. Verify code revision, runtime and an approved synthetic smoke case. Do not deploy either drifting handler until the owner approves its [reconciliation](07-AWS-INFRASTRUCTURE.md#unresolved-deployed-source-drift).
+The [backend README](../backend/README.md) describes a separate ZIP workflow. Before any approved code-only release, verify account, Region, function, current revision and rollback package. Review the matching directory and [API contract](08-API-CONTRACTS.md), then package only its `lambda_function.py` at the ZIP root. Release to the specified function only with explicit deployment approval. Verify code revision, runtime and an approved synthetic smoke case. Step 5C closed [source reconciliation](07-AWS-INFRASTRUCTURE.md#lambda-source-reconciliation) for the PIN and Family Members handlers. Step 5E is unnecessary for this closure, subject to final owner closure approval. Future remediation releases require their own review, verification and deployment approval.
+
+### Current rollback limits
+
+Both HTTP APIs and the PIN Cognito triggers target unqualified `$LATEST`. No numbered versions or aliases were verified for either inspected function. Alias-based rollback is therefore unavailable for these targets. The privately preserved Step 5A deployment ZIPs passed checksum verification and can serve as code rollback inputs after renewed verification and authorization.
+
+Restoring code alone does not restore IAM policies, Lambda environment configuration, Cognito, API Gateway, DynamoDB data, S3 objects or other intervening resource changes. Step 7 should consider standardized versioning, packaging, configuration management, deployment verification and tested rollback procedures.
 
 No tracked GitHub Actions workflow was found in the assessed branch. CodePipeline, CodeBuild and CodeConnections list permissions were denied. Any independent automatic Lambda deploy, Node.js build image version, custom domains, aliases, and production config need verification.
 

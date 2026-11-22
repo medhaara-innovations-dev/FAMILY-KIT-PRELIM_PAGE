@@ -1,6 +1,6 @@
 # API contracts
 
-Last verified: 2026-11-22. Gateway routes and integrations were verified live. Payloads were reviewed in source. The exact deployed payload behavior of PIN and Family Members needs verification because of [source drift](07-AWS-INFRASTRUCTURE.md#unresolved-deployed-source-drift).
+Last verified: 2026-11-22. Gateway routes and integrations were verified live. Payloads were reviewed in source. The deployed and tracked PIN and Family Members handlers have the same static contracts. Live requests remain untested. See the [reconciliation decision](07-AWS-INFRASTRUCTURE.md#lambda-source-reconciliation).
 
 ## Transport
 

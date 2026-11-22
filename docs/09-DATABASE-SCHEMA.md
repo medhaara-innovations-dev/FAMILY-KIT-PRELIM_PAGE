@@ -18,7 +18,7 @@ All keys below are strings. No global or local secondary indexes were listed.
 
 ## Ownership and lifecycle
 
-The tracked Family Members handler generates a UUID for each additional `memberId`. It also accepts `photoKey`, whose compatibility with `profilePictureKey` needs verification. Exact deployed member behavior remains subject to [Step 5](07-AWS-INFRASTRUCTURE.md#unresolved-deployed-source-drift).
+The tracked Family Members handler generates a UUID for each additional `memberId`. It also accepts `photoKey`, whose compatibility with `profilePictureKey` needs verification. The [Step 5 comparison](07-AWS-INFRASTRUCTURE.md#lambda-source-reconciliation) verified matching keys, ownership conditions and update expressions for both PIN and Family Members handler pairs. Source reconciliation requires no migration.
 
 Business records are scoped to the Cognito subject as `userId`. Preserve that boundary for list and item operations and avoid accepting caller-supplied ownership. The profile picture object is stored in S3, with only the reference stored alongside the profile. Recovery expiry is also enforced by code. Data retention, deletion and backup policies need verification.
 

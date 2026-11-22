@@ -21,6 +21,15 @@ Last verified: 2026-11-22. Formal end-to-end testing is Step 6. A dedicated test
 | Partial features | Check category search and navigation without implying record filtering. Verify visible UI states for calendar and AI placeholders. |
 | Release | Confirm intended commit or Lambda revision, expected public origin, Gateway/S3 CORS, and approved smoke tests. |
 
+## Step 6 test boundaries
+
+| Setting | Planned checks |
+|---|---|
+| Local with mocked AWS dependencies | API validation and error handling, accepted PIN format, conditional creation, mocked email verification and registration transitions, OTP expiry and resend boundaries, per-OTP attempts, account-limit and recovery-counter persistence across state changes, single-use reset, mail failure cleanup and expected response shapes. Cover member create/read/update, the self sentinel, list handling, owner-key selection, and photo format, replacement and cleanup regressions. |
+| Owner-approved isolated AWS environment | Use synthetic accounts, member records and photos. Verify email verification, registration, PIN creation and login, Google sign-in where configured, Gmail recovery delivery, old/new PIN consistency, existing-session policy, effective limits, profile synchronization and dashboard flows. Verify member create/read/update, two-account data isolation, photo upload and display, replacement, listing scale, API compatibility and frontend regressions. |
+
+Before Step 6, confirm isolation, account and fixture scope, cleanup responsibilities and cost bounds with the owner. Use synthetic data throughout and keep production customer resources outside the test scope.
+
 Record date, revision, environment, case, result, and gaps without sensitive payloads. Needs verification: designated test environment, account provisioning, coverage targets and cleanup procedures.
 
 See [user journeys](04-USER-JOURNEYS.md), [design system](03-UI-DESIGN-SYSTEM.md), and [deployment](11-DEPLOYMENT-GUIDE.md).

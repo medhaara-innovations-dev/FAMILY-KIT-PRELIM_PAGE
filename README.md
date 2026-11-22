@@ -28,7 +28,7 @@ Poppins is used for headings and Mulish for body text. The landing page uses Rea
 | [04 User journeys](docs/04-USER-JOURNEYS.md) | Signup, login, recovery, profiles and records |
 | [05 Feature specifications](docs/05-FEATURE-SPECIFICATIONS.md) | Feature status and business rules |
 | [06 Frontend architecture](docs/06-FRONTEND-ARCHITECTURE.md) | Routes, components and configuration |
-| [07 AWS infrastructure](docs/07-AWS-INFRASTRUCTURE.md) | Live resource inventory and source drift |
+| [07 AWS infrastructure](docs/07-AWS-INFRASTRUCTURE.md) | Live resource inventory and approved Lambda source baseline |
 | [08 API contracts](docs/08-API-CONTRACTS.md) | Methods, payloads and response formats |
 | [09 Database schema](docs/09-DATABASE-SCHEMA.md) | DynamoDB keys, item models and ownership |
 | [10 Authentication and security](docs/10-AUTHENTICATION-SECURITY.md) | Identity, sessions and security requirements |

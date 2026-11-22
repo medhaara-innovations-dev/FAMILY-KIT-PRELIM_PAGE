@@ -29,13 +29,16 @@ All six functions use Python 3.14, x86_64 and `lambda_function.lambda_handler`. 
 
 See the [handler environment-variable names](../backend/README.md#lambda-environment-variables-and-resources) in the backend reference. Effective IAM permissions, SES configuration and any Bedrock account integration need verification.
 
-## Unresolved deployed source drift
+## Lambda source reconciliation
 
-| Function | Tracked file | Verified difference | Potential impact |
+Step 5A found text differences between the deployed and tracked handlers. Steps 5A and 5B verified that the differences were limited to whitespace and line endings. Step 5C approved Git commit `6e8eb4303e84bf057dbe6da250442d146cc7cf58` as the authoritative development baseline for these two functions only.
+
+| Finding | Function and tracked handler | Accepted difference | Deployed ZIP `CodeSha256` |
 |---|---|---|---|
-| PIN service | [lambda_function.py](../backend/familykit-pin-service/lambda_function.py) | The deployed handler text differs after line-ending normalization. Functional changes need verification. | Login challenge, recovery and profile behavior can differ from Git assumptions. |
-| Family Members | [lambda_function.py](../backend/FamilyKit-FamilyMembers/lambda_function.py) | The deployed handler text differs after line-ending normalization. Functional changes need verification. | Validation, ownership checks and profile responses can differ from Git assumptions. |
+| PIN-DIFF-001 | `familykit-pin-service`, [handler](../backend/familykit-pin-service/lambda_function.py) | Whitespace on an otherwise blank line, plus line-ending normalization. | `fZ/ZnbJTkKkEEiN7OT2em3FM+z8UjZqXQXk7udPQWzQ=` |
+| FAMILY-DIFF-001 | `FamilyKit-FamilyMembers`, [handler](../backend/FamilyKit-FamilyMembers/lambda_function.py) | Trailing blank lines, plus line-ending normalization. | `B3W0XBF0REG4PMqO1q9FO8EPqjiXmZg7yA5P2vRyuAo=` |
 
-The other four deployed handler texts matched their tracked counterparts. **Reconciliation remains unresolved and is reserved for Step 5, pending explicit owner approval.** Once approved, compare sanitized source diffs in a controlled review, identify behavioral changes and the authoritative version, review ownership and recovery regressions with synthetic accounts, and agree on a release and rollback plan before changes. Keep both current versions intact until that review.
+Both findings are closed. No functional reconciliation, standalone formatting change or Lambda redeployment is required. The deployed implementations were unchanged. The preserved ZIP checksums matched AWS, and static Python syntax comparison verified executable parity. This comparison does not establish ZIP byte identity with the tracked files, full runtime dependency or configuration parity, or end-to-end behavior. See [deployment and rollback](11-DEPLOYMENT-GUIDE.md#documented-lambda-procedure).
+
 
 Source: [backend README](../backend/README.md) and the live Lambda, Gateway, S3, Cognito, DynamoDB, Amplify, CloudWatch and IAM metadata checked during discovery.

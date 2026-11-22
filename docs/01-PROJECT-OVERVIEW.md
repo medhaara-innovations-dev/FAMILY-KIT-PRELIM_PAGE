@@ -13,6 +13,6 @@ FamilyKit gives a household one place to organize profiles, important contacts, 
 
 ## Source and ownership
 
-The frontend and Lambda handler sources live in the same repository. Amplify hosts the frontend. AWS runs separately packaged handlers, with two unresolved differences from Git. See [architecture](02-SYSTEM-ARCHITECTURE.md), [AWS inventory](07-AWS-INFRASTRUCTURE.md), and [decisions](13-DECISIONS-AND-CONSTRAINTS.md).
+The frontend and Lambda handler sources live in the same repository. Amplify hosts the frontend. AWS runs separately packaged handlers, with executable parity verified for the two handlers reviewed in Step 5. The approved development baseline and formatting-only closure are recorded in the AWS inventory. See [architecture](02-SYSTEM-ARCHITECTURE.md), [AWS inventory](07-AWS-INFRASTRUCTURE.md), and [decisions](13-DECISIONS-AND-CONSTRAINTS.md).
 
 Needs verification: launch scope, intended production branch, and support ownership.

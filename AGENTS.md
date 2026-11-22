@@ -18,7 +18,7 @@ Last verified: 2026-11-22.
 - Review the Git diff before requesting approval. Distinguish verified implementation, untested behavior and planned functionality. State assumptions and document unresolved issues.
 - Update affected documentation whenever approved functionality, architecture, security or deployment procedures change.
 - Obtain explicit owner approval for Git commits and pushes, for deployments, and before creating, modifying or deleting AWS resources.
-- Keep both the deployed and repository PIN and Family Members Lambda versions intact. Their differences remain unresolved. Obtain explicit approval for Step 5 reconciliation before overwriting either version.
+- Use Git commit `6e8eb4303e84bf057dbe6da250442d146cc7cf58` as the approved development baseline for the PIN and Family Members handlers. Preserve the private comparison evidence. Step 5C accepted the formatting-only differences and requires no redeployment. Obtain separate approval for future source changes, security remediation and releases. See the [decision record](docs/07-AWS-INFRASTRUCTURE.md#lambda-source-reconciliation).
 
 ## Read by task
 
