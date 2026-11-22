@@ -432,3 +432,6 @@ def lambda_handler(event, context):
         return response(500, {
             "error": "Internal server error"
         })
+
+
+print("success")
