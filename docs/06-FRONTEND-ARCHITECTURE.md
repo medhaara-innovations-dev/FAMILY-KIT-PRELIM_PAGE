@@ -1,0 +1,31 @@
+# Frontend architecture
+
+Last verified: 2026-11-22.
+
+## Layout and responsibilities
+
+| Location | Role |
+|---|---|
+| [index.html](../index.html), [src/main.jsx](../src/main.jsx) | SPA mount, React Strict Mode, BrowserRouter and route declarations |
+| [src/App.jsx](../src/App.jsx), [src/App.css](../src/App.css) | Public landing, interactions and responsive compositions |
+| [src/auth](../src/auth) | Signup, login, forgot PIN, Cognito client calls and session refresh |
+| [src/api](../src/api) | Family Members, Profile Pictures, Diary, Notes, Important Contacts wrappers |
+| [src/components](../src/components) | ProfileAvatar, PageTransition and shared glass-header styling |
+| [src/assets/images](../src/assets/images) | Illustrations, logos, category art and mockups |
+| [src](../src) feature pages and styles | Screen state, navigation, forms and CSS |
+
+## Routes
+
+| Route group | Primary components |
+|---|---|
+| `/`, `/signup`, `/login`, `/forgot-pin` | App and respective auth pages |
+| `/my-family`, `/my-profile` | MyFamilyPage dashboard and MyProfile |
+| `/family`, `/family/add`, `/family/:memberId` | FamilyMembersPage, AddFamilyMemberPage, FamilyMemberProfile |
+| `/categories`, `/events`, `/important-contacts` | CategoriesPage, EventsCalendarPage, ImportantContactsPage |
+| `/diary`, `/diary/new`, `/diary/:entryId`, `/diary/:entryId/edit` | DiaryPage and DiaryEditorPage |
+| `/notes`, `/notes/new`, `/notes/details`, `/notes/:noteId`, `/notes/:noteId/edit` | NotesPage, NotesEditorPage, NotesDetailsPage, NotesViewPage |
+| `/search`, `/search/voice`, `/smart-suggestions`, `/notifications` | SearchPage, VoiceSearchPage, SmartSuggestionsPage, NotificationsPage |
+
+The [package manifest](../package.json) defines Vite dev, build and preview scripts. The [lockfile](../package-lock.json) records React 19.3.1, Vite 8.3.5 and React Router 7.18.5. Cognito configuration lives in [authService.js](../src/auth/authService.js) and application base URLs live in API modules. The reviewed setup hardcodes environment endpoints in client source. Dev/production separation needs verification.
+
+Page-level session checks coordinate with [sessionManager.js](../src/auth/sessionManager.js). Domain wrappers send protected requests through the session path and use module-specific error handling. See [auth and security](10-AUTHENTICATION-SECURITY.md), [API contracts](08-API-CONTRACTS.md), and [design system](03-UI-DESIGN-SYSTEM.md).
