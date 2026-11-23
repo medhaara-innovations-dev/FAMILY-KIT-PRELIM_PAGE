@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import {
   signUpWithEmail,
@@ -802,6 +803,9 @@ export default function SignupPage() {
                 </svg>
                 <span>Continue with Google</span>
               </button>
+              <p className="signup-login-text">
+                Already have an account? <Link to="/login">Login</Link>
+              </p>
             </div>
           </section>
         </div>

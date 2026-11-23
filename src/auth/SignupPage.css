@@ -2606,3 +2606,15 @@
   height: 18px;
   flex-shrink: 0;
 }
+.signup-login-text {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.signup-login-text a {
+  color: #2d0b84;
+  font-weight: 600;
+  text-decoration: underline;
+}

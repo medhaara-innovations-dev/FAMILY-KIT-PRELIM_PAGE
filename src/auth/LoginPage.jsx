@@ -15,7 +15,8 @@ export default function LoginPage() {
 
   // Form state
   const [email, setEmail] = useState("");
-  const [pin, setPin] = useState("");
+  const [pinDigits, setPinDigits] = useState(["", "", "", ""]);
+  const pin = pinDigits.join("");
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -154,46 +155,22 @@ export default function LoginPage() {
   };
 
   // --------------------------------------------------
-  // Desktop PIN input handling
+  // PIN input handling
   // --------------------------------------------------
 
   const handlePinChange = (index, value) => {
     const digit = value.replace(/\D/g, "").slice(-1);
-    const digits = pin.split("");
-
-    while (digits.length < 4) {
-      digits.push("");
-    }
-
-    digits[index] = digit;
-
-    setPin(digits.join(""));
+    setPinDigits((current) =>
+      current.map((previousDigit, position) =>
+        position === index ? digit : previousDigit
+      )
+    );
     setError("");
 
     if (digit && index < 3) {
       document
         .getElementById(`login-pin-${index + 1}`)
         ?.focus();
-    }
-  };
-
-  // --------------------------------------------------
-  // Mobile numeric keypad
-  // --------------------------------------------------
-
-  const handleKeypad = (key) => {
-    if (loading) return;
-
-    setError("");
-
-    if (key === "Clear") {
-      setPin("");
-    } else if (key === "Delete") {
-      setPin((current) => current.slice(0, -1));
-    } else if (/^\d$/.test(key)) {
-      setPin((current) =>
-        current.length < 4 ? current + key : current
-      );
     }
   };
 
@@ -446,7 +423,7 @@ export default function LoginPage() {
                     "familykit_refresh_token"
                   );
 
-                  setPin("");
+                  setPinDigits(["", "", "", ""]);
                   setEmail("");
                   setProfileName("");
                   setVerifiedEmail("");
@@ -748,7 +725,7 @@ export default function LoginPage() {
                   autoComplete="off"
                   aria-label={`PIN digit ${index + 1}`}
                   disabled={loading}
-                  value={pin[index] || ""}
+                  value={pinDigits[index]}
                   onChange={(event) =>
                     handlePinChange(
                       index,
@@ -758,7 +735,7 @@ export default function LoginPage() {
                   onKeyDown={(event) => {
                     if (
                       event.key === "Backspace" &&
-                      !pin[index] &&
+                      !pinDigits[index] &&
                       index > 0
                     ) {
                       document
@@ -791,43 +768,6 @@ export default function LoginPage() {
               {error}
             </div>
           )}
-
-          {/* Mobile PIN keypad */}
-
-          <div
-            className="login-mobile-keypad"
-            role="group"
-            aria-label="PIN keypad"
-          >
-            {[
-              "1",
-              "2",
-              "3",
-              "4",
-              "5",
-              "6",
-              "7",
-              "8",
-              "9",
-              "Clear",
-              "0",
-              "Delete",
-            ].map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleKeypad(key)}
-                disabled={loading}
-                className={
-                  key.length > 1
-                    ? "login-keypad-action"
-                    : ""
-                }
-              >
-                {key}
-              </button>
-            ))}
-          </div>
 
           {/* Continue button */}
 
