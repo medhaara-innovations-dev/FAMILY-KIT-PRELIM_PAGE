@@ -533,25 +533,102 @@ def handle_registration_status_api(event):
 # GET /profile
 # =========================================================
 
+PROFILE_FIELDS = {
+    "yourName": 100, "familyName": 100, "mobile": 16, "email": 254,
+    "bloodGroup": 256, "dateOfBirth": 10, "height": 256, "weight": 256,
+    "address": 1000, "instagramUrl": 256, "facebookUrl": 256, "linkedinUrl": 256,
+}
+
+SOCIAL_PROFILE_PATTERNS = {
+    "instagramUrl": r"https://www\.instagram\.com/[A-Za-z0-9_.-]+",
+    "facebookUrl": r"https://www\.facebook\.com/(?:profile\.php\?id=[0-9]+|(?![A-Za-z0-9_.-]*\.[pP][hH][pP]$)(?![A-Za-z0-9_.-]*\.\.)[A-Za-z0-9_.-]+)",
+    "linkedinUrl": r"https://www\.linkedin\.com/in/[A-Za-z0-9_-]+",
+}
+
+
+def profile_response(item):
+    return api_response(200, {
+        "success": True,
+        **{field: item.get(field) or None for field in PROFILE_FIELDS},
+    })
+
+
 def handle_get_profile_api(event):
-    """Return only public profile fields for the authenticated user."""
+    """Return only profile fields for the authenticated owner."""
     user_id = get_api_gateway_user_id(event)
     if not user_id:
         return api_response(401, {"success": False, "message": "Unauthorized."})
 
+    names = {f"#field{i}": field for i, field in enumerate(PROFILE_FIELDS)}
     result = table.get_item(
         Key={"userId": user_id},
-        ProjectionExpression="userId, yourName, familyName"
+        ProjectionExpression="userId, " + ", ".join(names),
+        ExpressionAttributeNames=names,
+        ConsistentRead=True,
     )
     item = result.get("Item")
     if not item:
         return api_response(404, {"success": False, "message": "Profile not found."})
 
-    return api_response(200, {
-        "success": True,
-        "yourName": item.get("yourName") or None,
-        "familyName": item.get("familyName") or None
-    })
+    return profile_response(item)
+
+
+def handle_update_profile_api(event):
+    user_id = get_api_gateway_user_id(event)
+    if not user_id:
+        return api_response(401, {"success": False, "message": "Unauthorized."})
+
+    body = parse_json_object(event)
+    if body.keys() - PROFILE_FIELDS.keys():
+        raise ValueError("Unsupported profile field.")
+
+    values = {}
+    for field, maximum in PROFILE_FIELDS.items():
+        if field not in body:
+            continue
+        value = body[field]
+        if not isinstance(value, str):
+            raise ValueError("Profile fields must be text.")
+        value = value.strip()
+        if len(value) > maximum:
+            raise ValueError(f"{field} is too long.")
+        pattern = SOCIAL_PROFILE_PATTERNS.get(field)
+        if pattern and value and not re.fullmatch(pattern, value):
+            raise ValueError(f"Invalid {field} profile link.")
+        values[field] = value
+
+    if not values.get("yourName") or not values.get("familyName"):
+        raise ValueError("Full name and family name are required.")
+    if values.get("mobile") and not re.fullmatch(r"\+?[0-9]{10,15}", values["mobile"]):
+        raise ValueError("Enter a valid mobile number.")
+    if values.get("email") and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", values["email"]):
+        raise ValueError("Enter a valid email address.")
+    if values.get("dateOfBirth"):
+        try:
+            date_of_birth = datetime.strptime(values["dateOfBirth"], "%Y-%m-%d").date()
+            if date_of_birth.isoformat() != values["dateOfBirth"] or date_of_birth > datetime.now(timezone.utc).date():
+                raise ValueError
+        except ValueError:
+            raise ValueError("Enter a valid date of birth.") from None
+
+    values["updatedAt"] = datetime.now(timezone.utc).isoformat()
+    names = {f"#field{i}": field for i, field in enumerate(values)}
+    placeholders = {f":value{i}": value for i, value in enumerate(values.values())}
+    assignments = [f"{name} = {value}" for name, value in zip(names, placeholders)]
+    try:
+        updated = table.update_item(
+            Key={"userId": user_id},
+            ConditionExpression="attribute_exists(userId)",
+            UpdateExpression="SET " + ", ".join(assignments),
+            ExpressionAttributeNames=names,
+            ExpressionAttributeValues=placeholders,
+            ReturnValues="ALL_NEW",
+        )
+    except ClientError as error:
+        if error.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+            return api_response(404, {"success": False, "message": "Profile not found."})
+        raise
+    return profile_response(updated["Attributes"])
 
 
 # =========================================================
@@ -856,7 +933,7 @@ OTP_MAX_SENDS_PER_HOUR = 5
 GENERIC_OTP_MESSAGE = "If an eligible FamilyKit account exists, a verification code will be emailed."
 
 
-def recovery_body(event):
+def parse_json_object(event):
     try:
         raw = event.get("body") or "{}"
         if event.get("isBase64Encoded"):
@@ -890,7 +967,7 @@ def find_recovery_user(email):
 
 
 def handle_request_pin_reset(event):
-    body = recovery_body(event)
+    body = parse_json_object(event)
     email = normalize_email(body.get("email"))
     key = recovery_key(email)
     now = int(time())
@@ -946,7 +1023,7 @@ def handle_request_pin_reset(event):
 
 
 def handle_verify_pin_reset(event):
-    body = recovery_body(event)
+    body = parse_json_object(event)
     email = normalize_email(body.get("email"))
     otp = body.get("otp")
     if not isinstance(otp, str) or not re.fullmatch(r"[0-9]{6}", otp):
@@ -985,7 +1062,7 @@ def handle_verify_pin_reset(event):
 
 
 def handle_reset_pin(event):
-    body = recovery_body(event)
+    body = parse_json_object(event)
     email = normalize_email(body.get("email"))
     pin = body.get("newPin")
     confirmation = body.get("confirmPin")
@@ -1192,6 +1269,8 @@ def lambda_handler(
 
         if route_key == "GET /profile":
             return handle_get_profile_api(event)
+        if route_key == "PUT /profile":
+            return handle_update_profile_api(event)
 
         # ---------------------------------------------
         # POST /resolve-login
