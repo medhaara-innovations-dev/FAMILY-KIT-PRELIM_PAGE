@@ -32,4 +32,6 @@ Before Step 6, confirm isolation, account and fixture scope, cleanup responsibil
 
 Record date, revision, environment, case, result, and gaps without sensitive payloads. Needs verification: designated test environment, account provisioning, coverage targets and cleanup procedures.
 
+For responsive and PWA checks, build and serve with `npm run preview`. Check narrow phone and foldable widths, portrait and landscape tablet layouts, and wide desktop navigation. Check forms with the keyboard open and verify zoom, focus, safe-area spacing, and fixed navigation. On each supported install surface, open online first, install and launch in standalone mode, then test reopening offline and reconnecting. Check browser Cache Storage for build assets and the offline screen only. Real-device installation and private-data flows need browser verification.
+
 See [user journeys](04-USER-JOURNEYS.md), [design system](03-UI-DESIGN-SYSTEM.md), and [deployment](11-DEPLOYMENT-GUIDE.md).

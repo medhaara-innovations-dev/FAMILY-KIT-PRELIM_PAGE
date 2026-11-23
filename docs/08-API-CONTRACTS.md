@@ -17,14 +17,19 @@ Gateway CORS allows the Amplify development origin, the authorization and conten
 | POST /pin | JWT | `pin` string, `yourName`, `familyName` | 200, confirmation |
 | GET /registration-status | JWT | No body | 200, `registrationComplete` boolean |
 | GET /profile | JWT | No body | 200, `yourName`, `familyName` |
+| PUT /profile | JWT | `yourName` and `familyName` are required. Optional profile fields are `mobile`, `email`, `bloodGroup`, `dateOfBirth`, `height`, `weight` and `address`. Email and mobile are profile contact details. | 200, owner profile fields. The updated GET handler returns the same fields. |
 | POST /resolve-login | Public | `email` | 200, `username` |
 | POST /pin-reset/request | Public | `email` | 200, generic acknowledgement |
 | POST /pin-reset/verify | Public | `email`, `otp` string | 200, `resetToken` |
 | POST /pin-reset/reset | Public | `email`, `newPin`, `confirmPin`, `resetToken` | 200, reset confirmation |
 
+Owner profile changes use the deployed PIN Lambda and JWT-authorized `PUT /profile` route. The handler selects the existing owner record from the JWT subject, updates allowed profile attributes only, and preserves PIN credentials.
+
 ## Family Members — qi5ggu1olj
 
-[Handler](../backend/FamilyKit-FamilyMembers/lambda_function.py) and [API wrapper](../src/api/familyMembersApi.js). All routes require JWT. Create accepts required `name`, `relationship`, `mobile` and optional `email`, `bloodGroup`, `dateOfBirth`, `height`, `weight`, `address`, `photoKey`. Supply mutable profile fields on update. Use the photo routes for the upload flow. The tracked Family Members handler accepts `photoKey`, while the Profile Pictures handler uses `profilePictureKey` for confirmation and persistence. Compatibility between these fields needs verification.
+The deployed PIN and Family Members Lambdas accept optional `instagramUrl`, `facebookUrl`, and `linkedinUrl` fields in profile writes and return saved links in profile responses. The client normalizes supported HTTPS profile links before sending them. An empty string clears a link, and an omitted field preserves its current value. Existing JWT routes and keys are reused. Live profile saves for these fields remain untested.
+
+[Handler](../backend/FamilyKit-FamilyMembers/lambda_function.py) and [API wrapper](../src/api/familyMembersApi.js). All routes require JWT. The repository create handler requires `name`, `relationship` and a valid nonfuture `dateOfBirth` in `YYYY-MM-DD` format. Mobile is optional only for a Son or Daughter with a valid DOB who is under 18. A supplied mobile number must be valid. The same rule applies when updating relationship, DOB or mobile, using the existing value of an omitted field. Optional fields include `email`, `bloodGroup`, `height`, `weight`, `address` and `photoKey`. Creating a second Mother or Father, or changing a member to an occupied parent relationship, returns 409. Legacy member edits can still omit DOB. These constraints are deployed. Use the photo routes for upload. The tracked Family Members handler accepts `photoKey`, while the Profile Pictures handler uses `profilePictureKey` for confirmation and persistence. Compatibility between these fields needs verification.
 
 | Method and path | Request | Success |
 |---|---|---|
@@ -32,6 +37,13 @@ Gateway CORS allows the Amplify development origin, the authorization and conten
 | POST /family/members | Member fields | 201, `member` object |
 | GET /family/members/{memberId} | Path ID | 200, `member` object |
 | PUT /family/members/{memberId} | Path ID and update fields | 200, `member` object |
+| DELETE /family/members/{memberId} | Path ID, no body | 200, `deleted: true`. Returns 404 for missing members, members outside the caller's partition, and `PROFILE#SELF`. |
+
+When creating or editing a member with `relationship: "Other"`, include `relationshipDetail` with 1–80 characters after trimming. When changing to a standard relationship, omit the detail and the handler clears the stored value. The backend accepts this field. The updated form is local.
+
+The repository returns HTTP 409 for duplicate checks during creation or edits to identifying fields. `DUPLICATE_MEMBER` blocks the save and identifies the existing owner-scoped member profile. Matching mobile numbers are blocked unless the profile being saved is a Son or Daughter under 18. The shared number alone does not require confirmation for those children. Clear duplicate profiles are still blocked. `POSSIBLE_DUPLICATE` returns matching member IDs and names for review. After confirmation, retry with `acknowledgedDuplicateMemberIds` containing the returned IDs. This field is request-only. A changed match set requires confirmation again. These backend checks are deployed.
+
+Member removal uses the deployed Family Members Lambda, the JWT-authorized DELETE route, CORS allowing DELETE for the application origins, and the execution role's table-scoped `dynamodb:DeleteItem` permission. The handler conditionally deletes only the caller's member record. It does not delete S3 objects or linked records. End-to-end removal has not been tested against live member data.
 
 ## Profile Pictures — a8h5fl7bi0
 

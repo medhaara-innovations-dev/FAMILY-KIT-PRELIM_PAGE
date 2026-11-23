@@ -26,6 +26,12 @@ Last verified: 2026-11-22.
 | `/notes`, `/notes/new`, `/notes/details`, `/notes/:noteId`, `/notes/:noteId/edit` | NotesPage, NotesEditorPage, NotesDetailsPage, NotesViewPage |
 | `/search`, `/search/voice`, `/smart-suggestions`, `/notifications` | SearchPage, VoiceSearchPage, SmartSuggestionsPage, NotificationsPage |
 
+## Responsive layouts and PWA
+
+The local dashboard uses a single column on narrow displays, two columns on wider displays, and side navigation when width and height allow it. The family directory can display two columns on wider screens. Responsive overrides are in `src/responsive.css`.
+
+The local Vite configuration generates a release-specific service worker from `src/service-worker.js` for production builds. The manifest at `public/manifest.webmanifest` sets standalone display, app icons, and startup colors. The worker precaches built JavaScript, CSS, and an offline screen. Navigation fetches from the network and displays that screen if the request fails. API responses, credentials, documents, and member records are outside its cache. Registration requires HTTPS or loopback. Use the production preview to check worker behavior locally.
+
 The [package manifest](../package.json) defines Vite dev, build and preview scripts. The [lockfile](../package-lock.json) records React 19.3.1, Vite 8.3.5 and React Router 7.18.5. Cognito configuration lives in [authService.js](../src/auth/authService.js) and application base URLs live in API modules. The reviewed setup hardcodes environment endpoints in client source. Dev/production separation needs verification.
 
 Page-level session checks coordinate with [sessionManager.js](../src/auth/sessionManager.js). Domain wrappers send protected requests through the session path and use module-specific error handling. See [auth and security](10-AUTHENTICATION-SECURITY.md), [API contracts](08-API-CONTRACTS.md), and [design system](03-UI-DESIGN-SYSTEM.md).

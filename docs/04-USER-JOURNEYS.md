@@ -30,7 +30,7 @@ sequenceDiagram
 
 The registered account owner is distinct from additional members. The initial family contains the owner alone. The dashboard places the owner first and loads additional members through the authenticated Family Members API. Additional members use unique `memberId` values. The self photo uses `PROFILE#SELF`. See [family rules](05-FEATURE-SPECIFICATIONS.md#family-ownership-and-filtering).
 
-From the dashboard, open the family directory or Add Member. Enter required fields, review available optional details, save, and reopen the member to edit. Open My Profile for the signed-in user's profile. Both profile types support cropped photo uploads.
+The local frontend previews up to four profiles, including the owner, in a horizontally scrollable row with Add Member at the end. Select **View All** to open the full family directory, or select **Add Member** to start a new profile. Enter the required fields first. On the final review step, choose and crop an optional profile photo, then select Add Member. The app creates the member before uploading the photo. You can also save without a photo and add one later. Open My Profile for the signed-in user's profile.
 
 ```mermaid
 sequenceDiagram
