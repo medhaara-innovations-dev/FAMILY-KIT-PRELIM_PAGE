@@ -598,7 +598,7 @@ export default function AddFamilyMemberPage() {
 
         {label}
 
-        {required && <b> *</b>}
+        {required ? <b> *</b> : field === "mobile" && " (optional)"}
 
       </span>
 

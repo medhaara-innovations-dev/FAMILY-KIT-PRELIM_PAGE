@@ -34,7 +34,8 @@ function isUnder18(dateOfBirth, today = new Date()) {
 }
 
 export function canShareFamilyMobile(relationship, dateOfBirth) {
-  return ["Son", "Daughter"].includes(relationship) && isUnder18(dateOfBirth);
+  const relation = String(relationship ?? "").trim().toLowerCase();
+  return ["son", "daughter"].includes(relation) && isUnder18(dateOfBirth);
 }
 
 export const RELATIONSHIP_DETAIL_MAX_LENGTH = 80;
