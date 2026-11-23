@@ -29,13 +29,33 @@ async function apiRequest(path, options = {}) {
   }
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       data.message ||
         `Request failed with status ${response.status}`
     );
+    error.status = response.status;
+    error.code = data.code;
+    error.matches = Array.isArray(data.matches) ? data.matches : [];
+    throw error;
   }
 
   return data;
+}
+
+async function saveWithDuplicateConfirmation(save, details) {
+  try {
+    return await save(details);
+  } catch (error) {
+    if (error.code !== "POSSIBLE_DUPLICATE" || !error.matches.length) throw error;
+
+    const names = error.matches.slice(0, 5).map(({ name }) => name).join(", ");
+    const more = error.matches.length > 5 ? ` and ${error.matches.length - 5} more` : "";
+    if (!window.confirm(
+      `Possible match in My Family: ${names}${more}.\n\nContinue only if you are saving a different person, such as a twin or a family member who shares a mobile number.`
+    )) return null;
+
+    return save({ ...details, acknowledgedDuplicateMemberIds: error.matches.map(({ memberId }) => memberId) });
+  }
 }
 
 // ======================================================
@@ -70,12 +90,12 @@ export async function getFamilyMember(memberId) {
 // ======================================================
 
 export async function addFamilyMember(memberData) {
-  const data = await apiRequest("/family/members", {
+  const data = await saveWithDuplicateConfirmation((details) => apiRequest("/family/members", {
     method: "POST",
-    body: JSON.stringify(memberData),
-  });
+    body: JSON.stringify(details),
+  }), memberData);
 
-  return data.member;
+  return data === null ? null : data.member;
 }
 
 // ======================================================
@@ -86,13 +106,19 @@ export async function updateFamilyMember(
   memberId,
   memberData
 ) {
-  const data = await apiRequest(
+  const data = await saveWithDuplicateConfirmation((details) => apiRequest(
     `/family/members/${encodeURIComponent(memberId)}`,
     {
       method: "PUT",
-      body: JSON.stringify(memberData),
+      body: JSON.stringify(details),
     }
-  );
+  ), memberData);
 
-  return data.member;
+  return data === null ? null : data.member;
+}
+
+export async function deleteFamilyMember(memberId) {
+  return apiRequest(`/family/members/${encodeURIComponent(memberId)}`, {
+    method: "DELETE",
+  });
 }

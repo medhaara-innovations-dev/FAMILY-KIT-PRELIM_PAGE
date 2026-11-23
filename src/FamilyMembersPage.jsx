@@ -4,17 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 import {
   ChevronLeft,
-  UsersRound,
   Plus,
   ChevronRight,
   Phone,
-  MessageCircle,
   RefreshCw,
-  LayoutGrid,
-  CreditCard,
   UserRoundPlus,
-  House,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { getFamilyKitProfile } from "./auth/authService.js";
@@ -25,6 +21,9 @@ import {
 } from "./auth/sessionManager.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
+import { getWhatsAppUrl } from "./components/whatsAppUrl.js";
+import { familyRelationshipLabel } from "./familyMemberOptions.js";
 
 import "./FamilyMembersPage.css";
 
@@ -164,13 +163,11 @@ export default function FamilyMembersPage() {
 
     if (!mobile) return;
 
-    const number = String(mobile).replace(/\D/g, "");
-
-    const whatsappNumber =
-      number.length === 10 ? `91${number}` : number;
+    const whatsappUrl = getWhatsAppUrl(mobile);
+    if (!whatsappUrl) return;
 
     window.open(
-      `https://wa.me/${whatsappNumber}`,
+      whatsappUrl,
       "_blank",
       "noopener,noreferrer"
     );
@@ -283,7 +280,7 @@ export default function FamilyMembersPage() {
                 {primaryUser && (
                   <article className="fk-family-member-card" key="primary-user">
                     <button type="button" className="fk-family-member-details"
-                      onClick={() => navigate("/my-profile")} aria-label="Open my profile">
+                      onClick={() => navigate("/my-profile", { state: { fromFamily: true } })} aria-label="Open my profile">
                       <ProfileAvatar memberId={SELF_PROFILE_ID} name={primaryUser.name}
                         className="fk-family-avatar">
                         {primaryUser.name.charAt(0).toUpperCase()}
@@ -309,7 +306,7 @@ export default function FamilyMembersPage() {
                       </ProfileAvatar>
                       <span className="fk-family-member-info">
                         <strong>{member.name}</strong>
-                        <small>{member.relationship || "Family Member"}</small>
+                        <small>{familyRelationshipLabel(member) || "Family Member"}</small>
                       </span>
                     </button>
                     <div className="fk-family-member-trailing">
@@ -319,7 +316,7 @@ export default function FamilyMembersPage() {
                             aria-label={`Call ${member.name}`}><Phone size={18} /></button>
                           <button type="button" className="fk-family-whatsapp"
                             onClick={(event) => openWhatsApp(event, member.mobile)}
-                            aria-label={`WhatsApp ${member.name}`}><MessageCircle size={18} /></button>
+                            aria-label={`WhatsApp ${member.name}`}><FaWhatsapp size={17} aria-hidden="true" /></button>
                         </div>
                       )}
                       <button type="button" className="fk-family-chevron-button"
@@ -360,23 +357,7 @@ export default function FamilyMembersPage() {
         )}
       </main>
 
-      {/* BOTTOM NAVIGATION */}
-      <nav className="fk-family-bottom-nav" aria-label="Main navigation">
-        <button type="button" className="fk-family-nav-item" onClick={() => navigate("/my-family")}>
-          <span className="fk-family-nav-icon"><House size={20} strokeWidth={1.8} /></span><span>Home</span>
-        </button>
-        <button type="button" className="fk-family-nav-item active" onClick={() => navigate("/family")} aria-current="page">
-          <span className="fk-family-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span><span>My Family</span>
-        </button>
-        <button type="button" className="fk-family-bottom-add" onClick={openAddMember}
-          aria-label="Add family member"><Plus size={30} /></button>
-        <button type="button" className="fk-family-nav-item" onClick={() => navigate("/categories")}>
-          <span className="fk-family-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span><span>Category</span>
-        </button>
-        <button type="button" className="fk-family-nav-item" disabled aria-label="Pay and Renew unavailable">
-          <span className="fk-family-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span><span>Pay & Renew</span>
-        </button>
-      </nav>
+      <FamilyBottomNav onAdd={openAddMember} />
     </div>
   );
 }

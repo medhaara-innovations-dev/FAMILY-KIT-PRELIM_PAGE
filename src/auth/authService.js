@@ -2141,6 +2141,24 @@ export async function getFamilyKitProfile(accessToken) {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
   }
+  return readFamilyKitProfile(response);
+}
+
+export async function updateFamilyKitProfile(details) {
+  const { authenticatedFetch } = await import("./sessionManager.js");
+  const response = await authenticatedFetch(PROFILE_API_URL, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(details),
+  });
+  if (response.status === 404) {
+    const result = await response.clone().json().catch(() => null);
+    if (result?.success !== false) throw new Error("Saving profile details requires the updated profile service.");
+  }
+  return readFamilyKitProfile(response);
+}
+
+async function readFamilyKitProfile(response) {
   let result = null;
   try { result = await response.json(); } catch { result = null; }
   if (!response.ok) {
@@ -2149,10 +2167,13 @@ export async function getFamilyKitProfile(accessToken) {
   if (!result?.success) {
     throw new Error(result?.message || "Unable to retrieve FamilyKit profile.");
   }
-  return {
-    yourName: typeof result.yourName === "string" ? result.yourName.trim() : "",
-    familyName: typeof result.familyName === "string" ? result.familyName.trim() : "",
-  };
+  const fields = [
+    "yourName", "familyName", "mobile", "email", "bloodGroup", "dateOfBirth", "height", "weight", "address",
+    "instagramUrl", "facebookUrl", "linkedinUrl",
+  ];
+  return Object.fromEntries(fields.map((field) => [
+    field, typeof result[field] === "string" ? result[field].trim() : "",
+  ]));
 }
 
 // ======================================================

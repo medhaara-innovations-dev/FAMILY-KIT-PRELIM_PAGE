@@ -1,6 +1,9 @@
 /* Registered account owner's profile only */
 .fk-my-profile-page {
   --fk-fixed-header-height: 83px;
+  --fk-profile-purple: #2d0b84;
+  --fk-profile-dark: #130438;
+  --fk-profile-border: #edeaf3;
   min-height: 100vh;
   background: #C4ADFF;
   color: #050011;
@@ -87,6 +90,14 @@
   display: block;
 }
 
+.fk-my-profile-avatar-slot {
+  display: contents;
+}
+
+.fk-my-profile-avatar-slot .fk-my-profile-mobile-camera {
+  display: none;
+}
+
 .fk-my-profile-card h2 {
   margin: 20px 0 6px;
   font-family: "Poppins", sans-serif;
@@ -94,7 +105,8 @@
   color: #130438;
 }
 
-.fk-my-profile-card > p { margin: 0 0 22px; color: #4d485a; }
+.fk-my-profile-card > p,
+.fk-my-profile-card .fk-mobile-profile-identity p { margin: 0 0 22px; color: #4d485a; }
 
 .fk-my-profile-actions {
   display: flex;
@@ -123,12 +135,60 @@
 .fk-my-profile-error { color: #b42318 !important; margin-top: 16px !important; }
 .fk-my-profile-success { color: #18794e !important; margin-top: 16px !important; }
 
+.fk-self-profile-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.fk-self-profile-edit {
+  max-width: 440px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
 @media (max-width: 600px) {
-  .fk-my-profile-page { --fk-fixed-header-height: 71px; }
-  .fk-my-profile-header { padding: 14px 16px; }
-  .fk-my-profile-header h1 { font-size: 21px; }
-  .fk-my-profile-main { padding: 24px 16px; }
+  .fk-my-profile-page { --fk-fixed-header-height: 67px; }
+  .fk-my-profile-header { padding: 12px 16px; }
+  .fk-my-profile-header h1 { font-size: 19px; }
+  .fk-my-profile-main { padding: 0 14px 40px; }
   .fk-my-profile-card { padding: 28px 16px; }
+
+  .fk-my-profile-page .fk-mobile-profile-card {
+    margin-bottom: 22px;
+  }
+
+  .fk-my-profile-avatar-slot {
+    display: block;
+    position: relative;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .fk-my-profile-avatar-slot .fk-my-profile-mobile-camera {
+    display: grid;
+  }
+
+  .fk-my-profile-page .fk-my-profile-card .fk-profile-desktop-only {
+    display: none;
+  }
+
+  .fk-self-mobile-account-actions {
+    max-width: 440px;
+    margin: 22px auto 0;
+    text-align: center;
+  }
+
+  .fk-self-mobile-account-actions button {
+    padding: 8px 16px;
+    border: 1px solid #ebe6f7;
+    border-radius: 999px;
+    background: #fff;
+    color: #2d0b84;
+    font: 700 13px "Mulish", sans-serif;
+    cursor: pointer;
+  }
 }
 
 /* REGISTERED USER - LOG OUT BUTTON */

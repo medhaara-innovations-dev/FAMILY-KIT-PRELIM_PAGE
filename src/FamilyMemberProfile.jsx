@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 
 
@@ -40,6 +40,7 @@ import {
 
 import {
 
+  deleteFamilyMember,
   getFamilyMember,
 
   updateFamilyMember,
@@ -48,21 +49,20 @@ import {
 
 
 
-import {
-
-  uploadProfilePicture,
-
-  deleteProfilePicture,
-
-} from "./api/profilePicturesApi.js";
+import { SELF_PROFILE_ID, uploadProfilePicture } from "./api/profilePicturesApi.js";
 
 
 
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
+import MobileProfileDetails, { MobileConnectedDocuments, MobileProfileActions } from "./components/MobileProfileDetails.jsx";
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 import ProfilePhotoCropper from "./ProfilePhotoCropper.jsx";
 
 
 
+import ProfileFields, { SocialProfileFields } from "./components/ProfileFields.jsx";
+import { getChangedSocialLinks, socialProfileFields, verifySavedSocialLinks } from "./socialProfileLinks.js";
+import { canShareFamilyMobile, familyRelationshipLabel } from "./familyMemberOptions.js";
 import "./FamilyMemberProfile.css";
 
 
@@ -72,6 +72,7 @@ const EDITABLE_FIELDS = [
   "name",
 
   "relationship",
+  "relationshipDetail",
 
   "mobile",
 
@@ -91,29 +92,8 @@ const EDITABLE_FIELDS = [
 
 
 
-const FIELD_LABELS = {
-
-  name: "Full Name",
-
-  relationship: "Relationship",
-
-  mobile: "Mobile Number",
-
-  email: "Email Address",
-
-  bloodGroup: "Blood Group",
-
-  dateOfBirth: "Date of Birth",
-
-  height: "Height (cm)",
-
-  weight: "Weight (kg)",
-
-  address: "Address",
-
-};
-
-
+const REQUIRED_FIELDS = ["name", "relationship"];
+const FORM_FIELDS = [...EDITABLE_FIELDS, ...socialProfileFields.map(([field]) => field)];
 
 export default function FamilyMemberProfile() {
 
@@ -136,8 +116,11 @@ export default function FamilyMemberProfile() {
   const [editing, setEditing] = useState(false);
 
   const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState("");
 
   const [error, setError] = useState("");
+  const [duplicateMatch, setDuplicateMatch] = useState(null);
 
   const [success, setSuccess] = useState("");
 
@@ -196,7 +179,7 @@ export default function FamilyMemberProfile() {
 
 
 
-        EDITABLE_FIELDS.forEach((field) => {
+        FORM_FIELDS.forEach((field) => {
 
           initialForm[field] = result?.[field] || "";
 
@@ -298,60 +281,6 @@ export default function FamilyMemberProfile() {
     }
   };
 
-  // =====================================================
-  const handleDeletePhoto = async () => {
-
-    if (!memberId || photoBusy) return;
-
-
-
-    const confirmed = window.confirm(
-
-      "Are you sure you want to remove this profile picture?"
-
-    );
-
-
-
-    if (!confirmed) return;
-
-
-
-    setPhotoBusy(true);
-
-    setPhotoError("");
-
-    setPhotoSuccess("");
-
-
-
-    try {
-
-      await deleteProfilePicture(memberId);
-
-
-
-      setPhotoRefreshKey((previous) => previous + 1);
-
-      setPhotoSuccess("Profile picture removed successfully.");
-
-    } catch (err) {
-
-      setPhotoError(
-
-        err.message || "Unable to remove profile picture."
-
-      );
-
-    } finally {
-
-      setPhotoBusy(false);
-
-    }
-
-  };
-
-
 
   // =====================================================
 
@@ -362,6 +291,7 @@ export default function FamilyMemberProfile() {
 
 
   const updateField = (field, value) => {
+    setDuplicateMatch(null);
 
     setForm((previous) => ({
 
@@ -395,7 +325,7 @@ export default function FamilyMemberProfile() {
 
 
 
-    EDITABLE_FIELDS.forEach((field) => {
+    FORM_FIELDS.forEach((field) => {
 
       original[field] = member?.[field] || "";
 
@@ -421,7 +351,10 @@ export default function FamilyMemberProfile() {
 
 
 
-  const saveChanges = async () => {
+  const saveChanges = async (event) => {
+    event.preventDefault();
+    if (saving || photoBusy || removing) return;
+    setDuplicateMatch(null);
 
     if (!form.name.trim()) {
 
@@ -440,10 +373,15 @@ export default function FamilyMemberProfile() {
       return;
 
     }
+    if (form.relationship === "Other" && !form.relationshipDetail.trim()) {
+      setError("Specify the relationship.");
+      return;
+    }
 
 
 
-    if (!/^\+?[0-9]{10,15}$/.test(form.mobile.trim())) {
+    const mobile = form.mobile.trim();
+    if ((!canShareFamilyMobile(form.relationship, form.dateOfBirth) || mobile) && !/^\+?[0-9]{10,15}$/.test(mobile)) {
 
       setError("Enter a valid mobile number.");
 
@@ -479,16 +417,22 @@ export default function FamilyMemberProfile() {
 
     try {
 
+      const links = getChangedSocialLinks(form, member);
+      const details = Object.fromEntries(EDITABLE_FIELDS
+        .filter((field) => field !== "relationshipDetail" || form.relationship === "Other")
+        .map((field) => [field, field === "relationshipDetail" ? form[field].trim() : form[field]]));
       const updated = await updateFamilyMember(
 
         memberId,
 
-        form
+        { ...details, ...links }
 
       );
 
 
 
+      if (updated === null) return;
+      verifySavedSocialLinks(updated, links);
       setMember(updated);
 
       setEditing(false);
@@ -498,6 +442,9 @@ export default function FamilyMemberProfile() {
     } catch (err) {
 
       setError(err.message || "Unable to update member.");
+      if (err.code === "DUPLICATE_MEMBER") {
+        setDuplicateMatch(err.matches[0] || null);
+      }
 
     } finally {
 
@@ -551,6 +498,31 @@ export default function FamilyMemberProfile() {
 
 
 
+  function startEditing() {
+    setEditing(true);
+    setError("");
+    setSuccess("");
+    setRemoveError("");
+    setDuplicateMatch(null);
+  }
+
+  async function removeMember() {
+    if (!memberId || memberId === SELF_PROFILE_ID || !member || saving || photoBusy || removing) return;
+    const message = `Are you sure you want to remove ${member.name} from your family?\n\nTheir profile will no longer be accessible through My Family. This action cannot be undone.`;
+    if (!window.confirm(message)) return;
+
+    setRemoving(true);
+    setRemoveError("");
+    try {
+      await deleteFamilyMember(memberId);
+      navigate("/family", { replace: true });
+    } catch (err) {
+      setRemoveError(err.message || "Unable to remove this family member.");
+    } finally {
+      setRemoving(false);
+    }
+  }
+
   return (
 
     <div className="fk-profile-page">
@@ -573,7 +545,10 @@ export default function FamilyMemberProfile() {
 
 
 
-        <h1>Member Profile</h1>
+        <h1>
+          <span className="fk-profile-desktop-only">Member Profile</span>
+          <span className="fk-profile-mobile-only">User Profile</span>
+        </h1>
 
 
 
@@ -628,193 +603,43 @@ export default function FamilyMemberProfile() {
 
 
 
-          <section className="fk-profile-hero">
+          <section className={editing ? "fk-profile-hero" : "fk-profile-hero fk-profile-compact-view"}>
+            <div className={editing ? "fk-profile-view-content" : "fk-profile-view-content fk-mobile-profile-card"}>
 
-            <div
+              <div className="fk-profile-avatar">
+                <ProfileAvatar memberId={memberId} name={member.name} refreshKey={photoRefreshKey}>
+                  <UserRound size={48} />
+                </ProfileAvatar>
+                <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/svg+xml,.svg"
+                  onChange={handlePhotoChange} disabled={photoBusy || saving} hidden />
+                <button type="button" className="fk-profile-camera-button"
+                  onClick={() => fileInputRef.current?.click()} disabled={photoBusy || saving || removing}
+                  aria-label={photoBusy ? "Updating profile photo" : "Upload or change profile photo"}>
+                  <Camera size={16} aria-hidden="true" />
+                </button>
+              </div>
 
-              className="fk-profile-avatar"
 
-              style={{
 
-                overflow: "hidden",
-
-                position: "relative",
-
-              }}
-
-            >
-
-              <ProfileAvatar
-
-                memberId={memberId}
-
-                name={member.name}
-
-                refreshKey={photoRefreshKey}
-
-              >
-
-                <UserRound size={48} />
-
-              </ProfileAvatar>
-
+            <div className="fk-mobile-profile-identity">
+              <h2><span className="fk-profile-mobile-only">Name: </span>{member.name}</h2>
+              <div className="fk-profile-relation-row">
+                <p>{familyRelationshipLabel(member)}</p>
+                {!editing && (
+                  <button type="button" className="fk-profile-inline-edit" onClick={startEditing} aria-label="Edit profile">
+                    <Pencil size={16} aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+            </div>
+            {!editing && <MobileProfileDetails member={member} />}
+              {!editing && <MobileProfileActions key={memberId} mobile={member.mobile} profile={member} />}
             </div>
 
 
 
-            <h2>{member.name}</h2>
-
-            <p>{member.relationship}</p>
-
-
-
-            {/* HIDDEN FILE INPUT */}
-
-
-
-            <input
-
-              ref={fileInputRef}
-
-              type="file"
-
-              accept="image/jpeg,image/png,image/svg+xml,.svg"
-
-              onChange={handlePhotoChange}
-
-              style={{ display: "none" }}
-
-              disabled={photoBusy}
-
-            />
-
-
-
-            {/* PROFILE PICTURE ACTIONS */}
-
-
-
-            <div
-
-              style={{
-
-                display: "flex",
-
-                justifyContent: "center",
-
-                alignItems: "center",
-
-                gap: "10px",
-
-                flexWrap: "wrap",
-
-                marginTop: "12px",
-
-              }}
-
-            >
-
-              <button
-
-                type="button"
-
-                className="fk-profile-edit-button"
-
-                onClick={() => fileInputRef.current?.click()}
-
-                disabled={photoBusy}
-
-              >
-
-                <Camera size={17} />
-
-
-
-                {photoBusy
-
-                  ? "Processing..."
-
-                  : "Upload / Change Photo"}
-
-              </button>
-
-
-
-              <button
-
-                type="button"
-
-                className="fk-profile-edit-button"
-
-                onClick={handleDeletePhoto}
-
-                disabled={photoBusy}
-
-              >
-
-                <Trash2 size={17} />
-
-                Remove Photo
-
-              </button>
-
-            </div>
-
-
-
-            <small
-
-              style={{
-
-                display: "block",
-
-                marginTop: "8px",
-
-              }}
-
-            >
-
-              JPG, PNG or SVG · Maximum 5 MB
-
-            </small>
-
-
-
-            {photoError && (
-
-              <p
-
-                className="fk-profile-error"
-
-                role="alert"
-
-              >
-
-                {photoError}
-
-              </p>
-
-            )}
-
-
-
-            {photoSuccess && (
-
-              <p
-
-                className="fk-profile-success"
-
-                role="status"
-
-              >
-
-                {photoSuccess}
-
-              </p>
-
-            )}
-
-
+            {photoError && <p className="fk-profile-error" role="alert">{photoError}</p>}
+            {photoSuccess && <p className="fk-profile-success" role="status">{photoSuccess}</p>}
 
             {!editing && (
 
@@ -822,15 +647,8 @@ export default function FamilyMemberProfile() {
 
                 type="button"
 
-                className="fk-profile-edit-button"
-
-                onClick={() => {
-
-                  setEditing(true);
-
-                  setSuccess("");
-
-                }}
+                className="fk-profile-edit-button fk-profile-desktop-only"
+                onClick={startEditing}
 
               >
 
@@ -861,6 +679,9 @@ export default function FamilyMemberProfile() {
             >
 
               {error}
+              {editing && duplicateMatch && (
+                <> <Link to={`/family/${encodeURIComponent(duplicateMatch.memberId)}`}>Open existing profile</Link></>
+              )}
 
             </p>
 
@@ -892,141 +713,36 @@ export default function FamilyMemberProfile() {
 
           {editing ? (
 
-            <section className="fk-profile-card">
-
-              <h3>Edit Personal Details</h3>
-
-
-
-              <div className="fk-profile-edit-form">
-
-                {EDITABLE_FIELDS.map((field) => (
-
-                  <label
-
-                    className="fk-profile-field"
-
-                    key={field}
-
-                  >
-
-                    <span>{FIELD_LABELS[field]}</span>
-
-
-
-                    {field === "address" ? (
-
-                      <textarea
-
-                        rows={3}
-
-                        value={form[field] || ""}
-
-                        onChange={(event) =>
-
-                          updateField(
-
-                            field,
-
-                            event.target.value
-
-                          )
-
-                        }
-
-                      />
-
-                    ) : (
-
-                      <input
-
-                        type={
-
-                          field === "dateOfBirth"
-
-                            ? "date"
-
-                            : field === "email"
-
-                            ? "email"
-
-                            : field === "mobile"
-
-                            ? "tel"
-
-                            : "text"
-
-                        }
-
-                        value={form[field] || ""}
-
-                        onChange={(event) =>
-
-                          updateField(
-
-                            field,
-
-                            event.target.value
-
-                          )
-
-                        }
-
-                      />
-
-                    )}
-
-                  </label>
-
-                ))}
-
-              </div>
-
-
-
+            <form className="fk-profile-card" onSubmit={saveChanges}>
+              <h3>Edit Profile</h3>
+              <ProfileFields fields={EDITABLE_FIELDS.filter((field) =>
+                field !== "relationshipDetail" || form.relationship === "Other")}
+                requiredFields={[
+                  ...REQUIRED_FIELDS,
+                  ...(form.relationship === "Other" ? ["relationshipDetail"] : []),
+                  ...(canShareFamilyMobile(form.relationship, form.dateOfBirth) ? [] : ["mobile"]),
+                ]}
+                values={form} onChange={updateField} />
+              <SocialProfileFields values={form} onChange={updateField} />
               <div className="fk-profile-actions">
-
-                <button
-
-                  type="button"
-
-                  className="fk-profile-cancel"
-
-                  onClick={cancelEdit}
-
-                  disabled={saving}
-
-                >
-
-                  <X size={17} />
-
-                  Cancel
-
+                <button type="button" className="fk-profile-cancel" onClick={cancelEdit} disabled={saving || photoBusy || removing}>
+                  <X size={17} /> Cancel
                 </button>
-
-
-
-                <button
-
-                  type="button"
-
-                  className="fk-profile-save"
-
-                  onClick={saveChanges}
-
-                  disabled={saving}
-
-                >
-
-                  <Save size={17} />
-
-                  {saving ? "Saving..." : "Save Changes"}
-
+                <button type="submit" className="fk-profile-save" disabled={saving || photoBusy || removing}>
+                  <Save size={17} /> {saving ? "Saving..." : "Save Changes"}
                 </button>
-
               </div>
-
-            </section>
+              {memberId && memberId !== SELF_PROFILE_ID && (
+                <div className="fk-profile-remove-section">
+                  {removeError && <p className="fk-profile-error" role="alert">{removeError}</p>}
+                  <button type="button" className="fk-profile-remove-button"
+                    onClick={removeMember} disabled={saving || photoBusy || removing}>
+                    <Trash2 size={16} aria-hidden="true" />
+                    {removing ? "Removing..." : "Remove family member"}
+                  </button>
+                </div>
+              )}
+            </form>
 
           ) : (
 
@@ -1036,7 +752,7 @@ export default function FamilyMemberProfile() {
 
 
 
-              <section className="fk-profile-card">
+              <section className="fk-profile-card fk-profile-desktop-only">
 
                 <h3>Personal Details</h3>
 
@@ -1060,7 +776,7 @@ export default function FamilyMemberProfile() {
 
                     "Relationship",
 
-                    member.relationship,
+                    familyRelationshipLabel(member),
 
                     UserRound
 
@@ -1168,7 +884,8 @@ export default function FamilyMemberProfile() {
 
 
 
-              <section className="fk-profile-card">
+              <MobileConnectedDocuments key={memberId} />
+              <section className="fk-profile-card fk-profile-desktop-only">
 
                 <h3>Documents</h3>
 
@@ -1192,6 +909,7 @@ export default function FamilyMemberProfile() {
 
       )}
 
+      {member && !loading && !editing && <FamilyBottomNav mobileOnly />}
     </div>
 
   );

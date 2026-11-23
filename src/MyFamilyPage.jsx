@@ -511,7 +511,7 @@ export default function MyFamilyPage() {
             <div className="fk-dash-family-scroll">
 
               {/* EXISTING FAMILY MEMBERS */}
-              {familyMembers.map((member) => (
+              {familyMembers.slice(0, 4).map((member) => (
                 <FamilyMemberItem
                   key={member.id}
                   member={member}

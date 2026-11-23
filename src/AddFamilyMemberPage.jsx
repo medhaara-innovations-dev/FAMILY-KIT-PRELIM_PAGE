@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 
@@ -27,7 +27,7 @@ import {
 
 
 
-import { addFamilyMember } from "./api/familyMembersApi.js";
+import { addFamilyMember, getFamilyMembers } from "./api/familyMembersApi.js";
 
 import { uploadProfilePicture } from "./api/profilePicturesApi.js";
 
@@ -38,51 +38,7 @@ import ProfilePhotoCropper from "./ProfilePhotoCropper.jsx";
 
 
 
-const RELATIONSHIPS = [
-
-  "Father",
-
-  "Mother",
-
-  "Spouse",
-
-  "Son",
-
-  "Daughter",
-
-  "Brother",
-
-  "Sister",
-
-  "Grandfather",
-
-  "Grandmother",
-
-  "Other",
-
-];
-
-
-
-const BLOOD_GROUPS = [
-
-  "A+",
-
-  "A-",
-
-  "B+",
-
-  "B-",
-
-  "AB+",
-
-  "AB-",
-
-  "O+",
-
-  "O-",
-
-];
+import { BLOOD_GROUPS, canShareFamilyMobile, familyRelationshipLabel, normalizeFamilyMobile, RELATIONSHIPS, RELATIONSHIP_DETAIL_MAX_LENGTH } from "./familyMemberOptions.js";
 
 
 
@@ -91,6 +47,7 @@ const INITIAL_FORM = {
   name: "",
 
   relationship: "",
+  relationshipDetail: "",
 
   mobile: "",
 
@@ -111,8 +68,6 @@ const INITIAL_FORM = {
 
 
 const STEP_TITLES = [
-
-  "Add Person Details",
 
   "Basic Details",
 
@@ -137,6 +92,9 @@ export default function AddFamilyMemberPage() {
   const [step, setStep] = useState(1);
 
   const [form, setForm] = useState(INITIAL_FORM);
+  const [familyMembers, setFamilyMembers] = useState(null);
+  const [relationshipLoadError, setRelationshipLoadError] = useState("");
+  const [relationshipRefresh, setRelationshipRefresh] = useState(0);
 
 
 
@@ -156,11 +114,39 @@ export default function AddFamilyMemberPage() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const [saveError, setSaveError] = useState("");
+  const [duplicateMatch, setDuplicateMatch] = useState(null);
 
   const [photoWarning, setPhotoWarning] = useState("");
 
   const [createdMember, setCreatedMember] = useState(null);
 
+  useEffect(() => {
+    let active = true;
+    setRelationshipLoadError("");
+    getFamilyMembers().then((members) => {
+      if (active) setFamilyMembers(members);
+    }).catch(() => {
+      if (active) setRelationshipLoadError("Unable to check existing relationships. Please try again.");
+    });
+    return () => { active = false; };
+  }, [relationshipRefresh]);
+
+  const usedRelationships = new Set(familyMembers?.map((member) =>
+    String(member.relationship || "").trim().toLowerCase()));
+  const relationshipOptions = RELATIONSHIPS.filter((relationship) =>
+    !["Mother", "Father"].includes(relationship) || !usedRelationships.has(relationship.toLowerCase()));
+  const latestBirthDate = new Date().toISOString().slice(0, 10);
+  const mobileRequired = !canShareFamilyMobile(form.relationship, form.dateOfBirth);
+  const mobile = form.mobile.trim();
+  const validMobile = /^\+?[0-9]{10,15}$/.test(mobile);
+  const normalizedMobile = normalizeFamilyMobile(mobile);
+  const mobileMatch = validMobile && normalizedMobile && familyMembers?.find(
+    (member) => normalizeFamilyMobile(member.mobile) === normalizedMobile
+  );
+  const mobileConflict = mobileMatch && mobileRequired
+    ? "This mobile number is already used by a family member."
+    : "";
+  const existingMobileProfile = mobileConflict ? mobileMatch : errors.mobile && duplicateMatch;
 
 
   // =====================================================
@@ -196,6 +182,9 @@ export default function AddFamilyMemberPage() {
 
 
   const updateField = (field, value) => {
+    if (["name", "relationship", "dateOfBirth", "mobile"].includes(field)) {
+      setDuplicateMatch(null);
+    }
 
     setForm((previous) => ({
 
@@ -212,6 +201,7 @@ export default function AddFamilyMemberPage() {
       ...previous,
 
       [field]: "",
+      ...(["name", "relationship", "dateOfBirth"].includes(field) && { mobile: "" }),
 
     }));
 
@@ -337,15 +327,32 @@ export default function AddFamilyMemberPage() {
       nextErrors.relationship = "Select a relationship.";
 
     }
+    if (form.relationship === "Other" && !form.relationshipDetail.trim()) {
+      nextErrors.relationshipDetail = "Specify the relationship.";
+    }
+
+    if (!familyMembers) {
+      nextErrors.relationship = relationshipLoadError || "Wait for relationships to load.";
+    } else if (form.relationship && !relationshipOptions.includes(form.relationship)) {
+      nextErrors.relationship = `A ${form.relationship} is already in your family.`;
+    }
+
+    if (!form.dateOfBirth) {
+      nextErrors.dateOfBirth = "Date of birth is required.";
+    } else if (form.dateOfBirth > latestBirthDate) {
+      nextErrors.dateOfBirth = "Date of birth cannot be in the future.";
+    }
 
 
 
-    if (!/^\+?[0-9]{10,15}$/.test(form.mobile.trim())) {
+    if ((mobileRequired || mobile) && !validMobile) {
 
       nextErrors.mobile =
 
         "Enter a valid mobile number (10–15 digits).";
 
+    } else if (mobileConflict) {
+      nextErrors.mobile = mobileConflict;
     }
 
 
@@ -384,13 +391,13 @@ export default function AddFamilyMemberPage() {
 
   const nextStep = () => {
 
-    if (step === 2 && !validateBasicDetails()) return;
+    if (step === 1 && !validateBasicDetails()) return;
 
 
 
     setSaveError("");
 
-    setStep((previous) => Math.min(previous + 1, 5));
+    setStep((previous) => Math.min(previous + 1, STEP_TITLES.length));
 
   };
 
@@ -399,6 +406,7 @@ export default function AddFamilyMemberPage() {
   const previousStep = () => {
 
     setSaveError("");
+    setDuplicateMatch(null);
 
     setStep((previous) => Math.max(previous - 1, 1));
 
@@ -430,7 +438,7 @@ export default function AddFamilyMemberPage() {
 
     if (!validateBasicDetails()) {
 
-      setStep(2);
+      setStep(1);
 
       return;
 
@@ -441,6 +449,7 @@ export default function AddFamilyMemberPage() {
     setSaving(true);
 
     setSaveError("");
+    setDuplicateMatch(null);
 
     setPhotoWarning("");
 
@@ -452,7 +461,11 @@ export default function AddFamilyMemberPage() {
 
 
 
-      const member = await addFamilyMember(form);
+      const { relationshipDetail, ...details } = form;
+      const member = await addFamilyMember(form.relationship === "Other"
+        ? { ...details, relationshipDetail: relationshipDetail.trim() }
+        : details);
+      if (member === null) return;
 
 
 
@@ -468,7 +481,7 @@ export default function AddFamilyMemberPage() {
 
 
 
-      // STEP 2: UPLOAD PHOTO TO S3 USING MEMBER ID
+      // Upload the optional photo after the member ID is available.
 
 
 
@@ -519,6 +532,21 @@ export default function AddFamilyMemberPage() {
       setCreatedMember(member);
 
     } catch (error) {
+      if (error.code === "PARENT_RELATIONSHIP_TAKEN") {
+        setFamilyMembers(null);
+        setRelationshipRefresh((previous) => previous + 1);
+        setStep(1);
+        setErrors({ relationship: error.message });
+      }
+      if (error.code === "DUPLICATE_MEMBER") {
+        setDuplicateMatch(error.matches[0] || null);
+        if (mobile) {
+          setStep(1);
+          setErrors({ mobile: error.message });
+          setRelationshipRefresh((previous) => previous + 1);
+          return;
+        }
+      }
 
       setSaveError(
 
@@ -557,6 +585,8 @@ export default function AddFamilyMemberPage() {
       placeholder = "",
 
       required = false,
+      maxLength,
+      feedback = errors[field],
 
     } = {}
 
@@ -577,6 +607,9 @@ export default function AddFamilyMemberPage() {
       <input
 
         type={type}
+        max={type === "date" ? latestBirthDate : undefined}
+        required={required}
+        maxLength={maxLength}
 
         value={form[field]}
 
@@ -588,17 +621,18 @@ export default function AddFamilyMemberPage() {
 
         }
 
-        aria-invalid={Boolean(errors[field])}
+        aria-invalid={Boolean(feedback)}
+        aria-describedby={feedback ? `fk-add-${field}-feedback` : undefined}
 
       />
 
 
 
-      {errors[field] && (
+      {feedback && (
 
-        <small className="fk-add-error">
+        <small id={`fk-add-${field}-feedback`} className="fk-add-error" role="alert">
 
-          {errors[field]}
+          {feedback}
 
         </small>
 
@@ -784,17 +818,13 @@ export default function AddFamilyMemberPage() {
 
           className="fk-add-skip"
 
-          onClick={
-
-            step === 1 ? nextStep : discard
-
-          }
+          onClick={discard}
 
           disabled={saving}
 
         >
 
-          {step === 1 ? "Skip" : "Discard"}
+          Discard
 
         </button>
 
@@ -826,11 +856,11 @@ export default function AddFamilyMemberPage() {
 
         <div className="fk-add-progress-heading">
 
-          <span>Step {step} of 5</span>
+          <span>Step {step} of {STEP_TITLES.length}</span>
 
           <span>
 
-            {Math.round((step / 5) * 100)}%
+            {Math.round((step / STEP_TITLES.length) * 100)}%
 
           </span>
 
@@ -844,7 +874,7 @@ export default function AddFamilyMemberPage() {
 
             style={{
 
-              width: `${(step / 5) * 100}%`,
+              width: `${(step / STEP_TITLES.length) * 100}%`,
 
             }}
 
@@ -860,189 +890,13 @@ export default function AddFamilyMemberPage() {
 
         {/* =========================================
 
-            STEP 1: PROFILE PICTURE
+            STEP 1: BASIC DETAILS
 
            ========================================= */}
 
 
 
         {step === 1 && (
-
-          <section className="fk-add-section">
-
-            <div
-
-              className="fk-add-photo"
-
-              style={{
-
-                overflow: "hidden",
-
-                position: "relative",
-
-              }}
-
-            >
-
-              {photoPreview ? (
-
-                <img
-
-                  src={photoPreview}
-
-                  alt="Selected profile"
-
-                  style={{
-
-                    width: "100%",
-
-                    height: "100%",
-
-                    objectFit: "cover",
-
-                    borderRadius: "inherit",
-
-                  }}
-
-                />
-
-              ) : (
-
-                <UserRound size={64} />
-
-              )}
-
-            </div>
-
-
-
-            <h3>Add a profile picture</h3>
-
-
-
-            <p>
-
-              Choose a picture for your family member.
-
-              You can also upload it later.
-
-            </p>
-
-
-
-
-
-
-
-            <div
-
-              style={{
-
-                display: "flex",
-
-                justifyContent: "center",
-
-                gap: "10px",
-
-                flexWrap: "wrap",
-
-              }}
-
-            >
-
-              <button
-
-                type="button"
-
-                className="fk-add-primary"
-
-                onClick={() =>
-
-                  fileInputRef.current?.click()
-
-                }
-
-                disabled={saving}
-
-              >
-
-                <Camera size={19} />
-
-                {photoPreview
-
-                  ? "Change Photo"
-
-                  : "Choose Photo"}
-
-              </button>
-
-
-
-              {photoPreview && (
-
-                <button
-
-                  type="button"
-
-                  className="fk-add-secondary"
-
-                  onClick={removeSelectedPhoto}
-
-                  disabled={saving}
-
-                >
-
-                  <X size={17} />
-
-                  Remove
-
-                </button>
-
-              )}
-
-            </div>
-
-
-
-            <small>
-
-              JPG, PNG or SVG · Maximum 5 MB
-
-            </small>
-
-
-
-            {photoError && (
-
-              <p
-
-                className="fk-add-save-error"
-
-                role="alert"
-
-              >
-
-                {photoError}
-
-              </p>
-
-            )}
-
-          </section>
-
-        )}
-
-
-
-        {/* =========================================
-
-            STEP 2: BASIC DETAILS
-
-           ========================================= */}
-
-
-
-        {step === 2 && (
 
           <section className="fk-add-section">
 
@@ -1087,6 +941,8 @@ export default function AddFamilyMemberPage() {
               <select
 
                 value={form.relationship}
+                disabled={!familyMembers}
+                required
 
                 onChange={(event) =>
 
@@ -1110,7 +966,7 @@ export default function AddFamilyMemberPage() {
 
 
 
-                {RELATIONSHIPS.map((relation) => (
+                {relationshipOptions.map((relation) => (
 
                   <option
 
@@ -1128,6 +984,14 @@ export default function AddFamilyMemberPage() {
 
               </select>
 
+              {!familyMembers && !relationshipLoadError && <small>Checking existing relationships…</small>}
+              {relationshipLoadError && (
+                <button type="button" className="fk-add-secondary"
+                  onClick={() => setRelationshipRefresh((previous) => previous + 1)}>
+                  Retry loading relationships
+                </button>
+              )}
+
 
 
               {errors.relationship && (
@@ -1144,6 +1008,13 @@ export default function AddFamilyMemberPage() {
 
 
 
+            {form.relationship === "Other" && renderInput("Specify relationship", "relationshipDetail", {
+              placeholder: "e.g. Guardian, Aunt, Uncle",
+              required: true,
+              maxLength: RELATIONSHIP_DETAIL_MAX_LENGTH,
+            })}
+            {renderInput("Date of Birth", "dateOfBirth", { type: "date", required: true })}
+
             {renderInput(
 
               "Mobile Number",
@@ -1154,14 +1025,18 @@ export default function AddFamilyMemberPage() {
 
                 type: "tel",
 
-                placeholder: "9876543210",
+                placeholder: mobileRequired ? "9876543210" : "Optional",
 
-                required: true,
+                required: mobileRequired,
+                feedback: mobileConflict || errors.mobile,
 
               }
 
             )}
 
+            {existingMobileProfile && (
+              <small><Link to={`/family/${encodeURIComponent(existingMobileProfile.memberId)}`}>Open existing profile</Link></small>
+            )}
 
 
             {renderInput(
@@ -1188,13 +1063,13 @@ export default function AddFamilyMemberPage() {
 
         {/* =========================================
 
-            STEP 3: VERIFICATION
+            STEP 2: VERIFICATION
 
            ========================================= */}
 
 
 
-        {step === 3 && (
+        {step === 2 && (
 
           <section className="fk-add-section fk-add-verify">
 
@@ -1246,13 +1121,13 @@ export default function AddFamilyMemberPage() {
 
         {/* =========================================
 
-            STEP 4: MORE DETAILS
+            STEP 3: MORE DETAILS
 
            ========================================= */}
 
 
 
-        {step === 4 && (
+        {step === 3 && (
 
           <section className="fk-add-section">
 
@@ -1322,18 +1197,6 @@ export default function AddFamilyMemberPage() {
 
             {renderInput(
 
-              "Date of Birth",
-
-              "dateOfBirth",
-
-              { type: "date" }
-
-            )}
-
-
-
-            {renderInput(
-
               "Height (cm)",
 
               "height",
@@ -1394,23 +1257,69 @@ export default function AddFamilyMemberPage() {
 
         {/* =========================================
 
-            STEP 5: REVIEW DETAILS
+            STEP 4: REVIEW DETAILS
 
            ========================================= */}
 
 
 
-        {step === 5 && (
+        {step === 4 && (
 
           <section className="fk-add-section">
 
             <p className="fk-add-intro">
 
-              Review the details before adding this member.
+              Review the details and add an optional profile photo before saving.
 
             </p>
 
 
+
+            <div className="fk-add-review">
+
+              {[
+
+                ["Full Name", form.name],
+
+                ["Relationship", familyRelationshipLabel(form)],
+
+                ["Mobile", form.mobile],
+
+                ["Email", form.email],
+
+                ["Blood Group", form.bloodGroup],
+
+                ["Date of Birth", form.dateOfBirth],
+
+                ["Height", form.height],
+
+                ["Weight", form.weight],
+
+                ["Address", form.address],
+
+              ].map(([label, value]) => (
+
+                <div
+
+                  className="fk-add-review-row"
+
+                  key={label}
+
+                >
+
+                  <span>{label}</span>
+
+                  <strong>
+
+                    {value || "Not provided"}
+
+                  </strong>
+
+                </div>
+
+              ))}
+
+            </div>
 
             {/* PHOTO PREVIEW AND EDITING ON REVIEW STEP */}
             <div
@@ -1501,57 +1410,7 @@ export default function AddFamilyMemberPage() {
               )}
             </div>
 
-
-
-            <div className="fk-add-review">
-
-              {[
-
-                ["Full Name", form.name],
-
-                ["Relationship", form.relationship],
-
-                ["Mobile", form.mobile],
-
-                ["Email", form.email],
-
-                ["Blood Group", form.bloodGroup],
-
-                ["Date of Birth", form.dateOfBirth],
-
-                ["Height", form.height],
-
-                ["Weight", form.weight],
-
-                ["Address", form.address],
-
-              ].map(([label, value]) => (
-
-                <div
-
-                  className="fk-add-review-row"
-
-                  key={label}
-
-                >
-
-                  <span>{label}</span>
-
-                  <strong>
-
-                    {value || "Not provided"}
-
-                  </strong>
-
-                </div>
-
-              ))}
-
-            </div>
-
-
-
-                        {saveError && (
+            {saveError && (
 
               <p
 
@@ -1562,6 +1421,9 @@ export default function AddFamilyMemberPage() {
               >
 
                 {saveError}
+                {duplicateMatch && (
+                  <> <Link to={`/family/${encodeURIComponent(duplicateMatch.memberId)}`}>Open existing profile</Link></>
+                )}
 
               </p>
 
@@ -1607,7 +1469,7 @@ export default function AddFamilyMemberPage() {
 
 
 
-          {step < 5 ? (
+          {step < STEP_TITLES.length ? (
 
             <button
 
@@ -1621,7 +1483,7 @@ export default function AddFamilyMemberPage() {
 
             >
 
-              {step === 2
+              {step === 1
 
                 ? "Continue (Demo — No OTP)"
 

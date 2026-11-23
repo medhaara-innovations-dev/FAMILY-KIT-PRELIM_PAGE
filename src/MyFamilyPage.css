@@ -382,6 +382,7 @@
 
 .fk-dash-family-scroll {
   display: flex;
+  flex-wrap: nowrap;
   align-items: stretch;
   gap: 0;
   width: 100%;

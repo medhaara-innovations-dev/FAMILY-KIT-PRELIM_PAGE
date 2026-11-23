@@ -78,14 +78,13 @@
    ========================================= */
 
 .fk-profile-avatar {
+  position: relative;
   width: 160px;
   height: 160px;
   min-width: 160px;
   min-height: 160px;
 
   border-radius: 50%;
-  overflow: hidden;
-
   background: #ffffff;
   color: var(--fk-profile-purple);
 
@@ -232,6 +231,10 @@
   gap: 18px;
 }
 
+.fk-profile-social-fields {
+  margin-top: 22px;
+}
+
 .fk-profile-field {
   display: flex;
   flex-direction: column;
@@ -244,6 +247,7 @@
 }
 
 .fk-profile-field input,
+.fk-profile-field select,
 .fk-profile-field textarea {
   width: 100%;
   min-height: 46px;
@@ -263,9 +267,42 @@
 }
 
 .fk-profile-field input:focus,
+.fk-profile-field select:focus,
 .fk-profile-field textarea:focus {
   border-color: var(--fk-profile-purple);
   box-shadow: 0 0 0 3px rgba(45, 11, 132, 0.1);
+}
+
+.fk-profile-inline-edit {
+  display: none;
+}
+
+.fk-profile-camera-button {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 1;
+  transform: translate(-50%, 35%);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--fk-profile-purple);
+  color: #fff;
+  cursor: pointer;
+}
+
+.fk-profile-camera-button:focus-visible {
+  outline: 2px solid var(--fk-profile-purple);
+  outline-offset: 2px;
+}
+
+.fk-profile-camera-button:disabled {
+  opacity: .6;
+  cursor: wait;
 }
 
 .fk-profile-actions {
@@ -273,6 +310,33 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: 26px;
+}
+
+.fk-profile-remove-section {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--fk-profile-border);
+}
+
+.fk-profile-remove-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 12px;
+  background: #fff0f2;
+  color: #b4233d;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fk-profile-remove-button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
 }
 
 .fk-profile-save,
@@ -376,6 +440,51 @@
    ========================================= */
 
 @media (max-width: 600px) {
+  .fk-mobile-profile-card .fk-profile-camera-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .fk-mobile-profile-card .fk-profile-camera-button svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .fk-profile-compact-view .fk-profile-desktop-only {
+    display: none;
+  }
+
+  .fk-mobile-profile-identity .fk-profile-relation-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .fk-mobile-profile-card .fk-mobile-profile-identity .fk-profile-relation-row p {
+    margin: 0;
+    padding: 2px 8px;
+    border: 1px solid #b294ff;
+    border-radius: 999px;
+    background: #ebe6f7;
+    color: #2d0b84;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+
+  .fk-profile-relation-row .fk-profile-inline-edit {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: #ebe6f7;
+    color: #2d0b84;
+    cursor: pointer;
+  }
+
   .fk-profile-page {
     --fk-fixed-header-height: 67px;
   }

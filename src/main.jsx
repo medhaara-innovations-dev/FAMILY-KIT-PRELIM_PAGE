@@ -31,6 +31,15 @@ import ImportantContactsPage from "./ImportantContactsPage.jsx";
 import "./App.css";
 import "./AppScreenBackground.css";
 import "./components/GlassHeader.css";
+import "./responsive.css";
+
+if (import.meta.env.PROD && window.isSecureContext && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch((error) => {
+      console.warn("FamilyKit offline support could not start.", error);
+    });
+  }, { once: true });
+}
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
