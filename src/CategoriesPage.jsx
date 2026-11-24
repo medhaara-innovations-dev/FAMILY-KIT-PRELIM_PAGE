@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DesktopNavHeader from "./components/DesktopNavHeader.jsx";
 
 import {
   ChevronLeft,
@@ -402,6 +403,7 @@ export default function CategoriesPage() {
           ========================================== */}
 
       <nav className="fk-cat-bottom-nav" aria-label="Main navigation">
+        <DesktopNavHeader onAdd={() => navigate("/family/add")} />
         <button type="button" className="fk-cat-nav-item" onClick={() => navigate("/my-family")}>
           <span className="fk-cat-nav-icon"><House size={20} strokeWidth={1.8} /></span>
           <span>Home</span>

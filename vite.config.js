@@ -31,4 +31,13 @@ function familyKitServiceWorker() {
 
 export default defineConfig({
   plugins: [react(), familyKitServiceWorker()],
+  server: {
+    proxy: {
+      "/events-api": {
+        target: "https://kvi1br0fnl.execute-api.ap-southeast-2.amazonaws.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/events-api/, ""),
+      },
+    },
+  },
 });

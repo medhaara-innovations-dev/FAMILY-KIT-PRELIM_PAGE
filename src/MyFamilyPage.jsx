@@ -24,6 +24,10 @@ import {
 import { getFamilyKitProfile } from "./auth/authService.js";
 import { getValidAccessToken } from "./auth/sessionManager.js";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
+import DesktopNavHeader from "./components/DesktopNavHeader.jsx";
+import { listEvents } from "./api/eventsApi.js";
+import { getDueEventReminders, getReadReminderIds, useReminderClock } from "./eventReminders.js";
+import { calendarHorizon, occurrenceList, formatEventDate } from "./eventDates.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyCalendar from "./FamilyCalendar.jsx";
@@ -153,6 +157,27 @@ export default function MyFamilyPage() {
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarEvents, setCalendarEvents] = useState([]);
+  const [upcomingStatus, setUpcomingStatus] = useState("Loading events…");
+  const reminderClock = useReminderClock();
+  const readReminders = getReadReminderIds();
+  const unreadReminders = getDueEventReminders(calendarEvents, reminderClock)
+    .filter(({ id }) => !readReminders.has(id)).length;
+  const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Kolkata" }).format(new Date());
+  const upcomingEvent = occurrenceList(calendarEvents, today, "9999-12-31", calendarHorizon(today, 366))[0];
+
+  useEffect(() => {
+    if (!hasSession) return;
+    const controller = new AbortController();
+    listEvents(controller.signal).then((events) => {
+      if (controller.signal.aborted) return;
+      setCalendarEvents(events);
+      setUpcomingStatus("No upcoming events");
+    }).catch(() => {
+      if (!controller.signal.aborted) setUpcomingStatus("Unable to load events");
+    });
+    return () => controller.abort();
+  }, [hasSession]);
 
   const [savedMembers, setSavedMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
@@ -326,12 +351,14 @@ export default function MyFamilyPage() {
             <button
               type="button"
               className="fk-dash-round-button fk-dash-bell-button"
-              aria-label="Notifications"
+              aria-label={unreadReminders ? `Notifications, ${unreadReminders} unread reminders` : "Notifications"}
               onClick={() => navigate("/notifications")}
             >
               <Bell size={19} />
 
-              <span className="fk-dash-notification-dot" />
+              {unreadReminders > 0 && <span className="fk-dash-notification-dot" aria-hidden="true">
+                {unreadReminders > 99 ? "99+" : unreadReminders}
+              </span>}
             </button>
           </div>
         </header>
@@ -390,7 +417,7 @@ export default function MyFamilyPage() {
             NEED ATTENTION
            ========================================= */}
 
-        <section className="fk-dash-section">
+        <section className="fk-dash-section fk-dash-attention-section">
           <SectionTitle title="Need Attention" />
 
           <div className="fk-dash-attention-card">
@@ -423,19 +450,19 @@ export default function MyFamilyPage() {
             UPCOMING EVENTS
            ========================================= */}
 
-        <section className="fk-dash-section">
-          <SectionTitle title="Upcoming Events" />
+        <section className="fk-dash-section fk-dash-events-section">
+          <SectionTitle title="Upcoming Events" onViewAll={() => navigate("/events")} />
 
           <div className="fk-dash-events-card">
             <div className="fk-dash-events-message">
               <CalendarDays size={20} />
-              <span>No Events Created Yet</span>
+              <span>{upcomingEvent ? `${upcomingEvent.title} · ${formatEventDate(upcomingEvent.startDate)}` : upcomingStatus}</span>
             </div>
 
             <button
               type="button"
               className="fk-dash-event-button"
-              onClick={() => navigate("/events")}
+              onClick={() => navigate("/events", { state: { createEvent: true } })}
             >
               Add Event
               <ChevronRight size={15} />
@@ -447,7 +474,7 @@ export default function MyFamilyPage() {
             QUICK ACTIONS
            ========================================= */}
 
-        <section className="fk-dash-section">
+        <section className="fk-dash-section fk-dash-actions-section">
           <SectionTitle title="Quick Actions" />
 
           <div className="fk-dash-actions-grid">
@@ -486,7 +513,7 @@ export default function MyFamilyPage() {
             MY FAMILY — DYNAMIC SCROLLABLE LAYOUT
            ========================================= */}
 
-        <section className="fk-dash-section">
+        <section className="fk-dash-section fk-dash-family-section">
           <SectionTitle
             title="My Family"
             onViewAll={() => navigate("/family")}
@@ -599,6 +626,7 @@ export default function MyFamilyPage() {
         className="fk-dash-bottom-nav"
         aria-label="Dashboard navigation"
       >
+        <DesktopNavHeader onAdd={() => navigate("/family/add")} />
         <NavItem
           icon={House}
           label="Home"
@@ -642,6 +670,11 @@ export default function MyFamilyPage() {
       {/* LIVE CALENDAR POPUP */}
       {calendarOpen && (
         <FamilyCalendar
+          events={calendarEvents}
+          onOpenDate={(eventDate) => {
+            setCalendarOpen(false);
+            navigate("/events", { state: { eventDate } });
+          }}
           onClose={() => setCalendarOpen(false)}
         />
       )}

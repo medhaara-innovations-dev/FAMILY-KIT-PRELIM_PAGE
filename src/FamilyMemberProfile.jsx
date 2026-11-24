@@ -612,11 +612,13 @@ export default function FamilyMemberProfile() {
                 </ProfileAvatar>
                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/svg+xml,.svg"
                   onChange={handlePhotoChange} disabled={photoBusy || saving} hidden />
-                <button type="button" className="fk-profile-camera-button"
-                  onClick={() => fileInputRef.current?.click()} disabled={photoBusy || saving || removing}
-                  aria-label={photoBusy ? "Updating profile photo" : "Upload or change profile photo"}>
-                  <Camera size={16} aria-hidden="true" />
-                </button>
+                {editing && (
+                  <button type="button" className="fk-profile-camera-button"
+                    onClick={() => fileInputRef.current?.click()} disabled={photoBusy || saving || removing}
+                    aria-label={photoBusy ? "Updating profile photo" : "Upload or change profile photo"}>
+                    <Camera size={16} aria-hidden="true" />
+                  </button>
+                )}
               </div>
 
 

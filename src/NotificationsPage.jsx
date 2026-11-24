@@ -1,84 +1,22 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
   ChevronLeft,
   ListFilter,
-  ShieldCheck,
+  CalendarClock,
   UsersRound,
-  FileCheck2,
-  UserRoundCheck,
   House,
   Plus,
   LayoutGrid,
   CreditCard,
 } from "lucide-react";
 
+import { listEvents } from "./api/eventsApi.js";
+import { formatEventDate } from "./eventDates.js";
+import { getDueEventReminders, getReadReminderIds, markRemindersRead, useReminderClock } from "./eventReminders.js";
 import "./NotificationsPage.css";
-
-// =====================================================
-// PREVIEW NOTIFICATIONS
-// Replace with real FamilyKit API data when available.
-// =====================================================
-
-const initialNotifications = [
-  {
-    id: 1,
-    title: "Insurance renewal",
-    message: "Your vehicle policy is due tomorrow.",
-    time: "9:15 AM",
-    group: "Today",
-    Icon: ShieldCheck,
-    tone: "blue",
-    unread: true,
-    type: "reminder",
-  },
-  {
-    id: 2,
-    title: "Family invitation",
-    message: "Meera accepted your FamilyKit invitation.",
-    time: "8:30 AM",
-    group: "Today",
-    Icon: UsersRound,
-    tone: "violet",
-    unread: true,
-    type: "update",
-  },
-  {
-    id: 3,
-    title: "Meera ID Document saved",
-    message: "Your property document was saved successfully.",
-    time: "Yesterday",
-    group: "Earlier",
-    Icon: FileCheck2,
-    tone: "orange",
-    unread: true,
-    type: "update",
-  },
-  {
-    id: 4,
-    title: "Document saved",
-    message: "Your property document was saved successfully.",
-    time: "Yesterday",
-    group: "Earlier",
-    Icon: FileCheck2,
-    tone: "orange",
-    unread: true,
-    type: "update",
-  },
-  {
-    id: 5,
-    title: "Nominee Updated",
-    message: "Your property document was saved successfully.",
-    time: "Yesterday",
-    group: "Earlier",
-    Icon: UserRoundCheck,
-    tone: "pink",
-    unread: true,
-    type: "update",
-  },
-];
 
 // =====================================================
 // BOTTOM NAVIGATION ITEM
@@ -111,60 +49,49 @@ function NavItem({ Icon, label, active, onClick }) {
 export default function NotificationsPage() {
   const navigate = useNavigate();
 
-  const accessToken = sessionStorage.getItem(
-    "familykit_access_token"
-  );
-
+  const hasSession = Boolean(sessionStorage.getItem("familykit_access_token") ||
+    sessionStorage.getItem("familykit_refresh_token"));
   const [tab, setTab] = useState("all");
-
-  const [items, setItems] = useState(
-    initialNotifications
-  );
-
-  // =====================================================
-  // AUTHENTICATION PROTECTION
-  // =====================================================
+  const [events, setEvents] = useState([]);
+  const [read, setRead] = useState(getReadReminderIds);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
+  const now = useReminderClock();
 
   useEffect(() => {
-    if (!accessToken) {
-      navigate("/login", {
-        replace: true,
-      });
+    if (!hasSession) {
+      navigate("/login", { replace: true });
+      return;
     }
-  }, [accessToken, navigate]);
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
+    listEvents(controller.signal).then((records) => {
+      if (!controller.signal.aborted) {
+        setEvents(records);
+        setRead(getReadReminderIds());
+      }
+    }).catch((failure) => {
+      if (!controller.signal.aborted) setError(failure.message);
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
+    });
+    return () => controller.abort();
+  }, [hasSession, navigate, retry]);
 
-  // =====================================================
-  // FILTER NOTIFICATIONS
-  // =====================================================
+  const reminders = getDueEventReminders(events, now);
+  const visible = reminders.filter(({ id }) => tab === "all" || (tab === "unread" && !read.has(id)));
 
-  const visible = useMemo(
-    () =>
-      items.filter(
-        (item) =>
-          tab === "all" ||
-          (tab === "unread" && item.unread) ||
-          (tab === "updates" && item.type === "update")
-      ),
-    [items, tab]
-  );
-
-  // =====================================================
-  // MARK ALL AS READ
-  // =====================================================
-
-  const handleMarkAllAsRead = () => {
-    setItems((current) =>
-      current.map((item) => ({
-        ...item,
-        unread: false,
-      }))
-    );
-  };
-
-  // Prevent protected content appearing before redirect.
-  if (!accessToken) {
-    return null;
+  function openReminder({ id, event }) {
+    setRead(markRemindersRead([id]));
+    navigate("/events", { state: {
+      eventDate: event.startDate, reminderEventId: event.eventId,
+      reminderOccurrence: event.occurrenceDate,
+    } });
   }
+
+  if (!hasSession) return null;
 
   return (
     <div className="fk-notif-page">
@@ -212,7 +139,6 @@ export default function NotificationsPage() {
             {[
               ["all", "All"],
               ["unread", "Unread"],
-              ["updates", "Updates"],
             ].map(([value, label]) => (
               <button
                 key={value}
@@ -238,7 +164,7 @@ export default function NotificationsPage() {
 
             <button
               type="button"
-              onClick={handleMarkAllAsRead}
+              onClick={() => setRead(markRemindersRead(reminders.map(({ id }) => id)))}
             >
               Mark all as read
             </button>
@@ -262,7 +188,7 @@ export default function NotificationsPage() {
               <NotificationCard
                 key={item.id}
                 item={item}
-                tab={tab}
+                unread={!read.has(item.id)} onOpen={() => openReminder(item)}
               />
             ))}
 
@@ -284,13 +210,17 @@ export default function NotificationsPage() {
               <NotificationCard
                 key={item.id}
                 item={item}
-                tab={tab}
+                unread={!read.has(item.id)} onOpen={() => openReminder(item)}
               />
             ))}
 
           {/* EMPTY STATE */}
 
-          {visible.length === 0 && (
+          {loading && <p className="fk-notif-empty" role="status">Loading reminders…</p>}
+          {error && <p className="fk-notif-empty" role="alert">{error}{" "}
+            <button type="button" onClick={() => setRetry((count) => count + 1)}>Retry</button>
+          </p>}
+          {!loading && !error && visible.length === 0 && (
             <p className="fk-notif-empty">
               No notifications here yet.
             </p>
@@ -347,58 +277,15 @@ export default function NotificationsPage() {
 // NOTIFICATION CARD
 // =====================================================
 
-function NotificationCard({ item, tab }) {
-  const Icon = item.Icon;
-
-  // =====================================================
-  // PURPLE DOT VISIBILITY
-  //
-  // ALL TAB:
-  // Only Insurance renewal displays the purple dot.
-  //
-  // UNREAD TAB:
-  // Keep existing unread-dot behavior.
-  //
-  // UPDATES TAB:
-  // Keep existing unread-dot behavior.
-  // =====================================================
-
-  const showDot =
-    item.unread &&
-    (tab !== "all" || item.id === 1);
-
+function NotificationCard({ item, unread, onOpen }) {
   return (
-    <article className="fk-notif-card">
-
-      {/* NOTIFICATION ICON */}
-
-      <span
-        className={`fk-notif-card-icon ${item.tone}`}
-      >
-        <Icon
-          size={16}
-          strokeWidth={1.9}
-        />
+    <button type="button" className="fk-notif-card fk-notif-reminder-card" onClick={onOpen}>
+      <span className="fk-notif-card-icon violet"><CalendarClock size={16} aria-hidden="true" /></span>
+      <span className="fk-notif-card-copy">
+        <strong>{item.event.title}</strong>
+        <small>Event reminder · {formatEventDate(item.event.startDate)} · {item.event.reminderTime} IST</small>
       </span>
-
-      {/* NOTIFICATION DETAILS */}
-
-      <div className="fk-notif-card-copy">
-        <h3>{item.title}</h3>
-
-        <p>{item.message}</p>
-
-        <time>{item.time}</time>
-      </div>
-
-      {/* PURPLE UNREAD INDICATOR */}
-
-      {showDot && (
-        <span
-          className="fk-notif-unread-dot"
-          aria-label="Unread"
-        />
-      )}
-    </article>
+      {unread && <span className="fk-notif-unread-dot" aria-label="Unread" />}
+    </button>
   );
 }

@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { calendarDate, formatEventDate, occurrenceList } from "./eventDates.js";
 import "./FamilyCalendar.css";
 
 const TIME_ZONE = "Asia/Kolkata";
@@ -44,7 +45,7 @@ function fromMonthKey(key) {
   };
 }
 
-export default function FamilyCalendar({ onClose }) {
+export default function FamilyCalendar({ events, onClose, onOpenDate }) {
   const [today, setToday] = useState(indianDate);
 
   const [selectedMonth, setSelectedMonth] = useState(
@@ -117,6 +118,7 @@ export default function FamilyCalendar({ onClose }) {
   const daysInMonth = new Date(
     Date.UTC(year, month + 1, 0)
   ).getUTCDate();
+  const monthEvents = occurrenceList(events, calendarDate(year, month, 1), calendarDate(year, month, daysInMonth));
 
   const totalCells =
     Math.ceil((firstDay + daysInMonth) / 7) * 7;
@@ -199,6 +201,8 @@ export default function FamilyCalendar({ onClose }) {
 
         <div className="fk-calendar-grid">
           {cells.map((day, index) => {
+            const date = day === null ? "" : calendarDate(year, month, day);
+            const hasEvent = date && monthEvents.some((event) => event.startDate <= date && event.endDate >= date);
             const isToday =
               day !== null &&
               year === today.year &&
@@ -211,23 +215,22 @@ export default function FamilyCalendar({ onClose }) {
                 className="fk-calendar-cell"
               >
                 {day !== null && (
-                  <span
+                  <button
+                    type="button"
                     className={
                       isToday
                         ? "fk-calendar-day fk-calendar-today"
                         : "fk-calendar-day"
                     }
-                    aria-label={
-                      isToday
-                        ? `Today, ${day}`
-                        : String(day)
-                    }
+                    aria-label={`${formatEventDate(date)}${hasEvent ? ", has events" : ""}`}
                     aria-current={
                       isToday ? "date" : undefined
                     }
+                    onClick={() => onOpenDate(date)}
                   >
                     {day}
-                  </span>
+                    {hasEvent && <span className="fk-calendar-event-dot" aria-hidden="true" />}
+                  </button>
                 )}
               </div>
             );

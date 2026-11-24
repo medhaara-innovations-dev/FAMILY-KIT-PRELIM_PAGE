@@ -64,7 +64,22 @@ All routes in this table require JWT. Create returns 201. List, read, update and
 |---|---|---|---|
 | Diary `xjjpa0ph1m` | GET/POST `/diary`, GET/PUT/DELETE `/diary/{entryId}` | `entryDate` (YYYY-MM-DD) and nonempty `content`, plus optional `title` and `mood` | List `entries` and `count`, object `entry`, delete confirmation |
 | Notes `kvi1br0fnl` | GET/POST `/notes`, GET/PUT/DELETE `/notes/{noteId}` | `content`, optional string `title` and boolean `reminder`. Edit accepts update fields. | List `notes` and `count`, object `note`, delete confirmation |
+
+### Events
+
+Events reuses HTTP API `kvi1br0fnl` and its Cognito JWT authorizer. [The handler](../backend/FamilyKit-Events/lambda_function.py) uses the authenticated subject for every read and write.
+
+| Method and path | Result |
+|---|---|
+| GET /events | List the owner's event series and standalone events |
+| POST /events | Create an event |
+| PUT or DELETE /events/{eventId} | Update or delete the complete event or series |
+| PUT or DELETE /events/{eventId}/occurrences/{occurrenceDate} | Reschedule or remove a single yearly occurrence using its original ISO date |
+
+Writes accept a title, ISO start and end dates, optional category and notes, and an event type, all-day flag, and recurrence. Timed events use `HH:mm` in IST. A nonempty `reminderTime` displays a reminder in FamilyKit on the start date. The Reminders filter includes reminders and special events with a reminder time. February 29 yearly events appear in leap years. Changing a series start date or recurrence clears its occurrence overrides.
 | Contacts `09ngtow570` | GET/POST `/contacts`, GET/PUT/DELETE `/contacts/{contactId}`, GET `/contacts/categories` | `name`, `category`, `role`, `mobileNumber`, optional `email`. List accepts optional `category` query. | List `contacts` and `count`, object `contact`, delete `deleted: true`, catalog `categories` with `name` and `roles` |
+
+The repository Contacts update adds optional `relation` and `photo` (a JPEG thumbnail supplied as base64). `customRole` is required for `Other / Custom Role`. Pass `schema=2` to the categories endpoint for the expanded catalog and to the list endpoint for photos and paginated results. Use the returned `cursor` to request the next page. The deployed handler retains the authenticated owner's partition and existing Emergency contact limit.
 
 Sources: [Diary](../backend/FamilyKit-Diary/lambda_function.py), [Notes](../backend/FamilyKit-Notes/lambda_function.py), [Contacts](../backend/FamilyKit-ImportantContacts/lambda_function.py), and [frontend wrappers](../src/api).
 

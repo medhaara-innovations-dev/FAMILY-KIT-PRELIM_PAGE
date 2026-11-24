@@ -91,11 +91,7 @@
 }
 
 .fk-my-profile-avatar-slot {
-  display: contents;
-}
-
-.fk-my-profile-avatar-slot .fk-my-profile-mobile-camera {
-  display: none;
+  position: relative;
 }
 
 .fk-my-profile-card h2 {
@@ -164,10 +160,6 @@
     position: relative;
     grid-column: 1;
     grid-row: 1 / span 2;
-  }
-
-  .fk-my-profile-avatar-slot .fk-my-profile-mobile-camera {
-    display: grid;
   }
 
   .fk-my-profile-page .fk-my-profile-card .fk-profile-desktop-only {

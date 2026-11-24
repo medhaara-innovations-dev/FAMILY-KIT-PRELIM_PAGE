@@ -174,11 +174,13 @@ export default function MyProfile() {
               refreshKey={refreshKey}
               className="fk-my-profile-avatar"
             />
-            <button type="button" className="fk-profile-camera-button fk-my-profile-mobile-camera"
-              onClick={() => fileInputRef.current?.click()} disabled={busy || loading || savingProfile}
-              aria-label="Upload or change profile photo">
-              <Camera size={16} aria-hidden="true" />
-            </button>
+            {profileForm && (
+              <button type="button" className="fk-profile-camera-button"
+                onClick={() => fileInputRef.current?.click()} disabled={busy || loading || savingProfile}
+                aria-label="Upload or change profile photo">
+                <Camera size={16} aria-hidden="true" />
+              </button>
+            )}
           </div>
           <div className="fk-mobile-profile-identity">
             <h2><span className="fk-profile-mobile-only">Name: </span>{loading ? "Loading..." : name}</h2>
@@ -199,9 +201,6 @@ export default function MyProfile() {
           {!loading && <MobileProfileActions mobile={profile.mobile} profile={profile} canShare={false} />}
           <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/svg+xml,.svg" onChange={handleUpload} disabled={busy} hidden />
           <div className="fk-my-profile-actions fk-profile-desktop-only">
-            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={busy}>
-              <Camera size={18} /> {busy ? "Processing..." : "Upload / Change Photo"}
-            </button>
             <button type="button" onClick={handleRemove} disabled={busy}>
               <Trash2 size={18} /> Remove Photo
             </button>

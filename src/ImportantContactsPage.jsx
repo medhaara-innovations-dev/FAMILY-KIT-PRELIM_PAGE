@@ -4,20 +4,30 @@ import {
   ChevronLeft, Plus, Search, Phone, Mail, Pencil, Trash2, X,
   ContactRound, AlertTriangle, ShieldCheck, HeartPulse, UsersRound,
   Scale, GraduationCap, Landmark, CreditCard, House, LayoutGrid,
-  ChevronDown, MessageCircle, Check, RefreshCw,
+  ChevronDown, MessageCircle, Check, RefreshCw, Camera, EllipsisVertical,
 } from "lucide-react";
+import { contactThumbnail } from "./contactPhoto.js";
 import {
   getImportantContacts, getContactCategories, addImportantContact,
   updateImportantContact, deleteImportantContact,
 } from "./api/importantContactsApi";
 import "./ImportantContactsPage.css";
 
-const CATEGORY_ORDER = ["Emergency", "Insurance", "Medical", "Nominees", "Legal", "Education", "Finance"];
+const CUSTOM_ROLE = "Other / Custom Role";
+const LEGACY_CATEGORIES = { Emergency: "Emergency & Safety", Medical: "Medical & Healthcare",
+  Finance: "Finance & Banking", Nominees: "Personal & Community" };
 const CATEGORY_ICONS = {
   Emergency: AlertTriangle, Insurance: ShieldCheck, Medical: HeartPulse,
   Nominees: UsersRound, Legal: Scale, Education: GraduationCap, Finance: Landmark,
 };
-const EMPTY_FORM = { name: "", category: "", role: "", mobileNumber: "", email: "" };
+const EMPTY_FORM = { name: "", category: "", role: "", customRole: "", relation: "", mobileNumber: "", email: "", photo: "" };
+const emergency = (category) => category === "Emergency" || category === "Emergency & Safety";
+
+function ContactAvatar({ name, photo }) {
+  return <span className="fk-ic-avatar" aria-hidden="true">{photo
+    ? <img src={`data:image/jpeg;base64,${photo}`} alt="" />
+    : (name || "?").slice(0, 1).toUpperCase()}</span>;
+}
 
 function localMobile(value = "") {
   const digits = String(value).replace(/\D/g, "");
@@ -41,6 +51,8 @@ export default function ImportantContactsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [categorySearch, setCategorySearch] = useState("");
+  const [photoBusy, setPhotoBusy] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -48,7 +60,7 @@ export default function ImportantContactsPage() {
     try {
       const [items, available] = await Promise.all([getImportantContacts(), getContactCategories()]);
       setContacts(Array.isArray(items) ? items : []);
-      setCategories(Array.isArray(available) ? available.filter((c) => CATEGORY_ORDER.includes(c.name)) : []);
+      setCategories(Array.isArray(available) ? available : []);
     } catch (err) {
       setError(err.message || "Unable to load contacts.");
     } finally {
@@ -58,40 +70,58 @@ export default function ImportantContactsPage() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  const categoryNames = useMemo(() => CATEGORY_ORDER.filter((name) => categories.some((c) => c.name === name)), [categories]);
+  const categoryNames = useMemo(() => categories.map(({ name }) => name), [categories]);
+  const displayCategory = (name) => categoryNames.includes(LEGACY_CATEGORIES[name]) ? LEGACY_CATEGORIES[name] : name;
   const availableRoles = categories.find((c) => c.name === form.category)?.roles || [];
-  const emergencyCount = contacts.filter((c) => c.category === "Emergency").length;
+  const emergencyCount = contacts.filter((c) => emergency(c.category)).length;
   const visibleContacts = contacts.filter((c) => {
-    const categoryMatch = selectedCategory === "All" || c.category === selectedCategory;
+    const categoryMatch = selectedCategory === "All" || displayCategory(c.category) === selectedCategory;
     const q = search.trim().toLowerCase();
-    return categoryMatch && (!q || [c.name, c.role, c.category, c.email, c.mobileNumber].join(" ").toLowerCase().includes(q));
+    return categoryMatch && (!q || [c.name, c.customRole || c.role, displayCategory(c.category), c.relation, c.email, c.mobileNumber].join(" ").toLowerCase().includes(q));
   });
 
   function openAdd() {
     setEditingId(null);
     // The reference design starts with an explicit category selection.
     setForm({ ...EMPTY_FORM, category: selectedCategory === "All" ? "" : selectedCategory });
+    setCategorySearch("");
     setFormError("");
     setModalOpen(true);
   }
   function openEdit(contact) {
     setEditingId(contact.contactId);
-    setForm({ name: contact.name || "", category: contact.category || "", role: contact.role || "", mobileNumber: localMobile(contact.mobileNumber), email: contact.email || "" });
+    const category = displayCategory(contact.category);
+    const roles = categories.find((item) => item.name === category)?.roles || [];
+    const custom = roles.includes(CUSTOM_ROLE) && !roles.includes(contact.role);
+    setForm({ ...EMPTY_FORM, name: contact.name || "", category, role: custom ? CUSTOM_ROLE : contact.role,
+      customRole: contact.customRole || (custom ? contact.role : ""), relation: contact.relation || "",
+      mobileNumber: localMobile(contact.mobileNumber), email: contact.email || "", photo: contact.photo || "" });
+    setCategorySearch("");
     setFormError("");
     setModalOpen(true);
   }
   function changeField(field, value) {
-    setForm((old) => field === "category" ? { ...old, category: value, role: "" } : { ...old, [field]: value });
+    setForm((old) => field === "category" ? { ...old, category: value, role: "", customRole: "" } : { ...old, [field]: value });
+  }
+  async function selectPhoto(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setPhotoBusy(true);
+    setFormError("");
+    try { changeField("photo", await contactThumbnail(file)); }
+    catch (failure) { setFormError(failure.message); }
+    finally { setPhotoBusy(false); }
   }
   function closeForm() {
-    if (saving) return;
+    if (saving || photoBusy) return;
     setModalOpen(false);
     setFormError("");
   }
 
   async function handleSave(event) {
     event.preventDefault();
-    if (saving) return;
+    if (saving || photoBusy) return;
     setFormError("");
     const name = form.name.trim();
     const category = form.category;
@@ -101,14 +131,19 @@ export default function ImportantContactsPage() {
     if (!name || name.length > 100) return setFormError("Enter a name (up to 100 characters).");
     if (!categoryNames.includes(category)) return setFormError("Select a category.");
     if (!availableRoles.includes(role)) return setFormError("Select a role.");
+    if (role === CUSTOM_ROLE && !form.customRole.trim()) return setFormError("Enter a custom role.");
     if (!/^[6-9]\d{9}$/.test(mobileNumber)) return setFormError("Enter a valid 10-digit Indian mobile number.");
     const previous = contacts.find((c) => c.contactId === editingId);
-    if (category === "Emergency" && previous?.category !== "Emergency" && emergencyCount >= 2) {
+    if (emergency(category) && !emergency(previous?.category) && emergencyCount >= 2) {
       return setFormError("Only two Emergency contacts are allowed.");
     }
     setSaving(true);
     try {
-      const payload = { name, category, role, mobileNumber: `+91${mobileNumber}`, email };
+      const payload = { name, category, role, mobileNumber: `+91${mobileNumber}`, email,
+        ...(role === CUSTOM_ROLE && { customRole: form.customRole.trim() }),
+        ...(form.relation.trim() || previous?.relation ? { relation: form.relation.trim() } : {}),
+        ...(form.photo || previous?.photo ? { photo: form.photo } : {}),
+      };
       if (editingId) await updateImportantContact(editingId, payload);
       else await addImportantContact(payload);
       setModalOpen(false);
@@ -147,9 +182,9 @@ export default function ImportantContactsPage() {
         <div className="fk-ic-filter-label">Contacts Categories</div>
         <nav className="fk-ic-filters" aria-label="Contact categories">
           {["All", ...categoryNames].map((category) => {
-            const Icon = CATEGORY_ICONS[category];
+            const Icon = CATEGORY_ICONS[category] || CATEGORY_ICONS[Object.keys(LEGACY_CATEGORIES).find((name) => LEGACY_CATEGORIES[name] === category)];
             return (
-              <button key={category} type="button" className={`fk-ic-filter ${selectedCategory === category ? "active" : ""} ${category === "Emergency" ? "emergency" : ""}`} onClick={() => setSelectedCategory(category)} aria-pressed={selectedCategory === category}>
+              <button key={category} type="button" className={`fk-ic-filter ${selectedCategory === category ? "active" : ""} ${emergency(category) ? "emergency" : ""}`} onClick={() => setSelectedCategory(category)} aria-pressed={selectedCategory === category}>
                 {Icon && <Icon size={16} strokeWidth={1.9} />}<span>{category}</span>
               </button>
             );
@@ -180,13 +215,24 @@ export default function ImportantContactsPage() {
               {visibleContacts.map((contact) => (
                 <article className="fk-ic-card" key={contact.contactId}>
                   <div className="fk-ic-card-main">
-                    <div className="fk-ic-avatar" aria-hidden="true">{(contact.name || "?").slice(0, 1).toUpperCase()}</div>
+                    <ContactAvatar name={contact.name} photo={contact.photo} />
                     <div className="fk-ic-card-info">
-                      <div className="fk-ic-name-row"><h3>{contact.name}</h3><span className="fk-ic-role">{contact.role}</span></div>
-                      {contact.email && <p className="fk-ic-email">Mail: {contact.email}</p>}
-                      <span className={`fk-ic-category ${contact.category === "Emergency" ? "is-emergency" : ""}`}>{contact.category}</span>
+                      <div className="fk-ic-name-row"><h3>{contact.name}</h3></div>
+                      <div className="fk-ic-badges">
+                        <span className="fk-ic-category">{displayCategory(contact.category)}</span>
+                        <span className="fk-ic-role">{contact.customRole || contact.role}</span>
+                      </div>
+                      {contact.relation && <p className="fk-ic-card-detail"><UsersRound size={14} aria-hidden="true" />{contact.relation}</p>}
+                      <a className="fk-ic-card-detail" href={`tel:${contact.mobileNumber}`}><Phone size={14} aria-hidden="true" />{contact.mobileNumber}</a>
+                      {contact.email && <a className="fk-ic-card-detail" href={`mailto:${contact.email}`}><Mail size={14} aria-hidden="true" />{contact.email}</a>}
                     </div>
-                    <div className="fk-ic-card-actions"><button type="button" onClick={() => openEdit(contact)} aria-label={`Edit ${contact.name}`}><Pencil size={15} /></button><button type="button" onClick={() => handleDelete(contact)} aria-label={`Delete ${contact.name}`}><Trash2 size={15} /></button></div>
+                    <details className="fk-ic-card-menu">
+                      <summary aria-label={`Actions for ${contact.name}`}><EllipsisVertical size={20} aria-hidden="true" /></summary>
+                      <div>
+                        <button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; openEdit(contact); }}><Pencil size={15} /> Edit</button>
+                        <button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; handleDelete(contact); }}><Trash2 size={15} /> Delete</button>
+                      </div>
+                    </details>
                   </div>
                   <div className="fk-ic-card-links">
                     <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><MessageCircle size={17} /> WhatsApp</a>
@@ -226,14 +272,35 @@ export default function ImportantContactsPage() {
           <div className="fk-ic-modal" role="dialog" aria-modal="true" aria-labelledby="fk-ic-modal-title">
             <div className="fk-ic-modal-header"><h2 id="fk-ic-modal-title">{editingId ? "Edit Contact" : "Add Contact"}</h2><button type="button" onClick={closeForm} disabled={saving} aria-label="Close form"><X size={19} /></button></div>
             <form onSubmit={handleSave}>
+              <div className="fk-ic-photo-field">
+                <ContactAvatar name={form.name} photo={form.photo} />
+                <div>
+                  <span>Photo <small>(Optional)</small></span>
+                  <label className="fk-ic-photo-picker">
+                    <Camera size={16} aria-hidden="true" /> {photoBusy ? "Preparing photo..." : form.photo ? "Change photo" : "Upload or take a photo"}
+                    <input type="file" accept="image/*" disabled={saving || photoBusy} onChange={selectPhoto} />
+                  </label>
+                  {form.photo && <button type="button" disabled={saving || photoBusy} onClick={() => changeField("photo", "")}>Remove photo</button>}
+                </div>
+              </div>
               <label htmlFor="fk-ic-name">Name<span className="fk-ic-required">*</span></label>
               <input id="fk-ic-name" required maxLength={100} placeholder="Enter contact name" value={form.name} onChange={(e) => changeField("name", e.target.value)} />
 
               <label htmlFor="fk-ic-category">Category<span className="fk-ic-required">*</span></label>
-              <div className="fk-ic-select-wrap"><select id="fk-ic-category" required value={form.category} onChange={(e) => changeField("category", e.target.value)}><option value="">Select Category</option>{categoryNames.map((name) => <option key={name} value={name}>{name}</option>)}</select><ChevronDown size={17} /></div>
+              <input type="search" aria-label="Search available categories" placeholder="Search categories"
+                value={categorySearch} onChange={(event) => setCategorySearch(event.target.value)} />
+              <div className="fk-ic-select-wrap"><select id="fk-ic-category" required value={form.category} onChange={(e) => changeField("category", e.target.value)}><option value="">Select Category</option>{categoryNames.filter((name) => name === form.category || name.toLowerCase().includes(categorySearch.trim().toLowerCase())).map((name) => <option key={name} value={name}>{name}</option>)}</select><ChevronDown size={17} /></div>
 
               <label htmlFor="fk-ic-role">Role<span className="fk-ic-required">*</span></label>
               <div className="fk-ic-select-wrap"><select id="fk-ic-role" required value={form.role} disabled={!form.category} onChange={(e) => changeField("role", e.target.value)}><option value="">Select Role</option>{availableRoles.map((role) => <option key={role} value={role}>{role}</option>)}</select><ChevronDown size={17} /></div>
+              {form.role === CUSTOM_ROLE && <>
+                <label htmlFor="fk-ic-custom-role">Custom role<span className="fk-ic-required">*</span></label>
+                <input id="fk-ic-custom-role" required maxLength={100} value={form.customRole} onChange={(event) => changeField("customRole", event.target.value)} />
+              </>}
+
+              <label htmlFor="fk-ic-relation">Relation <span className="fk-ic-optional">(Optional)</span></label>
+              <input id="fk-ic-relation" maxLength={100} placeholder="e.g. Cousin, Uncle, Friend, Neighbour"
+                value={form.relation} onChange={(event) => changeField("relation", event.target.value)} />
 
               <label htmlFor="fk-ic-mobile">Mobile Number<span className="fk-ic-required">*</span></label>
               <div className="fk-ic-phone-field"><span>+91</span><input id="fk-ic-mobile" required type="tel" inputMode="numeric" autoComplete="tel-national" maxLength={10} pattern="[6-9][0-9]{9}" title="Enter a valid 10-digit Indian mobile number" placeholder="10-digit mobile number" value={form.mobileNumber} onChange={(e) => changeField("mobileNumber", e.target.value.replace(/\D/g, "").slice(0, 10))} /></div>
@@ -242,7 +309,7 @@ export default function ImportantContactsPage() {
               <input id="fk-ic-email" type="email" maxLength={254} placeholder="personname@gmail.com" value={form.email} onChange={(e) => changeField("email", e.target.value)} />
 
               {formError && <p className="fk-ic-form-error" role="alert">{formError}</p>}
-              <button className="fk-ic-save" type="submit" disabled={saving}><Check size={17} /> {saving ? "Saving..." : editingId ? "Update Contact" : "Save"}</button>
+              <button className="fk-ic-save" type="submit" disabled={saving || photoBusy}><Check size={17} /> {saving ? "Saving..." : editingId ? "Update Contact" : "Save"}</button>
             </form>
           </div>
         </div>

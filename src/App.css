@@ -39,12 +39,12 @@ button { cursor:pointer; }
 img { max-width:100%; display:block; }
 .familykit-app { min-height:100vh; overflow-x:hidden; background:var(--bg); }
 h1,h2,h3,h4,.brand-name,.footer-brand-name { font-family:"Poppins", sans-serif; }
-main {
+.familykit-app > main {
   display:grid;
   grid-template-columns:minmax(24px,1fr) minmax(0,470px) minmax(0,470px) minmax(24px,1fr);
   column-gap:18px;
 }
-main > section:not(.reminders-section):not(.tracker-section) { grid-column:1 / -1; }
+.familykit-app > main > section:not(.reminders-section):not(.tracker-section) { grid-column:1 / -1; }
 
 /* HEADER */
 .header {
@@ -462,7 +462,7 @@ section > h2 {
 
 /* Minimal fallback for narrow screens; desktop is the master reference for this file. */
 @media (max-width:700px) {
-  main { display:block; }
+  .familykit-app > main { display:block; }
   .desktop-nav,.desktop-cta { display:none; }
   .mobile-header-actions { display:flex; }
   .header { position:relative; background:#EDEAF3; }

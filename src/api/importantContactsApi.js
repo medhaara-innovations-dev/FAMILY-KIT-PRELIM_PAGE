@@ -61,17 +61,16 @@ async function apiRequest(path, options = {}) {
 export async function getImportantContacts(
   category = "All"
 ) {
-  const query =
-    category === "All"
-      ? ""
-      : `?category=${encodeURIComponent(category)}`;
-
-  const data = await apiRequest(
-    `/contacts${query}`,
-    { method: "GET" }
-  );
-
-  return data.contacts || [];
+  const query = new URLSearchParams({ schema: "2", category });
+  const contacts = [];
+  let cursor;
+  do {
+    if (cursor) query.set("cursor", cursor);
+    const page = await apiRequest(`/contacts?${query}`, { method: "GET" });
+    contacts.push(...(page.contacts || []));
+    cursor = page.cursor;
+  } while (cursor);
+  return contacts.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
 }
 
 // ======================================================
@@ -80,7 +79,7 @@ export async function getImportantContacts(
 
 export async function getContactCategories() {
   const data = await apiRequest(
-    "/contacts/categories",
+    "/contacts/categories?schema=2",
     { method: "GET" }
   );
 

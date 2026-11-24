@@ -197,25 +197,14 @@
 
   .fk-profile-direct-actions :is(a, button) {
     display: grid;
-    justify-items: center;
-    gap: 4px;
-    min-width: 30px;
+    place-items: center;
+    width: clamp(26px, 7vw, 34px);
+    height: clamp(26px, 7vw, 34px);
     padding: 0;
     border: 0;
-    background: transparent;
-    color: #050011;
-    font: inherit;
-    font-size: clamp(10px, 2.8vw, 13px);
-    text-decoration: none;
-  }
-
-  .fk-profile-direct-actions span {
-    display: grid;
-    place-items: center;
-    width: 27px;
-    height: 27px;
     border-radius: 50%;
     background: #ebe6f7;
+    color: #050011;
   }
 
   .fk-profile-direct-actions button:enabled {

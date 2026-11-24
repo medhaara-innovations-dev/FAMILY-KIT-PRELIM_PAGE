@@ -69,6 +69,10 @@ export function getStoredAccessToken() {
   return sessionStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
+export function getStoredSessionSubject() {
+  return decodeJwtPayload(getStoredAccessToken())?.sub;
+}
+
 export function getStoredRefreshToken() {
   return sessionStorage.getItem(REFRESH_TOKEN_KEY);
 }

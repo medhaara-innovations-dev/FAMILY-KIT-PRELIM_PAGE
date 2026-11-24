@@ -106,11 +106,13 @@ export function MobileProfileActions({ mobile, profile = {}, canShare = true }) 
       </div>
       <div className="fk-profile-direct-actions">
         {mobile ? (
-          <a href={`tel:${mobile}`}><span><Phone size={16} /></span>Call</a>
+          <a href={`tel:${mobile}`} aria-label="Call"><Phone size={16} aria-hidden="true" /></a>
         ) : (
-          <button type="button" disabled><span><Phone size={16} /></span>Call</button>
+          <button type="button" disabled aria-label="Call unavailable"><Phone size={16} aria-hidden="true" /></button>
         )}
-        <button type="button" onClick={shareProfile} disabled={!canShare}><span><Share2 size={16} /></span>Share</button>
+        <button type="button" onClick={shareProfile} disabled={!canShare} aria-label="Share profile">
+          <Share2 size={16} aria-hidden="true" />
+        </button>
       </div>
       {shareStatus && <p className="fk-profile-share-status" role="status">{shareStatus}</p>}
     </div>

@@ -5,9 +5,7 @@
   --ic-text: #050011;
   --ic-secondary: #4D485A;
   --ic-border: #EDEAF3;
-  height: 100dvh;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 100dvh;
   background: linear-gradient(180deg, #EBE6F7 0%, #F7F5FB 45%, #EBE6F7 100%);
   color: var(--ic-text);
   font-family: "Mulish", sans-serif;
@@ -17,9 +15,9 @@
 .fk-ic-page button { cursor: pointer; }
 .fk-ic-page button:disabled { cursor: not-allowed; opacity: .5; }
 .fk-ic-container {
-  width: 100%; max-width: 760px; height: 100%; min-height: 0;
+  width: 100%; max-width: 760px; min-height: 100dvh;
   margin: 0 auto; padding: 24px 20px 0;
-  display: flex; flex-direction: column; overflow: hidden;
+  display: flex; flex-direction: column;
 }
 .fk-ic-header { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; flex-shrink: 0; }
 .fk-ic-header h1 { margin: 0; flex: 1; min-width: 0; font: 600 22px/1.3 "Poppins", sans-serif; }
@@ -37,12 +35,11 @@
 .fk-ic-search button { border: 0; background: transparent; color: var(--ic-purple); }
 .fk-ic-loading { padding: 55px 15px; text-align: center; color: var(--ic-secondary); }
 /* Only the cards scroll. The heading stays above the scrolling list. */
-.fk-ic-results { margin-top: 4px; display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+.fk-ic-results { margin-top: 4px; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
 .fk-ic-list-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 4px 0 12px; flex: 0 0 auto; }
 .fk-ic-list-heading h2 { margin: 0; font: 600 17px "Poppins", sans-serif; }
 .fk-ic-list-heading span { color: var(--ic-secondary); font-size: 12px; white-space: nowrap; }
-.fk-ic-list { display: grid; align-content: start; gap: 12px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 12px; }
-.fk-ic-list::-webkit-scrollbar { display: none; }
+.fk-ic-list { display: grid; align-content: start; gap: 12px; padding-bottom: 12px; }
 /* Empty/loading state uses the same available viewport without scrolling the header. */
 .fk-ic-empty { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; text-align: center; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
 .fk-ic-empty-inner { display: flex; align-items: center; flex-direction: column; max-width: 300px; }
@@ -52,16 +49,21 @@
 .fk-ic-empty-add { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; padding: 9px 20px; border: 0; border-radius: 999px; background: var(--ic-purple); color: #FFFFFF; font-weight: 700 !important; font-size: 13px !important; }
 .fk-ic-card { padding: 14px; border: 1px solid #FFFFFF; border-radius: 16px; background: #FFFFFFA8; box-shadow: 0 5px 13px #1304380D; }
 .fk-ic-card-main { display: flex; align-items: flex-start; gap: 11px; }
-.fk-ic-avatar { display: grid; place-items: center; width: 43px; height: 43px; flex-shrink: 0; border: 1.5px solid var(--ic-purple); border-radius: 50%; color: var(--ic-purple); background: transparent; font-weight: 700; }
+.fk-ic-avatar { display: grid; place-items: center; width: clamp(46px, 15vw, 72px); aspect-ratio: 1; flex-shrink: 0; border-radius: 14px; overflow: hidden; color: var(--ic-purple); background: var(--ic-light); font-weight: 700; }
+.fk-ic-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .fk-ic-card-info { flex: 1; min-width: 0; }
 .fk-ic-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .fk-ic-name-row h3 { margin: 0; font: 600 14px/1.4 "Poppins", sans-serif; overflow-wrap: anywhere; }
 .fk-ic-role { display: inline-block; max-width: 100%; padding: 2px 7px; border: 1px solid #AC9FCC; border-radius: 999px; color: var(--ic-purple); font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
-.fk-ic-email { margin: 4px 0 2px; color: var(--ic-secondary); font-size: 12px; overflow-wrap: anywhere; }
-.fk-ic-category { color: var(--ic-purple); font-size: 11px; }
-.fk-ic-category.is-emergency { color: #C9364C; }
-.fk-ic-card-actions { display: flex; flex-shrink: 0; gap: 1px; }
-.fk-ic-card-actions button { display: grid; place-items: center; width: 26px; height: 28px; border: 0; background: transparent; color: var(--ic-purple); }
+.fk-ic-badges { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+.fk-ic-category { padding: 2px 7px; border-radius: 999px; background: var(--ic-light); color: var(--ic-purple); font-size: 11px; overflow-wrap: anywhere; }
+.fk-ic-card-detail { display: flex; align-items: center; gap: 5px; margin: 4px 0; color: var(--ic-secondary); font-size: 12px; overflow-wrap: anywhere; }
+.fk-ic-card-detail svg { flex: 0 0 14px; color: var(--ic-purple); }
+.fk-ic-card-menu { position: relative; flex: 0 0 auto; }
+.fk-ic-card-menu summary { display: grid; place-items: center; width: 32px; min-height: 34px; cursor: pointer; color: var(--ic-purple); list-style: none; }
+.fk-ic-card-menu summary::-webkit-details-marker { display: none; }
+.fk-ic-card-menu > div { position: absolute; z-index: 2; inset-inline-end: 0; min-width: 115px; padding: 5px; border: 1px solid var(--ic-border); border-radius: 10px; background: white; box-shadow: 0 5px 13px #13043820; }
+.fk-ic-card-menu button { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 40px; padding: 5px 8px; border: 0; background: transparent; color: var(--ic-purple); }
 .fk-ic-card-links { display: flex; gap: 12px; margin-top: 12px; }
 .fk-ic-card-links a { display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; min-width: 0; min-height: 36px; border-radius: 999px; font-size: 12px; font-weight: 800; text-decoration: none; }
 .fk-ic-whatsapp { border: 1px solid var(--ic-purple); color: var(--ic-purple); background: transparent; }
@@ -153,6 +155,13 @@
 .fk-ic-modal-header h2 { margin: 0; font: 600 21px "Poppins", sans-serif; }
 .fk-ic-modal-header button { position: absolute; right: 0; top: 0; display: grid; place-items: center; width: 28px; height: 28px; border: 0; background: transparent; color: var(--ic-purple); }
 .fk-ic-modal form { display: flex; flex-direction: column; gap: 8px; }
+.fk-ic-photo-field { display:flex; align-items:center; gap: 14px; padding: 12px; border-radius: 14px; background: var(--ic-light); color: var(--ic-purple); }
+.fk-ic-photo-field > div { min-width: 0; display:grid; justify-items: start; gap: 4px; }
+.fk-ic-photo-field .fk-ic-avatar { border-radius: 50%; background: white; }
+.fk-ic-photo-field .fk-ic-photo-picker { position: relative; display:flex; align-items:center; gap: 5px; min-height: 36px; padding: 4px 8px; border: 1px solid var(--ic-purple); border-radius: 8px; cursor: pointer; }
+.fk-ic-photo-picker:focus-within { outline: 2px solid var(--ic-purple); outline-offset: 2px; }
+.fk-ic-photo-picker input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.fk-ic-photo-field button { padding: 4px 0; border: 0; background: transparent; color: var(--ic-purple); font-size: 12px; }
 .fk-ic-modal label { margin-top: 3px; color: var(--ic-purple); font-size: 12px; font-weight: 800; }
 .fk-ic-required { color: #C9364C; }
 .fk-ic-optional { color: var(--ic-secondary); font-weight: 500; }
@@ -176,4 +185,10 @@
   .fk-ic-modal { padding: 20px 22px 25px; }
   .fk-ic-card { padding: 12px; }
   .fk-ic-card-links { gap: 9px; }
+}
+
+@media (min-width: 48rem) {
+  .fk-ic-filters { flex-wrap: wrap; overflow: visible; }
+  .fk-ic-overlay { align-items: center; padding: 1rem; }
+  .fk-ic-modal { width: min(100%, 36rem); border-radius: 24px; }
 }

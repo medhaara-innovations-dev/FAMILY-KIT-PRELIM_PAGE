@@ -62,12 +62,26 @@
   justify-content: center;
 }
 .fk-calendar-day {
+  position: relative;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
   width: 34px;
   height: 34px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   font-size: 13px;
+}
+.fk-calendar-event-dot {
+  position: absolute;
+  inset-inline-start: calc(50% - 2px);
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
 }
 .fk-calendar-today {
    background: #4e1caa;

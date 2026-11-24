@@ -11,6 +11,7 @@ All keys below are strings. No global or local secondary indexes were listed.
 | FamilyKitPinResetOTP | resetId | — | Recovery verification state, counters and `expiresAt`, which is the enabled TTL attribute. |
 | FamilyKit-Diary | userId | entryId | `entryDate`, title, content, mood, timestamps. |
 | FamilyKit-Notes | userId | noteId | Title, content, boolean reminder, `createdAt`, `updatedAt` and `createdDate`. |
+| FamilyKit-Events | userId | eventId | Private event fields, optional reminder time, recurrence, and yearly occurrence overrides keyed by original date. |
 | FamilyKit-ImportantContacts | userId | contactId | Name, category, role, mobileNumber, optional email and timestamps. The handler also uses transactional state to enforce the Emergency cap. |
 | AWSintegration-success | id | — | Needs verification. |
 | Test | id | — | Needs verification. |
