@@ -1,7 +1,7 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DesktopNavHeader from "./components/DesktopNavHeader.jsx";
 
 import {
   ChevronLeft,
@@ -13,11 +13,7 @@ import {
   Scale,
   UserRoundCheck,
   BadgeCheck,
-  House,
-  UsersRound,
-  LayoutGrid,
-  CreditCard,
-} from "lucide-react";
+  } from "lucide-react";
 
 import billsIcon from "./assets/images/Household & Bills.png";
 import diaryIcon from "./assets/images/Diary.png";
@@ -40,21 +36,21 @@ const categories = [
   {
     name: "Bills & Renewals",
     image: billsIcon,
-    background: "#fbf8ef",
-    color: "#c7a20b",
+    background: "#FAF7F0",
+    color: "#B89C10",
   },
   {
     name: "Diary",
     image: diaryIcon,
-    background: "#f3efff",
-    color: "#8146e7",
+    background: "#F1ECFB",
+    color: "#6528C6",
     route: "/diary",
   },
   {
     name: "Documents",
     image: documentsIcon,
-    background: "#eef7ff",
-    color: "#318bd5",
+    background: "#F0F6FB",
+    color: "#2882C6",
   },
   {
     name: "Education",
@@ -65,64 +61,65 @@ const categories = [
   {
     name: "Events",
     Icon: CalendarDays,
-    background: "#fff3e9",
-    color: "#f07828",
+    background: "#FAF3F0",
+    color: "#C66728",
     route: "/events",
   },
   {
     name: "Finance",
     Icon: Landmark,
-    background: "#eef0ff",
-    color: "#5559e8",
+    background: "#EFF0FB",
+    color: "#283DC6",
   },
   {
     name: "Health & Reports",
     image: healthIcon,
-    background: "#fff0f7",
-    color: "#e642a0",
+    background: "#FAEFF6",
+    color: "#C62882",
   },
   {
     name: "Important Contacts",
     Icon: ContactRound,
-    background: "#fff0f0",
-    color: "#ef4747",
+    route: "/important-contacts",
+    background: "#FAEFF0",
+    color: "#C62828",
   },
   {
     name: "Insurance",
     image: insuranceIcon,
-    background: "#eafafa",
-    color: "#28b9b0",
+    background: "#EFF9FA",
+    color: "#13A699",
   },
   {
     name: "Legal",
     Icon: Scale,
-    background: "#f7f2ed",
-    color: "#a66a2a",
+    background: "#F5F1ED",
+    color: "#844B06",
   },
   {
     name: "Nominees",
     Icon: UserRoundCheck,
-    background: "#fff0fc",
-    color: "#e32ed4",
+    background: "#FAEFFB",
+    color: "#C628C1",
   },
   {
     name: "Notes",
     image: notesIcon,
-    background: "#f4faed",
-    color: "#83c62a",
+    background: "#F5F9F0",
+    color: "#78B219",
     route: "/notes",
   },
   {
     name: "Property",
     image: propertyIcon,
-    background: "#f5eaff",
-    color: "#a532e4",
+    background: "#F7EFFB",
+    color: "#9E28C6",
   },
   {
     name: "Warranties",
     Icon: BadgeCheck,
-    background: "#fff0f7",
-    color: "#e84b91",
+    background: "#F9EDF3",
+    color: "#B31351",
   },
 ];
 
@@ -402,28 +399,7 @@ export default function CategoriesPage() {
           BOTTOM NAVIGATION
           ========================================== */}
 
-      <nav className="fk-cat-bottom-nav" aria-label="Main navigation">
-        <DesktopNavHeader onAdd={() => navigate("/family/add")} />
-        <button type="button" className="fk-cat-nav-item" onClick={() => navigate("/my-family")}>
-          <span className="fk-cat-nav-icon"><House size={20} strokeWidth={1.8} /></span>
-          <span>Home</span>
-        </button>
-        <button type="button" className="fk-cat-nav-item" onClick={() => navigate("/family")}>
-          <span className="fk-cat-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span>
-          <span>My Family</span>
-        </button>
-        <button type="button" className="fk-cat-center-add" onClick={() => navigate("/family/add")} aria-label="Add family member">
-          <Plus size={30} />
-        </button>
-        <button type="button" className="fk-cat-nav-item active" aria-current="page">
-          <span className="fk-cat-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span>
-          <span>Category</span>
-        </button>
-        <button type="button" className="fk-cat-nav-item" disabled>
-          <span className="fk-cat-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span>
-          <span>Pay &amp; Renew</span>
-        </button>
-      </nav>
+      <FamilyBottomNav active="category" />
 
       {/* ==========================================
           ADD PLACEHOLDER MODAL

@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
   FaXTwitter,
 } from "react-icons/fa6";
 import howItWorksIcon from "./assets/images/ai-brain-02.png";
@@ -48,7 +45,6 @@ import {
   Smartphone,
   Siren,
   Layers,
-  Camera,
   MapPin,
   CloudUpload,
   MessageCircleMore,
@@ -56,6 +52,7 @@ import {
   Tags,
   Crown,
 } from "lucide-react";
+import { CameraIcon, FacebookLogo, InstagramLogo, LinkedInLogo } from "./components/ReferenceIcons.jsx";
 import earlyAccessPhone from "./assets/images/iPhone 16 Pro.png";
 
 import familyKitLogo from "./assets/images/6be23a39-2441-4cce-a9c9-073707f549ff.png";
@@ -191,7 +188,7 @@ const howItWorksSteps = [
     number: "01",
     title: "Scan or Upload",
     description: "Upload documents, bills, policies, certificates and other family information.",
-    icon: Camera,
+    icon: CameraIcon,
   },
   {
     number: "02",
@@ -263,7 +260,7 @@ function FamilyKitHowItWorks({ mobile = false }) {
 
         <div className="fk-how-summary" aria-label="FamilyKit workflow summary">
           <div className="fk-how-summary-step">
-            <Camera />
+            <CameraIcon />
             <strong>Scan</strong>
           </div>
 
@@ -584,7 +581,7 @@ function FamilyKitFooter({ mobile = false }) {
           <a className="fk-end-footer-logo" href={`#${prefix}home`}><img src={familyKitLogo} alt="" /><span><strong>FamilyKit<sup>®</sup></strong><small>Everything in Place.</small></span></a>
           <p>One intelligent platform to organize your family’s information, important documents and everyday life.</p>
           <div className="fk-end-footer-socials" aria-label="Social media (links coming soon)">
-            <span title="LinkedIn coming soon"><FaLinkedinIn /></span><span title="YouTube coming soon"><Play /></span><span title="Instagram coming soon"><FaInstagram /></span><span title="Facebook coming soon"><FaFacebookF /></span>
+            <span title="LinkedIn coming soon"><LinkedInLogo /></span><span title="YouTube coming soon"><Play /></span><span title="Instagram coming soon"><InstagramLogo /></span><span title="Facebook coming soon"><FacebookLogo /></span>
           </div>
         </div>
         <nav className="fk-end-footer-nav" aria-label="Footer navigation">
@@ -845,9 +842,9 @@ function AllFeaturesPage({ onBack }) {
         <p className="fk-all-features-address">Office Address:<br />Street address, City, District, State, Pincode</p>
 
         <div className="fk-all-features-footer-socials">
-          <a href="#" aria-label="Facebook"><FaFacebookF /></a>
-          <a href="#" aria-label="Instagram"><FaInstagram /></a>
-          <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
+          <a href="#" aria-label="Facebook"><FacebookLogo /></a>
+          <a href="#" aria-label="Instagram"><InstagramLogo /></a>
+          <a href="#" aria-label="LinkedIn"><LinkedInLogo /></a>
           <a href="#" aria-label="X"><FaXTwitter /></a>
         </div>
 

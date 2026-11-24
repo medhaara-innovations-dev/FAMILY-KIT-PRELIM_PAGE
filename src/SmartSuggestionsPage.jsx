@@ -1,10 +1,9 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft, Search, Sparkles, FileText, CarFront, Landmark,
-  UserRoundCheck, ChevronRight, House, UsersRound, Plus,
-  LayoutGrid, CreditCard,
-} from "lucide-react";
+  UserRoundCheck, ChevronRight, } from "lucide-react";
 import "./SmartSuggestionsPage.css";
 
 // Design-preview content based on the supplied screenshot.
@@ -17,15 +16,6 @@ const suggestions = [
   { id: 5, Icon: UserRoundCheck, title: "Nominee Details Missing", description: "Complete 2 Finance Records in your document.", source: "For: You (Self)", action: "View Record" },
   { id: 6, Icon: FileText, title: "2 Policies need more information.", description: "Renewal date have not been recorded yet.", source: "Suggested by FamilyKit AI", action: "View Policy" },
 ];
-
-function BottomItem({ Icon, label, active, onClick }) {
-  return (
-    <button type="button" className={`fk-ss-nav-item ${active ? "fk-ss-nav-active" : ""}`} onClick={onClick} disabled={!onClick} aria-current={active ? "page" : undefined}>
-      <span className="fk-ss-nav-icon"><Icon size={20} strokeWidth={1.8} /></span>
-      <span>{label}</span>
-    </button>
-  );
-}
 
 export default function SmartSuggestionsPage() {
   const navigate = useNavigate();
@@ -64,13 +54,7 @@ export default function SmartSuggestionsPage() {
         </main>
       </div>
 
-      <nav className="fk-ss-bottom-nav" aria-label="FamilyKit navigation">
-        <BottomItem Icon={House} label="Home" active onClick={() => navigate("/my-family")} />
-        <BottomItem Icon={UsersRound} label="My Family" onClick={() => navigate("/family")} />
-        <button type="button" className="fk-ss-center-add" aria-label="Add family member" onClick={() => navigate("/family/add")}><Plus size={28} /></button>
-        <BottomItem Icon={LayoutGrid} label="Category" onClick={() => navigate("/categories")} />
-        <BottomItem Icon={CreditCard} label="Pay & Renew" />
-      </nav>
+      <FamilyBottomNav active="home" />
     </div>
   );
 }

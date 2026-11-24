@@ -1,3 +1,4 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,12 +7,7 @@ import {
   Search,
   Mic,
   AudioLines,
-  House,
-  UsersRound,
-  Plus,
-  LayoutGrid,
-  CreditCard,
-} from "lucide-react";
+  } from "lucide-react";
 
 // Actual FamilyKit category icons
 import insuranceIcon from "./assets/images/Insurance.png";
@@ -289,70 +285,7 @@ export default function SearchPage() {
           BOTTOM NAVIGATION
          ========================================= */}
 
-      <nav
-        className="fk-search-bottom-nav"
-        aria-label="Main navigation"
-      >
-        {/* HOME */}
-
-        <button
-          type="button"
-          className="active"
-          onClick={() =>
-            navigate("/my-family")
-          }
-        >
-          <House size={22} />
-          <span>Home</span>
-        </button>
-
-        {/* MY FAMILY */}
-
-        <button
-          type="button"
-          onClick={() =>
-            navigate("/family")
-          }
-        >
-          <UsersRound size={22} />
-          <span>My Family</span>
-        </button>
-
-        {/* CENTER PLUS */}
-
-        <button
-          type="button"
-          className="fk-search-bottom-add"
-          onClick={() =>
-            navigate("/categories")
-          }
-          aria-label="Categories"
-        >
-          <Plus size={26} />
-        </button>
-
-        {/* CATEGORY */}
-
-        <button
-          type="button"
-          onClick={() =>
-            navigate("/categories")
-          }
-        >
-          <LayoutGrid size={22} />
-          <span>Category</span>
-        </button>
-
-        {/* PAY & RENEW */}
-
-        <button
-          type="button"
-          disabled
-        >
-          <CreditCard size={22} />
-          <span>Pay & Renew</span>
-        </button>
-      </nav>
+      <FamilyBottomNav active="home" />
     </main>
   );
 }

@@ -70,7 +70,21 @@ export function getStoredAccessToken() {
 }
 
 export function getStoredSessionSubject() {
-  return decodeJwtPayload(getStoredAccessToken())?.sub;
+  return getAccessTokenSubject(getStoredAccessToken());
+}
+
+export function getAccessTokenSubject(token) {
+  return decodeJwtPayload(token)?.sub;
+}
+
+export function getVerifiedAccountContacts() {
+  const claims = decodeJwtPayload(sessionStorage.getItem(ID_TOKEN_KEY));
+  if (!claims?.sub || claims.sub !== getStoredSessionSubject()) return {};
+  const verified = (value) => value === true || value === "true";
+  return {
+    email: verified(claims.email_verified) ? claims.email : undefined,
+    mobile: verified(claims.phone_number_verified) ? claims.phone_number : undefined,
+  };
 }
 
 export function getStoredRefreshToken() {

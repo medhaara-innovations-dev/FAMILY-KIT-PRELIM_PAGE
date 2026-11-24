@@ -206,3 +206,169 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+.fk-settings-card {
+  margin-bottom: 14px;
+  padding: 8px 16px;
+  border: 1px solid #d8c8ff;
+  border-radius: 16px;
+  background: #f7f3ff;
+  box-shadow: 0 4px 12px #2d0b8410;
+}
+
+.fk-profile-settings-page.fk-my-profile-page { padding-inline: 0; }
+.fk-profile-settings-page.fk-my-profile-page .fk-my-profile-header { padding-inline-start: clamp(16px, 3vw, 24px); }
+.fk-profile-settings-page .fk-my-profile-main { max-width: 560px; }
+
+.fk-settings-identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin: 4px 0 10px;
+}
+
+.fk-settings-identity > div { min-width: 0; }
+.fk-settings-identity h2 {
+  margin: 0;
+  color: #130438;
+  font: 600 18px/24px "Poppins", sans-serif;
+  overflow-wrap: anywhere;
+}
+.fk-settings-identity p { margin: 4px 0 8px; color: #4d485a; }
+.fk-settings-name { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+.fk-settings-name > span { padding: 1px 7px; border: 1px solid #d8c8ff; border-radius: 999px; background: #ebe6f7; color: #2d0b84; font-size: 11px; }
+.fk-settings-avatar-wrap { position: relative; flex: 0 0 auto; }
+.fk-settings-avatar {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.fk-settings-edit {
+  display: grid;
+  place-items: center;
+  align-self: start;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ebe6f7 0 15px, transparent 16px);
+  color: #2d0b84;
+}
+.fk-settings-edit:disabled { opacity: .55; }
+
+.fk-settings-details { border-top: 1px solid #e4dcf5; }
+.fk-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: #050011;
+  text-align: start;
+}
+.fk-settings-row + .fk-settings-row { border-top: 1px solid #e4dcf5; }
+.fk-settings-row:disabled { cursor: default; }
+.fk-settings-row:disabled > svg:last-child { color: #737177; }
+.fk-settings-row-icon { display: grid; place-items: center; flex: 0 0 28px; height: 28px; border-radius: 6px; color: #2d0b84; background: #e4dcf5; }
+.fk-settings-row-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; font-family: "Mulish", sans-serif; }
+.fk-settings-row-copy strong, .fk-settings-row-copy small { display: block; }
+.fk-settings-row-copy strong { font-size: 13px; }
+.fk-settings-row-copy small { margin-top: 2px; font-size: 12px; color: #4d485a; }
+.fk-settings-row > svg { flex-shrink: 0; }
+.fk-settings-verified { color: #20733b; }
+.fk-settings-toggle { display: flex; align-items: center; width: 30px; height: 17px; padding: 2px; border-radius: 999px; background: #e4dcf5; }
+.fk-settings-toggle::before { content: ""; width: 13px; height: 13px; border-radius: 50%; background: #fff; }
+.fk-settings-signout { width: 100%; min-height: 44px; border: 1px solid #d8c8ff; border-radius: 12px; background: #f7f3ff; color: #050011; font-weight: 600; }
+.fk-profile-settings-page .fk-self-profile-edit {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.fk-settings-editor-card {
+  padding: clamp(12px, 4vw, 20px);
+  border: 1px solid #d8c8ff;
+  border-radius: 16px;
+  background: #f7f3ff;
+}
+
+.fk-settings-editor-photo {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.fk-settings-editor-camera, .fk-settings-editor-trash {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #2d0b84;
+}
+.fk-settings-editor-camera {
+  inset-inline-end: -12px;
+  bottom: -8px;
+  color: #fff;
+  background: radial-gradient(circle, #2d0b84 0 14px, transparent 15px);
+}
+.fk-settings-editor-trash {
+  inset-inline-start: -12px;
+  bottom: -8px;
+  background: radial-gradient(circle, #ebe6f7 0 14px, transparent 15px);
+}
+.fk-settings-editor-camera:disabled, .fk-settings-editor-trash:disabled { opacity: .55; }
+.fk-settings-editor-card .fk-profile-edit-form { margin-top: 0; gap: 8px; }
+.fk-settings-editor-card .fk-profile-field { min-width: 0; }
+.fk-settings-editor-card .fk-profile-field + .fk-profile-field { margin-top: 8px; }
+.fk-settings-editor-card input[readonly] { background: #ebe6f7; color: #4d485a; }
+.fk-settings-editor-card .fk-self-profile-fields > .fk-profile-edit-form { grid-template-columns: minmax(0, 1fr); }
+
+.fk-settings-disclosure {
+  margin-top: 12px;
+  padding: 0;
+  border: 1px solid #d8c8ff;
+  border-radius: 12px;
+  background: #f7f3ff;
+}
+.fk-settings-disclosure summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #2d0b84;
+  font-weight: 600;
+  list-style: none;
+}
+.fk-settings-disclosure summary::-webkit-details-marker { display: none; }
+.fk-settings-disclosure summary > svg { margin-inline-start: auto; }
+.fk-settings-disclosure[open] summary > svg { transform: rotate(180deg); }
+.fk-settings-disclosure-content { padding: 8px 10px 12px; border-top: 1px solid #e4dcf5; }
+.fk-settings-address-fields { display: grid; gap: 8px; }
+.fk-settings-field-pair,
+.fk-settings-disclosure .fk-profile-edit-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.fk-settings-field-pair > .fk-profile-field + .fk-profile-field,
+.fk-settings-disclosure .fk-profile-edit-form > .fk-profile-field + .fk-profile-field { margin-top: 0; }
+.fk-profile-settings-page .fk-self-profile-edit > .fk-profile-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fk-profile-settings-page .fk-self-profile-edit > .fk-profile-actions button { border-radius: 999px; }
+.fk-settings-pin { display: grid; gap: 12px; margin-top: 12px; }
+.fk-settings-pin input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #b294ff;
+  border-radius: 12px;
+  font: inherit;
+}

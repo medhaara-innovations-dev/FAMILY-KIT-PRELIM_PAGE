@@ -1,3 +1,4 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,12 +7,7 @@ import {
   ChevronLeft,
   ListFilter,
   CalendarClock,
-  UsersRound,
-  House,
-  Plus,
-  LayoutGrid,
-  CreditCard,
-} from "lucide-react";
+  } from "lucide-react";
 
 import { listEvents } from "./api/eventsApi.js";
 import { formatEventDate } from "./eventDates.js";
@@ -21,26 +17,6 @@ import "./NotificationsPage.css";
 // =====================================================
 // BOTTOM NAVIGATION ITEM
 // =====================================================
-
-function NavItem({ Icon, label, active, onClick }) {
-  return (
-    <button
-      type="button"
-      className={`fk-notif-nav-item ${
-        active ? "fk-notif-nav-active" : ""
-      }`}
-      onClick={onClick}
-      disabled={!onClick}
-      aria-current={active ? "page" : undefined}
-    >
-      <span className="fk-notif-nav-icon">
-        <Icon size={19} strokeWidth={1.8} />
-      </span>
-
-      <span>{label}</span>
-    </button>
-  );
-}
 
 // =====================================================
 // NOTIFICATIONS PAGE
@@ -232,43 +208,7 @@ export default function NotificationsPage() {
           FIXED BOTTOM NAVIGATION
           ========================================== */}
 
-      <nav
-        className="fk-notif-bottom-nav"
-        aria-label="FamilyKit navigation"
-      >
-        <NavItem
-          Icon={House}
-          label="Home"
-          active
-          onClick={() => navigate("/my-family")}
-        />
-
-        <NavItem
-          Icon={UsersRound}
-          label="My Family"
-          onClick={() => navigate("/family")}
-        />
-
-        <button
-          type="button"
-          className="fk-notif-center-add"
-          aria-label="Add family member"
-          onClick={() => navigate("/family/add")}
-        >
-          <Plus size={28} />
-        </button>
-
-        <NavItem
-          Icon={LayoutGrid}
-          label="Category"
-          onClick={() => navigate("/categories")}
-        />
-
-        <NavItem
-          Icon={CreditCard}
-          label="Pay & Renew"
-        />
-      </nav>
+      <FamilyBottomNav active="home" />
     </div>
   );
 }

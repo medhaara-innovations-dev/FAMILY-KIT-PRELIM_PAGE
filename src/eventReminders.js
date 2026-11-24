@@ -26,7 +26,7 @@ export function getDueEventReminders(events, now) {
   }).format(now);
   const earliest = calendarHorizon(today, -29);
   return occurrenceList(events, earliest, today)
-    .filter((event) => event.reminderTime && event.startDate >= earliest &&
+    .filter((event) => !event.completed && event.reminderTime && event.startDate >= earliest &&
       (event.startDate < today || event.reminderTime <= time))
     .map((event) => ({
       event,

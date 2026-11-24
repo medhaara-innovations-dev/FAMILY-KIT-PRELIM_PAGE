@@ -1,3 +1,7 @@
+.fk-mobile-profile-identity h2 {
+  font-weight: 600;
+}
+
 .fk-profile-mobile-only,
 .fk-mobile-profile-details,
 .fk-mobile-profile-actions {
@@ -9,15 +13,7 @@
   display: contents;
 }
 
-.fk-family-bottom-nav.fk-profile-mobile-nav {
-  display: none;
-}
-
 @media (max-width: 600px) {
-  .fk-family-bottom-nav.fk-profile-mobile-nav {
-    display: grid;
-  }
-
   .fk-profile-page .fk-profile-main,
   .fk-my-profile-page .fk-my-profile-main {
     padding-bottom: calc(96px + env(safe-area-inset-bottom));
@@ -190,10 +186,8 @@
     font-size: clamp(16px, 5.2vw, 25px);
   }
 
-  .fk-profile-social-actions > :first-child { color: #c52978; }
-  .fk-profile-social-actions > :nth-child(2) { color: #1877f2; }
   .fk-profile-social-actions > :nth-child(3) { color: #16843e; }
-  .fk-profile-social-actions > :nth-child(4) { color: #0a66c2; }
+  .fk-profile-social-actions > button:disabled svg { filter: grayscale(1); }
 
   .fk-profile-direct-actions :is(a, button) {
     display: grid;
@@ -233,7 +227,6 @@
     }
   }
 
-  .fk-mobile-profile-card .fk-profile-edit-button,
   .fk-mobile-profile-card .fk-my-profile-actions button,
   .fk-mobile-profile-card .profile-logout-btn {
     justify-content: center;

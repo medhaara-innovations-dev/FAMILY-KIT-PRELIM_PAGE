@@ -55,7 +55,7 @@ export function EventForm({ initial, onSave, onClose, busy, error, singleOccurre
         {form.reminderTime && <label>Reminder time on start date (IST)<input type="time" required value={form.reminderTime}
           onChange={(e) => update("reminderTime", e.target.value)} /><small>Shown in FamilyKit when you open Events.</small></label>}
         {!singleOccurrence && <label>Repeat<select value={form.recurrence} onChange={(e) => update("recurrence", e.target.value)}>
-          <option value="none">Does not repeat</option><option value="yearly">Yearly</option>
+          <option value="none">Does not repeat</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option>
         </select></label>}
         <div>
           <label className="fk-events-toggle">

@@ -30,11 +30,13 @@ import {
 
   FolderOpen,
 
-  Camera,
-
   Trash2,
+  EllipsisVertical,
+  Link2,
+  ShieldCheck,
 
 } from "lucide-react";
+import { CameraIcon } from "./components/ReferenceIcons.jsx";
 
 
 
@@ -118,6 +120,8 @@ export default function FamilyMemberProfile() {
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [removeError, setRemoveError] = useState("");
+  const profileActions = useRef(null);
+  const [actionInfo, setActionInfo] = useState("");
 
   const [error, setError] = useState("");
   const [duplicateMatch, setDuplicateMatch] = useState(null);
@@ -545,16 +549,50 @@ export default function FamilyMemberProfile() {
 
 
 
-        <h1>
-          <span className="fk-profile-desktop-only">Member Profile</span>
-          <span className="fk-profile-mobile-only">User Profile</span>
-        </h1>
+        <h1>Family Member Profile</h1>
 
 
 
-        <span className="fk-profile-header-space" />
+        {member && !loading && !editing && memberId !== SELF_PROFILE_ID ? (
+          <button type="button" className="fk-profile-header-actions" aria-label="Profile actions" aria-haspopup="dialog" disabled={removing || photoBusy}
+            onClick={() => { setActionInfo(""); profileActions.current?.showModal(); }}>
+            <EllipsisVertical size={22} aria-hidden="true" />
+          </button>
+        ) : <span className="fk-profile-header-space" />}
 
       </header>
+      <dialog ref={profileActions} className="fk-family-actions-dialog" aria-labelledby="fk-profile-actions-title">
+        <header>
+          <h2 id="fk-profile-actions-title">Profile actions</h2>
+          <button type="button" onClick={() => profileActions.current?.close()} aria-label="Close"><X size={20} /></button>
+        </header>
+        <button type="button" className="fk-family-action-choice" onClick={() => {
+          profileActions.current?.close();
+          startEditing();
+        }}>
+          <Pencil size={20} aria-hidden="true" /><strong>Edit profile</strong>
+        </button>
+        <button type="button" className="fk-family-action-choice" onClick={() => setActionInfo("access")}
+          aria-expanded={actionInfo === "access"} aria-controls="fk-profile-access-info">
+          <ShieldCheck size={20} aria-hidden="true" /><strong>Access &amp; Permissions</strong>
+        </button>
+        <p id="fk-profile-access-info" hidden={actionInfo !== "access"}>
+          You manage this profile. It is separate from a signed-in FamilyKit account.
+        </p>
+        <button type="button" className="fk-family-action-choice" onClick={() => setActionInfo("invite")}
+          aria-expanded={actionInfo === "invite"} aria-controls="fk-profile-invite-info">
+          <Link2 size={20} aria-hidden="true" /><strong>Invite to FamilyKit</strong>
+        </button>
+        <p id="fk-profile-invite-info" hidden={actionInfo !== "invite"}>
+          Invitations aren’t available yet. Account connections require mobile verification and invitation acceptance.
+        </p>
+        <button type="button" className="fk-family-action-choice fk-profile-action-remove" onClick={() => {
+          profileActions.current?.close();
+          void removeMember();
+        }}>
+          <Trash2 size={20} aria-hidden="true" /><strong>Remove profile</strong>
+        </button>
+      </dialog>
       {photoToCrop && (
         <ProfilePhotoCropper
           file={photoToCrop}
@@ -616,7 +654,7 @@ export default function FamilyMemberProfile() {
                   <button type="button" className="fk-profile-camera-button"
                     onClick={() => fileInputRef.current?.click()} disabled={photoBusy || saving || removing}
                     aria-label={photoBusy ? "Updating profile photo" : "Upload or change profile photo"}>
-                    <Camera size={16} aria-hidden="true" />
+                    <CameraIcon size={16} aria-hidden="true" />
                   </button>
                 )}
               </div>
@@ -624,14 +662,9 @@ export default function FamilyMemberProfile() {
 
 
             <div className="fk-mobile-profile-identity">
-              <h2><span className="fk-profile-mobile-only">Name: </span>{member.name}</h2>
+              <h2>{member.name}</h2>
               <div className="fk-profile-relation-row">
                 <p>{familyRelationshipLabel(member)}</p>
-                {!editing && (
-                  <button type="button" className="fk-profile-inline-edit" onClick={startEditing} aria-label="Edit profile">
-                    <Pencil size={16} aria-hidden="true" />
-                  </button>
-                )}
               </div>
             </div>
             {!editing && <MobileProfileDetails member={member} />}
@@ -642,25 +675,7 @@ export default function FamilyMemberProfile() {
 
             {photoError && <p className="fk-profile-error" role="alert">{photoError}</p>}
             {photoSuccess && <p className="fk-profile-success" role="status">{photoSuccess}</p>}
-
-            {!editing && (
-
-              <button
-
-                type="button"
-
-                className="fk-profile-edit-button fk-profile-desktop-only"
-                onClick={startEditing}
-
-              >
-
-                <Pencil size={17} />
-
-                Edit Profile
-
-              </button>
-
-            )}
+            {!editing && removeError && <p className="fk-profile-error" role="alert">{removeError}</p>}
 
           </section>
 
@@ -734,16 +749,6 @@ export default function FamilyMemberProfile() {
                   <Save size={17} /> {saving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
-              {memberId && memberId !== SELF_PROFILE_ID && (
-                <div className="fk-profile-remove-section">
-                  {removeError && <p className="fk-profile-error" role="alert">{removeError}</p>}
-                  <button type="button" className="fk-profile-remove-button"
-                    onClick={removeMember} disabled={saving || photoBusy || removing}>
-                    <Trash2 size={16} aria-hidden="true" />
-                    {removing ? "Removing..." : "Remove family member"}
-                  </button>
-                </div>
-              )}
             </form>
 
           ) : (
@@ -911,7 +916,7 @@ export default function FamilyMemberProfile() {
 
       )}
 
-      {member && !loading && !editing && <FamilyBottomNav mobileOnly />}
+      {member && !loading && !editing && <FamilyBottomNav />}
     </div>
 
   );

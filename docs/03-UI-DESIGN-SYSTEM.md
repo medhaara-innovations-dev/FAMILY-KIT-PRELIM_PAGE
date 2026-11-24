@@ -17,6 +17,8 @@ Last verified: 2026-11-22. Approved references below come from the owner. Respon
 
 ## Owner-approved requirements
 
+The shared app navigation uses the approved Home outline and outline Categories grid from the icon reference. The active item uses the FamilyKit purple highlight, while unavailable controls are muted. Camera controls use the approved Camera glyph. Facebook, Instagram, and LinkedIn use their company artwork, and Categories keeps colored icon tiles.
+
 | Design area | Approved specification |
 |---|---|
 | Colors | Primary purple `#2D0B84`, lavender surface `#EBE6F7`, primary text `#050011`, secondary text `#4D485A` |
@@ -26,9 +28,9 @@ Last verified: 2026-11-22. Approved references below come from the owner. Respon
 
 Preserve approved desktop and mobile layouts, typography, spacing, gradients and component behavior. Changes to approved designs and new colors require explicit approval. Other source tokens and breakpoints need owner confirmation before adoption as standards.
 
-### Glass-header discrepancy
+### Approved audit rollout
 
-The shared header applies `blur(12px)` in both backdrop-filter declarations and omits `saturate(200%)`. The approved specification includes both. Applying saturation and verifying the result on desktop and mobile is a future application change requiring explicit approval. [Shared header CSS](../src/components/GlassHeader.css#L24)
+Shared app navigation switches from the bottom bar to the desktop sidebar at 1200 px. Bottom-bar labels use Poppins 12/16, with semibold for the active item. Home, Categories and Events apply the approved responsive heading scale. Categories uses the audit's verified color pairs where supplied. Education retains its existing treatment because the audit does not list a verified pair for it. The shared glass header applies `blur(12px) saturate(200%)`. [Responsive styles](../src/responsive.css) [Shared header CSS](../src/components/GlassHeader.css#L24)
 
 ## Inconsistencies and open decisions
 

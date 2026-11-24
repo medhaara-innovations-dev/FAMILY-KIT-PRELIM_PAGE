@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -9,6 +9,8 @@ import {
   Phone,
   RefreshCw,
   UserRoundPlus,
+  Link2,
+  X,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -35,6 +37,8 @@ export default function FamilyMembersPage() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const actionsDialog = useRef(null);
+  const [showInviteInfo, setShowInviteInfo] = useState(false);
 
   // =====================================================
   // LOAD REGISTERED USER + FAMILY MEMBERS
@@ -136,6 +140,11 @@ export default function FamilyMembersPage() {
     navigate("/family/add");
   };
 
+  function openFamilyActions() {
+    setShowInviteInfo(false);
+    actionsDialog.current?.showModal();
+  }
+
   const openMember = (memberId) => {
     navigate(
       `/family/${encodeURIComponent(memberId)}`
@@ -201,11 +210,33 @@ export default function FamilyMembersPage() {
             <RefreshCw size={19} />
           </button>
           <button type="button" className="fk-family-icon-button fk-family-header-add"
-            onClick={openAddMember} aria-label="Add family member">
+            onClick={openFamilyActions} aria-label="Add or invite a family member" aria-haspopup="dialog">
             <UserRoundPlus size={21} />
           </button>
         </div>
       </header>
+
+      <dialog ref={actionsDialog} className="fk-family-actions-dialog" aria-labelledby="fk-family-actions-title">
+        <header>
+          <h2 id="fk-family-actions-title">Add to My Family</h2>
+          <button type="button" onClick={() => actionsDialog.current?.close()} aria-label="Close"><X size={20} /></button>
+        </header>
+        <button type="button" className="fk-family-action-choice" onClick={() => {
+          actionsDialog.current?.close();
+          openAddMember();
+        }}>
+          <UserRoundPlus size={20} aria-hidden="true" />
+          <span><strong>Add Family Member</strong><small>Create a profile you manage.</small></span>
+        </button>
+        <button type="button" className="fk-family-action-choice" onClick={() => setShowInviteInfo((shown) => !shown)}
+          aria-expanded={showInviteInfo} aria-controls="fk-family-invite-info">
+          <Link2 size={20} aria-hidden="true" />
+          <span><strong>Invite Family Member</strong><small>Connect someone who manages their own account.</small></span>
+        </button>
+        <p id="fk-family-invite-info" hidden={!showInviteInfo}>
+          Invitations aren’t available yet. FamilyKit needs mobile verification and invitation acceptance before it can connect accounts.
+        </p>
+      </dialog>
 
       {/* MAIN */}
 

@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import uuid
+from calendar import monthrange
 from datetime import date, datetime, time, timezone
 
 import boto3
@@ -58,7 +59,7 @@ def clean(body):
     recurrence = text(body, "recurrence", 12, "none")
     kind = text(body, "kind", 12, "special")
     category = text(body, "category", 20, "Personal")
-    if not title or recurrence not in {"none", "yearly"} or kind not in {"special", "reminder"} or category not in CATEGORIES:
+    if not title or recurrence not in {"none", "monthly", "yearly"} or kind not in {"special", "reminder"} or category not in CATEGORIES:
         raise ValueError("Enter a title and select valid event options.")
     return {
         "title": title, "startDate": start, "endDate": end, "startTime": start_time,
@@ -70,6 +71,15 @@ def clean(body):
 
 def public(item):
     return {key: value for key, value in item.items() if key != "userId"}
+
+
+def is_occurrence(original, selected):
+    first = iso_date(original["startDate"])
+    if selected < first:
+        return False
+    if original["recurrence"] == "yearly":
+        return (selected.month, selected.day) == (first.month, first.day)
+    return original["recurrence"] == "monthly" and selected.day == min(first.day, monthrange(selected.year, selected.month)[1])
 
 
 def lambda_handler(event, context):
@@ -105,29 +115,61 @@ def lambda_handler(event, context):
             if not original:
                 return respond(404, {"message": "Event not found."})
             selected = iso_date(occurrence)
-            first = iso_date(original["startDate"])
-            if original["recurrence"] != "yearly" or selected < first or (selected.month, selected.day) != (first.month, first.day):
-                raise ValueError("Select an occurrence of this yearly event.")
-            changed = clean(json.loads(event.get("body") or "{}")) if method == "PUT" else {"cancelled": True}
+            if not is_occurrence(original, selected):
+                raise ValueError("Select a valid recurring occurrence.")
+            body = json.loads(event.get("body") or "{}") if method == "PUT" else {}
+            if isinstance(body, dict) and set(body) == {"completed"}:
+                if type(body["completed"]) is not bool or original.get("exceptions", {}).get(occurrence, {}).get("cancelled"):
+                    raise ValueError("Invalid completion.")
+                names = {"#recurrence": "recurrence", "#start": "startDate"}
+                values = {":repeat": original["recurrence"], ":start": original["startDate"]}
+                if "completedOccurrences" not in original:
+                    names["#completed"] = "completedOccurrences"
+                    values[":initial"] = {occurrence: True} if body["completed"] else {}
+                    expression = "SET #completed = :initial"
+                    guard = " AND attribute_not_exists(#completed)"
+                else:
+                    names.update({"#completed": "completedOccurrences", "#date": occurrence})
+                    expression = "REMOVE #completed.#date"
+                    if body["completed"]:
+                        values[":done"] = True
+                        expression = "SET #completed.#date = :done"
+                    guard = " AND attribute_exists(#completed)"
+                result = table.update_item(Key=key, UpdateExpression=expression,
+                    ConditionExpression=exists + " AND #recurrence = :repeat AND #start = :start" + guard,
+                    ExpressionAttributeNames=names, ExpressionAttributeValues=values, ReturnValues="ALL_NEW")
+                return respond(200, {"event": public(result["Attributes"])})
+            changed = clean(body) if method == "PUT" else {"cancelled": True}
             if method == "PUT":
                 changed["recurrence"] = "none"
             result = table.update_item(
                 Key=key, UpdateExpression="SET #exceptions.#occurrence = :value",
-                ConditionExpression=exists + " AND #recurrence = :yearly AND #start = :start",
+                ConditionExpression=exists + " AND #recurrence = :repeat AND #start = :start",
                 ExpressionAttributeNames={"#exceptions": "exceptions", "#occurrence": occurrence,
                                           "#recurrence": "recurrence", "#start": "startDate"},
-                ExpressionAttributeValues={":value": changed, ":yearly": "yearly", ":start": original["startDate"]},
+                ExpressionAttributeValues={":value": changed, ":repeat": original["recurrence"], ":start": original["startDate"]},
                 ReturnValues="ALL_NEW",
             )
             return respond(200, {"event": public(result["Attributes"])})
 
         if event_id and method == "PUT":
-            fields = clean(json.loads(event.get("body") or "{}"))
+            body = json.loads(event.get("body") or "{}")
+            if isinstance(body, dict) and set(body) == {"completed"}:
+                if type(body["completed"]) is not bool:
+                    raise ValueError("Invalid completion.")
+                result = table.update_item(Key=key, UpdateExpression="SET #completed = :done",
+                    ConditionExpression=exists + " AND #recurrence = :none",
+                    ExpressionAttributeNames={"#completed": "completed", "#recurrence": "recurrence"},
+                    ExpressionAttributeValues={":done": body["completed"], ":none": "none"}, ReturnValues="ALL_NEW")
+                return respond(200, {"event": public(result["Attributes"])})
+            fields = clean(body)
             current = table.get_item(Key=key, ConsistentRead=True).get("Item")
             if not current:
                 return respond(404, {"message": "Event not found."})
             if (current["startDate"], current["recurrence"]) != (fields["startDate"], fields["recurrence"]):
                 fields["exceptions"] = {}
+                fields["completedOccurrences"] = {}
+                fields["completed"] = False
             names = {f"#f{i}": field for i, field in enumerate(fields)}
             values = {f":v{i}": value for i, value in enumerate(fields.values())}
             expression = ", ".join(f"#f{i} = :v{i}" for i in range(len(fields)))

@@ -1,8 +1,8 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ChevronLeft, BookHeart, Pencil, Search,
-  House, UsersRound, Plus, LayoutGrid, CreditCard
+  ChevronLeft, BookHeart, Pencil, Search
 } from "lucide-react";
 import { getDiaryEntries } from "./api/diaryApi";
 import "./DiaryPage.css";
@@ -135,13 +135,7 @@ export default function DiaryPage() {
         </section>
       </div>
 
-      <nav className="diary-bottom-nav" aria-label="FamilyKit navigation">
-        <button type="button" className="diary-nav-item" onClick={() => navigate("/my-family")}><span className="diary-nav-icon"><House size={20} strokeWidth={1.8} /></span><span>Home</span></button>
-        <button type="button" className="diary-nav-item" onClick={() => navigate("/family")}><span className="diary-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span><span>My Family</span></button>
-        <button type="button" className="diary-bottom-add" onClick={() => navigate("/family/add")} aria-label="Add family member"><Plus size={30} /></button>
-        <button type="button" className="diary-nav-item" onClick={() => navigate("/categories")}><span className="diary-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span><span>Category</span></button>
-        <button type="button" className="diary-nav-item" disabled aria-label="Pay and Renew unavailable"><span className="diary-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span><span>Pay & Renew</span></button>
-      </nav>
+      <FamilyBottomNav active="category" />
     </main>
   );
 }

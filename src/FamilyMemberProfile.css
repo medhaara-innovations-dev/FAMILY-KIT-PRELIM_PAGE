@@ -39,6 +39,7 @@
 
 .fk-profile-header button {
   width: 42px;
+  flex: 0 0 42px;
   height: 42px;
   display: flex;
   align-items: center;
@@ -50,8 +51,14 @@
   cursor: pointer;
 }
 
+.fk-profile-action-remove { color: #b4233d; }
+
 .fk-profile-header-space {
   width: 42px;
+}
+
+.fk-profile-header .fk-profile-header-actions {
+  margin-inline-start: auto;
 }
 
 .fk-profile-main {
@@ -142,20 +149,6 @@
 /* =========================================
    EDIT AND PHOTO ACTION BUTTONS
    ========================================= */
-
-.fk-profile-edit-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 11px 20px;
-  border: 1px solid var(--fk-profile-purple);
-  border-radius: 12px;
-  background: var(--fk-profile-purple);
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-}
 
 /* =========================================
    INFORMATION CARDS
@@ -310,33 +303,6 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: 26px;
-}
-
-.fk-profile-remove-section {
-  margin-top: 22px;
-  padding-top: 16px;
-  border-top: 1px solid var(--fk-profile-border);
-}
-
-.fk-profile-remove-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid currentColor;
-  border-radius: 12px;
-  background: #fff0f2;
-  color: #b4233d;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.fk-profile-remove-button:disabled {
-  opacity: .6;
-  cursor: not-allowed;
 }
 
 .fk-profile-save,

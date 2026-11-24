@@ -1,3 +1,4 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,18 +14,12 @@ import {
   ContactRound,
   BookMarked,
   StickyNote,
-  CalendarPlus,
   Sparkles,
-  House,
-  UsersRound,
-  LayoutGrid,
-  CreditCard,
 } from "lucide-react";
 
 import { getFamilyKitProfile } from "./auth/authService.js";
 import { getValidAccessToken } from "./auth/sessionManager.js";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
-import DesktopNavHeader from "./components/DesktopNavHeader.jsx";
 import { listEvents } from "./api/eventsApi.js";
 import { getDueEventReminders, getReadReminderIds, useReminderClock } from "./eventReminders.js";
 import { calendarHorizon, occurrenceList, formatEventDate } from "./eventDates.js";
@@ -78,24 +73,6 @@ function QuickAction({ icon: Icon, label, tone, onClick }) {
 // =====================================================
 // BOTTOM NAVIGATION ITEM
 // =====================================================
-
-function NavItem({ icon: Icon, label, active, onClick }) {
-  return (
-    <button
-      type="button"
-      className={`fk-dash-nav-item ${active ? "active" : ""}`}
-      onClick={onClick}
-      disabled={!onClick}
-      aria-current={active ? "page" : undefined}
-    >
-      <span className="fk-dash-nav-icon">
-        <Icon size={20} strokeWidth={1.8} />
-      </span>
-
-      <span>{label}</span>
-    </button>
-  );
-}
 
 // =====================================================
 // MY FAMILY PROFILE ITEM
@@ -164,7 +141,8 @@ export default function MyFamilyPage() {
   const unreadReminders = getDueEventReminders(calendarEvents, reminderClock)
     .filter(({ id }) => !readReminders.has(id)).length;
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Kolkata" }).format(new Date());
-  const upcomingEvent = occurrenceList(calendarEvents, today, "9999-12-31", calendarHorizon(today, 366))[0];
+  const upcomingEvent = occurrenceList(calendarEvents, today, "9999-12-31", calendarHorizon(today, 366))
+    .find((event) => !event.completed);
 
   useEffect(() => {
     if (!hasSession) return;
@@ -501,7 +479,7 @@ export default function MyFamilyPage() {
             />
 
             <QuickAction
-              icon={CalendarPlus}
+              icon={CalendarDays}
               label="Events"
               tone="orange"
               onClick={() => navigate("/events")}
@@ -542,15 +520,9 @@ export default function MyFamilyPage() {
                 <FamilyMemberItem
                   key={member.id}
                   member={member}
-                  onOpen={() =>
-                    navigate(
-                      member.id === "me"
-                        ? "/my-profile"
-                        : `/family/${encodeURIComponent(
-                            member.id
-                          )}`
-                    )
-                  }
+                  onOpen={() => member.id === "me"
+                    ? navigate("/my-profile", { state: { readOnly: true } })
+                    : navigate(`/family/${encodeURIComponent(member.id)}`)}
                 />
               ))}
 
@@ -622,50 +594,7 @@ export default function MyFamilyPage() {
           FIXED BOTTOM NAVIGATION
          ========================================= */}
 
-      <nav
-        className="fk-dash-bottom-nav"
-        aria-label="Dashboard navigation"
-      >
-        <DesktopNavHeader onAdd={() => navigate("/family/add")} />
-        <NavItem
-          icon={House}
-          label="Home"
-          active
-          onClick={() =>
-            navigate("/my-family")
-          }
-        />
-
-        <NavItem
-          icon={UsersRound}
-          label="My Family"
-          onClick={() =>
-            navigate("/family")
-          }
-        />
-
-        <button
-          type="button"
-          className="fk-dash-center-add"
-          aria-label="Add new family member"
-          onClick={() =>
-            navigate("/family/add")
-          }
-        >
-          <Plus size={30} />
-        </button>
-
-        <NavItem
-          icon={LayoutGrid}
-          label="Category"
-          onClick={() => navigate("/categories")}
-        />
-
-        <NavItem
-          icon={CreditCard}
-          label="Pay & Renew"
-        />
-      </nav>
+      <FamilyBottomNav active="home" />
 
       {/* LIVE CALENDAR POPUP */}
       {calendarOpen && (

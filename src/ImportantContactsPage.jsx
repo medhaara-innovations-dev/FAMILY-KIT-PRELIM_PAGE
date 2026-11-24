@@ -1,11 +1,13 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft, Plus, Search, Phone, Mail, Pencil, Trash2, X,
   ContactRound, AlertTriangle, ShieldCheck, HeartPulse, UsersRound,
-  Scale, GraduationCap, Landmark, CreditCard, House, LayoutGrid,
-  ChevronDown, MessageCircle, Check, RefreshCw, Camera, EllipsisVertical,
+  Scale, GraduationCap, Landmark, ChevronDown, Check, RefreshCw, EllipsisVertical,
 } from "lucide-react";
+import { CameraIcon } from "./components/ReferenceIcons.jsx";
+import { FaWhatsapp } from "react-icons/fa";
 import { contactThumbnail } from "./contactPhoto.js";
 import {
   getImportantContacts, getContactCategories, addImportantContact,
@@ -72,10 +74,13 @@ export default function ImportantContactsPage() {
 
   const categoryNames = useMemo(() => categories.map(({ name }) => name), [categories]);
   const displayCategory = (name) => categoryNames.includes(LEGACY_CATEGORIES[name]) ? LEGACY_CATEGORIES[name] : name;
+  const populatedCategories = new Set(contacts.map(({ category }) => displayCategory(category)));
+  const filterCategories = categoryNames.filter((name) => populatedCategories.has(name));
+  const activeCategory = filterCategories.includes(selectedCategory) ? selectedCategory : "All";
   const availableRoles = categories.find((c) => c.name === form.category)?.roles || [];
   const emergencyCount = contacts.filter((c) => emergency(c.category)).length;
   const visibleContacts = contacts.filter((c) => {
-    const categoryMatch = selectedCategory === "All" || displayCategory(c.category) === selectedCategory;
+    const categoryMatch = activeCategory === "All" || displayCategory(c.category) === activeCategory;
     const q = search.trim().toLowerCase();
     return categoryMatch && (!q || [c.name, c.customRole || c.role, displayCategory(c.category), c.relation, c.email, c.mobileNumber].join(" ").toLowerCase().includes(q));
   });
@@ -83,7 +88,7 @@ export default function ImportantContactsPage() {
   function openAdd() {
     setEditingId(null);
     // The reference design starts with an explicit category selection.
-    setForm({ ...EMPTY_FORM, category: selectedCategory === "All" ? "" : selectedCategory });
+    setForm({ ...EMPTY_FORM, category: activeCategory === "All" ? "" : activeCategory });
     setCategorySearch("");
     setFormError("");
     setModalOpen(true);
@@ -181,10 +186,10 @@ export default function ImportantContactsPage() {
 
         <div className="fk-ic-filter-label">Contacts Categories</div>
         <nav className="fk-ic-filters" aria-label="Contact categories">
-          {["All", ...categoryNames].map((category) => {
+          {["All", ...filterCategories].map((category) => {
             const Icon = CATEGORY_ICONS[category] || CATEGORY_ICONS[Object.keys(LEGACY_CATEGORIES).find((name) => LEGACY_CATEGORIES[name] === category)];
             return (
-              <button key={category} type="button" className={`fk-ic-filter ${selectedCategory === category ? "active" : ""} ${emergency(category) ? "emergency" : ""}`} onClick={() => setSelectedCategory(category)} aria-pressed={selectedCategory === category}>
+              <button key={category} type="button" className={`fk-ic-filter ${activeCategory === category ? "active" : ""} ${emergency(category) ? "emergency" : ""}`} onClick={() => setSelectedCategory(category)} aria-pressed={activeCategory === category}>
                 {Icon && <Icon size={16} strokeWidth={1.9} />}<span>{category}</span>
               </button>
             );
@@ -210,7 +215,7 @@ export default function ImportantContactsPage() {
           </section>
         ) : (
           <section className="fk-ic-results">
-            <div className="fk-ic-list-heading"><h2>{selectedCategory === "All" ? "All Contacts" : `${selectedCategory} Contacts`}</h2><span>{visibleContacts.length} {visibleContacts.length === 1 ? "contact" : "contacts"}</span></div>
+            <div className="fk-ic-list-heading"><h2>{activeCategory === "All" ? "All Contacts" : `${activeCategory} Contacts`}</h2><span>{visibleContacts.length} {visibleContacts.length === 1 ? "contact" : "contacts"}</span></div>
             <div className="fk-ic-list">
               {visibleContacts.map((contact) => (
                 <article className="fk-ic-card" key={contact.contactId}>
@@ -235,7 +240,7 @@ export default function ImportantContactsPage() {
                     </details>
                   </div>
                   <div className="fk-ic-card-links">
-                    <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><MessageCircle size={17} /> WhatsApp</a>
+                    <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><FaWhatsapp size={17} aria-hidden="true" /> WhatsApp</a>
                     <a className="fk-ic-call" href={`tel:${contact.mobileNumber}`} aria-label={`Call ${contact.name}`}><Phone size={16} /> Call</a>
                   </div>
                 </article>
@@ -245,27 +250,7 @@ export default function ImportantContactsPage() {
         )}
       </div>
 
-      <nav className="fk-ic-bottom-nav" aria-label="Main navigation">
-        <button type="button" className="fk-ic-nav-item" onClick={() => navigate("/my-family")}>
-          <span className="fk-ic-nav-icon"><House size={20} strokeWidth={1.8} /></span>
-          <span>Home</span>
-        </button>
-        <button type="button" className="fk-ic-nav-item" onClick={() => navigate("/family")}>
-          <span className="fk-ic-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span>
-          <span>My Family</span>
-        </button>
-        <button type="button" className="fk-ic-bottom-plus" onClick={() => navigate("/family/add")} aria-label="Add family member">
-          <Plus size={30} />
-        </button>
-        <button type="button" className="fk-ic-nav-item" onClick={() => navigate("/categories")}>
-          <span className="fk-ic-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span>
-          <span>Category</span>
-        </button>
-        <button type="button" className="fk-ic-nav-item" disabled title="Pay & Renew route is not connected yet">
-          <span className="fk-ic-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span>
-          <span>Pay &amp; Renew</span>
-        </button>
-      </nav>
+      <FamilyBottomNav active="category" />
 
       {modalOpen && (
         <div className="fk-ic-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}>
@@ -277,7 +262,7 @@ export default function ImportantContactsPage() {
                 <div>
                   <span>Photo <small>(Optional)</small></span>
                   <label className="fk-ic-photo-picker">
-                    <Camera size={16} aria-hidden="true" /> {photoBusy ? "Preparing photo..." : form.photo ? "Change photo" : "Upload or take a photo"}
+                    <CameraIcon size={16} aria-hidden="true" /> {photoBusy ? "Preparing photo..." : form.photo ? "Change photo" : "Upload or take a photo"}
                     <input type="file" accept="image/*" disabled={saving || photoBusy} onChange={selectPhoto} />
                   </label>
                   {form.photo && <button type="button" disabled={saving || photoBusy} onClick={() => changeField("photo", "")}>Remove photo</button>}

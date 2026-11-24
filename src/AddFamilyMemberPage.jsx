@@ -11,8 +11,6 @@ import {
 
   ArrowRight,
 
-  Camera,
-
   Check,
 
   CheckCircle2,
@@ -24,6 +22,7 @@ import {
   X,
 
 } from "lucide-react";
+import { CameraIcon } from "./components/ReferenceIcons.jsx";
 
 
 
@@ -1387,7 +1386,7 @@ export default function AddFamilyMemberPage() {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={saving}
                 >
-                  <Camera size={18} />
+                  <CameraIcon size={18} />
                   {photoPreview ? "Change Photo" : "Choose Photo"}
                 </button>
                 {photoPreview && (

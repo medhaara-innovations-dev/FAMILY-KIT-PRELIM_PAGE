@@ -1,9 +1,10 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Bell, ChevronLeft, ChevronRight, CalendarPlus, House, UsersRound, Plus, LayoutGrid, CreditCard, UserRound } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight, CalendarPlus, UserRound } from "lucide-react";
 import { EventDialog, EventForm } from "./components/EventDialog.jsx";
 import { deleteEvent, listEvents, saveEvent } from "./api/eventsApi.js";
-import { calendarDate, calendarHorizon, formatEventDate, occurrenceList } from "./eventDates.js";
+import { calendarDate, calendarHorizon, completedEventList, formatEventDate, occurrenceList } from "./eventDates.js";
 import "./EventsCalendarPage.css";
 
 const dateParts = new Intl.DateTimeFormat("en-GB", {timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"});
@@ -18,7 +19,6 @@ function istToday() {
   return {year:p.year,month:p.month-1,day:p.day};
 }
 const keyOf = d => d.year*12+d.month;
-function BottomItem({Icon,label,active,onClick}) {return <button type="button" className={`fk-events-nav-item ${active?"active":""}`} onClick={onClick} disabled={!onClick} aria-current={active ? "page" : undefined}><span className="fk-events-nav-icon"><Icon size={20} strokeWidth={1.8}/></span><span>{label}</span></button>}
 export default function EventsCalendarPage(){
   const navigate=useNavigate();
   const location = useLocation();
@@ -91,16 +91,18 @@ export default function EventsCalendarPage(){
     else setStatus("This event is no longer available.");
   }, [events, loading, loadError, location, openedDate]);
   const monthEvents = occurrenceList(events, calendarDate(year, month, 1), calendarDate(year, month, days));
-  const yearlyLimit = selectedDate || calendarHorizon(todayKey, 366);
-  const shown = occurrenceList(events, selectedDate || todayKey, selectedDate || "9999-12-31", yearlyLimit)
-    .filter((event) => filter === "All" || (filter === "Reminders"
-      ? event.kind === "reminder" || event.reminderTime
-      : event.kind === "special"));
+  const repeatLimit = selectedDate || calendarHorizon(todayKey, 366);
+  const shown = filter === "Completed"
+    ? completedEventList(events).filter((event) => !selectedDate || (event.startDate <= selectedDate && event.endDate >= selectedDate))
+    : occurrenceList(events, selectedDate || todayKey, selectedDate || "9999-12-31", repeatLimit)
+      .filter((event) => !event.completed && (filter === "All" || (filter === "Reminders"
+        ? event.kind === "reminder" || event.reminderTime
+        : event.kind === "special")));
   const timeNow = new Intl.DateTimeFormat("en-GB", {
     timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
   }).format(now);
   const due = occurrenceList(events, todayKey, todayKey).filter((event) =>
-    event.startDate === todayKey && event.reminderTime && event.reminderTime <= timeNow);
+    !event.completed && event.startDate === todayKey && event.reminderTime && event.reminderTime <= timeNow);
   function changeMonth(delta){
     setFollowingToday(false);
     setSelectedDate("");
@@ -114,6 +116,27 @@ export default function EventsCalendarPage(){
     setEvents((current) => current.some((item) => item.eventId === event.eventId)
       ? current.map((item) => item.eventId === event.eventId ? event : item)
       : [...current, event]);
+  }
+  async function changeCompletion() {
+    if (busy) return;
+    const current = dialog.event;
+    const completed = !current.completed;
+    setBusy(true);
+    setError("");
+    try {
+      const { event } = await saveEvent({ completed }, current.eventId, current.occurrenceDate);
+      if (current.occurrenceDate && Boolean(event.completedOccurrences?.[current.occurrenceDate]) !== completed ||
+          !current.occurrenceDate && Boolean(event.completed) !== completed) {
+        throw new Error("The event completion status was not saved.");
+      }
+      updateEvent(event);
+      setDialog({ mode: "view", event: { ...current, completed } });
+      setStatus(completed ? "Marked as done." : "Event reopened.");
+    } catch (failure) {
+      setError(failure.message);
+    } finally {
+      setBusy(false);
+    }
   }
   async function submit(form) {
     if (busy) return;
@@ -179,7 +202,7 @@ export default function EventsCalendarPage(){
         onClick={() => { setStatus(""); openDialog({ mode: "edit", event: { startDate: selectedDate || todayKey } }); }}>
         <CalendarPlus size={17}/>Create a New Event
       </button>
-      <div className="fk-events-filters" role="group" aria-label="Event type">{["All","Reminders","Special events"].map(f=><button type="button" key={f} className={filter===f?"selected":""} aria-pressed={filter===f} onClick={()=>setFilter(f)}>{f}</button>)}</div>
+      <div className="fk-events-filters" role="group" aria-label="Event type">{["All","Reminders","Special events","Completed"].map(f=><button type="button" key={f} className={filter===f?"selected":""} aria-pressed={filter===f} onClick={()=>setFilter(f)}>{f}</button>)}</div>
       {status && <p role="status">{status}</p>}
       {due.length > 0 && <section className="fk-events-reminders" aria-label="Reminders due today">
         <h2>Reminders due today</h2>
@@ -204,7 +227,8 @@ export default function EventsCalendarPage(){
               </span>
             </span>
             <span className="fk-events-item-schedule">
-              {event.reminderTime && <span className="fk-events-item-reminder"><Bell size={10} aria-hidden="true" />Reminder</span>}
+              {event.completed ? <span className="fk-events-item-reminder">Completed</span>
+                : event.reminderTime && <span className="fk-events-item-reminder"><Bell size={10} aria-hidden="true" />Reminder</span>}
               <span className="fk-events-item-times" aria-label={event.allDay ? undefined : "Times in IST"}>
                 {event.allDay ? "All day" : <>
                   <time dateTime={event.startTime}>{cardTime(event.startTime)}</time>
@@ -217,27 +241,26 @@ export default function EventsCalendarPage(){
         ))}
       </section>}
     </main>
-    <nav className="fk-events-bottom-nav" aria-label="Dashboard navigation">
-      <BottomItem Icon={House} label="Home" onClick={()=>navigate("/my-family")}/>
-      <BottomItem Icon={UsersRound} label="My Family" onClick={()=>navigate("/family")}/>
-      <button type="button" className="fk-events-nav-add" aria-label="Add family member" onClick={()=>navigate("/family/add")}><Plus size={30}/></button>
-      <BottomItem Icon={LayoutGrid} label="Category" onClick={()=>navigate("/categories")}/>
-      <BottomItem Icon={CreditCard} label="Pay & Renew"/>
-    </nav>
+    <FamilyBottomNav active="category" />
     {dialog?.mode === "edit" && <EventForm initial={dialog.event} singleOccurrence={dialog.single}
       busy={busy} error={error} onSave={submit} onClose={() => openDialog(null)} />}
-    {dialog?.mode === "view" && <EventDialog title={dialog.event.title} onClose={() => openDialog(null)}>
+    {dialog?.mode === "view" && <EventDialog title={dialog.event.title} busy={busy} onClose={() => openDialog(null)}>
       <p>{formatEventDate(dialog.event.startDate)} {dialog.event.allDay ? "· All day" : `· ${dialog.event.startTime} IST`}</p>
       <p>Ends {formatEventDate(dialog.event.endDate)} {dialog.event.allDay ? "" : `· ${dialog.event.endTime} IST`}</p>
-      <p>{dialog.event.category} · Private{dialog.event.occurrenceDate ? " · Yearly series" : ""}</p>
+      <p>{dialog.event.category} · Private{dialog.event.occurrenceDate ? (dialog.event.recurrence === "monthly" ? " · Monthly series" : " · Yearly series") : ""}</p>
+      {dialog.event.completed && <p role="status">Completed</p>}
       {dialog.event.reminderTime && <p>Reminder at {dialog.event.reminderTime} IST</p>}
       {dialog.event.notes && <p className="fk-events-notes">{dialog.event.notes}</p>}
+      {error && <p role="alert" className="fk-events-error">{error}</p>}
       <div className="fk-events-dialog-actions">
-        <button type="button" className="fk-events-secondary" onClick={() => openDialog(null)}>Close</button>
-        <button type="button" className="fk-events-secondary" onClick={() => openDialog({ ...dialog, mode: "delete" })}>Delete</button>
-        {dialog.event.occurrenceDate && <button type="button" className="fk-events-secondary"
+        <button type="button" className="fk-events-secondary" disabled={busy} onClick={changeCompletion}>
+          {busy ? "Updating…" : dialog.event.completed ? "Undo completion" : "Mark as done"}
+        </button>
+        <button type="button" disabled={busy} className="fk-events-secondary" onClick={() => openDialog(null)}>Close</button>
+        <button type="button" disabled={busy} className="fk-events-secondary" onClick={() => openDialog({ ...dialog, mode: "delete" })}>Delete</button>
+        {dialog.event.occurrenceDate && <button type="button" disabled={busy} className="fk-events-secondary"
           onClick={() => openDialog({ ...dialog, mode: "edit", single: true })}>Edit this occurrence</button>}
-        <button type="button" className="fk-events-primary" onClick={() => openDialog({
+        <button type="button" disabled={busy} className="fk-events-primary" onClick={() => openDialog({
           mode: "edit", event: events.find((event) => event.eventId === dialog.event.eventId),
         })}>{dialog.event.occurrenceDate ? "Edit series" : "Edit"}</button>
       </div>

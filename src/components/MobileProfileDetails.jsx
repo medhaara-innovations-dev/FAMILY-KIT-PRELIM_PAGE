@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BookOpen, FileText, Landmark, Phone, Share2 } from "lucide-react";
-import { FaFacebook, FaInstagram, FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
+import { FacebookLogo, InstagramLogo, LinkedInLogo } from "./ReferenceIcons.jsx";
 import { normalizeSocialProfileUrl } from "../socialProfileLinks.js";
 import { getWhatsAppUrl } from "./whatsAppUrl.js";
 import "./MobileProfileDetails.css";
@@ -93,8 +94,8 @@ export function MobileProfileActions({ mobile, profile = {}, canShare = true }) 
         <strong aria-hidden="true">–</strong>
       </div>
       <div className="fk-profile-social-actions" aria-label="Social actions">
-        <SocialProfileAction field="instagramUrl" label="Instagram" Icon={FaInstagram} value={profile.instagramUrl} />
-        <SocialProfileAction field="facebookUrl" label="Facebook" Icon={FaFacebook} value={profile.facebookUrl} />
+        <SocialProfileAction field="instagramUrl" label="Instagram" Icon={InstagramLogo} value={profile.instagramUrl} />
+        <SocialProfileAction field="facebookUrl" label="Facebook" Icon={FacebookLogo} value={profile.facebookUrl} />
         {whatsappUrl ? (
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
             <FaWhatsapp />
@@ -102,7 +103,7 @@ export function MobileProfileActions({ mobile, profile = {}, canShare = true }) 
         ) : (
           <button type="button" disabled aria-label="WhatsApp unavailable"><FaWhatsapp /></button>
         )}
-        <SocialProfileAction field="linkedinUrl" label="LinkedIn" Icon={FaLinkedin} value={profile.linkedinUrl} />
+        <SocialProfileAction field="linkedinUrl" label="LinkedIn" Icon={LinkedInLogo} value={profile.linkedinUrl} />
       </div>
       <div className="fk-profile-direct-actions">
         {mobile ? (

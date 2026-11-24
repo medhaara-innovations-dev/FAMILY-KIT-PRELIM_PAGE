@@ -8,8 +8,13 @@ export default function ProfileAvatar({
   className = "",
   children,
   refreshKey = 0,
+  onPhotoChange,
 }) {
   const [photoUrl, setPhotoUrl] = useState(null);
+
+  useEffect(() => {
+    onPhotoChange?.(Boolean(photoUrl));
+  }, [photoUrl, onPhotoChange]);
 
   useEffect(() => {
     let active = true;

@@ -1,3 +1,4 @@
+import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,11 +9,7 @@ import {
   StickyNote,
   Plus,
   Bell,
-  House,
-  UsersRound,
-  LayoutGrid,
-  CreditCard,
-} from "lucide-react";
+  } from "lucide-react";
 
 import { getNotes } from "./api/notesApi";
 import { getStoredAccessToken, getStoredRefreshToken } from "./auth/sessionManager.js";
@@ -410,27 +407,7 @@ export default function NotesPage() {
         </section>
       </div>
 
-      <nav className="fk-notes-bottom-nav" aria-label="FamilyKit navigation">
-        <button type="button" className="fk-notes-nav-item" onClick={() => navigate("/my-family")}>
-          <span className="fk-notes-nav-icon"><House size={20} strokeWidth={1.8} /></span>
-          <span>Home</span>
-        </button>
-        <button type="button" className="fk-notes-nav-item" onClick={() => navigate("/family")}>
-          <span className="fk-notes-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span>
-          <span>My Family</span>
-        </button>
-        <button type="button" className="fk-notes-nav-center-add" onClick={() => navigate("/family/add")} aria-label="Add family member">
-          <Plus size={30} />
-        </button>
-        <button type="button" className="fk-notes-nav-item active" onClick={() => navigate("/categories")} aria-current="page">
-          <span className="fk-notes-nav-icon"><LayoutGrid size={20} strokeWidth={1.8} /></span>
-          <span>Category</span>
-        </button>
-        <button type="button" className="fk-notes-nav-item" disabled aria-label="Pay and Renew unavailable">
-          <span className="fk-notes-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span>
-          <span>Pay &amp; Renew</span>
-        </button>
-      </nav>
+      <FamilyBottomNav active="category" />
     </main>
   );
 }
