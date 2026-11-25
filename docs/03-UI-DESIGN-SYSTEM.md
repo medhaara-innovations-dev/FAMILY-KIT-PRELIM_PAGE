@@ -23,14 +23,14 @@ The shared app navigation uses the approved Home outline and outline Categories 
 |---|---|
 | Colors | Primary purple `#2D0B84`, lavender surface `#EBE6F7`, primary text `#050011`, secondary text `#4D485A` |
 | Dashboard gradient | `#C4ADFF` to `#F0EEF3` |
-| Glass header | `blur(12px)` and `saturate(200%)` |
+| Glass header | `blur(12px)` |
 | Typography | Poppins headings and Mulish body |
 
 Preserve approved desktop and mobile layouts, typography, spacing, gradients and component behavior. Changes to approved designs and new colors require explicit approval. Other source tokens and breakpoints need owner confirmation before adoption as standards.
 
 ### Approved audit rollout
 
-Shared app navigation switches from the bottom bar to the desktop sidebar at 1200 px. Bottom-bar labels use Poppins 12/16, with semibold for the active item. Home, Categories and Events apply the approved responsive heading scale. Categories uses the audit's verified color pairs where supplied. Education retains its existing treatment because the audit does not list a verified pair for it. The shared glass header applies `blur(12px) saturate(200%)`. [Responsive styles](../src/responsive.css) [Shared header CSS](../src/components/GlassHeader.css#L24)
+Shared app navigation switches from the bottom bar to the desktop sidebar at 1200 px. Bottom-bar labels use Poppins 12/16, with semibold for the active item. Home, Categories and Events apply the approved responsive heading scale. Categories uses the audit's verified color pairs where supplied. Education retains its existing treatment because the audit does not list a verified pair for it. The shared glass header applies `blur(12px)`. [Responsive styles](../src/responsive.css) [Shared header CSS](../src/components/GlassHeader.css#L24)
 
 ## Inconsistencies and open decisions
 

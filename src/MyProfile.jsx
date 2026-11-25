@@ -285,7 +285,7 @@ export default function MyProfile() {
               {!loading && !contacts.email && <p>Sign in again with your verified email to edit your profile.</p>}
             </section>
             <section className="fk-settings-card fk-settings-actions" aria-label="Account actions">
-              <SettingsRow icon={KeyRound} label="Reset PIN" onClick={() => navigate("/forgot-pin")} />
+              <SettingsRow icon={KeyRound} label="Reset PIN" onClick={() => navigate("/forgot-pin", { state: { fromProfileSettings: true } })} />
               <SettingsRow icon={Fingerprint} label="Biometric Password" toggle />
             </section>
             <section className="fk-settings-card" aria-label="Referral">

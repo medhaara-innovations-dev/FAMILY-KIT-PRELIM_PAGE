@@ -2666,7 +2666,7 @@ async function refreshWithOAuthEndpoint(refreshToken) {
 
   if (!response.ok || !result.access_token) {
 
-    throw new Error(
+    const error = new Error(
 
       result.error_description ||
 
@@ -2675,6 +2675,9 @@ async function refreshWithOAuthEndpoint(refreshToken) {
       "Unable to refresh Cognito session."
 
     );
+
+    if (result.error === "invalid_grant") error.name = "SessionExpiredError";
+    throw error;
 
   }
 

@@ -73,6 +73,11 @@ export function getStoredSessionSubject() {
   return getAccessTokenSubject(getStoredAccessToken());
 }
 
+export function getStoredSessionIdentity() {
+  const claims = decodeJwtPayload(getStoredAccessToken());
+  return claims?.sub ? `${claims.sub}:${claims.auth_time ?? ""}` : null;
+}
+
 export function getAccessTokenSubject(token) {
   return decodeJwtPayload(token)?.sub;
 }

@@ -7,6 +7,7 @@ import App from "./App.jsx";
 import SignupPage from "./auth/SignupPage.jsx";
 import LoginPage from "./auth/LoginPage.jsx";
 import ForgotPinPage from "./auth/ForgotPinPage.jsx";
+import InactivityLock from "./auth/InactivityLock.jsx";
 import MyFamilyPage from "./MyFamilyPage.jsx";
 import FamilyMembersPage from "./FamilyMembersPage.jsx";
 import AddFamilyMemberPage from "./AddFamilyMemberPage.jsx";
@@ -76,6 +77,7 @@ createRoot(document.getElementById("root")).render(
           element={<ImportantContactsPage />}
         />
       </Routes>
+      <InactivityLock />
     </BrowserRouter>
   </StrictMode>
 );

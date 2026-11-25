@@ -1,0 +1,50 @@
+.fk-inactivity-lock {
+  box-sizing: border-box;
+  width: min(26rem, calc(100% - 2rem));
+  max-height: calc(100% - 2rem);
+  margin: auto;
+  padding: 1.5rem;
+  border: 1px solid #ebe6f7;
+  border-radius: 1rem;
+  background: #fff;
+  color: #050011;
+  font-family: Mulish, sans-serif;
+}
+
+.fk-inactivity-lock::backdrop {
+  background: #ebe6f7;
+}
+
+.fk-inactivity-lock form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.fk-inactivity-lock h1,
+.fk-inactivity-lock p {
+  margin: 0;
+}
+
+.fk-inactivity-lock h1 {
+  font: 600 1.25rem / 1.4 Poppins, sans-serif;
+}
+
+.fk-inactivity-lock input,
+.fk-inactivity-lock button {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ebe6f7;
+  border-radius: 0.75rem;
+  font: inherit;
+}
+
+.fk-inactivity-lock button {
+  background: #2d0b84;
+  color: #fff;
+}
+
+.fk-inactivity-lock button:disabled {
+  opacity: 0.65;
+}

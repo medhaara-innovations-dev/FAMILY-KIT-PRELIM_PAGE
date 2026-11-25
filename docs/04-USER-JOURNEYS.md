@@ -26,6 +26,8 @@ sequenceDiagram
 
 [LoginPage.jsx](../src/auth/LoginPage.jsx) resolves the email identity, starts a Cognito custom challenge and submits the PIN. [ForgotPinPage.jsx](../src/auth/ForgotPinPage.jsx) requests a recovery code, verifies it and submits the new PIN with the reset authorization. See [auth](10-AUTHENTICATION-SECURITY.md) for session and recovery rules.
 
+[Profile & Settings](../src/MyProfile.jsx) opens the shared Reset PIN screen. The back arrow and the “Remember your PIN?” link return to Profile & Settings when entered from there. When entered from login, both controls lead to login.
+
 ## Family and photos
 
 The registered account owner is distinct from additional members. The initial family contains the owner alone. The dashboard places the owner first and loads additional members through the authenticated Family Members API. Additional members use unique `memberId` values. The self photo uses `PROFILE#SELF`. See [family rules](05-FEATURE-SPECIFICATIONS.md#family-ownership-and-filtering).

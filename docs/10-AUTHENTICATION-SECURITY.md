@@ -11,6 +11,8 @@ Last verified: 2026-11-22.
 
 ## PIN and email
 
+Signed-in screens lock after 10 minutes of inactivity, including time spent in the background. The lock obscures the screen and preserves the mounted page and draft in memory. Unlock uses the existing Cognito PIN challenge for the signed-in account and discards the proof tokens. The browser requires a fresh sign-in after five rejected PINs or a confirmed expired session. The lock is a browser privacy control and does not change API authorization or server-side session expiry.
+
 Tracked code stores salted PBKDF2 verification material and allows five failed PIN attempts per Cognito challenge sequence. Signup email uses Cognito. Tracked recovery sends email through Gmail using Secrets Manager at runtime. Recovery uses a five-minute OTP, up to five verification attempts and up to five sends per hour. Writes enforce expiry and verification state. The reset authorization is consumed when the PIN changes. Step 5 closed the reported source timing difference. Both handlers use the same 300-second OTP lifetime, 60-second resend cooldown and five verification attempts per OTP. Neither defines a separate failed-attempt reset timer. Reset authorization uses the remainder of the original OTP lifetime. The 60-second browser countdown starts after a generic acknowledgement, so delivery and exact server timing require verification. The live Lambda budget is 10 seconds and the two sequential mail-client timeouts are 15 seconds each. Delivery, cleanup and counter retention remain open Step 6 verification items. No timing values were changed.
 
 ## Security requirements and risks

@@ -1,7 +1,7 @@
 import { ChevronLeft } from "lucide-react";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   requestPinReset,
@@ -15,6 +15,16 @@ const RESEND_SECONDS = 60;
 
 export default function ForgotPinPage() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const fromProfileSettings = state?.fromProfileSettings === true;
+
+  const handleBack = () => {
+    if (fromProfileSettings) {
+      navigate(-1);
+      return;
+    }
+    navigate("/login");
+  };
 
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -260,8 +270,8 @@ export default function ForgotPinPage() {
             <button
               type="button"
               className="forgot-pin-back"
-              onClick={() => navigate("/login")}
-              aria-label="Back to login"
+              onClick={handleBack}
+              aria-label={fromProfileSettings ? "Back to Profile & Settings" : "Back to login"}
             >
               <ChevronLeft size={20} aria-hidden="true" />
             </button>
@@ -553,9 +563,9 @@ export default function ForgotPinPage() {
                 Remember your PIN?{" "}
                 <button
                   type="button"
-                  onClick={() => navigate("/login")}
+                  onClick={handleBack}
                 >
-                  Log in
+                  {fromProfileSettings ? "Back to Profile & Settings" : "Log in"}
                 </button>
               </div>
             )}
