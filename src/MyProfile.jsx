@@ -255,8 +255,7 @@ export default function MyProfile() {
             <h2>{loading ? "Loading..." : name}</h2>
             <div className="fk-profile-relation-row">
               <p>
-                <span className="fk-profile-desktop-only">Registered User</span>
-                <span className="fk-profile-mobile-only">Self</span>
+                Self
               </p>
             </div>
           </div>

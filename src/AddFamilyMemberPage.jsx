@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
 
@@ -13,7 +13,6 @@ import {
 
   Check,
 
-  CheckCircle2,
 
   ChevronLeft,
 
@@ -83,6 +82,7 @@ const STEP_TITLES = [
 export default function AddFamilyMemberPage() {
 
   const navigate = useNavigate();
+  const returnToLauncher = useLocation().state?.returnToLauncher === true;
 
   const fileInputRef = useRef(null);
 
@@ -115,9 +115,6 @@ export default function AddFamilyMemberPage() {
   const [saveError, setSaveError] = useState("");
   const [duplicateMatch, setDuplicateMatch] = useState(null);
 
-  const [photoWarning, setPhotoWarning] = useState("");
-
-  const [createdMember, setCreatedMember] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -228,7 +225,6 @@ export default function AddFamilyMemberPage() {
 
     setPhotoError("");
 
-    setPhotoWarning("");
 
 
 
@@ -415,7 +411,8 @@ export default function AddFamilyMemberPage() {
 
   const discard = () => {
 
-    navigate("/family");
+    if (returnToLauncher) navigate(-1);
+    else navigate("/family", { replace: true });
 
   };
 
@@ -431,7 +428,7 @@ export default function AddFamilyMemberPage() {
 
   const saveMember = async () => {
 
-    if (saving || createdMember) return;
+    if (saving) return;
 
 
 
@@ -450,7 +447,6 @@ export default function AddFamilyMemberPage() {
     setSaveError("");
     setDuplicateMatch(null);
 
-    setPhotoWarning("");
 
 
 
@@ -480,55 +476,19 @@ export default function AddFamilyMemberPage() {
 
 
 
-      // Upload the optional photo after the member ID is available.
-
-
-
+      let photoUploadFailed = false;
       if (photoFile) {
-
         setUploadingPhoto(true);
-
-
-
         try {
-
-          await uploadProfilePicture(
-
-            member.memberId,
-
-            photoFile
-
-          );
-
-        } catch (photoUploadError) {
-
-          setPhotoWarning(
-
-            `Member created successfully, but photo upload failed: ${
-
-              photoUploadError.message ||
-
-              "Unknown error"
-
-            }. You can upload the photo later from the member profile.`
-
-          );
-
+          await uploadProfilePicture(member.memberId, photoFile);
+        } catch {
+          photoUploadFailed = true;
         } finally {
-
           setUploadingPhoto(false);
-
         }
-
       }
 
-
-
-      // SHOW SUCCESS AFTER PHOTO UPLOAD FINISHES
-
-
-
-      setCreatedMember(member);
+      navigate("/family", { replace: true, state: { memberAdded: true, photoUploadFailed } });
 
     } catch (error) {
       if (error.code === "PARENT_RELATIONSHIP_TAKEN") {
@@ -640,125 +600,6 @@ export default function AddFamilyMemberPage() {
     </label>
 
   );
-
-
-
-  // =====================================================
-
-  // SUCCESS SCREEN
-
-  // =====================================================
-
-
-
-  if (createdMember) {
-
-    return (
-
-      <div className="fk-add-page">
-
-        <header className="fk-add-header fk-glass-header">
-          <button
-            type="button"
-            className="fk-add-back"
-            onClick={() => navigate("/family")}
-            aria-label="Back to My Family"
-          >
-            <ChevronLeft size={22} />
-          </button>
-          <h1>Add Family Member</h1>
-          <span aria-hidden="true" />
-        </header>
-
-        <main className="fk-add-success">
-
-          <CheckCircle2 size={82} />
-
-
-
-          <h2>Member Added Successfully!</h2>
-
-
-
-          <p>
-
-            {createdMember.name} has been added
-
-            to your family.
-
-          </p>
-
-
-
-          {photoWarning && (
-
-            <p
-
-              className="fk-add-save-error"
-
-              role="alert"
-
-            >
-
-              {photoWarning}
-
-            </p>
-
-          )}
-
-
-
-          <button
-
-            type="button"
-
-            className="fk-add-primary"
-
-            onClick={() =>
-
-              navigate(
-
-                `/family/${encodeURIComponent(
-
-                  createdMember.memberId
-
-                )}`
-
-              )
-
-            }
-
-          >
-
-            View Profile
-
-            <ArrowRight size={19} />
-
-          </button>
-
-
-
-          <button
-
-            type="button"
-
-            className="fk-add-secondary"
-
-            onClick={() => navigate("/family")}
-
-          >
-
-            Back to My Family
-
-          </button>
-
-        </main>
-
-      </div>
-
-    );
-
-  }
 
 
 

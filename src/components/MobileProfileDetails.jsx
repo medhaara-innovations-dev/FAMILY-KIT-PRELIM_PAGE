@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { BookOpen, FileText, Landmark, Phone, Share2 } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
-import { FacebookLogo, InstagramLogo, LinkedInLogo } from "./ReferenceIcons.jsx";
+import { FacebookLogo, InstagramLogo, LinkedInLogo, WhatsAppLogo } from "./ReferenceIcons.jsx";
 import { normalizeSocialProfileUrl } from "../socialProfileLinks.js";
 import { getWhatsAppUrl } from "./whatsAppUrl.js";
 import "./MobileProfileDetails.css";
@@ -98,10 +97,10 @@ export function MobileProfileActions({ mobile, profile = {}, canShare = true }) 
         <SocialProfileAction field="facebookUrl" label="Facebook" Icon={FacebookLogo} value={profile.facebookUrl} />
         {whatsappUrl ? (
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-            <FaWhatsapp />
+            <WhatsAppLogo />
           </a>
         ) : (
-          <button type="button" disabled aria-label="WhatsApp unavailable"><FaWhatsapp /></button>
+          <button type="button" disabled aria-label="WhatsApp unavailable"><WhatsAppLogo /></button>
         )}
         <SocialProfileAction field="linkedinUrl" label="LinkedIn" Icon={LinkedInLogo} value={profile.linkedinUrl} />
       </div>
@@ -129,7 +128,7 @@ const documentCategories = [
 export function MobileConnectedDocuments() {
   const [category, setCategory] = useState("Documents");
   return (
-    <section className="fk-profile-connected-docs fk-profile-mobile-only">
+    <section className="fk-profile-connected-docs">
       <h3>Connected Documents</h3>
       <div className="fk-profile-document-filters" aria-label="Document category">
         {documentCategories.map(([label, Icon]) => (

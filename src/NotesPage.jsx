@@ -1,18 +1,18 @@
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   ChevronLeft,
   Search,
-  StickyNote,
   Plus,
   Bell,
   } from "lucide-react";
 
 import { getNotes } from "./api/notesApi";
 import { getStoredAccessToken, getStoredRefreshToken } from "./auth/sessionManager.js";
+import { NotesIcon } from "./components/ReferenceIcons.jsx";
 import "./NotesPage.css";
 
 // =====================================================
@@ -113,6 +113,7 @@ function getRelativeTime(createdAt, now) {
 
 export default function NotesPage() {
   const navigate = useNavigate();
+  const fromCategories = useLocation().state?.fromCategories === true;
 
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -210,12 +211,13 @@ export default function NotesPage() {
     if (!note.noteId) return;
 
     navigate(
-      `/notes/${encodeURIComponent(note.noteId)}`
+      `/notes/${encodeURIComponent(note.noteId)}`,
+      { state: { fromCategories } }
     );
   };
 
   const handleAddNote = () => {
-    navigate("/notes/new");
+    navigate("/notes/new", { state: { fromCategories } });
   };
 
   // =====================================================
@@ -230,8 +232,8 @@ export default function NotesPage() {
           <button
             type="button"
             className="fk-notes-icon-button"
-            onClick={() => navigate("/categories")}
-            aria-label="Back to Categories"
+            onClick={() => navigate(fromCategories ? "/categories" : "/my-family", { replace: true })}
+            aria-label={fromCategories ? "Back to Categories" : "Back to dashboard"}
           >
             <ChevronLeft size={20} />
           </button>
@@ -290,7 +292,7 @@ export default function NotesPage() {
           </div>
 
           <div className="fk-notes-hero-icon">
-            <StickyNote
+            <NotesIcon
               size={53}
               strokeWidth={1.5}
             />
@@ -333,7 +335,7 @@ export default function NotesPage() {
           ) : !error &&
             filteredNotes.length === 0 ? (
             <div className="fk-notes-empty">
-              <StickyNote
+              <NotesIcon
                 size={42}
                 strokeWidth={1.4}
               />

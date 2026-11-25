@@ -22,6 +22,7 @@ import "./NotesDetailsPage.css";
 export default function NotesDetailsPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const fromCategories = location.state?.fromCategories === true;
 
   // =====================================================
   // NOTE DATA FROM EDITOR
@@ -75,6 +76,7 @@ export default function NotesDetailsPage() {
     navigate(editorPath, {
       replace: true,
       state: {
+        fromCategories,
         noteText,
         noteTitle,
         hasReminder,
@@ -255,6 +257,7 @@ export default function NotesDetailsPage() {
 
     navigate("/notes", {
       replace: true,
+      state: { fromCategories },
     });
   };
 

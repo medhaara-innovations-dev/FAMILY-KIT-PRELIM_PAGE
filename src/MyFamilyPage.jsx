@@ -11,9 +11,7 @@ import {
   AudioLines,
   Plus,
   ChevronRight,
-  ContactRound,
   BookMarked,
-  StickyNote,
   Sparkles,
 } from "lucide-react";
 
@@ -27,6 +25,7 @@ import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyCalendar from "./FamilyCalendar.jsx";
 
+import { ImportantContactsIcon, NotesIcon } from "./components/ReferenceIcons.jsx";
 import "./MyFamilyPage.css";
 
 // =====================================================
@@ -457,7 +456,7 @@ export default function MyFamilyPage() {
 
           <div className="fk-dash-actions-grid">
             <QuickAction
-              icon={ContactRound}
+              icon={ImportantContactsIcon}
               label="Important Contacts"
               tone="coral"
               onClick={() => navigate("/important-contacts")}
@@ -472,7 +471,7 @@ export default function MyFamilyPage() {
 
             {/* MY NOTES — ENABLED */}
             <QuickAction
-              icon={StickyNote}
+              icon={NotesIcon}
               label="Notes"
               tone="green"
               onClick={() => navigate("/notes")}
@@ -522,7 +521,7 @@ export default function MyFamilyPage() {
                   member={member}
                   onOpen={() => member.id === "me"
                     ? navigate("/my-profile", { state: { readOnly: true } })
-                    : navigate(`/family/${encodeURIComponent(member.id)}`)}
+                    : navigate(`/family/${encodeURIComponent(member.id)}`, { state: { fromHome: true } })}
                 />
               ))}
 
@@ -537,7 +536,7 @@ export default function MyFamilyPage() {
                   className="fk-dash-family-add"
                   aria-label="Add family member"
                   onClick={() =>
-                    navigate("/family/add")
+                    navigate("/family/add", { state: { returnToLauncher: true } })
                   }
                 >
                   <Plus size={27} />

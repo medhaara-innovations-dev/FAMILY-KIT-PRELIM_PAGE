@@ -32,6 +32,8 @@ sequenceDiagram
 
 The registered account owner is distinct from additional members. The initial family contains the owner alone. The dashboard places the owner first and loads additional members through the authenticated Family Members API. Additional members use unique `memberId` values. The self photo uses `PROFILE#SELF`. See [family rules](05-FEATURE-SPECIFICATIONS.md#family-ownership-and-filtering).
 
+Member profiles return to the Home preview or My Family directory that opened them. The directory returns to Home. The self profile returns to its launcher, and Profile & Settings returns to Home. Discarding Add Family Member returns to its launcher, while a successful addition opens My Family with confirmation. Saving or canceling an edit returns to the same member profile. Deleting a member returns to My Family.
+
 The local frontend previews up to four profiles, including the owner, in a horizontally scrollable row with Add Member at the end. Select **View All** to open the full family directory, or select **Add Member** to start a new profile. Enter the required fields first. On the final review step, choose and crop an optional profile photo, then select Add Member. The app creates the member before uploading the photo. You can also save without a photo and add one later. Open My Profile for the signed-in user's profile.
 
 ```mermaid
@@ -52,5 +54,7 @@ sequenceDiagram
 ## Records and navigation
 
 Open Diary, Notes, or Important Contacts from the dashboard or linked category, then list, create, view, edit, or delete records where supported. Category search filters card titles. The selector starts with **All Family** and **Me** and adds relationship options from the authenticated member list. Selection updates the UI. Filtering stored records by `memberId` is future work. Events currently provides calendar navigation and a visual empty state.
+
+The Diary, Notes, Events and Important Contacts back arrows return to Categories when opened from their category tiles. When opened from Home or from a direct link, they return to Home. Diary and Notes carry the entry point through their view and edit screens.
 
 Sources: [dashboard](../src/MyFamilyPage.jsx), [member form](../src/AddFamilyMemberPage.jsx), [photo wrapper](../src/api/profilePicturesApi.js), and [feature specs](05-FEATURE-SPECIFICATIONS.md).

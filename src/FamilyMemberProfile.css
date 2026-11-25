@@ -53,6 +53,15 @@
 
 .fk-profile-action-remove { color: #b4233d; }
 
+.fk-profile-contact-info {
+  padding-inline: 12px;
+  overflow-wrap: anywhere;
+}
+
+.fk-profile-contact-info dl { margin: 0; }
+.fk-profile-contact-info dt { font-weight: 600; }
+.fk-profile-contact-info dd { margin: 0 0 6px; }
+
 .fk-profile-header-space {
   width: 42px;
 }
@@ -160,58 +169,6 @@
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 20px;
-}
-
-.fk-profile-card h3 {
-  margin: 0 0 22px;
-  font-family: "Poppins", sans-serif;
-  font-size: 21px;
-  color: var(--fk-profile-dark);
-}
-
-.fk-profile-details {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.fk-profile-detail {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid var(--fk-profile-border);
-  border-radius: 14px;
-}
-
-.fk-profile-detail-icon {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: var(--fk-profile-lavender);
-  color: var(--fk-profile-purple);
-}
-
-.fk-profile-detail-text {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-}
-
-.fk-profile-detail-text span {
-  font-size: 13px;
-  color: var(--fk-profile-muted);
-}
-
-.fk-profile-detail-text strong {
-  font-size: 15px;
-  font-weight: 700;
-  overflow-wrap: anywhere;
 }
 
 /* =========================================
@@ -336,28 +293,6 @@
 }
 
 /* =========================================
-   DOCUMENTS SECTION
-   ========================================= */
-
-.fk-profile-documents {
-  min-height: 170px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  color: var(--fk-profile-purple);
-  background: #faf9ff;
-  border-radius: 14px;
-}
-
-.fk-profile-documents p {
-  margin: 0;
-  font-size: 14px;
-  color: var(--fk-profile-muted);
-}
-
-/* =========================================
    ERROR AND SUCCESS MESSAGES
    ========================================= */
 
@@ -405,6 +340,24 @@
    MOBILE RESPONSIVENESS
    ========================================= */
 
+.fk-mobile-profile-identity .fk-profile-relation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fk-mobile-profile-card .fk-mobile-profile-identity .fk-profile-relation-row p {
+  margin: 0;
+  padding: 2px 8px;
+  border: 1px solid #b294ff;
+  border-radius: 999px;
+  background: #ebe6f7;
+  color: #2d0b84;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 600px) {
   .fk-mobile-profile-card .fk-profile-camera-button {
     width: 28px;
@@ -414,41 +367,6 @@
   .fk-mobile-profile-card .fk-profile-camera-button svg {
     width: 14px;
     height: 14px;
-  }
-
-  .fk-profile-compact-view .fk-profile-desktop-only {
-    display: none;
-  }
-
-  .fk-mobile-profile-identity .fk-profile-relation-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .fk-mobile-profile-card .fk-mobile-profile-identity .fk-profile-relation-row p {
-    margin: 0;
-    padding: 2px 8px;
-    border: 1px solid #b294ff;
-    border-radius: 999px;
-    background: #ebe6f7;
-    color: #2d0b84;
-    font-size: 11px;
-    overflow-wrap: anywhere;
-  }
-
-  .fk-profile-relation-row .fk-profile-inline-edit {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border: 0;
-    border-radius: 50%;
-    background: #ebe6f7;
-    color: #2d0b84;
-    cursor: pointer;
   }
 
   .fk-profile-page {
@@ -479,11 +397,6 @@
     padding: 18px 15px;
   }
 
-  .fk-profile-card h3 {
-    font-size: 19px;
-  }
-
-  .fk-profile-details,
   .fk-profile-edit-form {
     grid-template-columns: 1fr;
     gap: 12px;

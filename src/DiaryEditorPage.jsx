@@ -76,6 +76,7 @@ function CalendarPopup({ value, onSelect, onClose }) {
 export default function DiaryEditorPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const fromCategories = location.state?.fromCategories === true;
   const { entryId } = useParams();
   const isNew = !entryId;
   const isEditing = location.pathname.endsWith("/edit");
@@ -128,7 +129,7 @@ export default function DiaryEditorPage() {
       const payload = { entryDate, title: title.trim(), content: content.trim(), mood };
       if (isNew) await createDiaryEntry(payload);
       else await updateDiaryEntry(entryId, payload);
-      navigate("/diary");
+      navigate("/diary", { state: { fromCategories } });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -143,7 +144,7 @@ export default function DiaryEditorPage() {
     try {
       await deleteDiaryEntry(entryId);
       setConfirmDelete(false);
-      navigate("/diary", { replace: true });
+      navigate("/diary", { replace: true, state: { fromCategories } });
     } catch (err) {
       setError(err?.message || "Unable to delete diary entry.");
       setConfirmDelete(false);
@@ -158,7 +159,7 @@ export default function DiaryEditorPage() {
     <main className="diary-editor-page">
       <div className="diary-editor-container">
         <header className="diary-editor-topbar">
-          <button type="button" className="diary-editor-back" onClick={() => navigate("/diary")} aria-label="Back to diary">
+          <button type="button" className="diary-editor-back" onClick={() => navigate("/diary", { state: { fromCategories } })} aria-label="Back to diary">
             <ChevronLeft size={19} />
           </button>
           <span>Dear Diary</span>
@@ -167,7 +168,7 @@ export default function DiaryEditorPage() {
               <Trash2 size={18} />
             </button>
           ) : (
-            <button type="button" className="diary-editor-search" aria-label="Search diary entries" onClick={() => navigate("/diary")}>
+            <button type="button" className="diary-editor-search" aria-label="Search diary entries" onClick={() => navigate("/diary", { state: { fromCategories } })}>
               <Search size={16} />
             </button>
           )}
@@ -212,7 +213,7 @@ export default function DiaryEditorPage() {
 
             <div className="diary-editor-save-area">
               {readOnly ? (
-                <button type="button" className="diary-save-btn" onClick={() => navigate(`/diary/${entryId}/edit`)}>Edit Entry</button>
+                <button type="button" className="diary-save-btn" onClick={() => navigate(`/diary/${entryId}/edit`, { state: { fromCategories } })}>Edit Entry</button>
               ) : (
                 <button type="submit" className="diary-save-btn" disabled={saving}>{saving ? "Saving..." : "Save Entry"}</button>
               )}

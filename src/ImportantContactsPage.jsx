@@ -1,13 +1,12 @@
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, Plus, Search, Phone, Mail, Pencil, Trash2, X,
-  ContactRound, AlertTriangle, ShieldCheck, HeartPulse, UsersRound,
-  Scale, GraduationCap, Landmark, ChevronDown, Check, RefreshCw, EllipsisVertical,
+  AlertTriangle, ShieldCheck, HeartPulse, UsersRound,
+  Scale, GraduationCap, Landmark, ChevronDown, Check, RefreshCw, EllipsisVertical, Eye,
 } from "lucide-react";
-import { CameraIcon } from "./components/ReferenceIcons.jsx";
-import { FaWhatsapp } from "react-icons/fa";
+import { CameraIcon, ImportantContactsIcon, WhatsAppLogo } from "./components/ReferenceIcons.jsx";
 import { contactThumbnail } from "./contactPhoto.js";
 import {
   getImportantContacts, getContactCategories, addImportantContact,
@@ -25,10 +24,13 @@ const CATEGORY_ICONS = {
 const EMPTY_FORM = { name: "", category: "", role: "", customRole: "", relation: "", mobileNumber: "", email: "", photo: "" };
 const emergency = (category) => category === "Emergency" || category === "Emergency & Safety";
 
-function ContactAvatar({ name, photo }) {
+function ContactAvatar({ name, photo, card = false }) {
+  const words = (name || "").trim().split(/\s+/).filter(Boolean);
+  const initial = words[0]?.[0]?.toUpperCase() || "?";
+  const lastInitial = words.length > 1 ? words.at(-1)[0].toUpperCase() : "";
   return <span className="fk-ic-avatar" aria-hidden="true">{photo
     ? <img src={`data:image/jpeg;base64,${photo}`} alt="" />
-    : (name || "?").slice(0, 1).toUpperCase()}</span>;
+    : <span>{initial}{card && lastInitial && <span className="fk-ic-card-mobile">{lastInitial}</span>}</span>}</span>;
 }
 
 function localMobile(value = "") {
@@ -41,6 +43,8 @@ function whatsAppUrl(number) {
 
 export default function ImportantContactsPage() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const fromCategories = state?.fromCategories === true;
   const [contacts, setContacts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -55,6 +59,8 @@ export default function ImportantContactsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [categorySearch, setCategorySearch] = useState("");
   const [photoBusy, setPhotoBusy] = useState(false);
+  const [viewedContact, setViewedContact] = useState(null);
+  const contactDetails = useRef(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -178,7 +184,9 @@ export default function ImportantContactsPage() {
     <main className="fk-ic-page">
       <div className="fk-ic-container">
         <header className="fk-ic-header">
-          <button type="button" className="fk-ic-round fk-ic-back" onClick={() => navigate("/my-family")} aria-label="Back to dashboard"><ChevronLeft size={19} /></button>
+          <button type="button" className="fk-ic-round fk-ic-back"
+            onClick={() => fromCategories ? navigate(-1) : navigate("/my-family")}
+            aria-label={fromCategories ? "Back to Categories" : "Back to dashboard"}><ChevronLeft size={19} /></button>
           <h1>Important Contacts</h1>
           <button type="button" className="fk-ic-round fk-ic-search-toggle" onClick={() => { setSearchOpen((v) => !v); setSearch(""); }} aria-label="Search contacts"><Search size={19} /></button>
           <button type="button" className="fk-ic-round fk-ic-plus" onClick={openAdd} disabled={loading || categories.length === 0} aria-label="Add contact"><Plus size={19} /></button>
@@ -207,7 +215,7 @@ export default function ImportantContactsPage() {
         ) : visibleContacts.length === 0 ? (
           <section className="fk-ic-empty">
             <div className="fk-ic-empty-inner">
-              <span className="fk-ic-empty-icon"><ContactRound size={29} /></span>
+              <span className="fk-ic-empty-icon"><ImportantContactsIcon size={29} /></span>
               <h2>{contacts.length === 0 ? "No Important Contacts yet" : "No contacts found"}</h2>
               <p>{contacts.length === 0 ? "Add someone you may need to reach quickly." : "Try another category or search."}</p>
               <button type="button" className="fk-ic-empty-add" onClick={openAdd} disabled={categories.length === 0}><Plus size={16} /> Add Contact</button>
@@ -220,12 +228,13 @@ export default function ImportantContactsPage() {
               {visibleContacts.map((contact) => (
                 <article className="fk-ic-card" key={contact.contactId}>
                   <div className="fk-ic-card-main">
-                    <ContactAvatar name={contact.name} photo={contact.photo} />
+                    <ContactAvatar name={contact.name} photo={contact.photo} card />
                     <div className="fk-ic-card-info">
                       <div className="fk-ic-name-row"><h3>{contact.name}</h3></div>
                       <div className="fk-ic-badges">
                         <span className="fk-ic-category">{displayCategory(contact.category)}</span>
                         <span className="fk-ic-role">{contact.customRole || contact.role}</span>
+                        {contact.relation && <span className="fk-ic-role fk-ic-relation fk-ic-card-mobile">{contact.relation}</span>}
                       </div>
                       {contact.relation && <p className="fk-ic-card-detail"><UsersRound size={14} aria-hidden="true" />{contact.relation}</p>}
                       <a className="fk-ic-card-detail" href={`tel:${contact.mobileNumber}`}><Phone size={14} aria-hidden="true" />{contact.mobileNumber}</a>
@@ -234,14 +243,26 @@ export default function ImportantContactsPage() {
                     <details className="fk-ic-card-menu">
                       <summary aria-label={`Actions for ${contact.name}`}><EllipsisVertical size={20} aria-hidden="true" /></summary>
                       <div>
+                        <button type="button" onClick={(event) => {
+                          const menu = event.currentTarget.closest("details");
+                          menu.open = false;
+                          menu.querySelector("summary").focus();
+                          setViewedContact(contact);
+                          contactDetails.current?.showModal();
+                        }}><Eye size={15} aria-hidden="true" /> View Details</button>
                         <button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; openEdit(contact); }}><Pencil size={15} /> Edit</button>
                         <button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; handleDelete(contact); }}><Trash2 size={15} /> Delete</button>
                       </div>
                     </details>
                   </div>
                   <div className="fk-ic-card-links">
-                    <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><FaWhatsapp size={17} aria-hidden="true" /> WhatsApp</a>
+                    <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><WhatsAppLogo size={17} aria-hidden="true" /> WhatsApp</a>
                     <a className="fk-ic-call" href={`tel:${contact.mobileNumber}`} aria-label={`Call ${contact.name}`}><Phone size={16} /> Call</a>
+                    {contact.email?.trim() ? (
+                      <a className="fk-ic-email fk-ic-card-mobile" href={`mailto:${encodeURIComponent(contact.email.trim()).replace(/%40/g, "@")}`} aria-label={`Email ${contact.name}`}><Mail size={16} aria-hidden="true" /> Email</a>
+                    ) : (
+                      <button type="button" className="fk-ic-email fk-ic-card-mobile" disabled aria-label={`Email unavailable for ${contact.name}`}><Mail size={16} aria-hidden="true" /> Email</button>
+                    )}
                   </div>
                 </article>
               ))}
@@ -251,6 +272,24 @@ export default function ImportantContactsPage() {
       </div>
 
       <FamilyBottomNav active="category" />
+
+      <dialog ref={contactDetails} className="fk-ic-modal fk-ic-view-details"
+        aria-labelledby="fk-ic-details-title" onClose={() => setViewedContact(null)}>
+        <div className="fk-ic-modal-header">
+          <h2 id="fk-ic-details-title">Contact Details</h2>
+          <button type="button" onClick={() => contactDetails.current?.close()} aria-label="Close contact details"><X size={19} /></button>
+        </div>
+        {viewedContact && <>
+          <h3>{viewedContact.name}</h3>
+          <dl>
+            <dt>Category</dt><dd>{displayCategory(viewedContact.category)}</dd>
+            <dt>Role</dt><dd>{viewedContact.customRole || viewedContact.role}</dd>
+            <dt>Relationship</dt><dd>{viewedContact.relation || "Not provided"}</dd>
+            <dt>Mobile number</dt><dd>{viewedContact.mobileNumber || "Not provided"}</dd>
+            <dt>Email address</dt><dd>{viewedContact.email || "Not provided"}</dd>
+          </dl>
+        </>}
+      </dialog>
 
       {modalOpen && (
         <div className="fk-ic-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}>

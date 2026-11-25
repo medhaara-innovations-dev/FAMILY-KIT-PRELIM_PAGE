@@ -69,6 +69,41 @@
 .fk-ic-whatsapp { border: 1px solid var(--ic-purple); color: var(--ic-purple); background: transparent; }
 .fk-ic-whatsapp svg { color: #23B55A; }
 .fk-ic-call { border: 1px solid var(--ic-purple); color: #FFFFFF; background: var(--ic-purple); }
+.fk-ic-card .fk-ic-card-mobile { display: none; }
+
+@media (width < 768px) {
+  .fk-ic-card .fk-ic-avatar { border-radius: 50%; font-size: 20px; }
+  .fk-ic-card .fk-ic-card-mobile { display: inline; }
+  .fk-ic-card .fk-ic-category,
+  .fk-ic-card .fk-ic-card-detail { display: none; }
+  .fk-ic-name-row h3 { font-size: 16px; }
+  .fk-ic-badges { flex-wrap: nowrap; align-items: flex-start; }
+  .fk-ic-badges .fk-ic-role { min-width: 0; background: var(--ic-light); }
+  .fk-ic-badges .fk-ic-relation { background: transparent; }
+  .fk-ic-card-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fk-ic-card-links :is(a, button) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 44px;
+    gap: clamp(3px, 1vw, 8px);
+    padding: 0 4px;
+    font-size: clamp(10px, 3vw, 12px);
+    white-space: nowrap;
+  }
+  .fk-ic-card-links svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .fk-ic-card-links .fk-ic-email {
+    display: flex;
+    border: 1px solid var(--ic-purple);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ic-purple);
+    font-family: inherit;
+    font-weight: 800;
+  }
+  .fk-ic-email:disabled { opacity: .55; }
+}
 /* Bottom navigation — Home Dashboard standard */
 .fk-ic-bottom-nav {
   position: fixed;
@@ -154,6 +189,12 @@
 .fk-ic-modal-header { position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
 .fk-ic-modal-header h2 { margin: 0; font: 600 21px "Poppins", sans-serif; }
 .fk-ic-modal-header button { position: absolute; right: 0; top: 0; display: grid; place-items: center; width: 28px; height: 28px; border: 0; background: transparent; color: var(--ic-purple); }
+.fk-ic-modal.fk-ic-view-details { width: min(calc(100% - 32px), 28rem); border: 1px solid var(--ic-border); border-radius: 16px; color: var(--ic-text); }
+.fk-ic-view-details::backdrop { background: #13043880; }
+.fk-ic-view-details h3 { margin: 0 0 12px; font: 600 16px/1.4 "Poppins", sans-serif; overflow-wrap: anywhere; }
+.fk-ic-view-details dl { margin: 0; overflow-wrap: anywhere; }
+.fk-ic-view-details dt { font-weight: 800; }
+.fk-ic-view-details dd { margin: 0 0 10px; color: var(--ic-secondary); }
 .fk-ic-modal form { display: flex; flex-direction: column; gap: 8px; }
 .fk-ic-photo-field { display:flex; align-items:center; gap: 14px; padding: 12px; border-radius: 14px; background: var(--ic-light); color: var(--ic-purple); }
 .fk-ic-photo-field > div { min-width: 0; display:grid; justify-items: start; gap: 4px; }

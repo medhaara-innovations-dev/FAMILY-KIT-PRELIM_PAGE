@@ -227,6 +227,7 @@
 }
 
 .fk-cat-radio {
+  display: inline-flex;
   width: 23px;
   height: 23px;
 
@@ -234,6 +235,12 @@
   border-radius: 50%;
 
   background: #faf8ff;
+}
+
+.fk-cat-filter-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 
 /* ==========================================
@@ -339,15 +346,6 @@
 
   border-radius: 12px;
   margin-bottom: 7px;
-}
-
-.fk-cat-image-icon {
-  display: block;
-
-  width: 28px;
-  height: 28px;
-
-  object-fit: contain;
 }
 
 /* ==========================================

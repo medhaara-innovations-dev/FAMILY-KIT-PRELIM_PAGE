@@ -1,6 +1,6 @@
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, BookHeart, Pencil, Search
 } from "lucide-react";
@@ -22,6 +22,7 @@ function getDateParts(value) {
 
 export default function DiaryPage() {
   const navigate = useNavigate();
+  const fromCategories = useLocation().state?.fromCategories === true;
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -61,7 +62,7 @@ export default function DiaryPage() {
         {/* This area stays visible while the diary cards scroll. */}
         <div className="diary-fixed-content">
           <header className="diary-topbar">
-            <button type="button" className="diary-back" onClick={() => navigate("/categories")} aria-label="Back to Categories">
+            <button type="button" className="diary-back" onClick={() => navigate(fromCategories ? "/categories" : "/my-family", { replace: true })} aria-label={fromCategories ? "Back to Categories" : "Back to dashboard"}>
               <ChevronLeft size={18} />
             </button>
             <h1>Dear Diary</h1>
@@ -80,7 +81,7 @@ export default function DiaryPage() {
           <section className="diary-hero">
             <div className="diary-hero-copy">
               <p>Start writing your thoughts in Dear Diary and no one has access to your diary.</p>
-              <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new")}>
+              <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new", { state: { fromCategories } })}>
                 <Pencil size={13} /> Write Today's Diary
               </button>
             </div>
@@ -108,7 +109,7 @@ export default function DiaryPage() {
               <BookHeart size={34} />
               <h3>{searchText ? "No matching entries" : "Your diary is waiting"}</h3>
               <p>{searchText ? "Try a different search." : "Your thoughts, memories and special moments deserve a place of their own."}</p>
-              {!searchText && <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new")}>Write Your First Entry</button>}
+              {!searchText && <button type="button" className="diary-primary-btn" onClick={() => navigate("/diary/new", { state: { fromCategories } })}>Write Your First Entry</button>}
             </div>
           ) : (
             <div className="diary-entry-grid">
@@ -116,7 +117,7 @@ export default function DiaryPage() {
                 const date = getDateParts(entry.entryDate);
                 return (
                   <article className="diary-entry-card" key={entry.entryId}>
-                    <button type="button" className="diary-entry-main" onClick={() => navigate(`/diary/${encodeURIComponent(entry.entryId)}`)} aria-label={`Read ${entry.title || "Untitled Entry"}`}>
+                    <button type="button" className="diary-entry-main" onClick={() => navigate(`/diary/${encodeURIComponent(entry.entryId)}`, { state: { fromCategories } })} aria-label={`Read ${entry.title || "Untitled Entry"}`}>
                       <div className="diary-entry-topline">
                         <div className="diary-date-badge">
                           <strong>{date.day}</strong>

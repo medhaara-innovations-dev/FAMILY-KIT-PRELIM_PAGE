@@ -2,293 +2,306 @@
   font-weight: 600;
 }
 
-.fk-profile-mobile-only,
-.fk-mobile-profile-details,
-.fk-mobile-profile-actions {
-  display: none;
-}
-
 .fk-mobile-profile-identity,
 .fk-profile-view-content {
   display: contents;
 }
 
-@media (max-width: 600px) {
-  .fk-profile-page .fk-profile-main,
-  .fk-my-profile-page .fk-my-profile-main {
-    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+.fk-profile-page .fk-profile-header,
+.fk-my-profile-page .fk-my-profile-header {
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.fk-profile-page .fk-profile-header h1,
+.fk-my-profile-page .fk-my-profile-header h1 {
+  color: #050011;
+}
+
+.fk-profile-page .fk-mobile-profile-card,
+.fk-my-profile-page .fk-mobile-profile-card {
+  display: grid;
+  grid-template-columns: clamp(46px, 14vw, 63px) minmax(0, 1fr);
+  align-items: start;
+  gap: 8px 14px;
+  padding: 16px clamp(12px, 4.5vw, 26px);
+  margin: 8px auto 0;
+  width: 100%;
+  max-width: 440px;
+  text-align: left;
+  background: #f7f3ff;
+  border: 1px solid #d8c8ff;
+  border-radius: 20px;
+  box-shadow: 0 3px 10px #2d0b8410;
+}
+
+.fk-profile-page .fk-profile-compact-view {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.fk-mobile-profile-card > * {
+  grid-column: 1 / -1;
+}
+
+.fk-mobile-profile-card .fk-my-profile-avatar-slot {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  min-width: 0;
+}
+
+.fk-mobile-profile-card .fk-profile-avatar,
+.fk-mobile-profile-card .fk-my-profile-avatar {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  background: #fff;
+  font-size: 22px;
+}
+
+.fk-mobile-profile-card .fk-profile-avatar > span svg {
+  width: 60%;
+  height: 60%;
+  color: #a59abc;
+}
+
+.fk-mobile-profile-card .fk-mobile-profile-identity,
+.fk-mobile-profile-card .fk-mobile-profile-details {
+  display: block;
+  grid-column: 2;
+  min-width: 0;
+}
+
+.fk-mobile-profile-card .fk-mobile-profile-identity h2 {
+  margin: 0 0 3px;
+  font-size: clamp(16px, 4.4vw, 19px);
+  overflow-wrap: anywhere;
+}
+
+.fk-mobile-profile-card .fk-mobile-profile-identity > p,
+.fk-my-profile-page .fk-mobile-profile-card .fk-mobile-profile-identity > p {
+  display: inline-block;
+  margin: 0;
+  padding: 2px 8px;
+  border: 1px solid #b294ff;
+  border-radius: 999px;
+  color: #2d0b84;
+  background: #ebe6f7;
+  font-size: 11px;
+}
+
+.fk-mobile-profile-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  margin: 0 0 8px;
+  font-size: clamp(11px, 3.2vw, 14px);
+  overflow-wrap: anywhere;
+}
+
+.fk-mobile-profile-detail-row > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+}
+
+.fk-mobile-profile-detail-row > div + div {
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid #a59abc;
+}
+
+.fk-mobile-profile-details dt {
+  font-weight: 600;
+}
+
+.fk-mobile-profile-details dt::after {
+  content: ":";
+}
+
+.fk-mobile-profile-details dd {
+  margin: 0;
+}
+
+.fk-mobile-profile-card .fk-mobile-profile-actions {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(4px, 2vw, 10px);
+}
+
+.fk-profile-document-count {
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  min-height: 52px;
+  padding: 6px;
+  border: 1px solid #e0d4f5;
+  border-radius: 12px;
+  background: #faf9ff;
+}
+
+.fk-profile-document-count small {
+  font-size: clamp(7px, 1.9vw, 9px);
+  white-space: nowrap;
+}
+
+.fk-profile-social-actions,
+.fk-profile-direct-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: clamp(2px, 1vw, 7px);
+}
+
+.fk-profile-social-actions :is(a, button) {
+  display: grid;
+  place-items: center;
+  width: clamp(24px, 7vw, 34px);
+  height: clamp(26px, 7vw, 34px);
+  padding: 3px;
+  border: 1px solid #d8c8ff;
+  border-radius: 8px;
+  background: #fff;
+  font-size: clamp(16px, 5.2vw, 25px);
+}
+
+.fk-profile-social-actions > :nth-child(3) { color: #16843e; }
+.fk-profile-social-actions > button:disabled svg { filter: grayscale(1); }
+
+.fk-profile-direct-actions :is(a, button) {
+  display: grid;
+  place-items: center;
+  width: clamp(26px, 7vw, 34px);
+  height: clamp(26px, 7vw, 34px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #ebe6f7;
+  color: #050011;
+}
+
+.fk-profile-direct-actions button:enabled {
+  cursor: pointer;
+}
+
+.fk-mobile-profile-actions button:disabled {
+  opacity: .55;
+}
+
+.fk-mobile-profile-actions .fk-profile-share-status {
+  grid-column: 1 / -1;
+  color: #4d485a;
+  font-size: 11px;
+}
+
+@media (max-width: 340px) {
+  .fk-mobile-profile-card .fk-mobile-profile-actions {
+    grid-template-columns: auto 1fr;
   }
 
-  .fk-profile-desktop-only {
-    display: none;
+  .fk-profile-direct-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    gap: 12px;
   }
+}
 
-  .fk-profile-mobile-only {
-    display: revert;
-  }
+.fk-mobile-profile-card .fk-my-profile-actions button,
+.fk-mobile-profile-card .profile-logout-btn {
+  justify-content: center;
+  margin-top: 0;
+  padding: 8px 10px;
+  font-size: 12px;
+}
 
-  .fk-profile-page .fk-profile-header,
-  .fk-my-profile-page .fk-my-profile-header {
-    justify-content: flex-start;
-    gap: 10px;
-  }
+.fk-mobile-profile-card > small {
+  text-align: center;
+}
 
-  .fk-profile-page .fk-profile-header h1,
-  .fk-my-profile-page .fk-my-profile-header h1 {
-    color: #050011;
+.fk-profile-page .fk-profile-connected-docs,
+.fk-my-profile-page .fk-profile-connected-docs {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+}
+
+.fk-profile-connected-docs h3 {
+  margin: 0 0 10px;
+  color: #130438;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+}
+
+.fk-profile-document-filters {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+}
+
+.fk-profile-document-filters button {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid #e0d4f5;
+  border-radius: 999px;
+  background: #fff;
+  color: #050011;
+  font: 500 13px "Poppins", sans-serif;
+  cursor: pointer;
+}
+
+.fk-profile-document-filters button[aria-pressed="true"] {
+  border-color: #2d0b84;
+}
+
+.fk-profile-document-filters svg {
+  color: #2d0b84;
+}
+
+.fk-profile-connected-docs p {
+  margin: 0;
+  text-align: center;
+  color: #4d485a;
+  font-size: 12px;
+}
+
+@media (min-width: 601px) {
+  .fk-profile-page .fk-mobile-profile-card,
+  .fk-my-profile-page .fk-mobile-profile-card,
+  .fk-profile-page .fk-profile-connected-docs,
+  .fk-my-profile-page .fk-profile-connected-docs {
+    max-width: min(100%, 36rem);
   }
 
   .fk-profile-page .fk-mobile-profile-card,
   .fk-my-profile-page .fk-mobile-profile-card {
-    display: grid;
-    grid-template-columns: clamp(46px, 14vw, 63px) minmax(0, 1fr);
-    align-items: start;
-    gap: 8px 14px;
-    padding: 16px clamp(12px, 4.5vw, 26px);
-    margin: 8px auto 0;
-    width: 100%;
-    max-width: 440px;
-    text-align: left;
-    background: #f7f3ff;
-    border: 1px solid #d8c8ff;
-    border-radius: 20px;
-    box-shadow: 0 3px 10px #2d0b8410;
-  }
-
-  .fk-profile-page .fk-profile-compact-view {
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  .fk-mobile-profile-card > * {
-    grid-column: 1 / -1;
-  }
-
-  .fk-mobile-profile-card .fk-profile-avatar,
-  .fk-mobile-profile-card .fk-my-profile-avatar {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1;
-    min-width: 0;
-    min-height: 0;
-    border: 0;
-    background: #fff;
-    font-size: 22px;
-  }
-
-  .fk-mobile-profile-card .fk-profile-avatar > span svg {
-    width: 60%;
-    height: 60%;
-    color: #a59abc;
-  }
-
-  .fk-mobile-profile-card .fk-mobile-profile-identity,
-  .fk-mobile-profile-card .fk-mobile-profile-details {
-    display: block;
-    grid-column: 2;
-    min-width: 0;
-  }
-
-  .fk-mobile-profile-card .fk-mobile-profile-identity h2 {
-    margin: 0 0 3px;
-    font-size: clamp(16px, 4.4vw, 19px);
-    overflow-wrap: anywhere;
-  }
-
-  .fk-mobile-profile-card .fk-mobile-profile-identity > p,
-  .fk-my-profile-page .fk-mobile-profile-card .fk-mobile-profile-identity > p {
-    display: inline-block;
-    margin: 0;
-    padding: 2px 8px;
-    border: 1px solid #b294ff;
-    border-radius: 999px;
-    color: #2d0b84;
-    background: #ebe6f7;
-    font-size: 11px;
-  }
-
-  .fk-mobile-profile-detail-row {
-    display: flex;
-    flex-wrap: wrap;
-    row-gap: 4px;
-    margin: 0 0 8px;
-    font-size: clamp(11px, 3.2vw, 14px);
-    overflow-wrap: anywhere;
-  }
-
-  .fk-mobile-profile-detail-row > div {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 6px;
-  }
-
-  .fk-mobile-profile-detail-row > div + div {
-    margin-left: 8px;
-    padding-left: 8px;
-    border-left: 1px solid #a59abc;
-  }
-
-  .fk-mobile-profile-details dt {
-    font-weight: 600;
-  }
-
-  .fk-mobile-profile-details dt::after {
-    content: ":";
-  }
-
-  .fk-mobile-profile-details dd {
-    margin: 0;
-  }
-
-  .fk-mobile-profile-card .fk-mobile-profile-actions {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: clamp(4px, 2vw, 10px);
-  }
-
-  .fk-profile-document-count {
-    display: grid;
-    place-items: center;
-    gap: 3px;
-    min-height: 52px;
-    padding: 6px;
-    border: 1px solid #e0d4f5;
-    border-radius: 12px;
-    background: #faf9ff;
-  }
-
-  .fk-profile-document-count small {
-    font-size: clamp(7px, 1.9vw, 9px);
-    white-space: nowrap;
+    grid-template-columns: clamp(4rem, 9vw, 5.5rem) minmax(0, 1fr);
+    gap: 12px 20px;
+    padding: 24px;
   }
 
   .fk-profile-social-actions,
   .fk-profile-direct-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    gap: clamp(2px, 1vw, 7px);
+    justify-content: flex-start;
   }
 
-  .fk-profile-social-actions :is(a, button) {
-    display: grid;
-    place-items: center;
-    width: clamp(24px, 7vw, 34px);
-    height: clamp(26px, 7vw, 34px);
-    padding: 3px;
-    border: 1px solid #d8c8ff;
-    border-radius: 8px;
-    background: #fff;
-    font-size: clamp(16px, 5.2vw, 25px);
-  }
-
-  .fk-profile-social-actions > :nth-child(3) { color: #16843e; }
-  .fk-profile-social-actions > button:disabled svg { filter: grayscale(1); }
-
+  .fk-profile-social-actions :is(a, button),
   .fk-profile-direct-actions :is(a, button) {
-    display: grid;
-    place-items: center;
-    width: clamp(26px, 7vw, 34px);
-    height: clamp(26px, 7vw, 34px);
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: #ebe6f7;
-    color: #050011;
-  }
-
-  .fk-profile-direct-actions button:enabled {
-    cursor: pointer;
-  }
-
-  .fk-mobile-profile-actions button:disabled {
-    opacity: .55;
-  }
-
-  .fk-mobile-profile-actions .fk-profile-share-status {
-    grid-column: 1 / -1;
-    color: #4d485a;
-    font-size: 11px;
-  }
-
-  @media (max-width: 340px) {
-    .fk-mobile-profile-card .fk-mobile-profile-actions {
-      grid-template-columns: auto 1fr;
-    }
-
-    .fk-profile-direct-actions {
-      grid-column: 1 / -1;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-  }
-
-  .fk-mobile-profile-card .fk-my-profile-actions button,
-  .fk-mobile-profile-card .profile-logout-btn {
-    justify-content: center;
-    margin-top: 0;
-    padding: 8px 10px;
-    font-size: 12px;
-  }
-
-  .fk-mobile-profile-card > small {
-    text-align: center;
-  }
-
-  .fk-profile-page .fk-profile-connected-docs,
-  .fk-my-profile-page .fk-profile-connected-docs {
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 0 2px;
-    border: 0;
-    background: transparent;
-  }
-
-  .fk-profile-connected-docs h3 {
-    margin: 0 0 10px;
-    color: #130438;
-    font-family: "Poppins", sans-serif;
-    font-size: 15px;
-  }
-
-  .fk-profile-document-filters {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding: 4px 2px 10px;
-  }
-
-  .fk-profile-document-filters button {
-    display: flex;
-    flex: none;
-    align-items: center;
-    gap: 6px;
-    min-height: 36px;
-    padding: 6px 12px;
-    border: 1px solid #e0d4f5;
-    border-radius: 999px;
-    background: #fff;
-    color: #050011;
-    font: 500 13px "Poppins", sans-serif;
-    cursor: pointer;
-  }
-
-  .fk-profile-document-filters button[aria-pressed="true"] {
-    border-color: #2d0b84;
-  }
-
-  .fk-profile-document-filters svg {
-    color: #2d0b84;
-  }
-
-  .fk-profile-connected-docs p {
-    margin: 0;
-    text-align: center;
-    color: #4d485a;
-    font-size: 12px;
+    width: 44px;
+    height: 44px;
   }
 }

@@ -21,6 +21,7 @@ import "./NotesDetailsPage.css";
 export default function NotesEditorPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const fromCategories = location.state?.fromCategories === true;
   const { noteId } = useParams();
 
   const isEditing = Boolean(noteId);
@@ -169,6 +170,7 @@ export default function NotesEditorPage() {
 
         navigate("/notes", {
           replace: true,
+          state: { fromCategories },
         });
       }
     };
@@ -184,7 +186,7 @@ export default function NotesEditorPage() {
         handlePopState
       );
     };
-  }, [navigate]);
+  }, [navigate, fromCategories]);
 
   // =====================================================
   // APP BACK BUTTON
@@ -200,6 +202,7 @@ export default function NotesEditorPage() {
 
     navigate("/notes", {
       replace: true,
+      state: { fromCategories },
     });
   };
 
@@ -217,6 +220,7 @@ export default function NotesEditorPage() {
 
     navigate("/notes/details", {
       state: {
+        fromCategories,
         noteText,
         noteId: isEditing ? noteId : null,
         noteTitle,
@@ -236,6 +240,7 @@ export default function NotesEditorPage() {
 
     navigate("/notes", {
       replace: true,
+      state: { fromCategories },
     });
   };
 
@@ -268,7 +273,7 @@ export default function NotesEditorPage() {
 
             <button
               type="button"
-              onClick={() => navigate("/notes")}
+              onClick={() => navigate("/notes", { state: { fromCategories } })}
             >
               Back to My Notes
             </button>

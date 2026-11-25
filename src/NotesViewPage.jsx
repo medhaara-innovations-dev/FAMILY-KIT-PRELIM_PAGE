@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import {
+  useLocation,
   useNavigate,
   useParams,
 } from "react-router-dom";
@@ -20,6 +21,7 @@ import "./NotesViewPage.css";
 
 export default function NotesViewPage() {
   const navigate = useNavigate();
+  const fromCategories = useLocation().state?.fromCategories === true;
   const { noteId } = useParams();
 
   const [note, setNote] = useState(null);
@@ -74,12 +76,13 @@ export default function NotesViewPage() {
   }, [noteId, navigate]);
 
   const handleBack = () => {
-    navigate("/notes");
+    navigate("/notes", { state: { fromCategories } });
   };
 
   const handleEdit = () => {
     navigate(
-      `/notes/${encodeURIComponent(noteId)}/edit`
+      `/notes/${encodeURIComponent(noteId)}/edit`,
+      { state: { fromCategories } }
     );
   };
 

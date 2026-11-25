@@ -30,6 +30,12 @@ The public landing at `/` is implemented in `App.jsx` and `App.css`. The origina
 
 ## Responsive layouts and PWA
 
+Shared app motion in `src/responsive.css` adds short screen, card, and dialog entrances, desktop hover lifts, and mobile press and navigation feedback. The rules follow the device’s reduced-motion setting. The public landing manages its own animations.
+
+The Categories member filter uses the shared ProfileAvatar component to show the same profile photos as My Family. The All Family option has no avatar.
+
+Family Member Profile and the read-only self profile use the same compact card, actions and Connected Documents controls at every viewport width. Wider viewports increase card width, spacing and action sizes. A family member’s email and address are available under Profile actions on all devices.
+
 The dashboard uses a single column on narrow displays and two columns on wider displays. From 1200 px, signed-in pages with primary navigation use a full-height left panel. The dashboard uses a main column for reminders, events and family profiles, with Quick Actions and Smart Suggestions in an adjacent column. Categories uses horizontal cards at that breakpoint. Signed-in screens with primary navigation use the shared FamilyBottomNav component. The desktop sidebar places Add above the links and highlights the active section. Narrower widths use the same five-item bottom navigation. Categories, the family directory and supported lists use wider grids from 768 px. Responsive overrides are in `src/responsive.css`.
 
 The local Vite configuration generates a release-specific service worker from `src/service-worker.js` for production builds. The manifest at `public/manifest.webmanifest` sets standalone display, app icons, and startup colors. The worker precaches built JavaScript, CSS, and an offline screen. Navigation fetches from the network and displays that screen if the request fails. API responses, credentials, documents, and member records are outside its cache. Registration requires HTTPS or loopback. Use the production preview to check worker behavior locally.

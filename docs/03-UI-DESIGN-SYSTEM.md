@@ -19,6 +19,8 @@ Last verified: 2026-11-22. Approved references below come from the owner. Respon
 
 The shared app navigation uses the approved Home outline and outline Categories grid from the icon reference. The active item uses the FamilyKit purple highlight, while unavailable controls are muted. Camera controls use the approved Camera glyph. Facebook, Instagram, and LinkedIn use their company artwork, and Categories keeps colored icon tiles.
 
+Quick Actions, Categories, and the Notes screen share the stacked Notes SVG. Important Contacts uses the contact card and handset SVG across its entry points and empty state. WhatsApp uses the same SVG artwork in member lists, profile cards, and contact cards. The category tiles and search filters render SVG glyphs with their existing colors. Shared icon implementations are in [ReferenceIcons.jsx](../src/components/ReferenceIcons.jsx).
+
 | Design area | Approved specification |
 |---|---|
 | Colors | Primary purple `#2D0B84`, lavender surface `#EBE6F7`, primary text `#050011`, secondary text `#4D485A` |
@@ -151,6 +153,8 @@ The entries below index distinct custom-property declarations and media queries 
 **Media queries** — [`@media screen and (min-width: 1440px)`](../src/auth/ForgotPinPage.css#L531), [`@media screen and (min-width: 769px) and (max-width: 1439px)`](../src/auth/ForgotPinPage.css#L585), [`@media screen and (max-width: 768px)`](../src/auth/ForgotPinPage.css#L651), [`@media screen and (max-width: 390px)`](../src/auth/ForgotPinPage.css#L763)
 
 ### LoginPage.css
+
+On mobile, the “Welcome back” heading follows the back button and FamilyKit header.
 
 **Media queries** — [`@media (min-width: 769px) and (max-width: 1024px)`](../src/auth/LoginPage.css#L36), [`@media (max-width: 768px)`](../src/auth/LoginPage.css#L54), [`@media (max-width: 380px)`](../src/auth/LoginPage.css#L97), [`@media (prefers-reduced-motion: reduce)`](../src/auth/LoginPage.css#L131), [`@media (min-width: 1025px)`](../src/auth/LoginPage.css#L156)
 

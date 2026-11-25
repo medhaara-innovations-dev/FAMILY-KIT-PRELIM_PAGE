@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   ChevronLeft,
@@ -12,7 +12,7 @@ import {
   Link2,
   X,
 } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { WhatsAppLogo } from "./components/ReferenceIcons.jsx";
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { getFamilyKitProfile } from "./auth/authService.js";
@@ -31,6 +31,7 @@ import "./FamilyMembersPage.css";
 
 export default function FamilyMembersPage() {
   const navigate = useNavigate();
+  const { state } = useLocation();
 
   const [primaryUser, setPrimaryUser] = useState(null);
   const [familyName, setFamilyName] = useState("");
@@ -137,7 +138,7 @@ export default function FamilyMembersPage() {
   // =====================================================
 
   const openAddMember = () => {
-    navigate("/family/add");
+    navigate("/family/add", { state: { returnToLauncher: true } });
   };
 
   function openFamilyActions() {
@@ -262,6 +263,14 @@ export default function FamilyMembersPage() {
           </p>
         </section>
 
+        {state?.memberAdded && (
+          <p className="fk-family-state" role="status">
+            {state.photoUploadFailed
+              ? "Family member added. The photo couldn’t be uploaded. You can add it from their profile."
+              : "Family member added successfully."}
+          </p>
+        )}
+
         {/* LOADING */}
 
         {loading ? (
@@ -347,7 +356,7 @@ export default function FamilyMembersPage() {
                             aria-label={`Call ${member.name}`}><Phone size={18} /></button>
                           <button type="button" className="fk-family-whatsapp"
                             onClick={(event) => openWhatsApp(event, member.mobile)}
-                            aria-label={`WhatsApp ${member.name}`}><FaWhatsapp size={17} aria-hidden="true" /></button>
+                            aria-label={`WhatsApp ${member.name}`}><WhatsAppLogo size={17} aria-hidden="true" /></button>
                         </div>
                       )}
                       <button type="button" className="fk-family-chevron-button"

@@ -94,6 +94,10 @@
   position: relative;
 }
 
+.fk-my-profile-page .fk-mobile-profile-card {
+  margin-bottom: 22px;
+}
+
 .fk-my-profile-card h2 {
   margin: 20px 0 6px;
   font-family: "Poppins", sans-serif;
@@ -150,21 +154,6 @@
   .fk-my-profile-header h1 { font-size: 19px; }
   .fk-my-profile-main { padding: 0 14px 40px; }
   .fk-my-profile-card { padding: 28px 16px; }
-
-  .fk-my-profile-page .fk-mobile-profile-card {
-    margin-bottom: 22px;
-  }
-
-  .fk-my-profile-avatar-slot {
-    display: block;
-    position: relative;
-    grid-column: 1;
-    grid-row: 1 / span 2;
-  }
-
-  .fk-my-profile-page .fk-my-profile-card .fk-profile-desktop-only {
-    display: none;
-  }
 
   .fk-self-mobile-account-actions {
     max-width: 440px;

@@ -9,20 +9,20 @@ import {
   Plus,
   CalendarDays,
   Landmark,
-  ContactRound,
+  ReceiptText,
+  BookMarked,
+  FileText,
+  GraduationCap,
+  HeartPulse,
+  HandHeart,
+  Houses,
   Scale,
   UserRoundCheck,
   BadgeCheck,
   } from "lucide-react";
 
-import billsIcon from "./assets/images/Household & Bills.png";
-import diaryIcon from "./assets/images/Diary.png";
-import documentsIcon from "./assets/images/File.png";
-import educationIcon from "./assets/images/Education.png";
-import healthIcon from "./assets/images/health.png";
-import insuranceIcon from "./assets/images/Insurance.png";
-import notesIcon from "./assets/images/Notes.png";
-import propertyIcon from "./assets/images/Housing.png";
+import { ImportantContactsIcon, NotesIcon } from "./components/ReferenceIcons.jsx";
+import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
@@ -35,26 +35,26 @@ import "./CategoriesPage.css";
 const categories = [
   {
     name: "Bills & Renewals",
-    image: billsIcon,
+    Icon: ReceiptText,
     background: "#FAF7F0",
     color: "#B89C10",
   },
   {
     name: "Diary",
-    image: diaryIcon,
+    Icon: BookMarked,
     background: "#F1ECFB",
     color: "#6528C6",
     route: "/diary",
   },
   {
     name: "Documents",
-    image: documentsIcon,
+    Icon: FileText,
     background: "#F0F6FB",
     color: "#2882C6",
   },
   {
     name: "Education",
-    image: educationIcon,
+    Icon: GraduationCap,
     background: "#effbef",
     color: "#29c329",
   },
@@ -73,20 +73,20 @@ const categories = [
   },
   {
     name: "Health & Reports",
-    image: healthIcon,
+    Icon: HeartPulse,
     background: "#FAEFF6",
     color: "#C62882",
   },
   {
     name: "Important Contacts",
-    Icon: ContactRound,
+    Icon: ImportantContactsIcon,
     route: "/important-contacts",
     background: "#FAEFF0",
     color: "#C62828",
   },
   {
     name: "Insurance",
-    image: insuranceIcon,
+    Icon: HandHeart,
     background: "#EFF9FA",
     color: "#13A699",
   },
@@ -104,14 +104,14 @@ const categories = [
   },
   {
     name: "Notes",
-    image: notesIcon,
+    Icon: NotesIcon,
     background: "#F5F9F0",
     color: "#78B219",
     route: "/notes",
   },
   {
     name: "Property",
-    image: propertyIcon,
+    Icon: Houses,
     background: "#F7EFFB",
     color: "#9E28C6",
   },
@@ -209,7 +209,9 @@ export default function CategoriesPage() {
 
   const handleCategoryClick = (category) => {
     if (category.route) {
-      navigate(category.route);
+      const state = ["/important-contacts", "/diary", "/notes", "/events"].includes(category.route)
+        ? { fromCategories: true } : undefined;
+      navigate(category.route, { state });
     }
 
     // Remaining category pages will be connected
@@ -316,7 +318,11 @@ export default function CategoriesPage() {
                   */}
 
                   {filter.id !== "all-family" && (
-                    <span className="fk-cat-radio" />
+                    <span className="fk-cat-radio" aria-hidden="true">
+                      <ProfileAvatar memberId={filter.id} className="fk-cat-filter-avatar">
+                        <span />
+                      </ProfileAvatar>
+                    </span>
                   )}
 
                   <span>{filter.label}</span>
@@ -361,18 +367,7 @@ export default function CategoriesPage() {
                       color: category.color,
                     }}
                   >
-                    {category.image ? (
-                      <img
-                        src={category.image}
-                        alt=""
-                        className="fk-cat-image-icon"
-                      />
-                    ) : (
-                      <Icon
-                        size={24}
-                        strokeWidth={1.8}
-                      />
-                    )}
+                    <Icon size={24} strokeWidth={1.8} aria-hidden="true" />
                   </span>
 
                   <span className="fk-cat-card-name">

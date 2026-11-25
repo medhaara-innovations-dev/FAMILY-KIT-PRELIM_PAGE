@@ -22,6 +22,8 @@ const keyOf = d => d.year*12+d.month;
 export default function EventsCalendarPage(){
   const navigate=useNavigate();
   const location = useLocation();
+  const fromCategories = location.state?.fromCategories === true;
+  const backPath = fromCategories ? "/categories" : "/my-family";
   const openedDate = location.state?.eventDate || "";
   const [today,setToday]=useState(istToday);
   const [displayMonth,setDisplayMonth]=useState(() => openedDate
@@ -177,7 +179,7 @@ export default function EventsCalendarPage(){
   }
   return <div className="fk-events-page">
     <main className="fk-events-content">
-      <div className="fk-events-heading"><button type="button" aria-label="Back to Categories" onClick={()=>navigate("/categories")}><ChevronLeft size={19}/></button><h1>Events</h1></div>
+      <div className="fk-events-heading"><button type="button" aria-label={fromCategories ? "Back to Categories" : "Back to dashboard"} onClick={() => navigate(backPath, { replace: true })}><ChevronLeft size={19}/></button><h1>Events</h1></div>
       <section className="fk-events-calendar" aria-label="Events calendar">
         <header className="fk-events-calendar-header">
           <button type="button" aria-label="Previous month" onClick={()=>changeMonth(-1)}><ChevronLeft size={19}/></button>

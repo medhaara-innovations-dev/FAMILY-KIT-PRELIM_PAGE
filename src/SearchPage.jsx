@@ -7,12 +7,10 @@ import {
   Search,
   Mic,
   AudioLines,
+  HandHeart,
+  Landmark,
+  ReceiptText,
   } from "lucide-react";
-
-// Actual FamilyKit category icons
-import insuranceIcon from "./assets/images/Insurance.png";
-import financeIcon from "./assets/images/Vector.png";
-import billsIcon from "./assets/images/Household & Bills.png";
 
 import "./SearchPage.css";
 
@@ -24,17 +22,17 @@ const categories = [
   {
     name: "Insurance",
     color: "#20b6b0",
-    image: insuranceIcon,
+    Icon: HandHeart,
   },
   {
     name: "Finance",
     color: "#5559e8",
-    image: financeIcon,
+    Icon: Landmark,
   },
   {
     name: "Bills & Renewals",
     color: "#c9a31c",
-    image: billsIcon,
+    Icon: ReceiptText,
   },
 ];
 
@@ -192,17 +190,12 @@ export default function SearchPage() {
                   selectedCategory === category.name
                 }
               >
-                {/* ACTUAL CATEGORY IMAGE */}
-
-                <img
-                  src={category.image}
-                  alt=""
+                <category.Icon
+                  size={15}
+                  strokeWidth={1.8}
                   aria-hidden="true"
                   style={{
-                    width: "15px",
-                    height: "15px",
-                    objectFit: "contain",
-                    display: "block",
+                    color: category.color,
                     flexShrink: 0,
                   }}
                 />

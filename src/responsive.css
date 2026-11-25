@@ -146,7 +146,8 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
 
   :is(.fk-dash-page, .fk-family-page, .fk-cat-page, .fk-events-page, .diary-page,
     .fk-notes-page, .fk-ic-page, .fk-search-page, .fk-voice-page, .fk-ss-page,
-    .fk-notif-page, .fk-profile-page, .fk-my-profile-page) {
+    .fk-notif-page, .fk-profile-page:has(> .fk-family-bottom-nav),
+    .fk-my-profile-page:has(> .fk-family-bottom-nav)) {
     box-sizing: border-box;
     width: 100%;
     max-width: none;
@@ -158,7 +159,8 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
     width: calc(100% - var(--fk-desktop-nav-offset) - var(--fk-desktop-gutter));
   }
 
-  :is(.fk-profile-page .fk-profile-header, .fk-my-profile-page .fk-my-profile-header) {
+  :is(.fk-profile-page, .fk-my-profile-page):has(> .fk-family-bottom-nav)
+    :is(.fk-profile-header, .fk-my-profile-header) {
     box-sizing: border-box;
     padding-inline-start: calc(var(--fk-desktop-nav-offset) + 1.5rem);
   }
@@ -314,4 +316,110 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
   .fk-dash-sticky-top + .fk-dash-section {
     margin-top: 0;
   }
+}
+
+/* Shared application motion. The public landing manages its own animation. */
+@media (prefers-reduced-motion: no-preference) {
+  #root > :where(:not(.fk-landing-nav-preview, dialog)) {
+    --fk-app-motion-ease: cubic-bezier(.2, .75, .25, 1);
+    animation: fk-app-screen-in 200ms var(--fk-app-motion-ease);
+  }
+
+  #root > :where(:not(.fk-landing-nav-preview)) :where(
+    .fk-dash-section,
+    .fk-family-member-card,
+    .fk-cat-card,
+    .fk-mobile-profile-card,
+    .fk-settings-card,
+    .fk-ic-card,
+    .fk-events-item,
+    .diary-entry-card,
+    .fk-notes-card,
+    .fk-notif-card,
+    .fk-notif-reminder-card,
+    .fk-add-section,
+    .login-card,
+    .signup-card
+  ) {
+    animation: fk-app-content-in 280ms var(--fk-app-motion-ease);
+  }
+
+  #root > :where(:not(.fk-landing-nav-preview)) :where(
+    .fk-dash-section,
+    .fk-family-member-card,
+    .fk-cat-card,
+    .fk-ic-card,
+    .fk-events-item,
+    .diary-entry-card,
+    .fk-notes-card
+  ):where(:nth-child(2), :nth-child(3), :nth-child(4)) {
+    animation-delay: 35ms;
+    animation-fill-mode: backwards;
+  }
+
+  #root dialog[open],
+  #root > :where(:not(.fk-landing-nav-preview)) :where([role="dialog"], [role="alertdialog"]):not(dialog) {
+    animation: fk-app-dialog-in 220ms cubic-bezier(.2, .75, .25, 1);
+  }
+
+  #root dialog[open]::backdrop {
+    animation: fk-app-screen-in 220ms ease-out;
+  }
+
+  :where(#root > :not(.fk-landing-nav-preview)) :where(
+    button:not(:disabled), a[href], summary, [role="button"]:not([aria-disabled="true"])
+  ) {
+    transition: scale 150ms ease-out, translate 170ms ease-out;
+  }
+
+  #root .fk-family-nav-item {
+    transition: color 220ms ease, scale 150ms ease-out, translate 170ms ease-out;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #root > :where(:not(.fk-landing-nav-preview)) :where(
+      .fk-dash-action, .fk-cat-card, .fk-family-nav-item:not(:disabled),
+      .fk-dash-round-button, .fk-dash-family-avatar, .fk-add-primary
+    ):hover {
+      translate: 0 -2px;
+    }
+  }
+
+  #root > :where(:not(.fk-landing-nav-preview)) :where(
+    button:not(:disabled, .fk-family-bottom-add), a[href], summary,
+    [role="button"]:not([aria-disabled="true"])
+  ):active {
+    scale: .98;
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    #root > :where(:not(.fk-landing-nav-preview)) :where(
+      button:not(:disabled, .fk-family-bottom-add), a[href], summary,
+      [role="button"]:not([aria-disabled="true"])
+    ):active {
+      scale: .96;
+    }
+
+    .fk-family-nav-item.active .fk-family-nav-icon {
+      animation: fk-app-icon-in 250ms cubic-bezier(.2, .75, .25, 1);
+    }
+  }
+}
+
+@keyframes fk-app-screen-in {
+  from { opacity: .84; }
+}
+
+@keyframes fk-app-content-in {
+  from { opacity: .72; translate: 0 6px; }
+}
+
+@keyframes fk-app-dialog-in {
+  from { opacity: .55; translate: 0 8px; scale: .985; }
+}
+
+@keyframes fk-app-icon-in {
+  from { scale: .88; }
+  65% { scale: 1.07; }
+  to { scale: 1; }
 }

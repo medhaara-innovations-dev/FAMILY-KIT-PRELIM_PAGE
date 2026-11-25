@@ -1,9 +1,7 @@
-import home from "../assets/icons/home.png";
-import categories from "../assets/icons/categories.png";
-import camera from "../assets/icons/camera.png";
-import facebook from "../assets/icons/facebook.png";
-import instagram from "../assets/icons/instagram.png";
-import linkedin from "../assets/icons/linkedin.png";
+import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
+import home from "../assets/icons/home.svg";
+import categories from "../assets/icons/categories.svg";
+import camera from "../assets/icons/camera.svg";
 
 function Glyph({ asset, size = "1em", style, ...props }) {
   const mask = `url("${asset}") center / contain no-repeat`;
@@ -11,15 +9,50 @@ function Glyph({ asset, size = "1em", style, ...props }) {
     {...props} style={{ ...style, mask, WebkitMask: mask, backgroundColor: "currentColor" }} />;
 }
 
-function CompanyLogo({ asset, size = "1em", ...props }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <image href={asset} width="24" height="24" />
-  </svg>;
-}
-
 export const HomeIcon = (props) => <Glyph asset={home} {...props} />;
 export const CategoriesIcon = (props) => <Glyph asset={categories} {...props} />;
 export const CameraIcon = (props) => <Glyph asset={camera} {...props} />;
-export const FacebookLogo = (props) => <CompanyLogo asset={facebook} {...props} />;
-export const InstagramLogo = (props) => <CompanyLogo asset={instagram} {...props} />;
-export const LinkedInLogo = (props) => <CompanyLogo asset={linkedin} {...props} />;
+export function ImportantContactsIcon({ size = "1em", strokeWidth = 1.8, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <g stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12.8 19.5H3a1.5 1.5 0 0 1-1.5-1.5V3.5A1.5 1.5 0 0 1 3 2h17.5A1.5 1.5 0 0 1 22 3.5v4.6" />
+        <circle cx="11.7" cy="8.3" r="3.2" />
+        <path d="M6.2 19.5V16a1.4 1.4 0 0 1 1.4-1.4h8.2a1.4 1.4 0 0 1 1.4 1.1" />
+      </g>
+      <path
+        fill="currentColor"
+        d="M21 9.7c.5-.2 1-.1 1.4.2l.6.5c.5.4.7 1 .6 1.6-.5 4.2-2.4 7.3-5.9 9.6-.6.4-1.3.4-1.8.1l-.7-.4a1.5 1.5 0 0 1-.5-2.1l.8-1.4c.3-.5.9-.8 1.5-.6l1.3.4a8.3 8.3 0 0 0 1.9-3.2l-1-.9c-.4-.4-.5-1-.2-1.5l.8-1.5c.2-.4.6-.7 1.2-.8Z"
+      />
+    </svg>
+  );
+}
+
+export function NotesIcon({ size = "1em", strokeWidth, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <g transform="translate(2 22) scale(1 -1)">
+      <path transform="translate(0.0000 -0.1504)" fill="currentColor" d="M4.2886 13.1943 C4.0005 12.1191 3.7605 11.2215 3.6265 10.4726 C3.4868 9.6911 3.4356 8.9367 3.6148 8.168 C3.8619 7.1088 4.4177 6.1468 5.2115 5.4033 C5.7876 4.8638 6.4658 4.5305 7.2125 4.2607 C7.9224 4.0043 8.8114 3.7656 9.8755 3.4805 L10.0074 3.4453 C10.9856 3.1832 11.8132 2.9616 12.5093 2.8232 C12.8518 2.7552 13.1889 2.7019 13.523 2.6738 C13.4662 2.6136 13.4069 2.5549 13.3462 2.498 C12.615 1.8131 11.4878 1.5104 9.233 0.9062 C6.9781 0.3021 5.8503 0.0001 4.8746 0.2275 C4.1041 0.4072 3.4037 0.8113 2.8629 1.3887 C2.178 2.12 1.8762 3.248 1.272 5.5029 L0.7545 7.4346 C0.1502 9.6896 -0.1518 10.8172 0.0757 11.793 C0.2554 12.5633 0.6595 13.263 1.2369 13.8037 C1.911 14.435 2.9219 14.7415 4.8423 15.2588 L4.2886 13.1943 z" />
+      <path transform="translate(5.0000 3.7607)" fill="currentColor" fillRule="evenodd" d="M4.8746 16.1631 C5.8503 16.3905 6.978 16.0886 9.233 15.4844 C11.4875 14.8802 12.615 14.5783 13.3462 13.8935 C13.9237 13.3527 14.3277 12.6523 14.5074 11.8818 C14.7348 10.9061 14.4328 9.7783 13.8287 7.5235 L13.3111 5.5918 C12.707 3.3373 12.4049 2.2098 11.7203 1.4785 C11.1795 0.9011 10.479 0.4971 9.7085 0.3174 C9.6123 0.295 9.5147 0.277 9.4146 0.2647 C8.4995 0.1518 7.3827 0.4515 5.3501 0.9961 C3.0956 1.6002 1.9681 1.9023 1.2368 2.5869 C0.6594 3.1277 0.2553 3.8282 0.0757 4.5987 C-0.1517 5.5744 0.1502 6.7022 0.7544 8.957 L1.272 10.8887 C1.3588 11.2128 1.4397 11.5142 1.5161 11.7939 C1.9711 13.4594 2.2766 14.3759 2.8628 15.0019 C3.4036 15.5793 4.1041 15.9834 4.8746 16.1631 z M4.1939 6.0664 C3.7939 6.1736 3.3822 5.9362 3.2749 5.5362 C3.1678 5.1361 3.4052 4.7245 3.8052 4.6172 L6.7037 3.8408 C7.1036 3.7339 7.5144 3.9713 7.6216 4.3711 C7.7288 4.7712 7.4915 5.1829 7.0914 5.2901 L4.1939 6.0664 z M4.9703 8.9638 C4.5703 9.0708 4.1596 8.8334 4.0523 8.4336 C3.9451 8.0335 4.1825 7.6219 4.5826 7.5147 L9.4117 6.2207 C9.8118 6.1135 10.2234 6.3509 10.3306 6.751 C10.4378 7.1511 10.2004 7.5627 9.8003 7.6699 L4.9703 8.9638 z" />
+      </g>
+    </svg>
+  );
+}
+
+export function WhatsAppLogo({ size = "1em", ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <circle cx="12" cy="12" r="12" fill="#4dcb5b" />
+      <g transform="translate(0 24) scale(1 -1)">
+      <path transform="translate(3.1299 2.9990)" fill="#b3b3b3" d="M4.9254 2.8407 L5.1961 2.6825 C6.3281 2.011 7.6289 1.656 8.9508 1.656 L8.9543 1.656 C13.0219 1.656 16.3301 4.9642 16.3336 9.0317 C16.3336 11.004 15.5672 12.8567 14.175 14.2489 C12.7934 15.6376 10.916 16.4181 8.9578 16.411 C4.8867 16.411 1.5785 13.1028 1.575 9.0353 C1.5715 7.6466 1.9652 6.286 2.7035 5.1083 L2.8793 4.8306 L2.134 2.1095 L4.9254 2.8407 z M0.0 0.0001 L1.2586 4.5985 C0.4852 5.945 0.0738 7.4708 0.0773 9.0353 C0.0773 13.929 4.0605 17.9087 8.9543 17.9087 C11.3273 17.9087 13.5563 16.9841 15.2332 15.3071 C16.9102 13.6302 17.8312 11.4013 17.8312 9.0282 C17.8277 4.1345 13.848 0.1548 8.9543 0.1548 L8.9508 0.1548 C7.4637 0.1548 6.0047 0.5274 4.7074 1.2341 L0.0 0.0001 z" />
+      <path transform="translate(3.0391 3.0913)" fill="#ffffff" d="M0.0 0.0001 L1.2621 4.5985 C0.4816 5.9485 0.0738 7.4778 0.0773 9.0353 C0.0773 13.929 4.0605 17.9087 8.9543 17.9087 C11.3273 17.9087 13.5563 16.9841 15.2332 15.3071 C16.9102 13.6302 17.8312 11.4013 17.8312 9.0282 C17.8277 4.1345 13.8445 0.1548 8.9543 0.1548 L8.9508 0.1548 C7.4637 0.1548 6.0047 0.5274 4.7074 1.2341 L0.0 0.0001 z" />
+      <path transform="translate(4.6104 4.7432)" fill="#159d47" d="M7.3828 14.7583 C3.3117 14.7583 0.0035 11.4501 0.0 7.3825 C0.0 5.9938 0.3937 4.6333 1.132 3.4556 L1.3078 3.1778 L0.5625 0.4567 L3.3539 1.188 L3.6246 1.0298 C4.7566 0.3583 6.0574 0.0032 7.3793 0.0032 L7.3828 0.0032 C11.4504 0.0032 14.7586 3.3114 14.7621 7.379 C14.7691 9.3372 13.9922 11.2145 12.6035 12.5962 C11.2219 13.9813 9.341 14.7618 7.3828 14.7583 z" />
+      <path transform="translate(7.4824 7.7188)" fill="#ffffff" fillRule="evenodd" d="M2.2922 8.1177 C2.127 8.4868 1.9512 8.4938 1.793 8.5009 L1.3676 8.5044 C1.2199 8.5044 0.9809 8.4481 0.777 8.2267 C0.573 8.0052 0.0 7.4673 0.0 6.3774 C0.0 5.2876 0.7945 4.2329 0.907 4.0853 C1.0195 3.9376 2.4398 1.6278 4.6969 0.7384 C6.5707 0.0001 6.9504 0.1478 7.3582 0.1829 C7.766 0.2216 8.6695 0.7208 8.8559 1.2376 C9.0422 1.7544 9.0422 2.2009 8.9859 2.2923 C8.9297 2.3837 8.782 2.4399 8.5605 2.5524 C8.3391 2.6649 7.2492 3.1993 7.0453 3.2731 C6.8414 3.347 6.6937 3.3856 6.5461 3.1606 C6.3984 2.9392 5.973 2.4399 5.843 2.2923 C5.7129 2.1446 5.5828 2.1271 5.3613 2.236 C5.1398 2.3485 4.4262 2.5806 3.5789 3.3364 C2.918 3.9235 2.475 4.6513 2.3449 4.8728 C2.2148 5.0942 2.3309 5.2138 2.4434 5.3263 C2.5418 5.4247 2.6648 5.5864 2.7773 5.7165 C2.8898 5.8466 2.925 5.938 2.9988 6.0856 C3.0727 6.2333 3.0375 6.3634 2.9813 6.4759 C2.918 6.5813 2.4891 7.6782 2.2922 8.1177 z" />
+      </g>
+    </svg>
+  );
+}
+
+export const FacebookLogo = (props) => <FaFacebook color="#1877f2" aria-hidden="true" {...props} />;
+export const InstagramLogo = (props) => <FaInstagram color="#c13584" aria-hidden="true" {...props} />;
+export const LinkedInLogo = (props) => <FaLinkedin color="#0a66c2" aria-hidden="true" {...props} />;

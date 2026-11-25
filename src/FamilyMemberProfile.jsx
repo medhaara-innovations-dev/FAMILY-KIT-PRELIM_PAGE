@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 
 
@@ -18,17 +18,7 @@ import {
 
   X,
 
-  Phone,
-
   Mail,
-
-  MapPin,
-
-  CalendarDays,
-
-  HeartPulse,
-
-  FolderOpen,
 
   Trash2,
   EllipsisVertical,
@@ -100,6 +90,9 @@ const FORM_FIELDS = [...EDITABLE_FIELDS, ...socialProfileFields.map(([field]) =>
 export default function FamilyMemberProfile() {
 
   const navigate = useNavigate();
+  const fromHome = useLocation().state?.fromHome === true;
+  const backPath = fromHome ? "/my-family" : "/family";
+  const backLabel = fromHome ? "Back to Home" : "Back to My Family";
 
   const { memberId } = useParams();
 
@@ -462,40 +455,6 @@ export default function FamilyMemberProfile() {
 
   // =====================================================
 
-  // DETAILS COMPONENT
-
-  // =====================================================
-
-
-
-  const detail = (label, value, Icon) => (
-
-    <div className="fk-profile-detail" key={label}>
-
-      <div className="fk-profile-detail-icon">
-
-        <Icon size={19} />
-
-      </div>
-
-
-
-      <div className="fk-profile-detail-text">
-
-        <span>{label}</span>
-
-        <strong>{value || "Not provided"}</strong>
-
-      </div>
-
-    </div>
-
-  );
-
-
-
-  // =====================================================
-
   // UI
 
   // =====================================================
@@ -537,9 +496,10 @@ export default function FamilyMemberProfile() {
 
           type="button"
 
-          onClick={() => navigate("/family")}
+          onClick={() => editing ? cancelEdit() : navigate(backPath, { replace: true })}
 
-          aria-label="Back to My Family"
+          aria-label={editing ? "Back to member profile" : backLabel}
+          disabled={editing && (saving || photoBusy || removing)}
 
         >
 
@@ -572,6 +532,18 @@ export default function FamilyMemberProfile() {
         }}>
           <Pencil size={20} aria-hidden="true" /><strong>Edit profile</strong>
         </button>
+        <button type="button" className="fk-family-action-choice" onClick={() => setActionInfo("details")}
+          aria-expanded={actionInfo === "details"} aria-controls="fk-profile-contact-info">
+          <Mail size={20} aria-hidden="true" /><strong>Contact details</strong>
+        </button>
+        <div id="fk-profile-contact-info" className="fk-profile-contact-info" hidden={actionInfo !== "details"}>
+          <dl>
+            <dt>Email</dt>
+            <dd>{member?.email || "Not provided"}</dd>
+            <dt>Address</dt>
+            <dd>{member?.address || "Not provided"}</dd>
+          </dl>
+        </div>
         <button type="button" className="fk-family-action-choice" onClick={() => setActionInfo("access")}
           aria-expanded={actionInfo === "access"} aria-controls="fk-profile-access-info">
           <ShieldCheck size={20} aria-hidden="true" /><strong>Access &amp; Permissions</strong>
@@ -623,11 +595,11 @@ export default function FamilyMemberProfile() {
 
             type="button"
 
-            onClick={() => navigate("/family")}
+            onClick={() => navigate(backPath, { replace: true })}
 
           >
 
-            Back to My Family
+            {backLabel}
 
           </button>
 
@@ -752,171 +724,14 @@ export default function FamilyMemberProfile() {
             </form>
 
           ) : (
-
-            <>
-
-              {/* PERSONAL DETAILS */}
-
-
-
-              <section className="fk-profile-card fk-profile-desktop-only">
-
-                <h3>Personal Details</h3>
-
-
-
-                <div className="fk-profile-details">
-
-                  {detail(
-
-                    "Full Name",
-
-                    member.name,
-
-                    UserRound
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Relationship",
-
-                    familyRelationshipLabel(member),
-
-                    UserRound
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Mobile Number",
-
-                    member.mobile,
-
-                    Phone
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Email Address",
-
-                    member.email,
-
-                    Mail
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Date of Birth",
-
-                    member.dateOfBirth,
-
-                    CalendarDays
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Blood Group",
-
-                    member.bloodGroup,
-
-                    HeartPulse
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Height",
-
-                    member.height
-
-                      ? `${member.height} cm`
-
-                      : "",
-
-                    UserRound
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Weight",
-
-                    member.weight
-
-                      ? `${member.weight} kg`
-
-                      : "",
-
-                    UserRound
-
-                  )}
-
-
-
-                  {detail(
-
-                    "Address",
-
-                    member.address,
-
-                    MapPin
-
-                  )}
-
-                </div>
-
-              </section>
-
-
-
-              {/* DOCUMENTS */}
-
-
-
-              <MobileConnectedDocuments key={memberId} />
-              <section className="fk-profile-card fk-profile-desktop-only">
-
-                <h3>Documents</h3>
-
-
-
-                <div className="fk-profile-documents">
-
-                  <FolderOpen size={40} />
-
-                  <p>No documents available yet.</p>
-
-                </div>
-
-              </section>
-
-            </>
-
+            <MobileConnectedDocuments key={memberId} />
           )}
 
         </main>
 
       )}
 
-      {member && !loading && !editing && <FamilyBottomNav />}
+      {member && !loading && !editing && <FamilyBottomNav active={fromHome ? "home" : "family"} />}
     </div>
 
   );

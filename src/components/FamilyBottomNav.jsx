@@ -5,7 +5,7 @@ import "../FamilyMembersPage.css";
 
 export default function FamilyBottomNav({ active = "family", onAdd }) {
   const navigate = useNavigate();
-  const addMember = onAdd || (() => navigate("/family/add"));
+  const addMember = onAdd || (() => navigate("/family/add", { state: { returnToLauncher: true } }));
 
   return (
     <nav className="fk-family-bottom-nav" aria-label="Main navigation">
