@@ -2165,6 +2165,90 @@ function subscribeToNavigationLayout(listener) {
   return () => compactNavigation.removeEventListener("change", listener);
 }
 
+function FamilyKitInstallPrompt() {
+  const [installEvent, setInstallEvent] = useState(null);
+  const [showAppleInstructions, setShowAppleInstructions] = useState(false);
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem("familykit-install-dismissed") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (!window.isSecureContext || dismissed) return;
+    const standalone = window.matchMedia("(display-mode: standalone)");
+    const runningAsApp = () => standalone.matches || navigator.standalone === true;
+    const appleMobile = /iPhone|iPad|iPod/.test(navigator.userAgent)
+      || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const safari = /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent);
+
+    function rememberInstall(event) {
+      if (runningAsApp()) return;
+      event.preventDefault();
+      setInstallEvent(event);
+    }
+
+    function hideAfterInstall() {
+      setInstallEvent(null);
+      setShowAppleInstructions(false);
+    }
+
+    function syncMode() {
+      if (runningAsApp()) hideAfterInstall();
+      else setShowAppleInstructions(appleMobile && safari);
+    }
+
+    syncMode();
+    window.addEventListener("beforeinstallprompt", rememberInstall);
+    window.addEventListener("appinstalled", hideAfterInstall);
+    standalone.addEventListener("change", syncMode);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", rememberInstall);
+      window.removeEventListener("appinstalled", hideAfterInstall);
+      standalone.removeEventListener("change", syncMode);
+    };
+  }, [dismissed]);
+
+  function dismiss() {
+    setDismissed(true);
+    try {
+      sessionStorage.setItem("familykit-install-dismissed", "true");
+    } catch {
+      // The popup can still be dismissed for this page when storage is unavailable.
+    }
+  }
+
+  async function install() {
+    try {
+      await installEvent.prompt();
+    } catch {
+      // The browser may withdraw an install offer before the user acts.
+    } finally {
+      dismiss();
+    }
+  }
+
+  if (dismissed || (!installEvent && !showAppleInstructions)) return null;
+
+  return (
+    <aside className="fk-install-prompt" aria-labelledby="fk-install-title">
+      <img src="/icons/familykit-192.png" width="40" height="40" alt="" />
+      <div>
+        <h2 id="fk-install-title">Install FamilyKit</h2>
+        <p>{installEvent
+          ? "Open FamilyKit directly from your device’s home screen."
+          : "In Safari, tap Share, then Add to Home Screen. Turn on Open as Web App if shown, then tap Add."}</p>
+        <div className="fk-install-actions">
+          {installEvent && <button type="button" className="fk-preview-join" onClick={install}>Install</button>}
+          <button type="button" className="fk-preview-hero-secondary" onClick={dismiss}>Not now</button>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 export default function App() {
   const compact = useSyncExternalStore(subscribeToNavigationLayout, () => compactNavigation.matches);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -2299,6 +2383,7 @@ export default function App() {
         <LandingEarlyAccessPreview />
       </main>
       <LandingFooterPreview />
+      <FamilyKitInstallPrompt />
     </div>
   );
 }

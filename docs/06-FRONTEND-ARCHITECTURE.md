@@ -30,6 +30,8 @@ The public landing at `/` is implemented in `App.jsx` and `App.css`. The origina
 
 ## Responsive layouts and PWA
 
+The public landing offers to install FamilyKit when a secure browser signals that installation is available. Safari on iPhone and iPad shows Add to Home Screen instructions. The offer is hidden in standalone mode and stays dismissed for the current tab session.
+
 Shared app motion in `src/responsive.css` adds short screen, card, and dialog entrances, desktop hover lifts, and mobile press and navigation feedback. The rules follow the device’s reduced-motion setting. The public landing manages its own animations.
 
 The Categories member filter uses the shared ProfileAvatar component to show the same profile photos as My Family. The All Family option has no avatar.
