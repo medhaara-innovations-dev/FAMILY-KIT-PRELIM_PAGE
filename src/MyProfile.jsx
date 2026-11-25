@@ -151,7 +151,7 @@ export default function MyProfile() {
   function handleLogout() {
     if (busy || !window.confirm("Are you sure you want to log out?")) return;
     clearFamilyKitSession();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   }
 
   function openProfileEditor() {

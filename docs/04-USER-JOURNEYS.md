@@ -28,6 +28,8 @@ sequenceDiagram
 
 [Profile & Settings](../src/MyProfile.jsx) opens the shared Reset PIN screen. The back arrow and the “Remember your PIN?” link return to Profile & Settings when entered from there. When entered from login, both controls lead to login.
 
+Confirming **Sign Out** in Profile & Settings clears the browser session and returns to the public landing page.
+
 ## Family and photos
 
 The registered account owner is distinct from additional members. The initial family contains the owner alone. The dashboard places the owner first and loads additional members through the authenticated Family Members API. Additional members use unique `memberId` values. The self photo uses `PROFILE#SELF`. See [family rules](05-FEATURE-SPECIFICATIONS.md#family-ownership-and-filtering).
