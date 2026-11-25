@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useSyncExternalStore } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {
   FaXTwitter,
 } from "react-icons/fa6";
@@ -51,6 +51,23 @@ import {
   Megaphone,
   Tags,
   Crown,
+  Pause,
+  UsersRound,
+  FolderClosed,
+  LayoutGrid,
+  Lightbulb,
+  ArrowLeft,
+  Camera,
+  CircleCheck,
+  Plane,
+  Ban,
+  WandSparkles,
+  BadgePercent,
+  CalendarCheck,
+  Database,
+  Mail,
+  Tag,
+  HandHeart,
 } from "lucide-react";
 import { CameraIcon, FacebookLogo, InstagramLogo, LinkedInLogo } from "./components/ReferenceIcons.jsx";
 import earlyAccessPhone from "./assets/images/iPhone 16 Pro.png";
@@ -85,6 +102,12 @@ import stepThreePurpleIcon from "./assets/images/Purple icon circle.png";
 import alertIcon from "./assets/images/Alert.png";
 import ideaIcon from "./assets/images/idea.png";
 
+import phonePreview from "./assets/images/landing-hero-phone.png";
+import landingWhyIllustration from "./assets/images/landing-why-familykit.jpg";
+import landingHowIllustration from "./assets/images/landing-how-it-works.jpg";
+import landingFamiliesIllustration from "./assets/images/landing-useful-for-families.jpg";
+import landingPrivacyIllustration from "./assets/images/landing-privacy-security.jpg";
+import familyIllustration from "./assets/images/landing-founding-family.svg";
 import "./App.css";
 
 
@@ -876,7 +899,7 @@ function AllFeaturesPage({ onBack }) {
 }
 
 
-function App() {
+export function PreviousLanding() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
@@ -1607,4 +1630,675 @@ function App() {
   );
 }
 
-export default App;
+// Finalized public landing
+const phoneExamples = [
+  { question: "Papa's PAN card", result: "PAN card · Papa", upcoming: "Car insurance renews in 12 days." },
+  { question: "My bike RC", result: "RC book · You", upcoming: "Passport expires in 7 months." },
+  { question: "Show me my parents' policy bond", result: "Policy bond · Papa and Amma", upcoming: "Electricity bill due Thursday." },
+];
+
+function LandingHeroPreview({ howItWorksHref }) {
+  const [examplesPaused, setExamplesPaused] = useState(false);
+
+  return (
+    <section className="fk-preview-hero" aria-labelledby="fk-preview-hero-title">
+      <div className="fk-preview-hero-copy">
+        <div className="fk-preview-hero-intro">
+          <p className="fk-preview-hero-badge">
+            <UsersRound size={17} aria-hidden="true" /> For the Whole Family
+          </p>
+          <h1 id="fk-preview-hero-title">
+            <span className="fk-preview-hero-line">Everything important,</span>{" "}
+            <span className="fk-preview-hero-line">in one place.</span>{" "}
+            <span className="fk-preview-hero-line fk-preview-hero-emphasis">Ready when your family needs it.</span>
+          </h1>
+          <p className="fk-preview-hero-description">
+            FamilyKit helps you organize your family’s important documents, securely share access with the people you choose, and get timely reminders—all without uploading the same documents again.
+          </p>
+        </div>
+        <div className="fk-preview-hero-actions">
+          <Link className="fk-preview-join" to="/signup">
+            Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
+          </Link>
+          <a className="fk-preview-hero-secondary" href={howItWorksHref}>
+            See How it Works <ChevronDown size={16} aria-hidden="true" />
+          </a>
+        </div>
+        <p className="fk-preview-hero-offer">
+          <Sparkles size={16} aria-hidden="true" />
+          <span><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+        </p>
+        <ul className="fk-preview-hero-features">
+          <li><HeartHandshake size={18} aria-hidden="true" /> Family sharing</li>
+          <li><ShieldCheck size={18} aria-hidden="true" /> Secure &amp; Private</li>
+          <li><Sparkles size={18} aria-hidden="true" /> AI-powered</li>
+        </ul>
+      </div>
+      <div className="fk-preview-hero-art" data-examples-paused={examplesPaused}>
+        <div className="fk-preview-hero-phone">
+          <img src={phonePreview} width="410" height="772" fetchPriority="high"
+            alt="FamilyKit preview with document search results found in three seconds, six category tiles, and upcoming reminders" />
+          <div className="fk-preview-phone-content fk-preview-phone-question" aria-hidden="true">
+            {phoneExamples.map(({ question }) => <span key={question}>{question}</span>)}
+          </div>
+          <div className="fk-preview-phone-content fk-preview-phone-result" aria-hidden="true">
+            {phoneExamples.map(({ result }) => <span key={result}>{result}</span>)}
+          </div>
+          <div className="fk-preview-phone-content fk-preview-phone-upcoming" aria-hidden="true">
+            {phoneExamples.map(({ upcoming }) => <span key={upcoming}>{upcoming}</span>)}
+          </div>
+        </div>
+        <button type="button" className="fk-preview-phone-pause"
+          aria-label={examplesPaused ? "Play phone examples" : "Pause phone examples"}
+          onClick={() => setExamplesPaused((paused) => !paused)}>
+          {examplesPaused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function EmergencyIcon({ size, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M6 19v-6a6 6 0 0 1 12 0v6M9 13a3 3 0 0 1 1.5-2.6M12 2v2M4 5l1.5 1.5M20 5l-1.5 1.5" />
+      <rect x="4" y="19" width="16" height="2.5" rx="1" />
+    </svg>
+  );
+}
+
+function ExpiryIcon({ size, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="3" y="5" width="18" height="16" rx="3" />
+      <path d="M7.5 3v4M16.5 3v4M3 10h18M8 14l1.5-1v5M13 13h4l-2.5 5" />
+    </svg>
+  );
+}
+
+const problems = [
+  [FolderClosed, "Documents scattered everywhere", "A drawer, a WhatsApp chat, an email, and another phone."],
+  [LayoutGrid, "Too many apps,\nno single place", "The bank, the bills, the vehicle, and the policies each sit in a different app."],
+  [EmergencyIcon, "No answers in an emergency", "It is night. Someone asks for a number. The person who knows cannot answer."],
+  [ExpiryIcon, "Expiry dates get missed", "The date was known once. Then it passed, and nobody else was reminded."],
+];
+
+function LandingWhyPreview() {
+  return (
+    <section id="why-familykit" className="fk-preview-why" aria-labelledby="fk-preview-why-title">
+      <div className="fk-preview-why-inner">
+        <img className="fk-preview-why-art" src={landingWhyIllustration} width="437" height="557" loading="lazy"
+          alt="Family members looking for information in a drawer, on a phone, and in a folder" />
+        <div className="fk-preview-why-copy">
+          <div className="fk-preview-why-intro">
+            <p className="fk-preview-why-badge"><Lightbulb size={15} aria-hidden="true" /> Why FamilyKit</p>
+            <h2 id="fk-preview-why-title">
+              <span>Your family’s life is connected.</span>{" "}
+              <span className="fk-preview-why-emphasis">Its information is scattered.</span>
+            </h2>
+            <p className="fk-preview-why-description">What one person knows, the others can’t find when they need it.</p>
+          </div>
+          <ul className="fk-preview-why-cards">
+            {problems.map(([Icon, title, description]) => (
+              <li key={title}>
+                <span className="fk-preview-why-icon"><Icon size={20} aria-hidden="true" /></span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="fk-preview-why-callout">
+          Everyone in your family knows something.{" "}<span>No one knows it all.</span>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+const steps = [
+  [Camera, "Scan or Upload", "Upload documents, bills, policies, certificates and other family information.", "Scan"],
+  [Sparkles, "AI Understands", "AI reads it, identifies the type, extracts the details and links it to the right family member.", "AI Organizes"],
+  [CircleCheck, "Review & Verify", "Check the extracted details against the original, and correct anything that needs attention.", "Verify"],
+  [LayoutGrid, "Organized & Ready", "Confirmed information is organised for authorised family members, with reminders where they apply.", "Confirm"],
+];
+
+function LandingHowPreview() {
+  return (
+    <section id="how" className="fk-preview-how" aria-labelledby="fk-preview-how-title">
+      <div className="fk-preview-how-inner">
+        <div className="fk-preview-how-copy">
+          <div className="fk-preview-how-intro">
+            <p className="fk-preview-how-badge"><Sparkles size={15} aria-hidden="true" /> How it Works</p>
+            <h2 id="fk-preview-how-title">
+              <span>You add the paper.</span>{" "}
+              <span>FamilyKit sorts it.</span>{" "}
+              <span className="fk-preview-how-emphasis">You confirm.</span>
+            </h2>
+            <p className="fk-preview-how-description">Four simple steps, from a photo to a reminder.</p>
+          </div>
+          <ol className="fk-preview-how-cards">
+            {steps.map(([Icon, title, description], index) => (
+              <li key={title}>
+                <div className="fk-preview-how-step">
+                  <span className="fk-preview-how-icon"><Icon size={20} aria-hidden="true" /></span>
+                  <span>Step {String(index + 1).padStart(2, "0")}</span>
+                </div>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <img className="fk-preview-how-art" src={landingHowIllustration} width="586" height="732" loading="lazy"
+          alt="A family reviewing a document together on a phone" />
+        <div className="fk-preview-how-flow">
+          <div className="fk-preview-how-flow-labels" aria-hidden="true">
+            {steps.map(([Icon, title, , label], index) => (
+              <span key={title} className={`fk-preview-how-flow-node fk-preview-how-flow-node-${index + 1}`}><Icon size={14} />{label}</span>
+            ))}
+            <ArrowRight className="fk-preview-how-flow-first" size={14} />
+            <svg className="fk-preview-how-flow-wide" width="20" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 10Q10 1 18 7m-5-1 5 1-1-5" />
+            </svg>
+            <ArrowRight className="fk-preview-how-flow-last" size={14} />
+            <ArrowLeft className="fk-preview-how-flow-back" size={14} />
+            <svg className="fk-preview-how-flow-turn" width="48" height="100%" viewBox="0 0 48 56" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M26 12h7c17 0 17 32 0 32H4" />
+              <path d="m8 40-4 4 4 4" />
+            </svg>
+          </div>
+          <p>You scan it. FamilyKit helps organize the rest.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const useCases = [
+  [GraduationCap, "Parents & Kids", "School records, birth certificates, vaccinations, and IDs."],
+  [HeartPulse, "Senior Parents", "Medical reports, prescriptions, pensions, and health policies."],
+  [House, "Home & Vehicles", "Property papers, utility bills, RC books, and insurance renewals."],
+  [Plane, "Trips & Milestones", "Passports, visas, bookings, and private family memories."],
+];
+
+function LandingFamiliesPreview({ privacyHref }) {
+  return (
+    <section id="useful-for-families" className="fk-preview-why" aria-labelledby="fk-preview-families-title">
+      <div className="fk-preview-why-inner">
+        <img className="fk-preview-why-art" src={landingFamiliesIllustration} width="587" height="777" loading="lazy"
+          alt="Three generations of a family with school, health, home, and travel records" />
+        <div className="fk-preview-why-copy">
+          <div className="fk-preview-why-intro">
+            <p className="fk-preview-why-badge"><UsersRound size={15} aria-hidden="true" /> Useful for Families</p>
+            <h2 id="fk-preview-families-title">
+              <span>Made for every family.</span>{" "}
+              <span className="fk-preview-why-emphasis">Ready for everyday life.</span>
+            </h2>
+          </div>
+          <ul className="fk-preview-why-cards fk-preview-families-cards">
+            {useCases.map(([Icon, title, description]) => (
+              <li key={title}>
+                <span className="fk-preview-why-icon"><Icon size={20} aria-hidden="true" /></span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="fk-preview-families-callout">
+          <span className="fk-preview-families-heart"><HeartHandshake size={26} aria-hidden="true" /></span>
+          <div>
+            <h3>One shared space for every generation.</h3>
+            <p>From school records to senior care, everything stays ready for the family members who need it.</p>
+          </div>
+          <a className="fk-preview-hero-secondary" href={privacyHref}>
+            See How It’s Protected <ChevronRight size={18} aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const protections = [
+  [LockKeyhole, "Protected by AES-256, the same encryption banks use", "Your family’s documents and records are encrypted at rest and in transit."],
+  [MapPin, "Your data stays in India", "Your family’s data stays in India."],
+  [Ban, "We never sell your data", "We never sell or share your family’s information."],
+  [WandSparkles, "Your data is never used to train AI", "AI processes your files only to assist you, never to train general models."],
+];
+
+function LandingPrivacyPreview() {
+  return (
+    <section id="security" className="fk-preview-how fk-preview-privacy" aria-labelledby="fk-preview-privacy-title">
+      <div className="fk-preview-how-inner">
+        <div className="fk-preview-how-copy">
+          <div className="fk-preview-how-intro">
+            <p className="fk-preview-how-badge"><ShieldCheck size={15} aria-hidden="true" /> Security &amp; Privacy</p>
+            <h2 id="fk-preview-privacy-title">
+              <span>Your family’s data stays safe.</span>{" "}
+              <span className="fk-preview-how-emphasis">And stays yours.</span>
+            </h2>
+          </div>
+          <ul className="fk-preview-privacy-protections">
+            {protections.map(([Icon, title, description]) => (
+              <li key={title}>
+                <span className="fk-preview-how-icon"><Icon size={20} aria-hidden="true" /></span>
+                <div><h3>{title}</h3><p>{description}</p></div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <img className="fk-preview-how-art" src={landingPrivacyIllustration} width="586" height="776" loading="lazy"
+          alt="A family standing beside a shield and lock protecting their records" />
+        <div className="fk-preview-privacy-callout">
+          <span className="fk-preview-privacy-shield"><ShieldCheck size={26} aria-hidden="true" /></span>
+          <div><h3>Your privacy is our commitment</h3>
+            <p>FamilyKit is built to keep your family’s information safe and private.</p>
+          </div>
+          <button type="button" className="fk-preview-hero-secondary" disabled title="Privacy policy coming soon">
+            Read our privacy policy
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const joining = [
+  [Mail, "No charge to join", "Join the Founding Families Program for free."],
+  [Tag, "Price shown at launch", "Know the regular annual price before you pay."],
+];
+
+const benefits = [
+  [UsersRound, "12 Months Free for Both Spouses", "You and your spouse each get a FamilyKit account, connected through one family subscription."],
+  [BadgePercent, "50% Off Every Year After", "As a Founding Family, you’ll receive 50% off the regular annual subscription every year."],
+  [ShieldCheck, "Your Family, Your Privacy", "Keep personal records private and share selected information with your spouse."],
+  [CalendarCheck, "No Automatic Charges", "We’ll remind you before your free year ends. You decide whether to renew."],
+];
+
+function PricingCards({ items, className }) {
+  return (
+    <ul className={className}>
+      {items.map(([Icon, title, description]) => (
+        <li className="fk-preview-pricing-card" key={title}>
+          <span className="fk-preview-pricing-icon"><Icon size={25} aria-hidden="true" /></span>
+          <div><h3>{title}</h3><p>{description}</p></div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function LandingPricingPreview() {
+  return (
+    <section id="pricing" className="fk-preview-pricing" aria-labelledby="fk-preview-pricing-title">
+      <div className="fk-preview-pricing-inner">
+        <header className="fk-preview-pricing-intro">
+          <p className="fk-preview-how-badge">Pricing</p>
+          <h2 id="fk-preview-pricing-title">
+            The first 100 families <br />
+            <span>pay nothing for a year.</span>
+          </h2>
+          <p>Your free year begins when FamilyKit launches for your family, not when you join.</p>
+        </header>
+        <PricingCards className="fk-preview-pricing-grid fk-preview-pricing-joining" items={joining} />
+        <div className="fk-preview-pricing-panel">
+          <img src={familyIllustration} width="1928" height="1600" loading="lazy" alt="A couple looking at FamilyKit together on a phone" />
+          <div className="fk-preview-pricing-benefits">
+            <h3>Your Founding Family Benefits</h3>
+            <PricingCards className="fk-preview-pricing-grid" items={benefits} />
+          </div>
+          <div className="fk-preview-pricing-retention">
+            <span className="fk-preview-pricing-icon"><Database size={25} aria-hidden="true" /></span>
+            <div><h3>Your Information Stays Yours</h3>
+              <p>Even if you don’t renew, you’ll have access to your existing family information under our data access and retention policy.</p>
+            </div>
+          </div>
+        </div>
+        <div className="fk-preview-pricing-close">
+          <h3><Heart size={20} aria-hidden="true" /> <span>The First 100 Families Will Always Be Special To Us.</span> <Heart size={20} aria-hidden="true" /></h3>
+          <p>You’re not just early users. You’re helping shape the future of FamilyKit.</p>
+          <Link className="fk-preview-join" to="/signup">Become a Founding Family <ChevronRight size={18} aria-hidden="true" /></Link>
+          <p className="fk-preview-pricing-offer"><UsersRound size={18} aria-hidden="true" />
+            <span><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const questions = [
+  ["What is FamilyKit?",
+    "FamilyKit is your family's intelligent digital organizer. Keep important documents, family profiles, health records, contacts, finances, insurance, events and reminders together in one secure place. Find what you need in seconds and share selected information with the family members you choose."],
+  ["Who can see my documents and personal information?",
+    "Your information stays private unless you choose to share it. You decide which family members can access specific records and can remove their access whenever you wish. Each registered user has their own secure account, and sharing selected information does not mean sharing your entire account."],
+  ["Does FamilyKit AI decide what is correct?",
+    "No. FamilyKit AI helps you understand, organize and find information. It can suggest details extracted from documents, but you review and confirm them. You always remain in control of your family's information."],
+  ["Where is my family's information stored?",
+    "Your family's records and documents are stored securely using Amazon Web Services (AWS), with data storage located in India. Your information is protected through encryption and access controls. We never sell your personal information, and your private records are not used to train general-purpose AI models.",
+    "Read more in our Privacy Policy."],
+  ["Will FamilyKit remind me before important dates?",
+    "Yes. FamilyKit helps you remember insurance renewals, bill payments, document expiries, appointments and important family events. You can review and confirm dates before reminders are created. Authorized family members can also receive reminders for information shared with them."],
+  ["I joined the Founding Families Program through WhatsApp. How do I sign in?",
+    "Joining the Founding Families Program reserves your place for early access. We'll notify you through WhatsApp when FamilyKit launches. You can then register using your email address, verify it with a one-time password (OTP), and create your secure four-digit PIN for future sign-ins."],
+  ["What does FamilyKit cost for the first 100 families?",
+    <>The first 100 Founding Families receive <strong>12 months of free FamilyKit access for both spouses</strong>, starting when FamilyKit becomes available to their family.</>,
+    <>After the free year, Founding Families enjoy an <strong>exclusive 50% discount on the regular annual subscription, every year</strong>.</>,
+    "We'll inform you of the subscription price before your free period ends. Renewal is entirely your choice, with no automatic charges.",
+    "If you don't renew, your FamilyKit access will be suspended until you renew your subscription."],
+  ["Can I delete my FamilyKit account and personal information?",
+    "Yes. You can request deletion of your FamilyKit account and associated personal information. Access you've granted to others will be revoked, while copies they previously downloaded may remain with them.",
+    "Applicable backup retention periods and any legally required retention will be explained in our Privacy Policy."],
+  ["Can I download my records? What happens if I don't renew?",
+    "Yes. While your subscription is active, you can download your documents and obtain copies of the records you've added.",
+    "If your subscription expires, access to your family records will be suspended. Your stored information will be retained according to our data retention policy.",
+    "Once you successfully renew your subscription, access to your retained records will be restored."],
+  ["What happens to someone's FamilyKit records if they pass away?",
+    "Records that a person previously shared remain available to authorized family members, subject to applicable access permissions and subscription status.",
+    "Private records are not automatically opened to others. Any additional access must follow the account holder's authorized arrangements or a valid legal process.",
+    "FamilyKit is designed to help families preserve important information while respecting each person's privacy and wishes."],
+];
+
+function LandingFaqPreview() {
+  return (
+    <section id="faq" className="fk-preview-faq" aria-labelledby="fk-preview-faq-title">
+      <p className="fk-preview-how-badge">FAQ</p>
+      <h2 id="fk-preview-faq-title">Questions families ask</h2>
+      <div className="fk-preview-faq-list">
+        {questions.map(([question, ...paragraphs], index) => (
+          <details key={question} name="fk-preview-faq" open={index === 0}>
+            <summary>{question}<ChevronDown size={20} aria-hidden="true" /></summary>
+            {paragraphs.map((paragraph, position) => <p key={position}>{paragraph}</p>)}
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const illustrationIcons = [BadgeCheck, ReceiptText, HandHeart, FileText, Bell, Landmark, HeartPulse];
+
+function LandingEarlyAccessPreview() {
+  const [submitted, setSubmitted] = useState(false);
+
+  return (
+    <section id="early-access" className="fk-preview-early" aria-labelledby="fk-preview-early-title">
+      <div className="fk-preview-early-inner">
+        <div className="fk-preview-early-copy">
+          <div className="fk-preview-early-intro">
+            <p className="fk-preview-early-label">Early Access</p>
+            <h2 id="fk-preview-early-title">Ready to put <span>everything in place?</span></h2>
+            <p>Join Indian families organizing documents, dates, and responsibilities in one calm, private space.</p>
+          </div>
+          <form className="fk-preview-early-form" onSubmit={(event) => {
+            event.preventDefault();
+            setSubmitted(true);
+          }} onChange={() => setSubmitted(false)}>
+            <div className="fk-preview-early-fields">
+              <label>
+                WhatsApp number <small>(required)</small>
+                <span className="fk-preview-early-phone">
+                  <span aria-hidden="true">+91</span>
+                  <input type="tel" inputMode="numeric" autoComplete="tel-national" required
+                    pattern="[6-9][0-9]{4} ?[0-9]{5}" maxLength={11} placeholder="98765 43210"
+                    title="Enter a 10-digit Indian WhatsApp number" />
+                </span>
+              </label>
+              <label>
+                Email <small>(optional)</small>
+                <input type="email" autoComplete="email" placeholder="Email address" />
+              </label>
+            </div>
+            <button type="submit" className="fk-preview-join">
+              Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
+            </button>
+            {submitted && <p role="status">Early-access registration is still in preview. Your details weren’t sent.</p>}
+          </form>
+          <p className="fk-preview-early-offer"><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></p>
+          <p className="fk-preview-early-consent">When registration opens, FamilyKit may message you on WhatsApp about your founding spot. See <a href="#security">Privacy &amp; Security</a>.</p>
+        </div>
+        <div className="fk-preview-early-art" aria-hidden="true">
+          {illustrationIcons.map((Icon, index) => <span key={index}><Icon size={19} /></span>)}
+          <img src={familyImage} width="1501" height="1047" loading="lazy" alt="" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const linkGroups = [
+  ["Product", [
+    ["Become a Founding Family", "#early-access"],
+    ["Why FamilyKit", "#why-familykit"],
+    ["How it Works", "#how"],
+    ["Privacy & Security", "#security"],
+    ["Pricing", "#pricing"],
+    ["FAQ", "#faq"],
+  ]],
+  ["Company", [["About"], ["Our Story"], ["Partners"]]],
+  ["Support", [["Contact Us"], ["Help Center", "#faq"], ["Refund Policy"]]],
+];
+
+const socialIcons = [
+  ["X", FaXTwitter],
+  ["Instagram", InstagramLogo],
+  ["Facebook", FacebookLogo],
+  ["LinkedIn", LinkedInLogo],
+];
+
+function LandingFooterPreview() {
+  return (
+    <footer className="fk-preview-footer">
+      <div className="fk-preview-footer-inner">
+        <div className="fk-preview-footer-main">
+          <div className="fk-preview-footer-identity">
+            <a href="#landing-top" className="fk-preview-brand" aria-label="FamilyKit, back to top">
+              <img src={familyKitLogo} alt="" />
+              <span>FamilyKit</span>
+            </a>
+            <p>Everything important to your family, securely organized in one place.</p>
+            <ul className="fk-preview-footer-socials" aria-label="FamilyKit social channels">
+              {socialIcons.map(([label, Icon]) => (
+                <li key={label} title={`${label} link coming soon`}>
+                  <Icon size={20} color="currentColor" aria-hidden="true" />
+                  <span className="fk-preview-footer-sr-only">{label} link coming soon</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <nav className="fk-preview-footer-nav" aria-label="Footer navigation">
+            {linkGroups.map(([heading, links]) => (
+              <div key={heading}>
+                <h2>{heading}</h2>
+                <ul>
+                  {links.map(([label, href]) => (
+                    <li key={label}>
+                      {href ? <a href={href}>{label}</a> : <span title="Coming soon">{label}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </div>
+        <div className="fk-preview-footer-bottom">
+          <p>© 2026 Medhaara Innovations. All rights reserved.<br />Made in India.</p>
+          <ul aria-label="Policies and settings">
+            {["Privacy Policy", "Terms of Service", "Refund Policy", "Cookie Settings"].map((label) => (
+              <li key={label}><span title="Coming soon">{label}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+const sections = [
+  ["Why FamilyKit", "why-familykit"],
+  ["How it works", "how"],
+  ["Privacy & Security", "security"],
+  ["Pricing", "pricing"],
+  ["FAQ", "faq"],
+];
+
+const compactNavigation = window.matchMedia("(width < 960px)");
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+const revealTargets = [
+  "main section h2", ".fk-preview-why-intro > p", ".fk-preview-how-intro > p",
+  ".fk-preview-pricing-intro > p", ".fk-preview-early-intro > p",
+  ".fk-preview-why-cards > li", ".fk-preview-how-cards > li",
+  ".fk-preview-privacy-protections > li", ".fk-preview-pricing-card",
+  ".fk-preview-faq-list > details", ".fk-preview-why-art", ".fk-preview-how-art",
+  ".fk-preview-pricing-panel img", ".fk-preview-early-art", ".fk-preview-early-form",
+  ".fk-preview-why-callout", ".fk-preview-families-callout", ".fk-preview-privacy-callout",
+  ".fk-preview-how-flow", ".fk-preview-pricing-retention", ".fk-preview-pricing-close",
+].join(", ");
+
+function subscribeToNavigationLayout(listener) {
+  compactNavigation.addEventListener("change", listener);
+  return () => compactNavigation.removeEventListener("change", listener);
+}
+
+export default function App() {
+  const compact = useSyncExternalStore(subscribeToNavigationLayout, () => compactNavigation.matches);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef(null);
+  const firstLink = useRef(null);
+  const preview = useRef(null);
+  const [activeSection, setActiveSection] = useState(null);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const page = preview.current;
+    const targets = [...page.querySelectorAll(revealTargets)];
+    const destinations = sections.map(([, id]) => page.querySelector(`#${id}`));
+    let revealObserver;
+    let frame = 0;
+
+    function updateActiveSection() {
+      const marker = window.innerHeight * 0.28;
+      const current = destinations.findLast((section) => section.getBoundingClientRect().top <= marker);
+      setActiveSection(current?.id ?? null);
+    }
+
+    function scheduleActiveSection() {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        updateActiveSection();
+      });
+    }
+
+    function stopMotion() {
+      revealObserver?.disconnect();
+      window.removeEventListener("scroll", scheduleActiveSection);
+      window.removeEventListener("resize", scheduleActiveSection);
+      window.cancelAnimationFrame(frame);
+      frame = 0;
+      root.removeAttribute("data-motion");
+    }
+
+    function syncMotion() {
+      stopMotion();
+      targets.forEach((element) => element.removeAttribute("data-revealed"));
+      setActiveSection(null);
+      if (motionPreference.matches || typeof IntersectionObserver !== "function") return;
+
+      root.setAttribute("data-motion", "");
+      revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(({ isIntersecting, target }) => {
+          if (!isIntersecting) return;
+          target.setAttribute("data-revealed", "");
+          observer.unobserve(target);
+        });
+      }, { threshold: 0.12 });
+      targets.forEach((target) => revealObserver.observe(target));
+
+      window.addEventListener("scroll", scheduleActiveSection, { passive: true });
+      window.addEventListener("resize", scheduleActiveSection);
+      updateActiveSection();
+    }
+
+    syncMotion();
+    motionPreference.addEventListener("change", syncMotion);
+    return () => {
+      motionPreference.removeEventListener("change", syncMotion);
+      stopMotion();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (compact && menuOpen) firstLink.current?.focus();
+  }, [compact, menuOpen]);
+
+  return (
+    <div id="landing-top" className="fk-landing-nav-preview" ref={preview}>
+      <div className="fk-preview-top">
+        <div className="fk-preview-announcement">
+          <span className="fk-preview-announcement-label">Free for 1 year for the first 100 families · 87 spots left</span>
+          <div className="fk-preview-announcement-track" aria-hidden="true">
+            {[0, 1].map((group) => (
+              <div className="fk-preview-announcement-group" key={group}>
+                {[0, 1, 2, 3].map((item) => (
+                  <span key={item}><Sparkles size={16} /> <strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      <header className="fk-preview-header"
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && menuOpen) {
+            setMenuOpen(false);
+            menuButton.current?.focus();
+          }
+        }}>
+        <Link to="/" className="fk-preview-brand" aria-label="FamilyKit home">
+          <img src={familyKitLogo} alt="" />
+          <span>FamilyKit</span>
+        </Link>
+        <nav className="fk-preview-links" id="fk-preview-nav" aria-label="Landing page navigation"
+          data-open={menuOpen} inert={compact && !menuOpen}>
+          {sections.map(([label, section], index) => (
+            <a key={section} ref={index === 0 ? firstLink : undefined}
+              href={`#${section}`}
+              aria-current={activeSection === section ? "location" : undefined}
+              onClick={() => setMenuOpen(false)}>{label}</a>
+          ))}
+          <Link className="fk-preview-join fk-preview-menu-join" to="/signup">
+            Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
+          </Link>
+        </nav>
+        <div className="fk-preview-actions">
+          <Link className="fk-preview-login" to="/login">Login</Link>
+          <Link className="fk-preview-join fk-preview-desktop-join" to="/signup">
+            Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
+          </Link>
+          <button type="button" className="fk-preview-menu-button" aria-controls="fk-preview-nav"
+            aria-expanded={menuOpen} aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+            onClick={() => setMenuOpen((open) => !open)} ref={menuButton}>
+            {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+          </button>
+        </div>
+      </header>
+      </div>
+      <main>
+        <LandingHeroPreview howItWorksHref="#how" />
+        <LandingWhyPreview />
+        <LandingHowPreview />
+        <LandingFamiliesPreview privacyHref="#security" />
+        <LandingPrivacyPreview />
+        <LandingPricingPreview />
+        <LandingFaqPreview />
+        <LandingEarlyAccessPreview />
+      </main>
+      <LandingFooterPreview />
+    </div>
+  );
+}

@@ -1,0 +1,369 @@
+.fk-landing-nav-preview {
+  --fk-preview-purple: #2d0b84;
+  --fk-preview-border: #e5e0ec;
+  --fk-preview-ease: cubic-bezier(.2, .75, .25, 1);
+  --fk-preview-gutter: clamp(16px, 4.6vw, 48px);
+  min-height: 100dvh;
+  padding: 16px var(--fk-preview-gutter);
+  background: #fff;
+  font-family: Poppins, sans-serif;
+}
+
+.fk-preview-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 28px);
+  max-width: 82rem;
+  margin-inline: auto;
+  padding: 8px clamp(14px, 2vw, 24px);
+  border: 1px solid var(--fk-preview-border);
+  border-radius: 999px;
+  background: #fdfcff;
+}
+
+html[data-motion] .fk-preview-header { animation: fk-preview-enter 360ms var(--fk-preview-ease) backwards; }
+
+@keyframes fk-preview-enter {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fk-preview-announcement {
+  position: relative;
+  margin: -16px calc(-1 * var(--fk-preview-gutter)) 16px;
+  overflow: hidden;
+  background: #edff91;
+  color: var(--fk-preview-purple);
+  font-size: 13px;
+}
+.fk-preview-announcement-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.fk-preview-announcement-track,
+.fk-preview-announcement-group { display: flex; width: max-content; }
+html[data-motion] .fk-preview-announcement-track { animation: fk-preview-ticker 64s linear infinite; }
+.fk-preview-announcement-group span { display: flex; align-items: center; gap: .3em; padding: 9px 28px; white-space: nowrap; }
+.fk-preview-announcement-group svg { margin-inline-end: 8px; }
+
+@media (width >= 960px) {
+  .fk-preview-top { position: sticky; top: 0; z-index: 2; }
+}
+
+@media (width < 960px) {
+  .fk-preview-announcement { margin-bottom: 10px; font-size: 11px; }
+  .fk-preview-announcement-group span { padding: 8px 16px; }
+}
+
+@keyframes fk-preview-ticker { to { transform: translateX(-50%); } }
+
+.fk-preview-header a { text-decoration: none; }
+
+.fk-preview-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fk-preview-purple);
+  font-size: 24px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fk-preview-brand img { width: 36px; height: 36px; object-fit: contain; transform: scale(1.33); }
+
+.fk-preview-links,
+.fk-preview-actions {
+  display: flex;
+  align-items: center;
+}
+
+.fk-preview-links {
+  gap: clamp(14px, 2.75vw, 48px);
+}
+
+.fk-preview-links > a:not(.fk-preview-join) {
+  position: relative;
+  color: #19181a;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (width >= 960px) {
+  .fk-preview-links > a:not(.fk-preview-join)::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -5px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--fk-preview-purple);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  html[data-motion] .fk-preview-links > a:not(.fk-preview-join)::after { transition: transform 220ms var(--fk-preview-ease); }
+  .fk-preview-links > a:not(.fk-preview-join):focus-visible::after { transform: scaleX(1); }
+}
+
+.fk-preview-actions { gap: 8px; }
+
+.fk-landing-nav-preview :is(.fk-preview-login, .fk-preview-join, .fk-preview-hero-secondary) {
+  font-family: Poppins, sans-serif !important;
+}
+
+.fk-preview-login,
+.fk-preview-join {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-inline: 16px;
+  border: 1px solid var(--fk-preview-purple);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.fk-preview-login { min-width: 86px; color: var(--fk-preview-purple); }
+.fk-preview-join { min-height: 48px; background: var(--fk-preview-purple); color: #fff; }
+.fk-preview-menu-button, .fk-preview-menu-join { display: none; }
+.fk-preview-header :is(a, button):focus-visible { outline: 2px solid var(--fk-preview-purple); outline-offset: 3px; }
+
+@media (hover: hover) {
+  .fk-preview-links > a:not(.fk-preview-join):hover { color: var(--fk-preview-purple); }
+  .fk-preview-login:hover { background: #ebe6f7; }
+  .fk-preview-join:hover { background: #3d2184; }
+  .fk-preview-links > a:not(.fk-preview-join):hover::after { transform: scaleX(1); }
+}
+
+html[data-motion] .fk-preview-menu-button svg { animation: fk-preview-icon-enter 180ms var(--fk-preview-ease) both; }
+
+@keyframes fk-preview-icon-enter {
+  from { opacity: 0; transform: rotate(-90deg) scale(.9); }
+  to { opacity: 1; transform: rotate(0) scale(1); }
+}
+
+@media (960px <= width < 1100px) {
+  .fk-preview-header { gap: 12px; padding-inline: 14px; }
+  .fk-preview-brand { font-size: 21px; }
+  .fk-preview-links { gap: 15px; }
+  .fk-preview-links > a:not(.fk-preview-join) { font-size: 13px; }
+  .fk-preview-login, .fk-preview-join { padding-inline: 12px; font-size: 13px; }
+  .fk-preview-login { min-width: 66px; }
+}
+
+@media (width < 960px) {
+  .fk-preview-header { padding: 6px 12px 6px 16px; }
+  .fk-preview-brand { font-size: 19px; }
+  .fk-preview-brand img { width: 27px; height: 27px; }
+  .fk-preview-desktop-join { display: none; }
+  .fk-preview-menu-button {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fk-preview-purple);
+    cursor: pointer;
+  }
+  .fk-preview-links {
+    position: absolute;
+    inset: calc(100% + 8px) 0 auto;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 12px;
+    border: 1px solid var(--fk-preview-border);
+    border-radius: 18px;
+    background: #fdfcff;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fk-preview-links[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .fk-preview-links > a:not(.fk-preview-join) { padding: 10px 12px; }
+  .fk-preview-menu-join { display: inline-flex; margin-top: 4px; }
+}
+
+@media (width <= 360px) {
+  .fk-preview-header { padding-inline: 10px; gap: 6px; }
+  .fk-preview-login { min-width: 0; padding-inline: 12px; }
+  .fk-preview-actions { gap: 2px; }
+}
+
+
+/* Motion is enabled by the landing preview after checking browser support. */
+html[data-motion] .fk-preview-links > a[aria-current="location"] {
+  color: var(--fk-preview-purple);
+}
+html[data-motion] .fk-preview-links > a[aria-current="location"]::after { transform: scaleX(1); }
+
+@media (width < 960px) {
+  html[data-motion] .fk-preview-links {
+    transform: translateY(-6px);
+    transition: opacity 180ms ease, transform 180ms var(--fk-preview-ease), visibility 0s linear 180ms;
+  }
+  html[data-motion] .fk-preview-links[data-open="true"] {
+    transform: translateY(0);
+    transition-delay: 0s;
+  }
+  html[data-motion] .fk-preview-links[data-open="true"] > a {
+    animation: fk-preview-rise 240ms var(--fk-preview-ease) backwards;
+    animation-delay: calc(40ms * var(--motion-index, 0));
+  }
+}
+
+.fk-landing-nav-preview :nth-child(2) { --motion-index: 1; }
+.fk-landing-nav-preview :nth-child(3) { --motion-index: 2; }
+.fk-landing-nav-preview :nth-child(4) { --motion-index: 3; }
+.fk-landing-nav-preview :nth-child(5) { --motion-index: 4; }
+.fk-landing-nav-preview :nth-child(6) { --motion-index: 5; }
+
+html[data-motion] .fk-landing-nav-preview [data-revealed] {
+  animation: fk-preview-rise 480ms var(--fk-preview-ease) backwards;
+  animation-delay: calc(65ms * var(--motion-index, 0));
+}
+
+html[data-motion] .fk-preview-hero :is(.fk-preview-hero-badge, h1, .fk-preview-hero-description, .fk-preview-hero-actions) {
+  animation: fk-preview-rise 480ms var(--fk-preview-ease) backwards;
+  animation-delay: calc(80ms * var(--motion-index, 0));
+}
+html[data-motion] .fk-preview-hero-actions { --motion-index: 3; }
+
+html[data-motion] .fk-landing-nav-preview [data-revealed]:is(.fk-preview-why-art, .fk-preview-how-art, .fk-preview-pricing-panel img, .fk-preview-early-art) {
+  animation: fk-preview-rise 480ms var(--fk-preview-ease) backwards, fk-preview-image-drift 6s ease-in-out 480ms infinite;
+}
+
+html[data-motion] .fk-landing-nav-preview [data-revealed] > :is(.fk-preview-why-icon, .fk-preview-how-step, .fk-preview-how-icon, .fk-preview-pricing-icon),
+html[data-motion] .fk-preview-how-flow[data-revealed] .fk-preview-how-flow-node {
+  animation: fk-preview-pop 350ms var(--fk-preview-ease) backwards;
+  animation-delay: calc(180ms + 65ms * var(--motion-index, 0));
+}
+
+html[data-motion] .fk-landing-nav-preview [data-revealed]:is(.fk-preview-why-callout, .fk-preview-families-callout, .fk-preview-privacy-callout, .fk-preview-how-flow, .fk-preview-pricing-retention, .fk-preview-pricing-close, .fk-preview-early-form) {
+  animation-name: fk-preview-banner-enter;
+}
+html[data-motion] .fk-landing-nav-preview [data-revealed]:is(.fk-preview-families-callout, .fk-preview-privacy-callout, .fk-preview-pricing-retention) > * {
+  animation: fk-preview-rise 400ms var(--fk-preview-ease) backwards;
+  animation-delay: calc(180ms + 110ms * var(--motion-index, 0));
+}
+
+html[data-motion] .fk-landing-nav-preview :is(.fk-preview-join, .fk-preview-hero-secondary, .fk-preview-families-callout, .fk-preview-privacy-callout, .fk-preview-how-flow, .fk-preview-pricing-retention, .fk-preview-why-callout) {
+  position: relative;
+}
+html[data-motion] .fk-landing-nav-preview :is(.fk-preview-join, .fk-preview-hero-secondary, .fk-preview-families-callout, .fk-preview-privacy-callout, .fk-preview-how-flow, .fk-preview-pricing-retention, .fk-preview-why-callout)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(112deg, transparent 35%, color-mix(in srgb, currentColor 12%, transparent) 50%, transparent 65%) 100% 0 / 250% 100% no-repeat;
+  opacity: 0;
+  animation: fk-preview-shine 9s ease-in-out infinite;
+}
+
+html[data-motion] .fk-landing-nav-preview :is(.fk-preview-families-callout a, .fk-preview-privacy-callout button, .fk-preview-pricing-close a) > svg {
+  animation: fk-preview-arrow-nudge 4s ease-in-out infinite;
+}
+html[data-motion] .fk-landing-nav-preview :is(.fk-preview-families-callout a, .fk-preview-pricing-close a) {
+  animation: fk-preview-banner-float 4s ease-in-out infinite;
+}
+
+html[data-motion] .fk-preview-how-flow[data-revealed] .fk-preview-how-flow-node {
+  animation: fk-preview-pop 350ms var(--fk-preview-ease) backwards, fk-preview-flow-pulse 4s ease-in-out infinite;
+  animation-delay: calc(180ms + 65ms * var(--motion-index, 0)), calc(600ms + 550ms * var(--motion-index, 0));
+}
+html[data-motion] .fk-preview-how-flow[data-revealed] .fk-preview-how-flow-labels > svg {
+  animation: fk-preview-flow-pulse 4s ease-in-out infinite;
+  animation-delay: 950ms;
+}
+html[data-motion] .fk-preview-how-flow[data-revealed] :is(.fk-preview-how-flow-wide, .fk-preview-how-flow-turn) { animation-delay: 1500ms; }
+html[data-motion] .fk-preview-how-flow[data-revealed] :is(.fk-preview-how-flow-last, .fk-preview-how-flow-back) { animation-delay: 2050ms; }
+
+html[data-motion] .fk-landing-nav-preview :is(a, button, summary) {
+  transition: transform 180ms var(--fk-preview-ease);
+}
+html[data-motion] .fk-landing-nav-preview :is(a, button:not(:disabled), summary):active { scale: .97; }
+
+@media (hover: hover) {
+  html[data-motion] .fk-landing-nav-preview :is(.fk-preview-why-cards li, .fk-preview-how-cards li, .fk-preview-privacy-protections li, .fk-preview-pricing-card) {
+    transition: transform 180ms var(--fk-preview-ease);
+  }
+  html[data-motion] .fk-landing-nav-preview :is(.fk-preview-why-cards li, .fk-preview-how-cards li, .fk-preview-privacy-protections li, .fk-preview-pricing-card, .fk-preview-join, .fk-preview-login, .fk-preview-hero-secondary:not(:disabled)):hover {
+    transform: translateY(-2px);
+  }
+  html[data-motion] .fk-landing-nav-preview :is(.fk-preview-families-callout, .fk-preview-privacy-callout, .fk-preview-pricing-retention, .fk-preview-why-callout):hover {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 28%, transparent);
+  }
+  html[data-motion] .fk-landing-nav-preview :is(.fk-preview-families-heart, .fk-preview-privacy-shield, .fk-preview-pricing-retention > .fk-preview-pricing-icon):hover,
+  html[data-motion] .fk-landing-nav-preview :is(.fk-preview-families-callout, .fk-preview-privacy-callout, .fk-preview-pricing-retention):hover > :is(.fk-preview-families-heart, .fk-preview-privacy-shield, .fk-preview-pricing-icon) {
+    animation: fk-preview-pop 1.3s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes fk-preview-rise {
+  from { transform: translateY(10px); opacity: .15; }
+}
+@keyframes fk-preview-banner-enter {
+  from { transform: translateY(16px); opacity: .15; }
+}
+@keyframes fk-preview-pop {
+  from { transform: scale(.88); opacity: .45; }
+}
+@keyframes fk-preview-image-drift {
+  50% { transform: translateY(-4px) scale(1.005); box-shadow: 0 0 18px color-mix(in srgb, var(--fk-preview-purple) 12%, transparent); }
+}
+@keyframes fk-preview-shine {
+  0%, 70%, 100% { opacity: 0; background-position: 100% 0; }
+  75% { opacity: 1; }
+  90% { opacity: 0; background-position: 0 0; }
+}
+@keyframes fk-preview-banner-float {
+  50% { translate: 0 -2px; }
+}
+@keyframes fk-preview-arrow-nudge {
+  15% { transform: translateX(2px); }
+  30%, 100% { transform: translateX(0); }
+}
+@keyframes fk-preview-flow-pulse {
+  15% { opacity: .72; transform: scale(1.04); }
+  30%, 100% { opacity: 1; transform: scale(1); }
+}
+@keyframes fk-preview-draw-underline {
+  from { transform: scaleX(0); }
+}
+
+html[data-motion] .fk-preview-why h2[data-revealed] .fk-preview-why-emphasis,
+html[data-motion] .fk-preview-how h2[data-revealed] .fk-preview-how-emphasis,
+html[data-motion] .fk-preview-pricing h2[data-revealed] span,
+html[data-motion] .fk-preview-pricing-close[data-revealed] h3 span {
+  position: relative;
+  background-image: none;
+}
+
+html[data-motion] .fk-preview-why h2[data-revealed] .fk-preview-why-emphasis::after,
+html[data-motion] .fk-preview-how h2[data-revealed] .fk-preview-how-emphasis::after,
+html[data-motion] .fk-preview-pricing h2[data-revealed] span::after,
+html[data-motion] .fk-preview-pricing-close[data-revealed] h3 span::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--fk-preview-purple), #edff91 77%);
+  transform-origin: left;
+  animation: fk-preview-draw-underline 600ms var(--fk-preview-ease) 120ms backwards;
+}

@@ -1,0 +1,59 @@
+.fk-preview-faq {
+  max-width: 52rem;
+  margin-inline: auto;
+  padding-block: clamp(36px, 5vw, 76px);
+  scroll-margin-top: 120px;
+  color: #19181a;
+  text-align: center;
+}
+
+.fk-preview-faq h2 {
+  margin: 0 0 24px;
+  font: 700 clamp(1.75rem, 4vw, 3rem)/1.2 Poppins, sans-serif;
+  letter-spacing: -.035em;
+}
+
+.fk-preview-faq-list { display: grid; gap: 10px; text-align: start; }
+.fk-preview-faq-list details {
+  border: 1px solid var(--fk-preview-border);
+  border-radius: 16px;
+  background: #fdfcff;
+}
+.fk-preview-faq-list summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px clamp(14px, 2vw, 22px);
+  list-style: none;
+  cursor: pointer;
+  font-size: clamp(.875rem, 1.5vw, 1rem);
+  font-weight: 600;
+}
+.fk-preview-faq-list summary::-webkit-details-marker { display: none; }
+.fk-preview-faq-list summary:focus-visible {
+  border-radius: inherit;
+  outline: 2px solid var(--fk-preview-purple);
+  outline-offset: 2px;
+}
+.fk-preview-faq-list summary svg {
+  flex: none;
+  color: var(--fk-preview-purple);
+}
+.fk-preview-faq-list details[open] summary { color: var(--fk-preview-purple); }
+.fk-preview-faq-list details[open] summary svg { transform: rotate(180deg); }
+.fk-preview-faq-list details p {
+  margin: 0;
+  padding: 0 clamp(14px, 2vw, 22px) 16px;
+  color: #4d485a;
+  font: 500 .95rem/1.55 Mulish, sans-serif;
+}
+
+@media (width < 960px) {
+  .fk-preview-faq { scroll-margin-top: 20px; }
+}
+html[data-motion] .fk-preview-faq-list summary svg { transition: transform 180ms ease; }
+html[data-motion] .fk-preview-faq-list details[open] > p {
+  animation: fk-preview-rise 240ms var(--fk-preview-ease) backwards;
+}

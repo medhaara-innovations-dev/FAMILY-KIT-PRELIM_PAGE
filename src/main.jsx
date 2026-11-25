@@ -1,7 +1,7 @@
 
-import { StrictMode } from "react";
+import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useSearchParams } from "react-router-dom";
 
 import App from "./App.jsx";
 import SignupPage from "./auth/SignupPage.jsx";
@@ -42,11 +42,21 @@ if (import.meta.env.PROD && window.isSecureContext && "serviceWorker" in navigat
   }, { once: true });
 }
 
+const LandingNavPreview = import.meta.env.DEV ? lazy(() => import("./LandingNavPreview.jsx")) : null;
+
+function LandingRoute() {
+  const [params] = useSearchParams();
+  if (LandingNavPreview && params.get("preview") === "landing-nav") {
+    return <Suspense fallback={null}><LandingNavPreview /></Suspense>;
+  }
+  return <App />;
+}
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<LandingRoute />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-pin" element={<ForgotPinPage />} />

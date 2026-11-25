@@ -16,6 +16,8 @@ Last verified: 2026-11-22.
 
 ## Routes
 
+The public landing at `/` is implemented in `App.jsx` and `App.css`. The original draft remains available in development at `/?preview=landing-nav` for comparison. Navigation links jump to sections on the current page. The Early Access form validates locally and does not submit or store contact details. Footer items without confirmed destinations are placeholders.
+
 | Route group | Primary components |
 |---|---|
 | `/`, `/signup`, `/login`, `/forgot-pin` | App and respective auth pages |

@@ -1,0 +1,122 @@
+.fk-preview-pricing {
+  margin-inline: calc(-1 * var(--fk-preview-gutter));
+  padding: clamp(36px, 5vw, 72px) var(--fk-preview-gutter);
+  background: #f6f4fa;
+  color: #19181a;
+  scroll-margin-top: 120px;
+}
+
+.fk-preview-pricing-inner { max-width: 82rem; margin-inline: auto; }
+.fk-preview-pricing-intro, .fk-preview-pricing-close { text-align: center; }
+.fk-preview-pricing-intro h2 {
+  margin: 0;
+  font: 700 clamp(1.75rem, 4vw, 3.5rem)/1.14 Poppins, sans-serif;
+  letter-spacing: -.035em;
+}
+.fk-preview-pricing-intro h2 span,
+.fk-preview-pricing-close h3 span {
+  color: var(--fk-preview-purple);
+  background: linear-gradient(90deg, var(--fk-preview-purple), #edff91 77%) left bottom / 100% 3px no-repeat;
+  padding-bottom: 5px;
+}
+.fk-preview-pricing-intro > p:last-child,
+.fk-preview-pricing-close > p { margin: 14px 0; }
+.fk-preview-pricing p { font-family: Mulish, sans-serif; line-height: 1.5; }
+
+.fk-preview-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fk-preview-pricing-joining { margin-block: 20px; }
+.fk-preview-pricing-card, .fk-preview-pricing-retention {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(10px, 1.4vw, 18px);
+  padding: clamp(12px, 1.5vw, 20px);
+  border: 1px solid var(--fk-preview-border);
+  border-radius: 16px;
+  background: #fff;
+}
+.fk-preview-pricing-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #ebe6f7;
+  color: var(--fk-preview-purple);
+}
+.fk-preview-pricing h3 { margin: 0; font: 600 clamp(1rem, 1.45vw, 1.25rem)/1.25 Poppins, sans-serif; }
+.fk-preview-pricing-card p, .fk-preview-pricing-retention p { margin: 5px 0 0; color: #4d485a; }
+.fk-preview-pricing-panel {
+  display: grid;
+  gap: 16px;
+  padding: clamp(14px, 2vw, 24px);
+  border: 1px solid var(--fk-preview-border);
+  border-radius: 24px;
+  background: #fdfcff;
+}
+.fk-preview-pricing-panel img {
+  width: 100%;
+  height: auto;
+  max-height: 350px;
+  object-fit: cover;
+  object-position: center 55%;
+  aspect-ratio: 5 / 4;
+  border-radius: 18px;
+}
+.fk-preview-pricing-benefits { min-width: 0; }
+.fk-preview-pricing-benefits > h3 { margin-bottom: 14px; color: var(--fk-preview-purple); text-align: center; }
+.fk-preview-pricing-retention { grid-column: 1 / -1; background: #ebe6f7; }
+.fk-preview-pricing-retention h3 { color: var(--fk-preview-purple); }
+.fk-preview-pricing-close { margin-top: 24px; }
+.fk-preview-pricing-close h3 { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--fk-preview-purple); }
+.fk-preview-pricing-close svg { flex: none; }
+.fk-preview-pricing-close a { text-decoration: none; }
+.fk-preview-pricing-close a:focus-visible { outline: 2px solid var(--fk-preview-purple); outline-offset: 3px; }
+.fk-preview-pricing-close .fk-preview-pricing-offer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 14px auto 0;
+  padding: 8px 14px;
+  border: 1px solid var(--fk-preview-border);
+  border-radius: 999px;
+  color: var(--fk-preview-purple);
+  font-size: clamp(.75rem, 2vw, .95rem);
+}
+
+@media (width >= 960px) {
+  .fk-preview-pricing-panel { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; }
+}
+
+@media (width < 960px) {
+  .fk-preview-pricing { scroll-margin-top: 20px; }
+  .fk-preview-pricing-panel img { max-width: 370px; margin-inline: auto; }
+}
+
+@media (width <= 600px) {
+  .fk-preview-pricing-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (width <= 700px) {
+  .fk-preview-pricing-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .fk-preview-pricing-intro { grid-row: 1; }
+  .fk-preview-pricing-panel { display: contents; }
+  .fk-preview-pricing-panel > img { grid-row: 2; }
+  .fk-preview-pricing-joining { grid-row: 3; margin-bottom: 0; }
+  .fk-preview-pricing-grid { grid-template-columns: minmax(0, 1fr); }
+}
