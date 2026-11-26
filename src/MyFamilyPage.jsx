@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import {
   Bell,
+  Cake,
   CalendarDays,
   Search,
   Mic,
@@ -13,6 +14,7 @@ import {
   ChevronRight,
   BookMarked,
   Sparkles,
+  UserRound,
 } from "lucide-react";
 
 import { getFamilyKitProfile } from "./auth/authService.js";
@@ -27,6 +29,33 @@ import FamilyCalendar from "./FamilyCalendar.jsx";
 
 import { ImportantContactsIcon, NotesIcon } from "./components/ReferenceIcons.jsx";
 import "./MyFamilyPage.css";
+
+const NO_UPCOMING_EVENTS = "No upcoming events";
+
+function UpcomingEventCard({ event, today, onOpen }) {
+  const Icon = event.category === "Birthday" ? Cake
+    : event.kind === "reminder" || event.reminderTime ? Bell : CalendarDays;
+  const daysUntil = (Date.parse(event.startDate) - Date.parse(today)) / 86_400_000;
+  const timing = daysUntil > 1 ? `${daysUntil} days`
+    : daysUntil === 1 ? "Tomorrow" : daysUntil === 0 ? "Today" : "Ongoing";
+
+  return (
+    <button type="button" className="fk-dash-events-card fk-dash-upcoming-event" onClick={onOpen}>
+      <span className="fk-dash-upcoming-icon"><Icon size={22} aria-hidden="true" /></span>
+      <span className="fk-dash-upcoming-copy">
+        <strong>{event.title}</strong>
+        <span className="fk-dash-upcoming-meta">
+          <span className="fk-dash-upcoming-avatar"><UserRound size={14} aria-hidden="true" /></span>
+          <span>
+            <b>You (Self)</b>
+            <small><time dateTime={event.startDate}>{formatEventDate(event.startDate)}</time> · {timing}</small>
+          </span>
+        </span>
+      </span>
+      <ChevronRight size={18} aria-hidden="true" />
+    </button>
+  );
+}
 
 // =====================================================
 // SECTION HEADING
@@ -140,8 +169,9 @@ export default function MyFamilyPage() {
   const unreadReminders = getDueEventReminders(calendarEvents, reminderClock)
     .filter(({ id }) => !readReminders.has(id)).length;
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Kolkata" }).format(new Date());
-  const upcomingEvent = occurrenceList(calendarEvents, today, "9999-12-31", calendarHorizon(today, 366))
-    .find((event) => !event.completed);
+  const upcomingEvents = occurrenceList(calendarEvents, today, "9999-12-31", calendarHorizon(today, 366))
+    .filter((event) => !event.completed)
+    .slice(0, 3);
 
   useEffect(() => {
     if (!hasSession) return;
@@ -149,7 +179,7 @@ export default function MyFamilyPage() {
     listEvents(controller.signal).then((events) => {
       if (controller.signal.aborted) return;
       setCalendarEvents(events);
-      setUpcomingStatus("No upcoming events");
+      setUpcomingStatus(NO_UPCOMING_EVENTS);
     }).catch(() => {
       if (!controller.signal.aborted) setUpcomingStatus("Unable to load events");
     });
@@ -430,21 +460,35 @@ export default function MyFamilyPage() {
         <section className="fk-dash-section fk-dash-events-section">
           <SectionTitle title="Upcoming Events" onViewAll={() => navigate("/events")} />
 
-          <div className="fk-dash-events-card">
+          {upcomingEvents.length ? (
+            <div className="fk-dash-upcoming-list">
+              {upcomingEvents.map((event) => (
+                <UpcomingEventCard key={`${event.eventId}-${event.occurrenceDate || ""}`} event={event} today={today}
+                  onOpen={() => navigate("/events", { state: {
+                    eventDate: event.startDate,
+                    reminderEventId: event.eventId,
+                    reminderOccurrence: event.occurrenceDate,
+                  } })} />
+              ))}
+            </div>
+          ) : <div className="fk-dash-events-card">
             <div className="fk-dash-events-message">
-              <CalendarDays size={20} />
-              <span>{upcomingEvent ? `${upcomingEvent.title} · ${formatEventDate(upcomingEvent.startDate)}` : upcomingStatus}</span>
+              <CalendarDays size={20} aria-hidden="true" />
+              <span>{upcomingStatus === NO_UPCOMING_EVENTS && calendarEvents.length === 0
+                ? "No Events Created Yet" : upcomingStatus}</span>
             </div>
 
-            <button
-              type="button"
-              className="fk-dash-event-button"
-              onClick={() => navigate("/events", { state: { createEvent: true } })}
-            >
-              Add Event
-              <ChevronRight size={15} />
-            </button>
-          </div>
+            {upcomingStatus === NO_UPCOMING_EVENTS && (
+              <button
+                type="button"
+                className="fk-dash-event-button"
+                onClick={() => navigate("/events", { state: { createEvent: true } })}
+              >
+                Add Event
+                <ChevronRight size={15} />
+              </button>
+            )}
+          </div>}
         </section>
 
         {/* =========================================

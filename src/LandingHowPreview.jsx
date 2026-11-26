@@ -36,8 +36,8 @@ export default function LandingHowPreview() {
             ))}
           </ol>
         </div>
-        <img className="fk-preview-how-art" src={illustration} width="586" height="732" loading="lazy"
-          alt="A family reviewing a document together on a phone" />
+        <img className="fk-preview-how-art" src={illustration} width="1448" height="1086" loading="lazy"
+          alt="A family scanning a document with a phone" />
         <div className="fk-preview-how-flow">
           <div className="fk-preview-how-flow-labels" aria-hidden="true">
             {steps.map(([Icon, title, , label], index) => (

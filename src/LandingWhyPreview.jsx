@@ -33,7 +33,7 @@ export default function LandingWhyPreview() {
   return (
     <section id="why-familykit" className="fk-preview-why" aria-labelledby="fk-preview-why-title">
       <div className="fk-preview-why-inner">
-        <img className="fk-preview-why-art" src={illustration} width="437" height="557" loading="lazy"
+        <img className="fk-preview-why-art" src={illustration} width="1086" height="1448" loading="lazy"
           alt="Family members looking for information in a drawer, on a phone, and in a folder" />
         <div className="fk-preview-why-copy">
           <div className="fk-preview-why-intro">

@@ -67,7 +67,7 @@
 .fk-ic-card-links { display: flex; gap: 12px; margin-top: 12px; }
 .fk-ic-card-links a { display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; min-width: 0; min-height: 36px; border-radius: 999px; font-size: 12px; font-weight: 800; text-decoration: none; }
 .fk-ic-whatsapp { border: 1px solid var(--ic-purple); color: var(--ic-purple); background: transparent; }
-.fk-ic-whatsapp svg { color: #23B55A; }
+.fk-ic-card-links svg { flex-shrink: 0; }
 .fk-ic-call { border: 1px solid var(--ic-purple); color: #FFFFFF; background: var(--ic-purple); }
 .fk-ic-card .fk-ic-card-mobile { display: none; }
 
@@ -80,8 +80,7 @@
   .fk-ic-badges { flex-wrap: nowrap; align-items: flex-start; }
   .fk-ic-badges .fk-ic-role { min-width: 0; background: var(--ic-light); }
   .fk-ic-badges .fk-ic-relation { background: transparent; }
-  .fk-ic-card-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .fk-ic-card-links :is(a, button) {
+  .fk-ic-card-links a {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -92,17 +91,6 @@
     font-size: clamp(10px, 3vw, 12px);
     white-space: nowrap;
   }
-  .fk-ic-card-links svg { width: 15px; height: 15px; flex-shrink: 0; }
-  .fk-ic-card-links .fk-ic-email {
-    display: flex;
-    border: 1px solid var(--ic-purple);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--ic-purple);
-    font-family: inherit;
-    font-weight: 800;
-  }
-  .fk-ic-email:disabled { opacity: .55; }
 }
 /* Bottom navigation — Home Dashboard standard */
 .fk-ic-bottom-nav {

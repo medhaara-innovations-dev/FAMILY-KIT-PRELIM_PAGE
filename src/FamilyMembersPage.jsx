@@ -356,7 +356,7 @@ export default function FamilyMembersPage() {
                             aria-label={`Call ${member.name}`}><Phone size={18} /></button>
                           <button type="button" className="fk-family-whatsapp"
                             onClick={(event) => openWhatsApp(event, member.mobile)}
-                            aria-label={`WhatsApp ${member.name}`}><WhatsAppLogo size={17} aria-hidden="true" /></button>
+                            aria-label={`WhatsApp ${member.name}`}><WhatsAppLogo size={18} aria-hidden="true" /></button>
                         </div>
                       )}
                       <button type="button" className="fk-family-chevron-button"

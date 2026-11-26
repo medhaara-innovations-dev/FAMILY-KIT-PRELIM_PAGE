@@ -90,6 +90,10 @@
   white-space: normal;
 }
 
+@media (hover: hover) {
+  .fk-preview-early-form > .fk-preview-join:hover { background: #fdfcff; }
+}
+
 .fk-preview-early-form [role="status"] { text-align: center; }
 .fk-preview-early-copy > .fk-preview-early-consent,
 .fk-preview-early-copy > .fk-preview-early-offer { margin-block: 10px 0; font-size: .75rem; }

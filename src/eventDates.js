@@ -59,6 +59,17 @@ export function calendarHorizon(date, days) {
   return new Date(Date.parse(date) + days * DAY).toISOString().slice(0, 10);
 }
 
+export function countEventEntries(events, today) {
+  let firstDate = today;
+  for (const event of events) {
+    if (event.startDate < firstDate) firstDate = event.startDate;
+    for (const change of Object.values(event.exceptions || {})) {
+      if (!change.cancelled && change.startDate < firstDate) firstDate = change.startDate;
+    }
+  }
+  return occurrenceList(events, firstDate, "9999-12-31", calendarHorizon(today, 366)).length;
+}
+
 export function formatEventDate(date) {
   return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(date));
 }

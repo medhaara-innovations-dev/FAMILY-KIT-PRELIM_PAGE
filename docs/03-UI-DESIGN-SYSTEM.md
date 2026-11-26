@@ -7,7 +7,7 @@ Last verified: 2026-11-22. Approved references below come from the owner. Respon
 | Surface | Values and behavior | Source |
 |---|---|---|
 | Global palette | White #FFFFFF, ink #050011, muted #4D485A, lavender #EBE6F7, border #EDEAF3, yellow #DAD05A. Primary #2D0B84, hover #3D2184, pressed #130438, focus #B294FF. | [App.css](../src/App.css) |
-| Typography | Poppins headings, Mulish body. Imported Poppins weights 400–800, Mulish weights 300–800 across duplicate imports. Landing mobile step heading 16px/23px at 600, body 14px/21px at 400. | [App.css](../src/App.css) |
+| Typography | Poppins headings and buttons, Mulish body. Imported Poppins weights 400–800, Mulish weights 300–800 across duplicate imports. Landing mobile step heading 16px/23px at 600, body 14px/21px at 400. | [App.css](../src/App.css), [responsive.css](../src/responsive.css) |
 | App background | 180-degree gradient from #C4ADFF at 0% to #F0EEF3 at 50%. | [AppScreenBackground.css](../src/AppScreenBackground.css) |
 | Glass and header | Fixed glass headers use 12px backdrop blur. Add Member reserves 77px for the header and overrides it to 65px at its responsive rule. | [GlassHeader.css](../src/components/GlassHeader.css), [AddFamilyMemberPage.css](../src/AddFamilyMemberPage.css) |
 | Landing cards | Step-card rules include 16px radius and 13px padding. A later mobile override uses 11px radius, 11px 10px 11px 34px padding, and a 0 4px 10px #2D0B8408 shadow. | [App.css](../src/App.css) |

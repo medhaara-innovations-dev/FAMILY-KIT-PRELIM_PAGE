@@ -69,8 +69,6 @@ const STEP_TITLES = [
 
   "Basic Details",
 
-  "Verification",
-
   "More Important Details & Address",
 
   "Review Details",
@@ -903,71 +901,13 @@ export default function AddFamilyMemberPage() {
 
         {/* =========================================
 
-            STEP 2: VERIFICATION
+            STEP 2: MORE DETAILS
 
            ========================================= */}
 
 
 
         {step === 2 && (
-
-          <section className="fk-add-section fk-add-verify">
-
-            <div className="fk-add-verify-icon">
-
-              <Check size={42} />
-
-            </div>
-
-
-
-            <h3>Mobile Verification</h3>
-
-
-
-            <p>
-
-              OTP verification will be enabled when
-
-              your SMS or WhatsApp verification service
-
-              is integrated.
-
-            </p>
-
-
-
-            <div className="fk-add-demo-label">
-
-              Demo mode — no OTP is sent
-
-            </div>
-
-
-
-            <p>
-
-              Select Continue to proceed with
-
-              family-member registration.
-
-            </p>
-
-          </section>
-
-        )}
-
-
-
-        {/* =========================================
-
-            STEP 3: MORE DETAILS
-
-           ========================================= */}
-
-
-
-        {step === 3 && (
 
           <section className="fk-add-section">
 
@@ -1097,13 +1037,13 @@ export default function AddFamilyMemberPage() {
 
         {/* =========================================
 
-            STEP 4: REVIEW DETAILS
+            STEP 3: REVIEW DETAILS
 
            ========================================= */}
 
 
 
-        {step === 4 && (
+        {step === 3 && (
 
           <section className="fk-add-section">
 
@@ -1323,11 +1263,7 @@ export default function AddFamilyMemberPage() {
 
             >
 
-              {step === 1
-
-                ? "Continue (Demo — No OTP)"
-
-                : "Next"}
+              {step === 1 ? "Continue" : "Next"}
 
 
 

@@ -173,7 +173,7 @@
 }
 
 .fk-profile-social-actions > :nth-child(3) { color: #16843e; }
-.fk-profile-social-actions > button:disabled svg { filter: grayscale(1); }
+.fk-profile-social-actions > button:disabled svg:not([data-whatsapp-logo]) { filter: grayscale(1); }
 
 .fk-profile-direct-actions :is(a, button) {
   display: grid;

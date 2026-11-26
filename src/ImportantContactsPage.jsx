@@ -256,13 +256,8 @@ export default function ImportantContactsPage() {
                     </details>
                   </div>
                   <div className="fk-ic-card-links">
-                    <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><WhatsAppLogo size={17} aria-hidden="true" /> WhatsApp</a>
-                    <a className="fk-ic-call" href={`tel:${contact.mobileNumber}`} aria-label={`Call ${contact.name}`}><Phone size={16} /> Call</a>
-                    {contact.email?.trim() ? (
-                      <a className="fk-ic-email fk-ic-card-mobile" href={`mailto:${encodeURIComponent(contact.email.trim()).replace(/%40/g, "@")}`} aria-label={`Email ${contact.name}`}><Mail size={16} aria-hidden="true" /> Email</a>
-                    ) : (
-                      <button type="button" className="fk-ic-email fk-ic-card-mobile" disabled aria-label={`Email unavailable for ${contact.name}`}><Mail size={16} aria-hidden="true" /> Email</button>
-                    )}
+                    <a className="fk-ic-whatsapp" href={whatsAppUrl(contact.mobileNumber)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.name}`}><WhatsAppLogo size={30} aria-hidden="true" /> WhatsApp</a>
+                    <a className="fk-ic-call" href={`tel:${contact.mobileNumber}`} aria-label={`Call ${contact.name}`}><Phone size={18} aria-hidden="true" /> Call</a>
                   </div>
                 </article>
               ))}

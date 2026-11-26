@@ -2,6 +2,22 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
 
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/fonts/Poppins-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/fonts/Poppins-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #FFFFFF;
   --hero: #EBE6F7;
@@ -10218,6 +10234,20 @@ html[data-motion] .fk-preview-hero-art:active { scale: .985; }
   .fk-preview-why-callout { grid-column: 1 / -1; }
 }
 
+@media (width >= 960px) {
+  .fk-why-desktop-layout { padding-block: clamp(64px, 7.7vw, 112px); }
+  .fk-why-desktop-layout .fk-preview-why-inner {
+    max-width: min(82rem, 84.5vw);
+    grid-template-columns: minmax(0, 147fr) minmax(0, 207fr);
+    grid-template-areas: "image copy" "callout callout";
+    gap: clamp(32px, 3.8vw, 60px) clamp(32px, 4.3vw, 64px);
+  }
+  .fk-why-desktop-layout .fk-preview-why-art { grid-area: image; max-width: none; }
+  .fk-why-desktop-layout .fk-preview-why-copy { grid-area: copy; }
+  .fk-why-desktop-layout .fk-preview-why-cards li { align-content: start; }
+  .fk-why-desktop-layout .fk-preview-why-callout { grid-area: callout; }
+}
+
 @media (width < 900px) {
   .fk-preview-why { scroll-margin-top: 20px; }
   .fk-preview-why-art { max-width: min(100%, 26rem); }
@@ -10703,10 +10733,6 @@ html[data-motion] .fk-preview-hero-art:active { scale: .985; }
 .fk-preview-pricing-panel img {
   width: 100%;
   height: auto;
-  max-height: 350px;
-  object-fit: cover;
-  object-position: center 55%;
-  aspect-ratio: 5 / 4;
   border-radius: 18px;
 }
 .fk-preview-pricing-benefits { min-width: 0; }
@@ -10912,6 +10938,10 @@ html[data-motion] .fk-preview-faq-list details[open] > p {
   white-space: normal;
 }
 
+@media (hover: hover) {
+  .fk-preview-early-form > .fk-preview-join:hover { background: #fdfcff; }
+}
+
 .fk-preview-early-form [role="status"] { text-align: center; }
 .fk-preview-early-copy > .fk-preview-early-consent,
 .fk-preview-early-copy > .fk-preview-early-offer { margin-block: 10px 0; font-size: .75rem; }
@@ -11109,6 +11139,7 @@ html[data-motion] .fk-preview-announcement-track { animation: fk-preview-ticker 
 }
 
 .fk-preview-brand img { width: 36px; height: 36px; object-fit: contain; transform: scale(1.33); }
+.fk-preview-header .fk-preview-brand > span { font-family: "Poppins", sans-serif !important; }
 
 .fk-preview-links,
 .fk-preview-actions {

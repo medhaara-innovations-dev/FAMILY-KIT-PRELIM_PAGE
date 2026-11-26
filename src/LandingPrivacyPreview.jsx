@@ -30,8 +30,8 @@ export default function LandingPrivacyPreview() {
             ))}
           </ul>
         </div>
-        <img className="fk-preview-how-art" src={illustration} width="586" height="776" loading="lazy"
-          alt="A family standing beside a shield and lock protecting their records" />
+        <img className="fk-preview-how-art" src={illustration} width="1086" height="1448" loading="lazy"
+          alt="A family using FamilyKit beside a shield with a lock and privacy icons" />
         <div className="fk-preview-privacy-callout">
           <span className="fk-preview-privacy-shield"><ShieldCheck size={26} aria-hidden="true" /></span>
           <div><h3>Your privacy is our commitment</h3>

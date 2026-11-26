@@ -13,8 +13,8 @@ export default function LandingFamiliesPreview({ privacyHref }) {
   return (
     <section id="useful-for-families" className="fk-preview-why" aria-labelledby="fk-preview-families-title">
       <div className="fk-preview-why-inner">
-        <img className="fk-preview-why-art" src={illustration} width="587" height="777" loading="lazy"
-          alt="Three generations of a family with school, health, home, and travel records" />
+        <img className="fk-preview-why-art" src={illustration} width="1086" height="1448" loading="lazy"
+          alt="Three generations of a family beneath a timeline from childhood to adulthood and beyond" />
         <div className="fk-preview-why-copy">
           <div className="fk-preview-why-intro">
             <p className="fk-preview-why-badge"><UsersRound size={15} aria-hidden="true" /> Useful for Families</p>

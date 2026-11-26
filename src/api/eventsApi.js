@@ -6,6 +6,7 @@ async function request(path, method = "GET", event, signal) {
   const response = await authenticatedFetch(`${base}/events${path}`, {
     method,
     signal,
+    ...(method === "GET" && { cache: "no-store" }),
     ...(event && { headers: { "Content-Type": "application/json" }, body: JSON.stringify(event) }),
   });
   const data = await response.json().catch(() => ({}));

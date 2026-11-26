@@ -64,10 +64,6 @@
 .fk-preview-pricing-panel img {
   width: 100%;
   height: auto;
-  max-height: 350px;
-  object-fit: cover;
-  object-position: center 55%;
-  aspect-ratio: 5 / 4;
   border-radius: 18px;
 }
 .fk-preview-pricing-benefits { min-width: 0; }

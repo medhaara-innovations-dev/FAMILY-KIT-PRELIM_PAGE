@@ -25,6 +25,11 @@ import { ImportantContactsIcon, NotesIcon } from "./components/ReferenceIcons.js
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
+import { getDiaryEntries } from "./api/diaryApi.js";
+import { listEvents } from "./api/eventsApi.js";
+import { countEventEntries } from "./eventDates.js";
+import { getImportantContacts } from "./api/importantContactsApi.js";
+import { getNotes } from "./api/notesApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import "./CategoriesPage.css";
 
@@ -45,6 +50,7 @@ const categories = [
     background: "#F1ECFB",
     color: "#6528C6",
     route: "/diary",
+    loadRecords: () => getDiaryEntries(),
   },
   {
     name: "Documents",
@@ -64,6 +70,9 @@ const categories = [
     background: "#FAF3F0",
     color: "#C66728",
     route: "/events",
+    loadRecords: (signal) => listEvents(signal),
+    countRecords: (events) => countEventEntries(events,
+      new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Kolkata" }).format(new Date())),
   },
   {
     name: "Finance",
@@ -81,6 +90,7 @@ const categories = [
     name: "Important Contacts",
     Icon: ImportantContactsIcon,
     route: "/important-contacts",
+    loadRecords: () => getImportantContacts(),
     background: "#FAEFF0",
     color: "#C62828",
   },
@@ -108,6 +118,7 @@ const categories = [
     background: "#F5F9F0",
     color: "#78B219",
     route: "/notes",
+    loadRecords: async () => (await getNotes()).notes || [],
   },
   {
     name: "Property",
@@ -122,6 +133,12 @@ const categories = [
     color: "#B31351",
   },
 ];
+
+function categoryCountLabel(category, count) {
+  if (!category.loadRecords || count === 0) return "None";
+  if (count === null) return "Unavailable";
+  return count ?? "Loading…";
+}
 
 // ==========================================
 // FAMILY FILTERS
@@ -166,6 +183,27 @@ export default function CategoriesPage() {
   const [familyFilters, setFamilyFilters] = useState(DEFAULT_FAMILY_FILTERS);
   const [familyError, setFamilyError] = useState("");
   const [familyRetry, setFamilyRetry] = useState(0);
+  const [recordCounts, setRecordCounts] = useState({});
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    categories.forEach(({ route, loadRecords, countRecords }) => {
+      if (!loadRecords) return;
+      loadRecords(controller.signal).then((records) => {
+        if (!controller.signal.aborted) {
+          const count = countRecords ? countRecords(records) : records.length;
+          setRecordCounts((previous) => ({ ...previous, [route]: count }));
+        }
+      }).catch(() => {
+        if (!controller.signal.aborted) {
+          setRecordCounts((previous) => ({ ...previous, [route]: null }));
+        }
+      });
+    });
+
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -375,7 +413,7 @@ export default function CategoriesPage() {
                   </span>
 
                   <span className="fk-cat-card-count">
-                    None
+                    {categoryCountLabel(category, recordCounts[category.route])}
                   </span>
                 </button>
               );

@@ -432,7 +432,8 @@
   width: 30px; height: 30px; border-radius: 50%;
   background: #f4f0ff; color: #351083;
 }
-.fk-family-contact-actions button.fk-family-whatsapp { background: #e8f8eb; color: #20ae51; }
+.fk-family-contact-actions button.fk-family-whatsapp { background: transparent; }
+.fk-family-contact-actions .fk-family-whatsapp > svg { width: 100%; height: 100%; }
 .fk-family-chevron-button { border: 0; background: transparent; color: #211b2c; display: grid; place-items: center; padding: 3px; }
 .fk-family-chevron { margin-left: auto; color: #211b2c; }
 @media (max-width: 600px) {

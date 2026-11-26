@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { BadgePercent, CalendarCheck, ChevronRight, Database, Heart, Mail, ShieldCheck, Tag, UsersRound } from "lucide-react";
-import familyIllustration from "./assets/images/landing-founding-family.svg";
+import familyIllustration from "./assets/images/landing-founding-family.jpg";
 import "./LandingPricingPreview.css";
 
 const joining = [
@@ -42,7 +42,7 @@ export default function LandingPricingPreview() {
         </header>
         <PricingCards className="fk-preview-pricing-grid fk-preview-pricing-joining" items={joining} />
         <div className="fk-preview-pricing-panel">
-          <img src={familyIllustration} width="1928" height="1600" loading="lazy" alt="A couple looking at FamilyKit together on a phone" />
+          <img src={familyIllustration} width="1024" height="1536" loading="lazy" alt="A couple showing FamilyKit on a phone beneath the Founding 100 Families benefits" />
           <div className="fk-preview-pricing-benefits">
             <h3>Your Founding Family Benefits</h3>
             <PricingCards className="fk-preview-pricing-grid" items={benefits} />

@@ -107,7 +107,7 @@ import landingWhyIllustration from "./assets/images/landing-why-familykit.jpg";
 import landingHowIllustration from "./assets/images/landing-how-it-works.jpg";
 import landingFamiliesIllustration from "./assets/images/landing-useful-for-families.jpg";
 import landingPrivacyIllustration from "./assets/images/landing-privacy-security.jpg";
-import familyIllustration from "./assets/images/landing-founding-family.svg";
+import familyIllustration from "./assets/images/landing-founding-family.jpg";
 import "./App.css";
 
 
@@ -1727,9 +1727,9 @@ const problems = [
 
 function LandingWhyPreview() {
   return (
-    <section id="why-familykit" className="fk-preview-why" aria-labelledby="fk-preview-why-title">
+    <section id="why-familykit" className="fk-preview-why fk-why-desktop-layout" aria-labelledby="fk-preview-why-title">
       <div className="fk-preview-why-inner">
-        <img className="fk-preview-why-art" src={landingWhyIllustration} width="437" height="557" loading="lazy"
+        <img className="fk-preview-why-art" src={landingWhyIllustration} width="1086" height="1448" loading="lazy"
           alt="Family members looking for information in a drawer, on a phone, and in a folder" />
         <div className="fk-preview-why-copy">
           <div className="fk-preview-why-intro">
@@ -1792,8 +1792,8 @@ function LandingHowPreview() {
             ))}
           </ol>
         </div>
-        <img className="fk-preview-how-art" src={landingHowIllustration} width="586" height="732" loading="lazy"
-          alt="A family reviewing a document together on a phone" />
+        <img className="fk-preview-how-art" src={landingHowIllustration} width="1448" height="1086" loading="lazy"
+          alt="A family scanning a document with a phone" />
         <div className="fk-preview-how-flow">
           <div className="fk-preview-how-flow-labels" aria-hidden="true">
             {steps.map(([Icon, title, , label], index) => (
@@ -1828,8 +1828,8 @@ function LandingFamiliesPreview({ privacyHref }) {
   return (
     <section id="useful-for-families" className="fk-preview-why" aria-labelledby="fk-preview-families-title">
       <div className="fk-preview-why-inner">
-        <img className="fk-preview-why-art" src={landingFamiliesIllustration} width="587" height="777" loading="lazy"
-          alt="Three generations of a family with school, health, home, and travel records" />
+        <img className="fk-preview-why-art" src={landingFamiliesIllustration} width="1086" height="1448" loading="lazy"
+          alt="Three generations of a family beneath a timeline from childhood to adulthood and beyond" />
         <div className="fk-preview-why-copy">
           <div className="fk-preview-why-intro">
             <p className="fk-preview-why-badge"><UsersRound size={15} aria-hidden="true" /> Useful for Families</p>
@@ -1891,8 +1891,8 @@ function LandingPrivacyPreview() {
             ))}
           </ul>
         </div>
-        <img className="fk-preview-how-art" src={landingPrivacyIllustration} width="586" height="776" loading="lazy"
-          alt="A family standing beside a shield and lock protecting their records" />
+        <img className="fk-preview-how-art" src={landingPrivacyIllustration} width="1086" height="1448" loading="lazy"
+          alt="A family using FamilyKit beside a shield with a lock and privacy icons" />
         <div className="fk-preview-privacy-callout">
           <span className="fk-preview-privacy-shield"><ShieldCheck size={26} aria-hidden="true" /></span>
           <div><h3>Your privacy is our commitment</h3>
@@ -1946,7 +1946,7 @@ function LandingPricingPreview() {
         </header>
         <PricingCards className="fk-preview-pricing-grid fk-preview-pricing-joining" items={joining} />
         <div className="fk-preview-pricing-panel">
-          <img src={familyIllustration} width="1928" height="1600" loading="lazy" alt="A couple looking at FamilyKit together on a phone" />
+          <img src={familyIllustration} width="1024" height="1536" loading="lazy" alt="A couple showing FamilyKit on a phone beneath the Founding 100 Families benefits" />
           <div className="fk-preview-pricing-benefits">
             <h3>Your Founding Family Benefits</h3>
             <PricingCards className="fk-preview-pricing-grid" items={benefits} />

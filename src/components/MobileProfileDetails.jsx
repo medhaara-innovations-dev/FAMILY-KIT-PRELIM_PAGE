@@ -97,10 +97,10 @@ export function MobileProfileActions({ mobile, profile = {}, canShare = true }) 
         <SocialProfileAction field="facebookUrl" label="Facebook" Icon={FacebookLogo} value={profile.facebookUrl} />
         {whatsappUrl ? (
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-            <WhatsAppLogo />
+            <WhatsAppLogo size={16} />
           </a>
         ) : (
-          <button type="button" disabled aria-label="WhatsApp unavailable"><WhatsAppLogo /></button>
+          <button type="button" disabled aria-label="WhatsApp unavailable"><WhatsAppLogo size={16} /></button>
         )}
         <SocialProfileAction field="linkedinUrl" label="LinkedIn" Icon={LinkedInLogo} value={profile.linkedinUrl} />
       </div>

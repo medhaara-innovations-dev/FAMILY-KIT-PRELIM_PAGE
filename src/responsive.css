@@ -318,6 +318,16 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
   }
 }
 
+/* Keep component font shorthands from overriding the shared heading and action face. */
+#root :is(
+  h1, h2, h3, h4, h5, h6, [role="heading"], button, [role="button"], summary,
+  input[type="button"], input[type="submit"], input[type="reset"],
+  .fk-preview-login, .fk-preview-join, .fk-preview-hero-secondary,
+  .fk-landing-nav-preview :is(h1, h2, h3, h4, h5, h6) span
+) {
+  font-family: "Poppins", sans-serif !important;
+}
+
 /* Shared application motion. The public landing manages its own animation. */
 @media (prefers-reduced-motion: no-preference) {
   #root > :where(:not(.fk-landing-nav-preview, dialog)) {

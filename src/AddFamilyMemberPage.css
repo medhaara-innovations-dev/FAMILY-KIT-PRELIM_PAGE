@@ -208,31 +208,6 @@
   font-size: 14px;
 }
 
-.fk-add-verify {
-  align-items: center;
-  text-align: center;
-}
-
-.fk-add-verify-icon {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: var(--fk-add-lavender);
-  color: var(--fk-add-purple);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.fk-add-demo-label {
-  padding: 10px 16px;
-  background: #fff3d6;
-  color: #7b4d00;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
 .fk-add-review {
   border: 1px solid var(--fk-add-border);
   border-radius: 14px;
@@ -288,6 +263,10 @@
   border: 1px solid var(--fk-add-purple);
   background: var(--fk-add-purple);
   color: #fff;
+}
+
+.fk-add-page .fk-add-actions .fk-add-primary {
+  font-family: "Poppins", sans-serif !important;
 }
 
 .fk-add-secondary {
