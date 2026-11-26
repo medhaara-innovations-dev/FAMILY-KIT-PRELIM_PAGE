@@ -90,7 +90,7 @@ function QuickAction({ icon: Icon, label, tone, onClick }) {
       disabled={!onClick}
     >
       <span className={`fk-dash-action-icon ${tone}`}>
-        <Icon size={23} strokeWidth={1.8} />
+        <Icon size={26} strokeWidth={1.8} />
       </span>
 
       <span>{label}</span>

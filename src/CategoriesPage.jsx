@@ -405,7 +405,7 @@ export default function CategoriesPage() {
                       color: category.color,
                     }}
                   >
-                    <Icon size={24} strokeWidth={1.8} aria-hidden="true" />
+                    <Icon size={26} strokeWidth={1.8} aria-hidden="true" />
                   </span>
 
                   <span className="fk-cat-card-name">

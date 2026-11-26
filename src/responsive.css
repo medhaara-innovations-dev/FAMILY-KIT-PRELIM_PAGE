@@ -272,7 +272,6 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
   }
 
   .fk-dash-action > span:last-child {
-    font-size: .875rem;
     text-align: start;
   }
 
@@ -323,6 +322,7 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
   h1, h2, h3, h4, h5, h6, [role="heading"], button, [role="button"], summary,
   input[type="button"], input[type="submit"], input[type="reset"],
   .fk-preview-login, .fk-preview-join, .fk-preview-hero-secondary,
+  .fk-dash-action > span:last-child,
   .fk-landing-nav-preview :is(h1, h2, h3, h4, h5, h6) span
 ) {
   font-family: "Poppins", sans-serif !important;
