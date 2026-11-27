@@ -4,7 +4,7 @@ import { createInvitation, updateInvitation } from "../api/familyConnectionsApi.
 
 const relationships = [...RELATIONSHIPS, "Parent", "Child", "Sibling", "Grandchild"];
 
-export default function FamilyInvitationForm({ canInvite, existingInvitation, emailEnabled, onChange }) {
+export default function FamilyInvitationForm({ canInvite, existingInvitation, emailEnabled, initialEmail = "", initialRelationship = "", onChange }) {
   const [token, setToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -50,10 +50,10 @@ export default function FamilyInvitationForm({ canInvite, existingInvitation, em
           });
         }}>
           <label>Recipient email
-            <input type="email" name="recipientEmail" autoComplete="off" maxLength={254} placeholder="name@example.com" />
+            <input type="email" name="recipientEmail" defaultValue={initialEmail} autoComplete="off" maxLength={254} placeholder="name@example.com" />
           </label>
           <label>How is this person related to you?
-            <select required name="relationship" defaultValue=""><option value="">Choose a relationship</option>
+            <select required name="relationship" defaultValue={relationships.includes(initialRelationship) ? initialRelationship : ""}><option value="">Choose a relationship</option>
               {relationships.map((value) => <option key={value}>{value}</option>)}
             </select>
           </label>

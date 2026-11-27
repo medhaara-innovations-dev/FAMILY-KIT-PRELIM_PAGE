@@ -1,3 +1,5 @@
+import FamilyInvitationForm from "./components/FamilyInvitationForm.jsx";
+import { connectionsEnabled, familyConnection } from "./api/familyConnectionsApi.js";
 
 
 import { useEffect, useRef, useState } from "react";
@@ -115,6 +117,23 @@ export default function FamilyMemberProfile() {
   const [removeError, setRemoveError] = useState("");
   const profileActions = useRef(null);
   const [actionInfo, setActionInfo] = useState("");
+  const [invitationState, setInvitationState] = useState(null);
+  const [invitationError, setInvitationError] = useState("");
+  const [invitationRevision, setInvitationRevision] = useState(0);
+
+  useEffect(() => {
+    if (actionInfo !== "invite" || !connectionsEnabled) return;
+    let active = true;
+    familyConnection().then((status) => {
+      if (active) {
+        setInvitationState(status);
+        setInvitationError("");
+      }
+    }).catch((error) => {
+      if (active) setInvitationError(error.message);
+    });
+    return () => { active = false; };
+  }, [actionInfo, invitationRevision]);
 
   const [error, setError] = useState("");
   const [duplicateMatch, setDuplicateMatch] = useState(null);
@@ -555,9 +574,21 @@ export default function FamilyMemberProfile() {
           aria-expanded={actionInfo === "invite"} aria-controls="fk-profile-invite-info">
           <Link2 size={20} aria-hidden="true" /><strong>Invite to FamilyKit</strong>
         </button>
-        <p id="fk-profile-invite-info" hidden={actionInfo !== "invite"}>
-          Invitations aren’t available yet. Account connections require mobile verification and invitation acceptance.
-        </p>
+        {actionInfo === "invite" && (
+          <div id="fk-profile-invite-info">
+            {!connectionsEnabled ? <p>Invitations are currently unavailable.</p>
+              : invitationError ? <p role="alert">{invitationError}</p>
+              : !invitationState ? <p role="status">Checking invitation availability...</p>
+              : <FamilyInvitationForm
+                  canInvite={invitationState.canInvite}
+                  existingInvitation={invitationState.invitation}
+                  emailEnabled={invitationState.emailEnabled}
+                  initialEmail={member?.email}
+                  initialRelationship={member?.relationship}
+                  onChange={() => setInvitationRevision((value) => value + 1)}
+                />}
+          </div>
+        )}
         <button type="button" className="fk-family-action-choice fk-profile-action-remove" onClick={() => {
           profileActions.current?.close();
           void removeMember();

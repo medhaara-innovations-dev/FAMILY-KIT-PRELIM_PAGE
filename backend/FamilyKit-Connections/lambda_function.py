@@ -7,7 +7,7 @@ import re
 import secrets
 import time
 from email.message import EmailMessage
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 from uuid import uuid4
@@ -87,6 +87,25 @@ def email_digest(address):
     return hashlib.sha256(address.encode()).hexdigest()
 
 
+def gmail_request(request, step):
+    try:
+        with urlopen(request, timeout=8) as response:
+            return json.load(response)
+    except HTTPError as error:
+        with error:
+            try:
+                details = json.loads(error.read(4096)).get("error")
+            except (ValueError, OSError):
+                details = None
+        if isinstance(details, dict):
+            details = details.get("status")
+        codes = {"invalid_grant", "invalid_client", "unauthorized_client", "PERMISSION_DENIED",
+                 "UNAUTHENTICATED", "RESOURCE_EXHAUSTED", "FAILED_PRECONDITION", "INVALID_ARGUMENT"}
+        print("Invitation Gmail failure:", step, error.code,
+              details if isinstance(details, str) and details in codes else "unclassified")
+        raise
+
+
 def send_invitation_email(sender, address, content):
     secret = boto3.client("secretsmanager").get_secret_value(SecretId=os.environ["GMAIL_SECRET_NAME"])
     credentials = json.loads(secret["SecretString"])
@@ -96,8 +115,7 @@ def send_invitation_email(sender, address, content):
         "refresh_token": credentials["GOOGLE_REFRESH_TOKEN"],
         "grant_type": "refresh_token",
     }).encode(), method="POST")
-    with urlopen(token_request, timeout=8) as response:
-        access_token = json.load(response)["access_token"]
+    access_token = gmail_request(token_request, "token refresh")["access_token"]
 
     message = EmailMessage()
     message["From"], message["To"], message["Subject"] = sender, address, "Your FamilyKit invitation"
@@ -106,9 +124,8 @@ def send_invitation_email(sender, address, content):
     send = Request("https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
                    data=json.dumps({"raw": raw}).encode(), method="POST",
                    headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"})
-    with urlopen(send, timeout=8) as response:
-        if not json.load(response).get("id"):
-            raise ValueError("Mail provider did not accept the invitation.")
+    if not gmail_request(send, "send").get("id"):
+        raise ValueError("Mail provider did not accept the invitation.")
 
 
 def invitation_email_enabled():
@@ -192,7 +209,7 @@ def lambda_handler(event, _context):
             token = secrets.token_urlsafe(32)
             key = invite_key(token)
             previous = get(family["inviteKey"]) if family.get("inviteKey") else None
-            guard = "attribute_not_exists(secondUser) AND "
+            guard = "attribute_not_exists(secondUser) AND attribute_not_exists(supersededBy) AND "
             values = {":key": key}
             changes = []
             if family.get("inviteKey"):
@@ -268,13 +285,39 @@ def lambda_handler(event, _context):
                 values[":requester"] = user
             if route.endswith("/accept"):
                 family_key = invitation["familyKey"]
+                family_id = family_key.removeprefix("FAMILY#")
+                membership = get(user_key)
+                if membership:
+                    old_id = membership["familyId"]
+                    old = get("FAMILY#" + old_id)
+                    if (membership.get("assignment") != "legacy" or not old
+                            or old.get("assignment") != "legacy" or old.get("firstUser") != user
+                            or old.get("secondUser") or old.get("supersededBy")):
+                        return reply(409, {"message": "This account already belongs to a family and cannot join another."})
+                    old_invite = old.get("inviteKey")
+                    if old_invite and active_invite(get(old_invite), now):
+                        return reply(409, {"message": "Cancel your outgoing invitation before accepting this one."})
+                    old_guard = "firstUser = :user AND assignment = :legacy AND attribute_not_exists(secondUser) AND attribute_not_exists(supersededBy)"
+                    old_values = {":user": user, ":legacy": "legacy", ":new": family_id}
+                    if old_invite:
+                        old_guard += " AND inviteKey = :oldInvite"
+                        old_values[":oldInvite"] = old_invite
+                    else:
+                        old_guard += " AND attribute_not_exists(inviteKey)"
+                    membership_changes = [
+                        update(old["pk"], "SET supersededBy = :new", old_guard, old_values),
+                        update(user_key, "SET familyId = :new REMOVE assignment", "familyId = :old AND assignment = :legacy",
+                               {":new": family_id, ":old": old_id, ":legacy": "legacy"}),
+                    ]
+                else:
+                    membership_changes = [put({"pk": user_key, "familyId": family_id})]
                 transact(
                     change,
                     update(family_key, "SET secondUser = :user, relationship = :relation, reverseRelationship = :reverse",
-                           "inviteKey = :invite AND attribute_not_exists(secondUser)",
+                           "inviteKey = :invite AND attribute_not_exists(secondUser) AND attribute_not_exists(supersededBy)",
                            {":user": user, ":relation": invitation["relationship"],
                             ":reverse": invitation["reverseRelationship"], ":invite": key}),
-                    put({"pk": user_key, "familyId": family_key.removeprefix("FAMILY#")}),
+                    *membership_changes,
                 )
                 return reply(200, {"connected": True})
             transact(change)
