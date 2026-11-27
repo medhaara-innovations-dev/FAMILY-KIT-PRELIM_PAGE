@@ -4,6 +4,7 @@ import json
 import hmac
 import hashlib
 import secrets
+from uuid import uuid4
 import base64
 import urllib.parse
 import urllib.request
@@ -62,7 +63,7 @@ def hash_pin(
     )
 
 
-def create_pin(user_id, pin, your_name=None, family_name=None):
+def create_pin(user_id, pin, your_name=None, family_name=None, *, registration=False, invitation=None, claims=None):
     validate_pin(pin)
 
     if your_name is not None:
@@ -104,12 +105,77 @@ def create_pin(user_id, pin, your_name=None, family_name=None):
     if family_name is not None:
         item["familyName"] = family_name
 
-    table.put_item(
-        Item=item,
-        ConditionExpression=(
-            "attribute_not_exists(userId)"
-        )
-    )
+    connections = os.environ.get("FAMILY_CONNECTIONS_TABLE") if registration else None
+    if not connections:
+        table.put_item(Item=item, ConditionExpression="attribute_not_exists(userId)")
+        return
+
+    pin_write = {"Put": {"TableName": table.name, "Item": item,
+                         "ConditionExpression": "attribute_not_exists(userId)"}}
+    control_key = {"pk": "CONTROL"}
+    control = dynamodb.Table(connections).get_item(Key=control_key, ConsistentRead=True).get("Item") or {}
+    mode = control.get("mode", "closed")
+    if invitation:
+        if not isinstance(invitation, str) or not re.fullmatch(r"[A-Za-z0-9_-]{43}", invitation):
+            raise RegistrationUnavailable("This invitation is invalid.")
+        invite_key = "INVITE#" + hashlib.sha256(invitation.encode()).hexdigest()
+        stored = dynamodb.Table(connections).get_item(Key={"pk": invite_key}, ConsistentRead=True).get("Item") or {}
+        stored_digest = stored.get("recipientDigest")
+        if stored_digest:
+            username = (claims or {}).get("username") or (claims or {}).get("cognito:username")
+            identity = cognito.admin_get_user(UserPoolId=USER_POOL_ID, Username=username) if username else {}
+            attrs = {entry["Name"]: entry["Value"] for entry in identity.get("UserAttributes", [])}
+            email = attrs.get("email", "").strip().lower()
+            digest = hashlib.sha256(email.encode()).hexdigest()
+            if (not identity.get("Enabled") or attrs.get("sub") != user_id or attrs.get("email_verified") != "true"
+                    or not secrets.compare_digest(digest, stored_digest)):
+                raise RegistrationUnavailable("Sign up with the verified email that received this invitation.")
+        actions = [{"Update": {
+            "TableName": connections, "Key": {"pk": invite_key},
+            "UpdateExpression": "SET reservedFor = :user",
+            "ConditionExpression": "#state = :pending AND expiresAt > :now AND inviter <> :user "
+                                   "AND (attribute_not_exists(reservedFor) OR reservedFor = :user)",
+            "ExpressionAttributeNames": {"#state": "state"},
+            "ExpressionAttributeValues": {":pending": "PENDING", ":user": user_id, ":now": int(time())},
+        }}]
+        if stored_digest:
+            actions[0]["Update"]["ConditionExpression"] += " AND recipientDigest = :digest"
+            actions[0]["Update"]["ExpressionAttributeValues"][":digest"] = stored_digest
+        else:
+            actions[0]["Update"]["ConditionExpression"] += " AND attribute_not_exists(recipientDigest)"
+    elif mode == "founding":
+        family_id = str(uuid4())
+        actions = [
+            {"Update": {
+                "TableName": connections, "Key": control_key, "UpdateExpression": "ADD families :one",
+                "ConditionExpression": "#mode = :founding AND families < :cap",
+                "ExpressionAttributeNames": {"#mode": "mode"},
+                "ExpressionAttributeValues": {":one": 1, ":founding": "founding", ":cap": 100},
+            }},
+            {"Put": {"TableName": connections, "Item": {"pk": "FAMILY#" + family_id, "firstUser": user_id},
+                     "ConditionExpression": "attribute_not_exists(pk)"}},
+            {"Put": {"TableName": connections, "Item": {"pk": "USER#" + user_id, "familyId": family_id},
+                     "ConditionExpression": "attribute_not_exists(pk)"}},
+        ]
+    elif mode == "public":
+        actions = [{"ConditionCheck": {
+            "TableName": connections, "Key": control_key,
+            "ConditionExpression": "#mode = :public",
+            "ExpressionAttributeNames": {"#mode": "mode"},
+            "ExpressionAttributeValues": {":public": "public"},
+        }}]
+    else:
+        raise RegistrationUnavailable("New FamilyKit registration is currently closed.")
+    try:
+        dynamodb.meta.client.transact_write_items(TransactItems=[pin_write, *actions])
+    except ClientError as error:
+        if error.response["Error"]["Code"] == "TransactionCanceledException":
+            raise RegistrationUnavailable("Registration could not claim a family slot or invitation. Please try again.") from error
+        raise
+
+
+class RegistrationUnavailable(Exception):
+    pass
 
 
 def verify_pin(user_id, pin):
@@ -459,12 +525,12 @@ def handle_create_pin_api(event):
     your_name = body.get("yourName")
     family_name = body.get("familyName")
 
-    create_pin(
-        user_id,
-        pin,
-        your_name,
-        family_name
-    )
+    try:
+        create_pin(user_id, pin, your_name, family_name,
+                   registration=True, invitation=body.get("invitation"),
+                   claims=event.get("requestContext", {}).get("authorizer", {}).get("jwt", {}).get("claims", {}))
+    except RegistrationUnavailable as error:
+        return api_response(409, {"success": False, "message": str(error)})
 
     return api_response(
         200,

@@ -11407,3 +11407,6 @@ html[data-motion] .fk-preview-pricing-close[data-revealed] h3 span::after {
   transform-origin: left;
   animation: fk-preview-draw-underline 600ms var(--fk-preview-ease) 120ms backwards;
 }
+
+.fk-preview-early-form > a { display: flex; margin-top: 12px; background: #edff91; border-color: #edff91; color: var(--fk-preview-purple); }
+.fk-preview-join:disabled { cursor: not-allowed; opacity: .65; }

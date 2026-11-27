@@ -1,3 +1,4 @@
+import FamilyInvitationPage from "./FamilyInvitationPage.jsx";
 
 import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
@@ -46,6 +47,7 @@ const LandingNavPreview = import.meta.env.DEV ? lazy(() => import("./LandingNavP
 
 function LandingRoute() {
   const [params] = useSearchParams();
+  if (params.get("invite") === "1") return <FamilyInvitationPage />;
   if (LandingNavPreview && params.get("preview") === "landing-nav") {
     return <Suspense fallback={null}><LandingNavPreview /></Suspense>;
   }
@@ -61,6 +63,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-pin" element={<ForgotPinPage />} />
         <Route path="/my-family" element={<MyFamilyPage />} />
+        <Route path="/invite" element={<FamilyInvitationPage />} />
         <Route path="/family" element={<FamilyMembersPage />} />
         <Route path="/family/add" element={<AddFamilyMemberPage />} />
         <Route path="/family/:memberId" element={<FamilyMemberProfile />} />

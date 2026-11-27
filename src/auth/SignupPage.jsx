@@ -1,3 +1,4 @@
+import { checkSignupAccess, pendingInvitation } from "../api/familyConnectionsApi.js";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -255,6 +256,7 @@ export default function SignupPage() {
         setError("");
         setLoading(true);
 
+        await checkSignupAccess();
         await startGoogleLogin(
           "/signup"
         );
@@ -307,6 +309,7 @@ export default function SignupPage() {
       try {
         setLoading(true);
 
+        await checkSignupAccess();
         const signupResult =
           await signUpWithEmail(
             cleanEmail
@@ -610,12 +613,8 @@ export default function SignupPage() {
         // PIN is PBKDF2 hashed and salted.
         // =================================================
 
-        await storeFamilyKitPin(
-          accessToken,
-          pin,
-          yourName.trim(),
-           familyName.trim()
-        );
+        await checkSignupAccess();
+        await storeFamilyKitPin(accessToken, pin, yourName.trim(), familyName.trim(), pendingInvitation());
 
         // Cache the registered personal name for same-device welcome display.
         // The authenticated backend remains the source of truth for account data.

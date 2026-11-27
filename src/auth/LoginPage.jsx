@@ -1,3 +1,4 @@
+import { invitationReturnPath } from "../api/familyConnectionsApi.js";
 import { ChevronLeft } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -42,7 +43,7 @@ export default function LoginPage() {
 
     if (mobileStage === "synced") {
       const redirectTimer = window.setTimeout(() => {
-        navigate("/my-family", { replace: true });
+        navigate(invitationReturnPath(), { replace: true });
       }, 1200);
 
       return () => window.clearTimeout(redirectTimer);
@@ -236,7 +237,7 @@ export default function LoginPage() {
         setProfileName(savedName);
         setMobileStage("account");
       } else {
-        navigate("/my-family");
+        navigate(invitationReturnPath());
       }
     } catch (err) {
       console.error("Login error:", err);

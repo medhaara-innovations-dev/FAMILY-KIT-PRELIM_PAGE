@@ -102,3 +102,19 @@ The Sydney HTTP API `qdks44cu0f` uses the existing Cognito JWT issuer and app cl
 The upload flow accepts files up to 10 MiB. The private `fk-documents-storage` bucket expires staging files under `uploads/` after one day. Saved records use the existing `Fkdocuments` keys `userId` and `documentid`. The API returns the sort key as `documentId`. Profile assignment accepts `PROFILE#SELF` or a member record belonging to the caller. Gemini extraction is pending.
 
 Deletion leaves only the owner and document keys and a deleted flag in DynamoDB to prevent replaying an old upload completion. The uploader role has `s3:DeleteObject` on the existing staging and saved document prefixes and `dynamodb:UpdateItem` on `Fkdocuments`.
+
+## Founding family connections
+
+The local deployment template and Lambda are in `backend/FamilyKit-Connections`. Use the existing Cognito issuer and app client with the new HTTP API. The template creates a dedicated DynamoDB table and execution role. The Lambda checks account activation using a projected read of the existing PIN-record table. No PIN verification material is returned.
+
+The table uses a single string partition key. `CONTROL` stores `mode` and `families`. `FAMILY#<uuid>` stores the first and optional second account. `USER#<sub>` enforces a single founding membership per account. `INVITE#<sha256>` stores the invitation state, expiry, and relationship in both directions. A link can be accepted once. Tokens are carried in a URL fragment and sent to the API in a request body.
+
+The frontend is enabled by `VITE_FAMILY_CONNECTIONS_API_URL`. A new table defaults to closed until the control record is initialized. Set mode to founding with a starting count of zero for an empty table. The founding service enforces the 100-family cap transactionally. Before opening the pilot, enforce the same policy at the existing registration-completion boundary. The current PIN registration endpoint can independently activate an account, and the new service does not block that legacy path. Existing accounts are not automatically enrolled or migrated. This implementation does not alter document access.
+
+The Sydney deployment uses Lambda and DynamoDB table `FamilyKit-Connections` and HTTP API `ammfp7dxh5`. The `$default` stage uses the existing Cognito JWT authorizer configuration. The deployed control record is closed with zero families enrolled. Local Vite is configured through the ignored development environment file. Amplify has not been configured for this service.
+
+The PIN registration code supports an optional server-side capacity guard. When `FAMILY_CONNECTIONS_TABLE` is set, PIN creation and the founding slot claim are a single DynamoDB transaction. Invitation-based signup reserves the token for that account without connecting the profiles until explicit acceptance. The capacity guard is disabled while the Lambda environment variable is unset. The API's legacy enrollment route now returns an existing membership or defers enrollment to PIN registration.
+
+The live PIN registration guard is enabled against `FamilyKit-Connections`. The control record is in founding mode. Localhost reads the live status. The hosted landing page has not been updated as part of this rollout.
+
+Email invitation support is prepared locally. To enable it, deploy both the Connections and PIN Lambda changes. Configure `INVITATION_FROM_EMAIL`, `INVITATION_WEB_ORIGIN`, `GMAIL_SECRET_NAME` and `USER_POOL_ID` on Connections. Grant access to the existing Gmail sender secret and Cognito `AdminGetUser` on the configured user pool. PIN registration also needs `AdminGetUser` for recipient verification. The invitation records a digest of the recipient address and displays the sent status only after the mail service accepts it. Existing manual links remain supported.

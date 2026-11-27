@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Dedicated FamilyKit founding enrollment and invitation API.
+Parameters:
+  UserPoolId:
+    Type: String
+  UserPoolClientId:
+    Type: String
+  ActivationTableName:
+    Type: String
+    Default: FamilyKitPinCredentials
+  WebOrigin:
+    Type: String
+Resources:
+  Connections:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+  ConnectionsApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: [!Ref WebOrigin, "http://127.0.0.1:5173", "http://localhost:5173"]
+        AllowHeaders: [Authorization, Content-Type]
+        AllowMethods: [GET, POST, OPTIONS]
+        MaxAge: 300
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 30
+        ThrottlingRateLimit: 15
+      Auth:
+        DefaultAuthorizer: Cognito
+        Authorizers:
+          Cognito:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              issuer: !Sub "https://cognito-idp.${AWS::Region}.${AWS::URLSuffix}/${UserPoolId}"
+              audience: [!Ref UserPoolClientId]
+  ConnectionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.14
+      Handler: lambda_function.lambda_handler
+      CodeUri: .
+      MemorySize: 128
+      Timeout: 12
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Connections
+          ACTIVATION_TABLE: !Ref ActivationTableName
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
+              Resource: !GetAtt Connections.Arn
+            - Effect: Allow
+              Action: dynamodb:GetItem
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ActivationTableName}"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, yourName, familyName]
+                StringEqualsIfExists:
+                  dynamodb:Select: SPECIFIC_ATTRIBUTES
+      Events:
+        Status:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ConnectionsApi
+            Path: /founding
+            Method: GET
+            Auth: { Authorizer: NONE }
+        Preview:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ConnectionsApi
+            Path: /invitations/preview
+            Method: POST
+            Auth: { Authorizer: NONE }
+        Enroll:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /founding/enroll, Method: POST }
+        Family:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection, Method: GET }
+        Create:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations, Method: POST }
+        Share:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/shared, Method: POST }
+        Cancel:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/cancel, Method: POST }
+        Decline:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/decline, Method: POST }
+        Accept:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/accept, Method: POST }
+Outputs:
+  ConnectionsApiUrl:
+    Value: !Sub "https://${ConnectionsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
+  ConnectionsTable:
+    Value: !Ref Connections

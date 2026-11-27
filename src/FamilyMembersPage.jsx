@@ -1,3 +1,6 @@
+import FamilyInvitationForm from "./components/FamilyInvitationForm.jsx";
+import { connectionsEnabled, familyConnection } from "./api/familyConnectionsApi.js";
+import { CircleCheck, Send } from "lucide-react";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -40,6 +43,20 @@ export default function FamilyMembersPage() {
   const [error, setError] = useState("");
   const actionsDialog = useRef(null);
   const [showInviteInfo, setShowInviteInfo] = useState(false);
+  const [connectionState, setConnectionState] = useState(null);
+  const refreshConnection = useCallback(() => {
+    if (connectionsEnabled) familyConnection().then(setConnectionState).catch(() => setConnectionState(null));
+  }, []);
+  useEffect(() => {
+    if (!connectionsEnabled) return;
+    refreshConnection();
+    const timer = window.setInterval(refreshConnection, 30000);
+    window.addEventListener("focus", refreshConnection);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshConnection);
+    };
+  }, [refreshConnection]);
 
   // =====================================================
   // LOAD REGISTERED USER + FAMILY MEMBERS
@@ -188,7 +205,7 @@ export default function FamilyMembersPage() {
   // =====================================================
 
   const totalMembers =
-    members.length + (primaryUser ? 1 : 0);
+    members.length + (primaryUser ? 1 : 0) + (connectionState?.connection ? 1 : 0);
 
   // =====================================================
   // UI
@@ -234,9 +251,9 @@ export default function FamilyMembersPage() {
           <Link2 size={20} aria-hidden="true" />
           <span><strong>Invite Family Member</strong><small>Connect someone who manages their own account.</small></span>
         </button>
-        <p id="fk-family-invite-info" hidden={!showInviteInfo}>
-          Invitations aren’t available yet. FamilyKit needs mobile verification and invitation acceptance before it can connect accounts.
-        </p>
+        {showInviteInfo && (connectionsEnabled
+          ? <FamilyInvitationForm canInvite={connectionState?.canInvite} existingInvitation={connectionState?.invitation} emailEnabled={connectionState?.emailEnabled} onChange={refreshConnection} />
+          : <p id="fk-family-invite-info">Invitations are currently unavailable.</p>)}
       </dialog>
 
       {/* MAIN */}
@@ -334,6 +351,34 @@ export default function FamilyMembersPage() {
                   </article>
                 )}
 
+                {connectionState?.connection && (
+                  <article className="fk-family-member-card">
+                    <div className="fk-family-member-details">
+                      <span className="fk-family-avatar">{connectionState.connection.name.charAt(0).toUpperCase()}</span>
+                      <span className="fk-family-member-info">
+                        <strong>{connectionState.connection.name}</strong>
+                        <small>{connectionState.connection.relationship}</small>
+                        <small className="fk-family-status fk-family-status--connected">
+                          <CircleCheck size={14} aria-hidden="true" /> Securely connected
+                        </small>
+                      </span>
+                    </div>
+                  </article>
+                )}
+                {connectionState?.invitation?.shared && (
+                  <article className="fk-family-member-card">
+                    <div className="fk-family-member-details">
+                      <span className="fk-family-avatar"><Send size={18} aria-hidden="true" /></span>
+                      <span className="fk-family-member-info">
+                        <strong>{connectionState.invitation.relationship}</strong>
+                        <small className="fk-family-status fk-family-status--pending">
+                          <Send size={14} aria-hidden="true" /> Invitation sent
+                        </small>
+                      </span>
+                    </div>
+                  </article>
+                )}
+
                 {/* ADDITIONAL FAMILY MEMBERS */}
 
                 {members.map((member) => (
@@ -370,7 +415,7 @@ export default function FamilyMembersPage() {
 
               {/* NO ADDITIONAL MEMBERS */}
 
-              {members.length === 0 && (
+              {members.length === 0 && !connectionState?.connection && !connectionState?.invitation?.shared && (
                 <section className="fk-family-empty">
                   <h3>
                     Bring your family together

@@ -1,3 +1,4 @@
+import { connectionsEnabled, foundingStatus } from "./api/familyConnectionsApi.js";
 import { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -1637,7 +1638,7 @@ const phoneExamples = [
   { question: "Show me my parents' policy bond", result: "Policy bond · Papa and Amma", upcoming: "Electricity bill due Thursday." },
 ];
 
-function LandingHeroPreview({ howItWorksHref }) {
+function LandingHeroPreview({ howItWorksHref, registration }) {
   const [examplesPaused, setExamplesPaused] = useState(false);
 
   return (
@@ -1657,9 +1658,7 @@ function LandingHeroPreview({ howItWorksHref }) {
           </p>
         </div>
         <div className="fk-preview-hero-actions">
-          <Link className="fk-preview-join" to="/signup">
-            Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
-          </Link>
+          <FoundingSignupLink registration={registration} className="fk-preview-join" />
           <a className="fk-preview-hero-secondary" href={howItWorksHref}>
             See How it Works <ChevronDown size={16} aria-hidden="true" />
           </a>
@@ -1932,7 +1931,7 @@ function PricingCards({ items, className }) {
   );
 }
 
-function LandingPricingPreview() {
+function LandingPricingPreview({ registration }) {
   return (
     <section id="pricing" className="fk-preview-pricing" aria-labelledby="fk-preview-pricing-title">
       <div className="fk-preview-pricing-inner">
@@ -1961,7 +1960,7 @@ function LandingPricingPreview() {
         <div className="fk-preview-pricing-close">
           <h3><Heart size={20} aria-hidden="true" /> <span>The First 100 Families Will Always Be Special To Us.</span> <Heart size={20} aria-hidden="true" /></h3>
           <p>You’re not just early users. You’re helping shape the future of FamilyKit.</p>
-          <Link className="fk-preview-join" to="/signup">Become a Founding Family <ChevronRight size={18} aria-hidden="true" /></Link>
+          <FoundingSignupLink registration={registration} className="fk-preview-join" />
           <p className="fk-preview-pricing-offer"><UsersRound size={18} aria-hidden="true" />
             <span><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
           </p>
@@ -2022,9 +2021,15 @@ function LandingFaqPreview() {
 
 const illustrationIcons = [BadgeCheck, ReceiptText, HandHeart, FileText, Bell, Landmark, HeartPulse];
 
-function LandingEarlyAccessPreview() {
-  const [showInvitationInfo, setShowInvitationInfo] = useState(false);
+function FoundingSignupLink({ registration, className = "fk-preview-join" }) {
+  const label = registration?.mode === "public" ? "Sign Up" : "Become a Founding Family";
+  if (connectionsEnabled && !registration?.newFamiliesOpen) {
+    return <button type="button" className={className} disabled>{label}</button>;
+  }
+  return <Link className={className} to="/signup">{label} <ChevronRight size={18} aria-hidden="true" /></Link>;
+}
 
+function LandingEarlyAccessPreview({ registration }) {
   return (
     <section id="early-access" className="fk-preview-early" aria-labelledby="fk-preview-early-title">
       <div className="fk-preview-early-inner">
@@ -2035,13 +2040,10 @@ function LandingEarlyAccessPreview() {
             <p>Join Indian families organizing documents, dates, and responsibilities in one calm, private space.</p>
           </div>
           <div className="fk-preview-early-form">
-            <button type="button" className="fk-preview-join" onClick={() => setShowInvitationInfo(true)}>
-              Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
-            </button>
-            {showInvitationInfo && <p role="status">FamilyKit is inviting founding families directly during the pilot.</p>}
+            <FoundingSignupLink registration={registration} />
           </div>
           <p className="fk-preview-early-offer"><strong>Free for 1 year</strong> for the first 100 families.</p>
-          <p className="fk-preview-early-consent">Early access is by personal invitation.</p>
+          <p className="fk-preview-early-consent">Founding access is open while family places are available.</p>
         </div>
         <div className="fk-preview-early-art" aria-hidden="true">
           {illustrationIcons.map((Icon, index) => <span key={index}><Icon size={19} /></span>)}
@@ -2232,6 +2234,19 @@ function FamilyKitInstallPrompt() {
 }
 
 export default function App() {
+  const [registration, setRegistration] = useState(null);
+  useEffect(() => {
+    if (!connectionsEnabled) return;
+    let live = true;
+    function refresh() {
+      foundingStatus().then((result) => { if (live) setRegistration(result); })
+        .catch(() => { if (live) setRegistration(null); });
+    }
+    refresh();
+    window.addEventListener("focus", refresh);
+    return () => { live = false; window.removeEventListener("focus", refresh); };
+  }, []);
+
   const compact = useSyncExternalStore(subscribeToNavigationLayout, () => compactNavigation.matches);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef(null);
@@ -2337,15 +2352,11 @@ export default function App() {
               aria-current={activeSection === section ? "location" : undefined}
               onClick={() => setMenuOpen(false)}>{label}</a>
           ))}
-          <Link className="fk-preview-join fk-preview-menu-join" to="/signup">
-            Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
-          </Link>
+          <FoundingSignupLink registration={registration} className="fk-preview-join fk-preview-menu-join" />
         </nav>
         <div className="fk-preview-actions">
           <Link className="fk-preview-login" to="/login">Login</Link>
-          <Link className="fk-preview-join fk-preview-desktop-join" to="/signup">
-            Become a Founding Family <ChevronRight size={18} aria-hidden="true" />
-          </Link>
+          <FoundingSignupLink registration={registration} className="fk-preview-join fk-preview-desktop-join" />
           <button type="button" className="fk-preview-menu-button" aria-controls="fk-preview-nav"
             aria-expanded={menuOpen} aria-label={menuOpen ? "Close navigation" : "Open navigation"}
             onClick={() => setMenuOpen((open) => !open)} ref={menuButton}>
@@ -2355,14 +2366,14 @@ export default function App() {
       </header>
       </div>
       <main>
-        <LandingHeroPreview howItWorksHref="#how" />
+        <LandingHeroPreview howItWorksHref="#how" registration={registration} />
         <LandingWhyPreview />
         <LandingHowPreview />
         <LandingFamiliesPreview privacyHref="#security" />
         <LandingPrivacyPreview />
-        <LandingPricingPreview />
+        <LandingPricingPreview registration={registration} />
         <LandingFaqPreview />
-        <LandingEarlyAccessPreview />
+        <LandingEarlyAccessPreview registration={registration} />
       </main>
       <LandingFooterPreview />
       <FamilyKitInstallPrompt />

@@ -584,3 +584,25 @@
 @media (prefers-reduced-motion: reduce) {
   .fk-family-nav-icon, .fk-family-nav-item, .fk-family-bottom-add { transition: none; }
 }
+
+.fk-family-invitation-page { padding: 24px; }
+.fk-family-invitation-controls,
+.fk-family-invitation-controls form,
+.fk-family-invitation-controls label {
+  display: grid;
+  gap: 8px;
+}
+.fk-family-invitation-controls input,
+.fk-family-invitation-controls select,
+.fk-family-invitation-controls button {
+  min-height: 40px;
+  width: 100%;
+  font: inherit;
+}
+.fk-family-member-info .fk-family-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.fk-family-member-info .fk-family-status--connected { color: #147637; }
+.fk-family-member-info .fk-family-status--pending { color: #954700; }
