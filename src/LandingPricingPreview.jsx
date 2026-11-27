@@ -59,7 +59,7 @@ export default function LandingPricingPreview() {
           <p>You’re not just early users. You’re helping shape the future of FamilyKit.</p>
           <Link className="fk-preview-join" to="/signup">Become a Founding Family <ChevronRight size={18} aria-hidden="true" /></Link>
           <p className="fk-preview-pricing-offer"><UsersRound size={18} aria-hidden="true" />
-            <span><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+            <span><strong>Free for 1 year</strong> for the first 100 families</span>
           </p>
         </div>
       </div>

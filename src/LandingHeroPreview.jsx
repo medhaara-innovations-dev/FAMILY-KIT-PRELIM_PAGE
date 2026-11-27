@@ -39,7 +39,7 @@ export default function LandingHeroPreview({ howItWorksHref }) {
         </div>
         <p className="fk-preview-hero-offer">
           <Sparkles size={16} aria-hidden="true" />
-          <span><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+          <span><strong>Free for 1 year</strong> for the first 100 families</span>
         </p>
         <ul className="fk-preview-hero-features">
           <li><HeartHandshake size={18} aria-hidden="true" /> Family sharing</li>

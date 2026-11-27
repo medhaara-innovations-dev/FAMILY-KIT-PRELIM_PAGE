@@ -41,7 +41,7 @@ export default function LandingEarlyAccessPreview() {
             </button>
             {submitted && <p role="status">Early-access registration is still in preview. Your details weren’t sent.</p>}
           </form>
-          <p className="fk-preview-early-offer"><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></p>
+          <p className="fk-preview-early-offer"><strong>Free for 1 year</strong> for the first 100 families</p>
           <p className="fk-preview-early-consent">When registration opens, FamilyKit may message you on WhatsApp about your founding spot. See <a href="#security">Privacy &amp; Security</a>.</p>
         </div>
         <div className="fk-preview-early-art" aria-hidden="true">

@@ -116,12 +116,12 @@ export default function LandingNavPreview() {
     <div id="landing-top" className="fk-landing-nav-preview" ref={preview}>
       <div className="fk-preview-top">
         <div className="fk-preview-announcement">
-          <span className="fk-preview-announcement-label">Free for 1 year for the first 100 families · 87 spots left</span>
+          <span className="fk-preview-announcement-label">Free for 1 year for the first 100 families</span>
           <div className="fk-preview-announcement-track" aria-hidden="true">
             {[0, 1].map((group) => (
               <div className="fk-preview-announcement-group" key={group}>
                 {[0, 1, 2, 3].map((item) => (
-                  <span key={item}><Sparkles size={16} /> <strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+                  <span key={item}><Sparkles size={16} /> <strong>Free for 1 year</strong> for the first 100 families</span>
                 ))}
               </div>
             ))}

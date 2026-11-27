@@ -59,8 +59,12 @@ Resources:
         Variables:
           TABLE_NAME: !Ref Connections
           ACTIVATION_TABLE: !Ref ActivationTableName
+          USER_POOL_ID: !Ref UserPoolId
       Policies:
         - Statement:
+            - Effect: Allow
+              Action: cognito-idp:ListUsers
+              Resource: !Sub "arn:${AWS::Partition}:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}"
             - Effect: Allow
               Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
               Resource: !GetAtt Connections.Arn

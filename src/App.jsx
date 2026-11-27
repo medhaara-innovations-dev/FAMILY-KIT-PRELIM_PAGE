@@ -1638,6 +1638,18 @@ const phoneExamples = [
   { question: "Show me my parents' policy bond", result: "Policy bond · Papa and Amma", upcoming: "Electricity bill due Thursday." },
 ];
 
+function foundingSpotsLabel(registration) {
+  const families = registration?.displayRemainingFamilies;
+  const spots = registration?.remainingMemberSpots;
+  if (registration?.mode !== "founding" || !Number.isInteger(families) || !Number.isInteger(spots)) return "";
+  return `${families} ${families === 1 ? "family" : "families"} left (${spots} member spots)`;
+}
+
+function FoundingSpots({ registration }) {
+  const label = foundingSpotsLabel(registration);
+  return label ? <> { " · " }<strong>{label}</strong></> : null;
+}
+
 function LandingHeroPreview({ howItWorksHref, registration }) {
   const [examplesPaused, setExamplesPaused] = useState(false);
 
@@ -1665,7 +1677,7 @@ function LandingHeroPreview({ howItWorksHref, registration }) {
         </div>
         <p className="fk-preview-hero-offer">
           <Sparkles size={16} aria-hidden="true" />
-          <span><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+          <span><strong>Free for 1 year</strong> for the first 100 families<FoundingSpots registration={registration} /></span>
         </p>
         <ul className="fk-preview-hero-features">
           <li><HeartHandshake size={18} aria-hidden="true" /> Family sharing</li>
@@ -1962,7 +1974,7 @@ function LandingPricingPreview({ registration }) {
           <p>You’re not just early users. You’re helping shape the future of FamilyKit.</p>
           <FoundingSignupLink registration={registration} className="fk-preview-join" />
           <p className="fk-preview-pricing-offer"><UsersRound size={18} aria-hidden="true" />
-            <span><strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+            <span><strong>Free for 1 year</strong> for the first 100 families<FoundingSpots registration={registration} /></span>
           </p>
         </div>
       </div>
@@ -2322,12 +2334,12 @@ export default function App() {
     <div id="landing-top" className="fk-landing-nav-preview" ref={preview}>
       <div className="fk-preview-top">
         <div className="fk-preview-announcement">
-          <span className="fk-preview-announcement-label">Free for 1 year for the first 100 families · 87 spots left</span>
+          <span className="fk-preview-announcement-label">Free for 1 year for the first 100 families{foundingSpotsLabel(registration) ? ` · ${foundingSpotsLabel(registration)}` : ""}</span>
           <div className="fk-preview-announcement-track" aria-hidden="true">
             {[0, 1].map((group) => (
               <div className="fk-preview-announcement-group" key={group}>
                 {[0, 1, 2, 3].map((item) => (
-                  <span key={item}><Sparkles size={16} /> <strong>Free for 1 year</strong> for the first 100 families · <strong>87 spots left</strong></span>
+                  <span key={item}><Sparkles size={16} /> <strong>Free for 1 year</strong> for the first 100 families<FoundingSpots registration={registration} /></span>
                 ))}
               </div>
             ))}
