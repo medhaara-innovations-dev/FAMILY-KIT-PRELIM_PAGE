@@ -1731,7 +1731,7 @@ function ExpiryIcon({ size, ...props }) {
 
 const problems = [
   [FolderClosed, "Documents scattered everywhere", "A drawer, a WhatsApp chat, an email, and another phone."],
-  [LayoutGrid, "Too many apps,\nno single place", "The bank, the bills, the vehicle, and the policies each sit in a different app."],
+  [LayoutGrid, "Too many apps, no single place", "The bank, the bills, the vehicle, and the policies each sit in a different app."],
   [EmergencyIcon, "No answers in an emergency", "It is night. Someone asks for a number. The person who knows cannot answer."],
   [ExpiryIcon, "Expiry dates get missed", "The date was known once. Then it passed, and nobody else was reminded."],
 ];
@@ -2054,7 +2054,7 @@ function LandingEarlyAccessPreview({ registration }) {
           <div className="fk-preview-early-form">
             <FoundingSignupLink registration={registration} />
           </div>
-          <p className="fk-preview-early-offer"><strong>Free for 1 year</strong> for the first 100 families.</p>
+          <p className="fk-preview-early-offer"><strong>Free for 1 year</strong> for the first 100 families<FoundingSpots registration={registration} /></p>
           <p className="fk-preview-early-consent">Founding access is open while family places are available.</p>
         </div>
         <div className="fk-preview-early-art" aria-hidden="true">

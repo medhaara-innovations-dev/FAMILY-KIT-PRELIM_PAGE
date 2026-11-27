@@ -24,7 +24,7 @@ function ExpiryIcon({ size, ...props }) {
 
 const problems = [
   [FolderClosed, "Documents scattered everywhere", "A drawer, a WhatsApp chat, an email, and another phone."],
-  [LayoutGrid, "Too many apps,\nno single place", "The bank, the bills, the vehicle, and the policies each sit in a different app."],
+  [LayoutGrid, "Too many apps, no single place", "The bank, the bills, the vehicle, and the policies each sit in a different app."],
   [EmergencyIcon, "No answers in an emergency", "It is night. Someone asks for a number. The person who knows cannot answer."],
   [ExpiryIcon, "Expiry dates get missed", "The date was known once. Then it passed, and nobody else was reminded."],
 ];

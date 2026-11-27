@@ -1,8 +1,9 @@
 import FamilyInvitationPage from "./FamilyInvitationPage.jsx";
+import InstalledAppLaunch, { isInstalledFamilyKit } from "./InstalledAppLaunch.jsx";
 
 import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, useSearchParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useSearchParams } from "react-router-dom";
 
 import App from "./App.jsx";
 import SignupPage from "./auth/SignupPage.jsx";
@@ -47,10 +48,12 @@ const LandingNavPreview = import.meta.env.DEV ? lazy(() => import("./LandingNavP
 
 function LandingRoute() {
   const [params] = useSearchParams();
+  const { state } = useLocation();
   if (params.get("invite") === "1") return <FamilyInvitationPage />;
   if (LandingNavPreview && params.get("preview") === "landing-nav") {
     return <Suspense fallback={null}><LandingNavPreview /></Suspense>;
   }
+  if (isInstalledFamilyKit()) return <InstalledAppLaunch fromSignOut={state?.fromSignOut} />;
   return <App />;
 }
 
