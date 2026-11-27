@@ -117,4 +117,4 @@ The PIN registration code supports an optional server-side capacity guard. When 
 
 The live PIN registration guard is enabled against `FamilyKit-Connections`. The control record is in founding mode. Localhost reads the live status. The hosted landing page has not been updated as part of this rollout.
 
-Email invitation support is prepared locally. To enable it, deploy both the Connections and PIN Lambda changes. Configure `INVITATION_FROM_EMAIL`, `INVITATION_WEB_ORIGIN`, `GMAIL_SECRET_NAME` and `USER_POOL_ID` on Connections. Grant access to the existing Gmail sender secret and Cognito `AdminGetUser` on the configured user pool. PIN registration also needs `AdminGetUser` for recipient verification. The invitation records a digest of the recipient address and displays the sent status only after the mail service accepts it. Existing manual links remain supported.
+New invitations use a manually shared link. Previously emailed invitations retain their verified-recipient checks.

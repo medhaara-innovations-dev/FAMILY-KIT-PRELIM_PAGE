@@ -50,4 +50,4 @@ Home groups incomplete Events records by the device's local calendar date. Need 
 
 Categories displays the saved document count for the selected family filter. The Documents tile opens `/documents`, which preserves that selection and shows category totals, searchable records and document details. Files display their assigned family profile. Uploads without category metadata appear under Other Documents. The document list refreshes after an upload completes.
 
-Both My Family's Add menu and the managed member's profile actions open the same invitation form. The profile entry point prefills the saved email and relationship. Both use the same live invitation slot and email delivery checks.
+Both My Family's Add menu and the managed member's profile actions open the same invitation form. The profile entry point prefills the relationship. Both check the same invitation slot and let the inviter copy or share the generated link.

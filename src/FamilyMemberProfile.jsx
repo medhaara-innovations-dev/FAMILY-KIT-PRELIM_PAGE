@@ -582,8 +582,6 @@ export default function FamilyMemberProfile() {
               : <FamilyInvitationForm
                   canInvite={invitationState.canInvite}
                   existingInvitation={invitationState.invitation}
-                  emailEnabled={invitationState.emailEnabled}
-                  initialEmail={member?.email}
                   initialRelationship={member?.relationship}
                   onChange={() => setInvitationRevision((value) => value + 1)}
                 />}

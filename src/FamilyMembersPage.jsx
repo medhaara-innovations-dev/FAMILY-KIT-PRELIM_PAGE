@@ -252,7 +252,7 @@ export default function FamilyMembersPage() {
           <span><strong>Invite Family Member</strong><small>Connect someone who manages their own account.</small></span>
         </button>
         {showInviteInfo && (connectionsEnabled
-          ? <FamilyInvitationForm canInvite={connectionState?.canInvite} existingInvitation={connectionState?.invitation} emailEnabled={connectionState?.emailEnabled} onChange={refreshConnection} />
+          ? <FamilyInvitationForm canInvite={connectionState?.canInvite} existingInvitation={connectionState?.invitation} onChange={refreshConnection} />
           : <p id="fk-family-invite-info">Invitations are currently unavailable.</p>)}
       </dialog>
 

@@ -1,15 +1,10 @@
 """Dedicated founding-family enrollment and single-use invitations."""
-import base64
 import hashlib
 import json
 import os
 import re
 import secrets
 import time
-from email.message import EmailMessage
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urlsplit
-from urllib.request import Request, urlopen
 from uuid import uuid4
 
 import boto3
@@ -87,52 +82,6 @@ def email_digest(address):
     return hashlib.sha256(address.encode()).hexdigest()
 
 
-def gmail_request(request, step):
-    try:
-        with urlopen(request, timeout=8) as response:
-            return json.load(response)
-    except HTTPError as error:
-        with error:
-            try:
-                details = json.loads(error.read(4096)).get("error")
-            except (ValueError, OSError):
-                details = None
-        if isinstance(details, dict):
-            details = details.get("status")
-        codes = {"invalid_grant", "invalid_client", "unauthorized_client", "PERMISSION_DENIED",
-                 "UNAUTHENTICATED", "RESOURCE_EXHAUSTED", "FAILED_PRECONDITION", "INVALID_ARGUMENT"}
-        print("Invitation Gmail failure:", step, error.code,
-              details if isinstance(details, str) and details in codes else "unclassified")
-        raise
-
-
-def send_invitation_email(sender, address, content):
-    secret = boto3.client("secretsmanager").get_secret_value(SecretId=os.environ["GMAIL_SECRET_NAME"])
-    credentials = json.loads(secret["SecretString"])
-    token_request = Request("https://oauth2.googleapis.com/token", data=urlencode({
-        "client_id": credentials["GOOGLE_CLIENT_ID"],
-        "client_secret": credentials["GOOGLE_CLIENT_SECRET"],
-        "refresh_token": credentials["GOOGLE_REFRESH_TOKEN"],
-        "grant_type": "refresh_token",
-    }).encode(), method="POST")
-    access_token = gmail_request(token_request, "token refresh")["access_token"]
-
-    message = EmailMessage()
-    message["From"], message["To"], message["Subject"] = sender, address, "Your FamilyKit invitation"
-    message.set_content(content)
-    raw = base64.urlsafe_b64encode(message.as_bytes()).decode("ascii")
-    send = Request("https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
-                   data=json.dumps({"raw": raw}).encode(), method="POST",
-                   headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"})
-    if not gmail_request(send, "send").get("id"):
-        raise ValueError("Mail provider did not accept the invitation.")
-
-
-def invitation_email_enabled():
-    return bool(os.environ.get("INVITATION_FROM_EMAIL") and os.environ.get("INVITATION_WEB_ORIGIN")
-                and os.environ.get("GMAIL_SECRET_NAME") and os.environ.get("USER_POOL_ID"))
-
-
 def lambda_handler(event, _context):
     route = event.get("routeKey")
     if route == "GET /founding":
@@ -173,7 +122,6 @@ def lambda_handler(event, _context):
                                "shared": bool(invitation.get("sharedAt"))}
                 if active_invite(invitation, now) and user == family["firstUser"] else None,
                 "canInvite": user == family["firstUser"] and not other,
-                "emailEnabled": invitation_email_enabled(),
             })
 
         if route == "POST /founding/enroll":
@@ -192,20 +140,8 @@ def lambda_handler(event, _context):
             relationship, reverse = body.get("relationship"), body.get("reverseRelationship")
             if relationship not in RELATIONS or reverse not in RELATIONS:
                 raise ValueError("Choose a relationship for both family members.")
-            address = body.get("recipientEmail")
-            sender = os.environ.get("INVITATION_FROM_EMAIL")
-            origin = os.environ.get("INVITATION_WEB_ORIGIN", "").rstrip("/")
-            if address is not None:
-                if not isinstance(address, str):
-                    raise ValueError("Enter a valid recipient email.")
-                address = address.strip().lower()
-                if len(address) > 254 or not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", address):
-                    raise ValueError("Enter a valid recipient email.")
-                target = urlsplit(origin)
-                if not invitation_email_enabled() or target.scheme != "https" or not target.hostname or target.path or target.query or target.fragment:
-                    return reply(503, {"message": "Email invitations are unavailable. You can still create a link."})
-                if address == verified_recipient(claims):
-                    raise ValueError("Enter a family member's email address.")
+            if "recipientEmail" in body:
+                return reply(400, {"message": "Create and share an invitation link manually."})
             token = secrets.token_urlsafe(32)
             key = invite_key(token)
             previous = get(family["inviteKey"]) if family.get("inviteKey") else None
@@ -225,25 +161,9 @@ def lambda_handler(event, _context):
                 update(family["pk"], "SET inviteKey = :key", guard, values),
                 put({"pk": key, "familyKey": family["pk"], "inviter": user,
                      "inviterName": account.get("yourName") or "A family member", "state": "PENDING",
-                     "expiresAt": now + 7 * 86400, "relationship": relationship, "reverseRelationship": reverse,
-                     **({"recipientDigest": email_digest(address)} if address else {})}),
+                     "expiresAt": now + 7 * 86400, "relationship": relationship, "reverseRelationship": reverse}),
                 *changes,
             )
-            if address:
-                try:
-                    send_invitation_email(sender, address, (
-                        f"{account.get('yourName') or 'A family member'} invited you to connect on FamilyKit. "
-                        f"They will appear as your {reverse}.\n\n"
-                        f"{origin}/?invite=1#token={token}\n\n"
-                        "Sign in or sign up with this email address, then accept. The link expires in 7 days."
-                    ))
-                except (ClientError, URLError, TimeoutError, KeyError, ValueError) as error:
-                    print("Invitation email failed:", type(error).__name__)
-                    return reply(502, {"message": "Email delivery could not start. Please try again."})
-                table.update_item(Key={"pk": key}, UpdateExpression="SET sharedAt = :now",
-                                  ConditionExpression="attribute_exists(pk)",
-                                  ExpressionAttributeValues={":now": int(time.time())})
-                return reply(201, {"sent": True})
             return reply(201, {"token": token})
 
         if route in {"POST /invitations/shared", "POST /invitations/cancel", "POST /invitations/decline", "POST /invitations/accept"}:

@@ -4,7 +4,7 @@ import { createInvitation, updateInvitation } from "../api/familyConnectionsApi.
 
 const relationships = [...RELATIONSHIPS, "Parent", "Child", "Sibling", "Grandchild"];
 
-export default function FamilyInvitationForm({ canInvite, existingInvitation, emailEnabled, initialEmail = "", initialRelationship = "", onChange }) {
+export default function FamilyInvitationForm({ canInvite, existingInvitation, initialRelationship = "", onChange }) {
   const [token, setToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -30,28 +30,11 @@ export default function FamilyInvitationForm({ canInvite, existingInvitation, em
         <form onSubmit={(event) => {
           event.preventDefault();
           const fields = Object.fromEntries(new FormData(event.currentTarget));
-          const emailRequested = event.nativeEvent.submitter?.value === "email";
-          if (emailRequested && !emailEnabled) {
-            setError("Email invitations are unavailable. You can still create a link.");
-            return;
-          }
-          if (emailRequested && !fields.recipientEmail.trim()) {
-            setError("Enter the recipient's email address.");
-            return;
-          }
-          if (!emailRequested) delete fields.recipientEmail;
           run(async () => {
-            const result = await createInvitation(fields);
-            if (result.sent) setMessage("Invitation sent by email.");
-            else if (result.token) {
-              setToken(result.token);
-              setMessage("");
-            }
+            setToken((await createInvitation(fields)).token);
+            setMessage("");
           });
         }}>
-          <label>Recipient email
-            <input type="email" name="recipientEmail" defaultValue={initialEmail} autoComplete="off" maxLength={254} placeholder="name@example.com" />
-          </label>
           <label>How is this person related to you?
             <select required name="relationship" defaultValue={relationships.includes(initialRelationship) ? initialRelationship : ""}><option value="">Choose a relationship</option>
               {relationships.map((value) => <option key={value}>{value}</option>)}
@@ -62,8 +45,7 @@ export default function FamilyInvitationForm({ canInvite, existingInvitation, em
               {relationships.map((value) => <option key={value}>{value}</option>)}
             </select>
           </label>
-          <button type="submit" value="email" disabled={busy}>Send Invitation</button>
-          <button type="submit" value="link" disabled={busy}>Create link to share manually</button>
+          <button type="submit" disabled={busy}>Create invitation link</button>
           <p>Creating a new link replaces any previous unused link.</p>
         </form>
       ) : <p>There is no available invitation slot for this account.</p> : (
