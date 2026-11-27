@@ -360,6 +360,7 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
   .fk-preview-login, .fk-preview-join, .fk-preview-hero-secondary,
   .fk-auth-brand,
   .fk-dash-action > span:last-child,
+  .fk-cat-card-name,
   .fk-landing-nav-preview :is(h1, h2, h3, h4, h5, h6) span
 ) {
   font-family: "Poppins", sans-serif !important;

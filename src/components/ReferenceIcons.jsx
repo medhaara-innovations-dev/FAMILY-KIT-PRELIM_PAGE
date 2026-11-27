@@ -13,6 +13,18 @@ function Glyph({ asset, size = "1em", style, ...props }) {
 export const HomeIcon = (props) => <Glyph asset={home} {...props} />;
 export const CategoriesIcon = (props) => <Glyph asset={categories} {...props} />;
 export const CameraIcon = (props) => <Glyph asset={camera} {...props} />;
+export function VehiclesIcon({ size = "1em", strokeWidth = 1.8, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <g stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3.5 16H3a1.5 1.5 0 0 1-1.5-1.5v-2a2 2 0 0 1 1.3-1.9L5 9.7l2-4a1.5 1.5 0 0 1 1.3-.8h5.2c.5 0 1 .3 1.3.7l2.9 4.1 3 .9a2 2 0 0 1 1.3 1.9v2a1.5 1.5 0 0 1-1.5 1.5h-.7M8.5 16h7M5 9.7h12.7M10.8 4.9v4.8" />
+        <circle cx="6" cy="16" r="2.5" />
+        <circle cx="18" cy="16" r="2.5" />
+      </g>
+    </svg>
+  );
+}
+
 export function ImportantContactsIcon({ size = "1em", strokeWidth = 1.8, ...props }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>

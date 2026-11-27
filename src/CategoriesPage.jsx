@@ -26,7 +26,7 @@ import {
   BadgeCheck,
   } from "lucide-react";
 
-import { ImportantContactsIcon, NotesIcon } from "./components/ReferenceIcons.jsx";
+import { ImportantContactsIcon, NotesIcon, VehiclesIcon } from "./components/ReferenceIcons.jsx";
 import useDocuments from "./components/useDocuments.js";
 import { deleteDocument, downloadDocument, OPEN_DOCUMENT_UPLOAD } from "./api/documentsApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
@@ -134,6 +134,12 @@ const categories = [
     Icon: Houses,
     background: "#F7EFFB",
     color: "#9E28C6",
+  },
+  {
+    name: "Vehicles",
+    Icon: VehiclesIcon,
+    background: "#eaf0f5",
+    color: "#526f8b",
   },
   {
     name: "Warranties",

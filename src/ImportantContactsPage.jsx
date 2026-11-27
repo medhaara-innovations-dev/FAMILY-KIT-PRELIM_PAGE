@@ -237,8 +237,14 @@ export default function ImportantContactsPage() {
                         {contact.relation && <span className="fk-ic-role fk-ic-relation fk-ic-card-mobile">{contact.relation}</span>}
                       </div>
                       {contact.relation && <p className="fk-ic-card-detail"><UsersRound size={14} aria-hidden="true" />{contact.relation}</p>}
+                      {contact.email?.trim() && (
+                        <a className="fk-ic-card-detail fk-ic-card-email"
+                          href={`mailto:${encodeURIComponent(contact.email.trim()).replace("%40", "@")}`}>
+                          <Mail size={14} aria-hidden="true" />
+                          {contact.email.trim()}
+                        </a>
+                      )}
                       <a className="fk-ic-card-detail" href={`tel:${contact.mobileNumber}`}><Phone size={14} aria-hidden="true" />{contact.mobileNumber}</a>
-                      {contact.email && <a className="fk-ic-card-detail" href={`mailto:${contact.email}`}><Mail size={14} aria-hidden="true" />{contact.email}</a>}
                     </div>
                     <details className="fk-ic-card-menu">
                       <summary aria-label={`Actions for ${contact.name}`}><EllipsisVertical size={20} aria-hidden="true" /></summary>
