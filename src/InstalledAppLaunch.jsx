@@ -4,8 +4,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getStoredAccessToken, getStoredRefreshToken, isAccessTokenExpired } from "./auth/sessionManager.js";
 import { connectionsEnabled, foundingStatus } from "./api/familyConnectionsApi.js";
 import familyArt from "./assets/images/Family Gathered Around Purple Folder.png";
-import scanArt from "./assets/images/how-ai-understands.jpg";
-import reminderArt from "./assets/images/solution-stay-on-track-calendar.png";
+import scanArt from "./assets/images/onboarding-scan.png";
+import reminderArt from "./assets/images/onboarding-reminders.png";
 import "./InstalledAppLaunch.css";
 
 const tourKey = "familykit_pwa_onboarding_seen";
