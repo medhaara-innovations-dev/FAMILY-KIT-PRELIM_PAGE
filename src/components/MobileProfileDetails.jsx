@@ -1,3 +1,6 @@
+import useDocuments from "./useDocuments.js";
+import { downloadDocument } from "../api/documentsApi.js";
+import { SELF_PROFILE_ID } from "../api/profilePicturesApi.js";
 import { useState } from "react";
 import { BookOpen, FileText, Landmark, Phone, Share2 } from "lucide-react";
 import { FacebookLogo, InstagramLogo, LinkedInLogo, WhatsAppLogo } from "./ReferenceIcons.jsx";
@@ -125,8 +128,19 @@ const documentCategories = [
   ["Finance", Landmark],
 ];
 
-export function MobileConnectedDocuments() {
+export function MobileConnectedDocuments({ memberId = SELF_PROFILE_ID }) {
   const [category, setCategory] = useState("Documents");
+  const [downloadError, setDownloadError] = useState("");
+  const { documents, error } = useDocuments();
+  const visible = category === "Documents" ? documents?.filter((document) => document.memberId === memberId) : [];
+  async function openDocument(id) {
+    setDownloadError("");
+    try {
+      window.location.assign(await downloadDocument(id));
+    } catch (cause) {
+      setDownloadError(cause.message);
+    }
+  }
   return (
     <section className="fk-profile-connected-docs">
       <h3>Connected Documents</h3>
@@ -138,7 +152,15 @@ export function MobileConnectedDocuments() {
           </button>
         ))}
       </div>
-      <p role="status">No connected {category.toLowerCase()} available yet.</p>
+      {error ? <p role="alert">{error}</p> : !visible ? <p role="status">Loading documents...</p>
+        : visible.length ? (
+          <ul>
+            {visible.map((document) => (
+              <li key={document.documentId}><button type="button" onClick={() => openDocument(document.documentId)}>{document.fileName}</button></li>
+            ))}
+          </ul>
+        ) : <p role="status">No connected {category.toLowerCase()} available yet.</p>}
+      {downloadError && <p role="alert">{downloadError}</p>}
     </section>
   );
 }

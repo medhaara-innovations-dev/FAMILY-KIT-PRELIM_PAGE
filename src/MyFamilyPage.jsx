@@ -1,3 +1,6 @@
+import firstDocumentFolder from "./assets/images/first-document-folder.svg";
+import useDocuments from "./components/useDocuments.js";
+import { OPEN_DOCUMENT_UPLOAD } from "./api/documentsApi.js";
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
@@ -30,7 +33,7 @@ import FamilyCalendar from "./FamilyCalendar.jsx";
 import { ImportantContactsIcon, NotesIcon } from "./components/ReferenceIcons.jsx";
 import "./MyFamilyPage.css";
 
-const NO_UPCOMING_EVENTS = "No upcoming events";
+const localDate = new Intl.DateTimeFormat("sv-SE");
 
 function UpcomingEventCard({ event, today, onOpen }) {
   const Icon = event.category === "Birthday" ? Cake
@@ -158,6 +161,10 @@ export default function MyFamilyPage() {
     sessionStorage.getItem("familykit_refresh_token")
   );
 
+  const { documents } = useDocuments(hasSession);
+  const firstDocument = documents?.length === 0;
+  const openUpload = () => window.dispatchEvent(new Event(OPEN_DOCUMENT_UPLOAD));
+
   const [yourName, setYourName] = useState("");
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
@@ -168,10 +175,25 @@ export default function MyFamilyPage() {
   const readReminders = getReadReminderIds();
   const unreadReminders = getDueEventReminders(calendarEvents, reminderClock)
     .filter(({ id }) => !readReminders.has(id)).length;
-  const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Kolkata" }).format(new Date());
-  const upcomingEvents = occurrenceList(calendarEvents, today, "9999-12-31", calendarHorizon(today, 366))
-    .filter((event) => !event.completed)
-    .slice(0, 3);
+  const today = localDate.format(reminderClock);
+  const tomorrow = calendarHorizon(today, 1);
+  const scheduledItems = occurrenceList(calendarEvents, today, "9999-12-31", calendarHorizon(today, 366))
+    .filter((event) => !event.completed && event.startDate >= today);
+  const attentionItems = scheduledItems.filter((event) => event.startDate <= tomorrow);
+  const comingUpItems = scheduledItems.filter((event) => event.startDate > tomorrow).slice(0, 3);
+
+  const renderEventCard = (event) => (
+    <UpcomingEventCard
+      key={`${event.eventId}-${event.occurrenceDate || ""}`}
+      event={event}
+      today={today}
+      onOpen={() => navigate("/events", { state: {
+        eventDate: event.startDate,
+        reminderEventId: event.eventId,
+        reminderOccurrence: event.occurrenceDate,
+      } })}
+    />
+  );
 
   useEffect(() => {
     if (!hasSession) return;
@@ -179,7 +201,7 @@ export default function MyFamilyPage() {
     listEvents(controller.signal).then((events) => {
       if (controller.signal.aborted) return;
       setCalendarEvents(events);
-      setUpcomingStatus(NO_UPCOMING_EVENTS);
+      setUpcomingStatus("");
     }).catch(() => {
       if (!controller.signal.aborted) setUpcomingStatus("Unable to load events");
     });
@@ -420,6 +442,19 @@ export default function MyFamilyPage() {
 
         </div>
 
+        {firstDocument && (
+          <section className="fk-dash-first-document">
+            <div>
+              <h2>Your family's important information starts here</h2>
+              <p>FamilyKit will identify, extract and organize the details for you.</p>
+              <button type="button" className="fk-dash-event-button" onClick={openUpload}>
+                <Plus size={16} aria-hidden="true" /> Add Your First Document
+              </button>
+            </div>
+            <img className="fk-dash-first-document-art" src={firstDocumentFolder} alt="" />
+          </section>
+        )}
+
         {/* =========================================
             NEED ATTENTION
            ========================================= */}
@@ -427,30 +462,18 @@ export default function MyFamilyPage() {
         <section className="fk-dash-section fk-dash-attention-section">
           <SectionTitle title="Need Attention" />
 
-          <div className="fk-dash-attention-card">
-            <div className="fk-dash-attention-symbol">
-              <Bell
-                size={31}
-                fill="currentColor"
-              />
+          {attentionItems.length ? (
+            <div className="fk-dash-upcoming-list">
+              {attentionItems.map(renderEventCard)}
             </div>
-
-            <h3>No Reminders created yet</h3>
-
-            <p>
-              Set reminders for bills, renewals and
-              important dates.
-            </p>
-
-            <button
-              type="button"
-              className="fk-dash-outline-button"
-              disabled
-            >
-              <Plus size={16} />
-              Add Document
-            </button>
-          </div>
+          ) : (
+            <div className="fk-dash-attention-card">
+              <div className="fk-dash-attention-symbol">
+                <Bell size={31} fill="currentColor" />
+              </div>
+              <h3>{upcomingStatus || "Nothing needs your attention today or tomorrow."}</h3>
+            </div>
+          )}
         </section>
 
         {/* =========================================
@@ -458,37 +481,25 @@ export default function MyFamilyPage() {
            ========================================= */}
 
         <section className="fk-dash-section fk-dash-events-section">
-          <SectionTitle title="Upcoming Events" onViewAll={() => navigate("/events")} />
+          <SectionTitle title="Coming Up" onViewAll={() => navigate("/events")} />
 
-          {upcomingEvents.length ? (
+          {comingUpItems.length ? (
             <div className="fk-dash-upcoming-list">
-              {upcomingEvents.map((event) => (
-                <UpcomingEventCard key={`${event.eventId}-${event.occurrenceDate || ""}`} event={event} today={today}
-                  onOpen={() => navigate("/events", { state: {
-                    eventDate: event.startDate,
-                    reminderEventId: event.eventId,
-                    reminderOccurrence: event.occurrenceDate,
-                  } })} />
-              ))}
+              {comingUpItems.map(renderEventCard)}
             </div>
-          ) : <div className="fk-dash-events-card">
-            <div className="fk-dash-events-message">
-              <CalendarDays size={20} aria-hidden="true" />
-              <span>{upcomingStatus === NO_UPCOMING_EVENTS && calendarEvents.length === 0
-                ? "No Events Created Yet" : upcomingStatus}</span>
+          ) : (
+            <div className="fk-dash-events-card">
+              <div className="fk-dash-events-message">
+                <CalendarDays size={20} aria-hidden="true" />
+                {upcomingStatus || (
+                  <div>
+                    <strong>No upcoming items yet.</strong>
+                    <div>Events, renewals and important dates will appear here.</div>
+                  </div>
+                )}
+              </div>
             </div>
-
-            {upcomingStatus === NO_UPCOMING_EVENTS && (
-              <button
-                type="button"
-                className="fk-dash-event-button"
-                onClick={() => navigate("/events", { state: { createEvent: true } })}
-              >
-                Add Event
-                <ChevronRight size={15} />
-              </button>
-            )}
-          </div>}
+          )}
         </section>
 
         {/* =========================================
@@ -606,6 +617,8 @@ export default function MyFamilyPage() {
           />
 
           <div className="fk-dash-suggestion-card">
+            {firstDocument && <button type="button" className="fk-dash-suggestion-target" onClick={openUpload}
+              aria-label="Upload a document to get started with AI organization" />}
             <div className="fk-dash-suggestion-icon">
               <Sparkles
                 size={23}
@@ -615,11 +628,11 @@ export default function MyFamilyPage() {
 
             <div className="fk-dash-suggestion-text">
               <h3>
-                Smart AI Suggestions for you
+                {firstDocument ? "Upload a document to get started with AI organization." : "Smart AI Suggestions for you"}
               </h3>
 
               <p>
-                FamilyKit AI is Waiting for you
+                {firstDocument ? "FamilyKit can identify documents, extract key details and suggest reminders." : "FamilyKit AI is Waiting for you"}
               </p>
             </div>
 

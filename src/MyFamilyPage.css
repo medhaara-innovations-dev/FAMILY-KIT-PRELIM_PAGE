@@ -796,18 +796,18 @@
 }
 
 /* Keep the first section below the fixed header. */
-.fk-dash-sticky-top + .fk-dash-section {
+.fk-dash-sticky-top + :is(.fk-dash-section, .fk-dash-first-document) {
   margin-top: 148px;
 }
 
 @media (max-width: 390px) {
   .fk-dash-sticky-top { padding: 25px 14px 0; }
-  .fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
+  .fk-dash-sticky-top + :is(.fk-dash-section, .fk-dash-first-document) { margin-top: 148px; }
 }
 
 @media (min-width: 768px) {
   .fk-dash-sticky-top { padding-top: 35px; }
-  .fk-dash-sticky-top + .fk-dash-section { margin-top: 148px; }
+  .fk-dash-sticky-top + :is(.fk-dash-section, .fk-dash-first-document) { margin-top: 148px; }
 }
 
 /* =========================================
@@ -855,4 +855,48 @@
   .fk-dash-action,
   .fk-dash-center-add,
   .fk-dash-round-button { transition: none; }
+}
+
+.fk-dash-first-document {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(70px, 23vw, 150px);
+  align-items: center;
+  gap: 12px;
+  padding: clamp(12px, 3vw, 24px);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 13px rgba(65, 34, 120, 0.07);
+}
+.fk-dash-first-document h2 { margin: 0; font: 600 clamp(16px, 3vw, 24px)/1.25 Poppins, sans-serif; color: #2d0b84; }
+.fk-dash-first-document p { margin: 8px 0 12px; font-size: 13px; }
+.fk-dash-first-document .fk-dash-event-button { white-space: normal; }
+.fk-dash-first-document-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.fk-dash-suggestion-card:has(.fk-dash-suggestion-target) { position: relative; }
+.fk-dash-suggestion-target {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+@media (min-width: 1200px) {
+  .fk-dash-container:has(> .fk-dash-first-document) {
+    grid-template-areas:
+      "header header"
+      "document document"
+      "attention actions"
+      "events actions"
+      "family suggestions";
+  }
+  .fk-dash-first-document { grid-area: document; }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .fk-dash-first-document { grid-column: 1 / -1; }
 }

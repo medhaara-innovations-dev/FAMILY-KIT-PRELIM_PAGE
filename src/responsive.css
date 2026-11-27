@@ -116,7 +116,7 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
     padding: 0;
   }
 
-  .fk-dash-sticky-top + .fk-dash-section,
+  .fk-dash-sticky-top + :is(.fk-dash-section, .fk-dash-first-document),
   .fk-dash-container > .fk-dash-section {
     margin: 0;
     min-width: 0;
@@ -312,7 +312,7 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
     padding: 0;
   }
 
-  .fk-dash-sticky-top + .fk-dash-section {
+  .fk-dash-sticky-top + :is(.fk-dash-section, .fk-dash-first-document) {
     margin-top: 0;
   }
 }
@@ -331,6 +331,16 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
 .fk-auth-brand--desktop { display: none; }
 .login-link-button[aria-disabled="true"] { cursor: not-allowed; opacity: .6; }
 
+@media (max-width: 768px) {
+  :is(.login-mobile-header, .signup-page--welcome .signup-mobile-topbar) .fk-auth-brand {
+    font: 600 18px/1.2 "Poppins", sans-serif;
+  }
+  :is(.login-mobile-header, .signup-page--welcome .signup-mobile-topbar) .fk-auth-brand img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
 @media (min-width: 1025px) {
   .fk-auth-brand--desktop {
     display: inline-flex;
@@ -348,6 +358,7 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
   h1, h2, h3, h4, h5, h6, [role="heading"], button, [role="button"], summary,
   input[type="button"], input[type="submit"], input[type="reset"],
   .fk-preview-login, .fk-preview-join, .fk-preview-hero-secondary,
+  .fk-auth-brand,
   .fk-dash-action > span:last-child,
   .fk-landing-nav-preview :is(h1, h2, h3, h4, h5, h6) span
 ) {

@@ -86,3 +86,19 @@ Sources: [Diary](../backend/FamilyKit-Diary/lambda_function.py), [Notes](../back
 ## Errors
 
 Handlers commonly return 400 for invalid input, 401 for missing or invalid authorization, 404 for missing resources, and 500 for unexpected failures. Profile Photos can return 403 for a key outside the profile. Contacts can return 409 for conflicting writes or the Emergency limit. Body fields vary by endpoint, commonly `message` or `error`. Match the handler and wrapper instead of assuming a universal envelope. See [troubleshooting](15-TROUBLESHOOTING.md) and [data schema](09-DATABASE-SCHEMA.md).
+
+### Document uploads
+
+The Sydney HTTP API `qdks44cu0f` uses the existing Cognito JWT issuer and app client. `document_uploader` requires an access token and derives record ownership from its subject.
+
+| Route | Purpose |
+|---|---|
+| GET /documents | List the caller's saved document records |
+| POST /documents/upload | Return a 10-minute S3 upload form for a PDF, JPEG, or PNG |
+| POST /documents/{documentId}/complete | Validate the uploaded file and selected `memberId`, then save the document record |
+| GET /documents/{documentId}/download | Return a 60-second signed download URL for the caller's record |
+| DELETE /documents/{documentId} | Delete the caller's file and remove it from the document inventory |
+
+The upload flow accepts files up to 10 MiB. The private `fk-documents-storage` bucket expires staging files under `uploads/` after one day. Saved records use the existing `Fkdocuments` keys `userId` and `documentid`. The API returns the sort key as `documentId`. Profile assignment accepts `PROFILE#SELF` or a member record belonging to the caller. Gemini extraction is pending.
+
+Deletion leaves only the owner and document keys and a deleted flag in DynamoDB to prevent replaying an old upload completion. The uploader role has `s3:DeleteObject` on the existing staging and saved document prefixes and `dynamodb:UpdateItem` on `Fkdocuments`.

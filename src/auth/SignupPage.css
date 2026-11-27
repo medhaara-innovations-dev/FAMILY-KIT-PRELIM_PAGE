@@ -1827,7 +1827,6 @@
   .signup-page--welcome .signup-brand-mark { display: none; }
   .signup-page--welcome .signup-welcome-card h1 {
     margin: 0;
-    max-width: 235px;
     color: #19181A;
     text-align: left;
     font: 600 28px/1.2 Poppins, sans-serif;
@@ -2617,4 +2616,13 @@
   color: #2d0b84;
   font-weight: 600;
   text-decoration: underline;
+}
+
+/* Fit the welcome title to the signup card at each existing layout width. */
+.signup-page--welcome .signup-welcome-card {
+  container-type: inline-size;
+}
+.signup-page--welcome .signup-welcome-card h1 {
+  font-size: min(32px, 6cqi);
+  white-space: nowrap;
 }

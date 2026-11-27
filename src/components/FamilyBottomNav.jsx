@@ -1,17 +1,26 @@
+import { useEffect, useState } from "react";
+import DocumentUploadDialog from "./DocumentUploadDialog.jsx";
+import { OPEN_DOCUMENT_UPLOAD } from "../api/documentsApi.js";
 import { CreditCard, Plus, UsersRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CategoriesIcon, HomeIcon } from "./ReferenceIcons.jsx";
 import "../FamilyMembersPage.css";
 
-export default function FamilyBottomNav({ active = "family", onAdd }) {
+export default function FamilyBottomNav({ active = "family" }) {
   const navigate = useNavigate();
-  const addMember = onAdd || (() => navigate("/family/add", { state: { returnToLauncher: true } }));
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const openUpload = () => setUploadOpen(true);
+  useEffect(() => {
+    window.addEventListener(OPEN_DOCUMENT_UPLOAD, openUpload);
+    return () => window.removeEventListener(OPEN_DOCUMENT_UPLOAD, openUpload);
+  }, []);
 
   return (
+    <>
     <nav className="fk-family-bottom-nav" aria-label="Main navigation">
       <div className="fk-desktop-nav-header">
         <strong>FamilyKit</strong>
-        <button type="button" onClick={addMember} aria-label="Add family member">
+        <button type="button" onClick={openUpload} aria-label="Add document">
           <Plus size={20} aria-hidden="true" /> Add
         </button>
       </div>
@@ -24,7 +33,7 @@ export default function FamilyBottomNav({ active = "family", onAdd }) {
         <span className="fk-family-nav-icon"><UsersRound size={20} strokeWidth={1.8} /></span><span>My Family</span>
       </button>
       <button type="button" className="fk-family-bottom-add"
-        onClick={addMember} aria-label="Add family member">
+        onClick={openUpload} aria-label="Add document">
         <Plus size={30} />
       </button>
       <button type="button" className={`fk-family-nav-item${active === "category" ? " active" : ""}`}
@@ -35,5 +44,7 @@ export default function FamilyBottomNav({ active = "family", onAdd }) {
         <span className="fk-family-nav-icon"><CreditCard size={20} strokeWidth={1.8} /></span><span>Pay & Renew</span>
       </button>
     </nav>
+    {uploadOpen && <DocumentUploadDialog onClose={() => setUploadOpen(false)} />}
+    </>
   );
 }

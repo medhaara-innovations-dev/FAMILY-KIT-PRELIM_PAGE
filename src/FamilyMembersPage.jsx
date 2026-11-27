@@ -397,7 +397,7 @@ export default function FamilyMembersPage() {
         )}
       </main>
 
-      <FamilyBottomNav onAdd={openAddMember} />
+      <FamilyBottomNav />
     </div>
   );
 }

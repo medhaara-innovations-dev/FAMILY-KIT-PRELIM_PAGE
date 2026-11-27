@@ -724,7 +724,7 @@ export default function FamilyMemberProfile() {
             </form>
 
           ) : (
-            <MobileConnectedDocuments key={memberId} />
+            <MobileConnectedDocuments key={memberId} memberId={memberId} />
           )}
 
         </main>

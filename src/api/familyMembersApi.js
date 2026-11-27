@@ -62,9 +62,10 @@ async function saveWithDuplicateConfirmation(save, details) {
 // GET: Retrieve all family members
 // ======================================================
 
-export async function getFamilyMembers() {
+export async function getFamilyMembers(signal) {
   const data = await apiRequest("/family/members", {
     method: "GET",
+    signal,
   });
 
   return data.members || [];

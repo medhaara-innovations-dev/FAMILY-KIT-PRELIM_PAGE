@@ -10887,53 +10887,21 @@ html[data-motion] .fk-preview-faq-list details[open] > p {
 
 .fk-preview-early h2 span { display: block; }
 
+.fk-preview-early h2 span::after {
+  content: "";
+  display: block;
+  width: min(100%, 10em);
+  height: 4px;
+  margin-top: .15em;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b294ff, #edff91);
+}
+
 .fk-preview-early-intro > p:not(.fk-preview-early-label) {
   color: #ebe6f7;
   font: 500 clamp(.875rem, 1.2vw, 1rem)/1.5 Mulish, sans-serif;
 }
 
-.fk-preview-early-fields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.fk-preview-early-fields label {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  align-items: baseline;
-  gap: 4px 6px;
-  color: #ebe6f7;
-  font-size: .75rem;
-  font-weight: 600;
-}
-
-.fk-preview-early-fields label > :last-child { grid-column: 1 / -1; }
-.fk-preview-early-fields small { font-weight: 400; }
-.fk-preview-early-fields input {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 0;
-  border-radius: 999px;
-  background: #fff;
-  color: #19181a;
-  font: 500 .875rem Mulish, sans-serif;
-}
-
-.fk-preview-early-phone {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-inline-start: 12px;
-  border-radius: 999px;
-  background: #fff;
-  color: #4d485a;
-}
-
-.fk-preview-early-phone input { padding-inline-start: 4px; }
 .fk-preview-early :is(input, button, a):focus-visible { outline: 2px solid #edff91; outline-offset: 3px; }
 .fk-preview-early-form > button {
   display: flex;
@@ -10998,7 +10966,6 @@ html[data-motion] .fk-preview-faq-list details[open] > p {
 }
 
 @media (width <= 520px) {
-  .fk-preview-early-fields { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (width <= 700px) {

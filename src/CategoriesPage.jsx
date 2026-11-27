@@ -1,10 +1,14 @@
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   ChevronLeft,
+  ChevronRight,
+  Download,
+  ScanLine,
+  IdCard,
   Search,
   Plus,
   CalendarDays,
@@ -12,6 +16,7 @@ import {
   ReceiptText,
   BookMarked,
   FileText,
+  Trash2,
   GraduationCap,
   HeartPulse,
   HandHeart,
@@ -22,6 +27,8 @@ import {
   } from "lucide-react";
 
 import { ImportantContactsIcon, NotesIcon } from "./components/ReferenceIcons.jsx";
+import useDocuments from "./components/useDocuments.js";
+import { deleteDocument, downloadDocument, OPEN_DOCUMENT_UPLOAD } from "./api/documentsApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
@@ -32,6 +39,7 @@ import { getImportantContacts } from "./api/importantContactsApi.js";
 import { getNotes } from "./api/notesApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import "./CategoriesPage.css";
+import emptyDocumentsArt from "./assets/images/first-document-folder.svg";
 
 // ==========================================
 // CATEGORY DATA
@@ -57,6 +65,7 @@ const categories = [
     Icon: FileText,
     background: "#F0F6FB",
     color: "#2882C6",
+    route: "/documents",
   },
   {
     name: "Education",
@@ -134,8 +143,24 @@ const categories = [
   },
 ];
 
+const documentSections = [
+  ["Identity & Personal", IdCard, "Documents"],
+  ["Education & Career", GraduationCap, "Education"],
+  ["Finance & Tax", Landmark, "Finance"],
+  ["Insurance", HandHeart, "Insurance"],
+  ["Property & Home", Houses, "Property"],
+  ["Health & Records", HeartPulse, "Health & Reports"],
+  ["Legal & Family", Scale, "Legal"],
+  ["Bills & Warranties", ReceiptText, "Bills & Renewals"],
+  ["Other Documents", FileText, "Documents"],
+];
+
+function documentSection(document) {
+  return documentSections.find(([name]) => name === document.category)?.[0] || "Other Documents";
+}
+
 function categoryCountLabel(category, count) {
-  if (!category.loadRecords || count === 0) return "None";
+  if ((!category.loadRecords && category.route !== "/documents") || count === 0) return "None";
   if (count === null) return "Unavailable";
   return count ?? "Loading…";
 }
@@ -164,6 +189,7 @@ function buildFamilyFilters(members) {
     const relationship = relationshipOf(member);
     return {
       id: member.memberId,
+      name: member.name,
       label: counts.get(relationship.toLowerCase()) > 1 && member.name
         ? `${relationship} (${member.name})`
         : relationship,
@@ -177,15 +203,24 @@ function buildFamilyFilters(members) {
 
 export default function CategoriesPage() {
   const navigate = useNavigate();
+  const { pathname, state } = useLocation();
+  const documentsOpen = pathname === "/documents";
+  const [params, setParams] = useSearchParams();
+  const section = documentSections.find(([name]) => name === params.get("section"));
+  const recordId = documentsOpen ? params.get("record") : null;
+  const { documents, error: documentsError } = useDocuments();
+  const [downloadError, setDownloadError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
   const [selectedFamily, setSelectedFamily] =
-    useState("all-family");
+    useState(state?.selectedFamily || "all-family");
   const [familyFilters, setFamilyFilters] = useState(DEFAULT_FAMILY_FILTERS);
   const [familyError, setFamilyError] = useState("");
   const [familyRetry, setFamilyRetry] = useState(0);
   const [recordCounts, setRecordCounts] = useState({});
 
   useEffect(() => {
+    if (documentsOpen) return;
     const controller = new AbortController();
 
     categories.forEach(({ route, loadRecords, countRecords }) => {
@@ -203,7 +238,7 @@ export default function CategoriesPage() {
     });
 
     return () => controller.abort();
-  }, []);
+  }, [documentsOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -245,7 +280,68 @@ export default function CategoriesPage() {
   // CATEGORY NAVIGATION
   // ==========================================
 
+  const selectedDocuments = documents?.filter(
+    ({ memberId }) => selectedFamily === "all-family" || memberId === selectedFamily
+  );
+  const documentCount = documentsError ? null : selectedDocuments?.length;
+  const query = searchText.trim().toLowerCase();
+  const matches = selectedDocuments?.filter(({ fileName }) => fileName.toLowerCase().includes(query));
+  const sectionDocuments = matches?.filter((document) => documentSection(document) === section?.[0]);
+  const record = selectedDocuments?.find(({ documentId }) => documentId === recordId);
+  const selectedLabel = familyFilters.find(({ id }) => id === selectedFamily)?.label || "All Family";
+  const openUpload = () => window.dispatchEvent(new Event(OPEN_DOCUMENT_UPLOAD));
+
+  function openSection(name, id) {
+    const next = {};
+    if (name) next.section = name;
+    if (id) next.record = id;
+    setDownloadError("");
+    setParams(next);
+  }
+
+  function goBack() {
+    setDownloadError("");
+    if (!documentsOpen) navigate("/my-family");
+    else if (recordId) openSection(section?.[0]);
+    else if (section) openSection();
+    else navigate("/categories", { state: { selectedFamily } });
+  }
+
+  function profileLabel(memberId) {
+    const profile = familyFilters.find(({ id }) => id === memberId);
+    return profile?.name ? `${profile.name} ? ${profile.label}` : profile?.label || "Profile unavailable";
+  }
+
+  async function openDocument(documentId) {
+    setDownloadError("");
+    try {
+      window.location.assign(await downloadDocument(documentId));
+    } catch (error) {
+      setDownloadError(error.message);
+    }
+  }
+
+  async function removeDocument({ documentId, fileName }) {
+    if (deletingId || !window.confirm(`Permanently delete "${fileName}" from FamilyKit?`)) return;
+    setDeletingId(documentId);
+    setDownloadError("");
+    try {
+      await deleteDocument(documentId);
+      openSection(section?.[0]);
+    } catch (error) {
+      setDownloadError(error.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const handleCategoryClick = (category) => {
+    if (category.route === "/documents") {
+      setSearchOpen(false);
+      setSearchText("");
+      navigate("/documents", { state: { selectedFamily } });
+      return;
+    }
     if (category.route) {
       const state = ["/important-contacts", "/diary", "/notes", "/events"].includes(category.route)
         ? { fromCategories: true } : undefined;
@@ -257,7 +353,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <main className="fk-cat-page">
+    <main className={documentsOpen ? "fk-cat-page fk-cat-page--documents" : "fk-cat-page"}>
       <div className="fk-cat-container">
         <div className="fk-cat-top fk-glass-header">
 
@@ -269,32 +365,33 @@ export default function CategoriesPage() {
             <button
               type="button"
               className="fk-cat-back"
-              onClick={() => navigate("/my-family")}
-              aria-label="Back to dashboard"
+              onClick={goBack}
+              aria-label={documentsOpen ? "Back" : "Back to dashboard"}
             >
               <ChevronLeft size={19} />
             </button>
 
-            <h1>Categories</h1>
+            <h1>{documentsOpen ? record?.fileName || section?.[0] || "Documents" : "Categories"}</h1>
 
             <div className="fk-cat-header-actions">
-              <button
+              {!recordId && <button
                 type="button"
                 className="fk-cat-search-btn"
                 onClick={() => {
                   setSearchOpen((previous) => !previous);
                   setSearchText("");
                 }}
-                aria-label="Search categories"
+                aria-label={documentsOpen ? "Search documents" : "Search categories"}
               >
                 <Search size={17} />
-              </button>
+              </button>}
 
               <button
                 type="button"
                 className="fk-cat-add-btn"
-                onClick={() => setShowAddMessage(true)}
-                aria-label="Add category"
+                onClick={() => documentsOpen
+                  ? openUpload() : setShowAddMessage(true)}
+                aria-label={documentsOpen ? "Add document" : "Add category"}
               >
                 <Plus size={20} />
               </button>
@@ -305,13 +402,13 @@ export default function CategoriesPage() {
               SEARCH
               ========================================== */}
 
-          {searchOpen && (
+          {!recordId && searchOpen && (
             <div className="fk-cat-search-panel">
               <Search size={17} />
 
               <input
                 type="search"
-                placeholder="Search categories..."
+                placeholder={documentsOpen ? "Search documents..." : "Search categories..."}
                 value={searchText}
                 onChange={(event) =>
                   setSearchText(event.target.value)
@@ -376,7 +473,9 @@ export default function CategoriesPage() {
           </section>
 
           <h2 id="all-categories-heading" className="fk-cat-grid-heading">
-            All Categories
+            {documentsOpen ? (!recordId && <>Results for {selectedLabel}
+              <small className="fk-cat-doc-total">{(section ? sectionDocuments : matches)?.length ?? ""}{matches && " documents"}</small>
+            </>) : "All Categories"}
           </h2>
         </div>
 
@@ -384,7 +483,57 @@ export default function CategoriesPage() {
             CATEGORY GRID
             ========================================== */}
 
-        <section className="fk-cat-content" aria-labelledby="all-categories-heading">
+        <section className="fk-cat-content" tabIndex={documentsOpen ? 0 : undefined}
+          aria-labelledby={recordId ? undefined : "all-categories-heading"} aria-label={recordId ? "Document details" : undefined}>
+          {documentsOpen ? (
+            <div className="fk-cat-document-groups">
+              {documentsError ? <p role="alert">{documentsError}</p>
+                : !matches ? <p role="status">Loading documents...</p>
+                : recordId ? (record ? (
+                  <section className="fk-cat-document-group fk-cat-document-detail">
+                    <FileText size={32} aria-hidden="true" />
+                    <h3>{record.fileName}</h3>
+                    <p>{profileLabel(record.memberId)}</p>
+                    <div className="fk-cat-document-actions">
+                      <button type="button" onClick={() => openDocument(record.documentId)}>
+                        <Download size={18} aria-hidden="true" /> Download
+                      </button>
+                      <button type="button" disabled={Boolean(deletingId)} onClick={() => removeDocument(record)}>
+                        <Trash2 size={18} aria-hidden="true" /> Delete
+                      </button>
+                    </div>
+                  </section>
+                ) : <p role="status">This document is unavailable for the selected profile.</p>)
+                : !(section ? sectionDocuments : matches).length ? (
+                  <div className="fk-cat-doc-empty">
+                    <img src={emptyDocumentsArt} alt="" />
+                    <p role="status">No Results</p>
+                    <button type="button" className="fk-cat-doc-scan" onClick={openUpload}>
+                      <ScanLine size={16} aria-hidden="true" /> Scan Documents
+                    </button>
+                  </div>
+                ) : section ? sectionDocuments.map((document) => {
+                  const Icon = section[1];
+                  return <button className="fk-cat-document-tile" type="button" key={document.documentId}
+                    onClick={() => openSection(section[0], document.documentId)}>
+                    <span className="fk-cat-document-tile-icon"><Icon size={20} aria-hidden="true" /></span>
+                    <span><strong>{document.fileName}</strong><small>{profileLabel(document.memberId)}</small></span>
+                    <ChevronRight size={17} aria-hidden="true" />
+                  </button>;
+                }) : documentSections.map(([name, Icon, theme]) => {
+                  const count = matches.filter((document) => documentSection(document) === name).length;
+                  const colors = categories.find((category) => category.name === theme);
+                  return <button className="fk-cat-document-tile" type="button" key={name} onClick={() => openSection(name)}>
+                    <span className="fk-cat-document-tile-icon" style={{ background: colors.background, color: colors.color }}>
+                      <Icon size={20} aria-hidden="true" />
+                    </span>
+                    <span><strong>{name}</strong><small>{count} {count === 1 ? "document" : "documents"}</small></span>
+                    <ChevronRight size={17} aria-hidden="true" />
+                  </button>;
+                })}
+              {downloadError && <p role="alert">{downloadError}</p>}
+            </div>
+          ) : <>
           <div className="fk-cat-grid">
             {filteredCategories.map((category) => {
               const Icon = category.Icon;
@@ -413,7 +562,7 @@ export default function CategoriesPage() {
                   </span>
 
                   <span className="fk-cat-card-count">
-                    {categoryCountLabel(category, recordCounts[category.route])}
+                    {categoryCountLabel(category, category.route === "/documents" ? documentCount : recordCounts[category.route])}
                   </span>
                 </button>
               );
@@ -425,6 +574,7 @@ export default function CategoriesPage() {
               No matching categories found.
             </p>
           )}
+          </>}
         </section>
       </div>
 

@@ -66,6 +66,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/family/:memberId" element={<FamilyMemberProfile />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/documents" element={<CategoriesPage />} />
         <Route path="/events" element={<EventsCalendarPage />} />
         <Route path="/diary" element={<DiaryPage />} />
         <Route path="/diary/new" element={<DiaryEditorPage />} />
