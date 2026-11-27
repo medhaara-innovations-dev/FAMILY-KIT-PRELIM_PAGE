@@ -119,4 +119,4 @@ The live PIN registration guard is enabled against `FamilyKit-Connections`. The 
 
 New invitations use a manually shared link. Previously emailed invitations retain their verified-recipient checks.
 
-During founding mode, the public status endpoint exposes displayRemainingFamilies (100 minus enabled Cognito accounts with verified email) and remainingMemberSpots (two per remaining display family). Verified Google accounts are included. The Lambda caches the aggregate for up to 60 seconds per execution environment and omits the landing count when unavailable. The DynamoDB family count remains the source of truth for registration availability.
+During founding mode, the public status endpoint exposes displayRemainingFamilies (100 minus enabled Cognito accounts with verified email) and remainingMemberSpots (200 minus the same eligible account count). Verified Google accounts are included. The Lambda caches the aggregate for up to 60 seconds per execution environment and omits the landing count when unavailable. The DynamoDB family count remains the source of truth for registration availability.

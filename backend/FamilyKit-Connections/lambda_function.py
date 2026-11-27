@@ -16,7 +16,7 @@ table = db.Table(os.environ["TABLE_NAME"])
 profiles = db.Table(os.environ["ACTIVATION_TABLE"])
 CAP = 100
 MEMBERS_PER_FAMILY = 2
-family_count_cache = (0, None)
+eligible_count_cache = (0, None)
 CONTROL = "CONTROL"
 RELATIONS = {"Father", "Mother", "Parent", "Spouse", "Son", "Daughter", "Child",
              "Brother", "Sister", "Sibling", "Grandfather", "Grandmother", "Grandchild", "Other"}
@@ -84,14 +84,14 @@ def email_digest(address):
     return hashlib.sha256(address.encode()).hexdigest()
 
 
-def remaining_families_from_cognito():
-    global family_count_cache
+def eligible_cognito_account_count():
+    global eligible_count_cache
     pool = os.environ.get("USER_POOL_ID")
     if not pool:
         return None
     now = time.monotonic()
-    if now < family_count_cache[0]:
-        return family_count_cache[1]
+    if now < eligible_count_cache[0]:
+        return eligible_count_cache[1]
     count = 0
     for page in cognito.get_paginator("list_users").paginate(UserPoolId=pool):
         count += sum(
@@ -100,11 +100,10 @@ def remaining_families_from_cognito():
             and any(attr["Name"] == "email_verified" and attr["Value"] == "true"
                     for attr in user.get("Attributes", []))
         )
-        if count >= CAP:
+        if count >= CAP * MEMBERS_PER_FAMILY:
             break
-    remaining = max(0, CAP - count)
-    family_count_cache = (now + 60, remaining)
-    return remaining
+    eligible_count_cache = (now + 60, count)
+    return count
 
 
 def lambda_handler(event, _context):
@@ -113,14 +112,14 @@ def lambda_handler(event, _context):
         control = get(CONTROL) or {}
         mode = control.get("mode", "closed")
         remaining = max(0, CAP - int(control.get("families", 0)))
-        display_families = None
+        eligible_accounts = None
         if mode == "founding":
             try:
-                display_families = remaining_families_from_cognito()
+                eligible_accounts = eligible_cognito_account_count()
             except ClientError as error:
                 print("Founding Cognito count unavailable:", error.response["Error"]["Code"])
-        return reply(200, {"mode": mode, "remainingFamilies": remaining, "displayRemainingFamilies": display_families,
-                           "remainingMemberSpots": display_families * MEMBERS_PER_FAMILY if display_families is not None else None,
+        return reply(200, {"mode": mode, "remainingFamilies": remaining, "displayRemainingFamilies": max(0, CAP - eligible_accounts) if eligible_accounts is not None else None,
+                           "remainingMemberSpots": max(0, CAP * MEMBERS_PER_FAMILY - eligible_accounts) if eligible_accounts is not None else None,
                            "newFamiliesOpen": mode == "public" or (mode == "founding" and remaining > 0)})
     try:
         body = json.loads(event.get("body") or "{}")
