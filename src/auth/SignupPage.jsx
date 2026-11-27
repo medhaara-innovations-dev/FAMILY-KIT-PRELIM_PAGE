@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
+import AuthBrandLink from "./AuthBrandLink.jsx";
 
 import {
   signUpWithEmail,
@@ -739,6 +740,7 @@ export default function SignupPage() {
       <div className="signup-page signup-page--welcome">
         <div className="signup-welcome-layout">
           <section className="signup-illustration-panel" aria-label="FamilyKit family illustration">
+            <AuthBrandLink className="fk-auth-brand--desktop" />
             <div className="signup-illustration-curve" />
             <div className="signup-illustration-content">
               <div className="signup-family-art">
@@ -765,18 +767,18 @@ export default function SignupPage() {
               <button type="button" className="signup-mobile-back" aria-label="Go back" onClick={() => { window.location.assign("/"); }}>
                 <ChevronLeft size={15} strokeWidth={1.8} aria-hidden="true" />
               </button>
-              <span className="signup-mobile-brand">FamilyKit</span>
+              <AuthBrandLink className="signup-mobile-brand" />
             </div>
             <div className="signup-card signup-welcome-card">
-              <div className="signup-brand-mark" aria-hidden="true">
+              <Link to="/" className="signup-brand-mark" aria-label="FamilyKit home">
                 <img
                   className="signup-brand-image"
                   src={new URL("../assets/images/WhatsApp Image 2026-10-19 at 21.39.33 1.png", import.meta.url).href}
                   alt=""
                 />
-              </div>
-              <h1>Welcome to FamilyKit</h1>
-              <p className="signup-welcome-subtitle">Log in or sign up with your email address.</p>
+              </Link>
+              <h1>Create your FamilyKit account</h1>
+              <p className="signup-welcome-subtitle">Start organizing what matters to your family.</p>
 
               <label className="signup-welcome-label" htmlFor="signup-email">Email address</label>
               <input
@@ -804,7 +806,7 @@ export default function SignupPage() {
                 <span>Continue with Google</span>
               </button>
               <p className="signup-login-text">
-                Already have an account? <Link to="/login">Login</Link>
+                Already have an account? <Link to="/login">Log in</Link>
               </p>
             </div>
           </section>

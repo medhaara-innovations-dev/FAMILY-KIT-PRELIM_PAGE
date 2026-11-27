@@ -1,7 +1,8 @@
 import { ChevronLeft } from "lucide-react";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import AuthBrandLink from "./AuthBrandLink.jsx";
 
 import {
   loginWithFamilyKitPin,
@@ -464,6 +465,7 @@ export default function LoginPage() {
         className="login-desktop-illustration"
         aria-label="FamilyKit family illustration"
       >
+        <AuthBrandLink className="fk-auth-brand--desktop" />
         <div className="login-desktop-curve" />
 
         <div className="login-desktop-art-content">
@@ -577,9 +579,10 @@ export default function LoginPage() {
         <div className="login-card">
           {/* Desktop FamilyKit logo */}
 
-          <div
+          <Link
+            to="/"
             className="login-desktop-brand"
-            aria-hidden="true"
+            aria-label="FamilyKit home"
           >
             <img
               src={
@@ -590,7 +593,7 @@ export default function LoginPage() {
               }
               alt=""
             />
-          </div>
+          </Link>
 
           {/* Mobile header */}
 
@@ -604,15 +607,15 @@ export default function LoginPage() {
               <ChevronLeft size={20} aria-hidden="true" />
             </button>
 
-            <span>FamilyKit</span>
+            <AuthBrandLink />
           </header>
 
           {/* Welcome heading */}
 
-          <h1>Welcome back</h1>
+          <h1>Welcome back to FamilyKit</h1>
 
           <p className="login-subtitle">
-            Log in to your FamilyKit.
+            Log in to access your family's important information.
           </p>
 
           {/* Email address */}
@@ -781,16 +784,16 @@ export default function LoginPage() {
           {/* Signup navigation */}
 
           <p className="login-signup-text">
-            Don't have an account?{" "}
+            New to FamilyKit?{" "}
 
-            <button
-              type="button"
+            <Link
+              to="/signup"
               className="login-link-button inline"
-              disabled={loading}
-              onClick={() => navigate("/signup")}
+              aria-disabled={loading || undefined}
+              onClick={(event) => { if (loading) event.preventDefault(); }}
             >
               Sign up
-            </button>
+            </Link>
           </p>
         </div>
       </section>

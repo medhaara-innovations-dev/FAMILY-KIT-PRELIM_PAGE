@@ -317,6 +317,32 @@ body:has(:is(.fk-dash-page, .fk-family-page, .fk-add-page, .fk-profile-page, .fk
   }
 }
 
+.fk-auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fk-primary);
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fk-auth-brand img { width: 20px; height: 20px; object-fit: contain; }
+.fk-auth-brand--desktop { display: none; }
+.login-link-button[aria-disabled="true"] { cursor: not-allowed; opacity: .6; }
+
+@media (min-width: 1025px) {
+  .fk-auth-brand--desktop {
+    display: inline-flex;
+    position: absolute;
+    inset-block-start: 24px;
+    inset-inline-start: 24px;
+    z-index: 1;
+    font-size: 24px;
+  }
+  .fk-auth-brand--desktop img { width: 32px; height: 32px; }
+}
+
 /* Keep component font shorthands from overriding the shared heading and action face. */
 #root :is(
   h1, h2, h3, h4, h5, h6, [role="heading"], button, [role="button"], summary,
