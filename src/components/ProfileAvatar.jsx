@@ -4,6 +4,7 @@ import { getProfilePicture } from "../api/profilePicturesApi.js";
 
 export default function ProfileAvatar({
   memberId,
+  connectedPhotoUrl,
   name = "",
   className = "",
   children,
@@ -19,9 +20,9 @@ export default function ProfileAvatar({
   useEffect(() => {
     let active = true;
 
-    setPhotoUrl(null);
+    setPhotoUrl(connectedPhotoUrl || null);
 
-    if (!memberId) {
+    if (connectedPhotoUrl !== undefined || !memberId) {
       return () => {
         active = false;
       };
@@ -55,7 +56,7 @@ export default function ProfileAvatar({
     return () => {
       active = false;
     };
-  }, [memberId, refreshKey]);
+  }, [memberId, refreshKey, connectedPhotoUrl]);
 
   return (
     <span

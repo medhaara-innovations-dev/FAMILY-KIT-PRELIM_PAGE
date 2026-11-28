@@ -201,6 +201,8 @@ function buildFamilyFilters(members) {
     return {
       id: member.memberId,
       name: member.name,
+      relationship,
+      connectedPhotoUrl: member.isConnected ? member.photoUrl || null : undefined,
       label: (member.linkedMemberId || member.memberId === CONNECTED_PROFILE_ID || counts.get(relationship.toLowerCase()) > 1) && member.name
         ? `${relationship} (${member.name})`
         : relationship,
@@ -477,15 +479,14 @@ export default function CategoriesPage() {
 
                   {filter.id !== "all-family" && (
                     <span className="fk-cat-radio" aria-hidden="true">
-                      {filter.id === CONNECTED_PROFILE_ID
-                        ? <span className="fk-cat-filter-avatar">{filter.name?.charAt(0).toUpperCase()}</span>
-                        : <ProfileAvatar memberId={filter.id} className="fk-cat-filter-avatar">
-                          <span />
-                        </ProfileAvatar>}
+                      <ProfileAvatar memberId={filter.id} connectedPhotoUrl={filter.connectedPhotoUrl}
+                        name={filter.connectedPhotoUrl !== undefined ? filter.name : undefined} className="fk-cat-filter-avatar">
+                        {filter.connectedPhotoUrl === undefined ? <span /> : null}
+                      </ProfileAvatar>
                     </span>
                   )}
 
-                  <span>{filter.label}</span>
+                  <span>{documentsOpen ? filter.label : filter.relationship || filter.label}</span>
                 </button>
               ))}
             </div>

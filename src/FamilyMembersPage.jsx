@@ -357,9 +357,8 @@ export default function FamilyMembersPage() {
                   <article className="fk-family-member-card">
                     <button type="button" className="fk-family-member-details"
                       onClick={() => openMember(connectionState.connection.linkedMemberId || CONNECTED_PROFILE_ID)} aria-label={`Open ${connectionState.connection.name} profile`}>
-                      {connectionState.connection.linkedMemberId
-                        ? <ProfileAvatar memberId={connectionState.connection.linkedMemberId} name={connectionState.connection.name} className="fk-family-avatar" />
-                        : <span className="fk-family-avatar">{connectionState.connection.name.charAt(0).toUpperCase()}</span>}
+                      <ProfileAvatar connectedPhotoUrl={connectionState.connection.photoUrl || null}
+                        name={connectionState.connection.name} className="fk-family-avatar" />
                       <span className="fk-family-member-info">
                         <strong>{connectionState.connection.name}</strong>
                         <small>{connectionState.connection.relationship}</small>

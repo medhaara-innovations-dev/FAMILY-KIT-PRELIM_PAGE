@@ -15,11 +15,13 @@ from urllib.request import Request, urlopen
 from uuid import UUID, uuid4
 
 import boto3
-from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.conditions import Attr, Key
 from botocore.exceptions import ClientError
 
 db = boto3.resource("dynamodb")
 cognito = boto3.client("cognito-idp")
+s3 = boto3.client("s3")
+photo_bucket = os.environ.get("PROFILE_PICTURES_BUCKET", "family-kit-profile-pictures")
 table = db.Table(os.environ["TABLE_NAME"])
 profiles = db.Table(os.environ["ACTIVATION_TABLE"])
 members = db.Table(os.environ.get("MEMBERS_TABLE", "FamilyKitFamilyMembers"))
@@ -103,6 +105,62 @@ def profile_update(user, values):
                        "UpdateExpression": "SET " + ", ".join(f"#field{i} = :value{i}" for i in range(len(values))),
                        "ConditionExpression": "attribute_exists(userId)",
                        "ExpressionAttributeNames": names, "ExpressionAttributeValues": params}}
+
+
+def connected_photo(user):
+    member_id = "PROFILE#SELF"
+    item = members.get_item(Key={"userId": user, "memberId": member_id},
+                            ProjectionExpression="profilePictureKey", ConsistentRead=True).get("Item") or {}
+    key = item.get("profilePictureKey")
+    prefix = f"profile-pictures/{user}/{member_id}/"
+    if not isinstance(key, str) or not key.startswith(prefix):
+        return None
+    return s3.generate_presigned_url("get_object", Params={"Bucket": photo_bucket, "Key": key}, ExpiresIn=300)
+
+
+def auto_link_profile(user, other, family, relationship, is_inviter):
+    field = "linkedMemberId" if is_inviter else "secondLinkedMemberId"
+    if family.get(field):
+        return family[field]
+    pool = os.environ.get("USER_POOL_ID")
+    if not pool:
+        return None
+    subject = str(UUID(other))
+    accounts = cognito.list_users(UserPoolId=pool, Filter=f'sub = "{subject}"').get("Users", [])
+    if len(accounts) != 1 or not accounts[0].get("Enabled"):
+        return None
+    attributes = {item["Name"]: item["Value"] for item in accounts[0].get("Attributes", [])}
+    email = attributes.get("email", "").strip().casefold()
+    if not email or attributes.get("email_verified") != "true":
+        return None
+    request = {
+        "KeyConditionExpression": Key("userId").eq(user),
+        "ProjectionExpression": "memberId, email, relationship",
+        "ConsistentRead": True,
+    }
+    matches = []
+    while True:
+        page = members.query(**request)
+        matches.extend(item["memberId"] for item in page["Items"]
+                       if item["memberId"] != "PROFILE#SELF"
+                       and str(item.get("email", "")).strip().casefold() == email
+                       and item.get("relationship") == relationship)
+        if len(matches) > 1:
+            return None
+        if "LastEvaluatedKey" not in page:
+            break
+        request["ExclusiveStartKey"] = page["LastEvaluatedKey"]
+    if len(matches) != 1:
+        return None
+    try:
+        transact(update(family["pk"], f"SET {field} = :member",
+                        f"attribute_not_exists({field}) AND firstUser = :first AND secondUser = :second AND attribute_not_exists(supersededBy)",
+                        {":member": matches[0], ":first": family["firstUser"], ":second": family["secondUser"]}))
+    except ClientError as error:
+        if error.response["Error"]["Code"] != "TransactionCanceledException":
+            raise
+        return (get(family["pk"]) or {}).get(field)
+    return matches[0]
 
 
 def shared_details(user, fields):
@@ -282,14 +340,25 @@ def lambda_handler(event, _context):
                 connection = {"name": other_profile.get("yourName") or "Family member",
                               "relationship": family["relationship"] if is_inviter else family["reverseRelationship"]}
                 linked = family.get("linkedMemberId" if is_inviter else "secondLinkedMemberId")
+                if not linked:
+                    try:
+                        linked = auto_link_profile(user, other, family, connection["relationship"], is_inviter)
+                    except (ClientError, ValueError):
+                        print("Automatic profile link unavailable")
                 if linked:
                     connection["linkedMemberId"] = linked
                 sharing_field = "sharedProfileFields" if is_inviter else "firstSharedProfileFields"
-                connection.update(shared_details(other, family.get(sharing_field, [])))
+                fields = family.get(sharing_field, []) if not is_inviter or family.get("recipientSharingCustomized") else SHARE_FIELDS
+                connection.update(shared_details(other, fields))
+                try:
+                    connection["photoUrl"] = connected_photo(other)
+                except ClientError as error:
+                    print("Connected profile photo unavailable:", error.response["Error"]["Code"])
             return reply(200, {
                 "connection": connection,
                 "mySharedProfileFields": family.get(
-                    "firstSharedProfileFields" if user == family["firstUser"] else "sharedProfileFields", []),
+                    "firstSharedProfileFields" if user == family["firstUser"] else "sharedProfileFields", [])
+                    if user == family["firstUser"] or family.get("recipientSharingCustomized") else sorted(SHARE_FIELDS),
                 "invitation": {"relationship": invitation["relationship"],
                                "shared": bool(invitation.get("sharedAt"))}
                 if active_invite(invitation, now) and user == family["firstUser"] else None,
@@ -317,9 +386,14 @@ def lambda_handler(event, _context):
                 raise ValueError("Select valid profile fields.")
             unique_fields = sorted(set(fields))
             field = "firstSharedProfileFields" if user == family["firstUser"] else "sharedProfileFields"
-            transact(update(family["pk"], f"SET {field} = :fields",
+            expression = f"SET {field} = :fields"
+            values = {":fields": unique_fields, ":first": family["firstUser"], ":second": family["secondUser"]}
+            if user == family["secondUser"]:
+                expression += ", recipientSharingCustomized = :customized"
+                values[":customized"] = True
+            transact(update(family["pk"], expression,
                             "firstUser = :first AND secondUser = :second AND attribute_not_exists(supersededBy)",
-                            {":fields": unique_fields, ":first": family["firstUser"], ":second": family["secondUser"]}))
+                            values))
             return reply(200, {"mySharedProfileFields": unique_fields})
         if route == "POST /family-connection/link-profile":
             family = family_record(user)

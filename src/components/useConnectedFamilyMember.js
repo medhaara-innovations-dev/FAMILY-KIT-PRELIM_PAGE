@@ -8,7 +8,7 @@ export default function useConnectedFamilyMember(enabled = true, retry = 0) {
     const controller = new AbortController();
     familyConnection(controller.signal).then(({ connection }) => {
       if (!controller.signal.aborted) {
-        setMember(connection ? { ...connection, memberId: connection.linkedMemberId || CONNECTED_PROFILE_ID } : null);
+        setMember(connection ? { ...connection, isConnected: true, memberId: connection.linkedMemberId || CONNECTED_PROFILE_ID } : null);
       }
     }).catch(() => {
       if (!controller.signal.aborted) setMember(null);

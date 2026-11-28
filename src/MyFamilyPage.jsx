@@ -27,7 +27,6 @@ import { listEvents } from "./api/eventsApi.js";
 import { getDueEventReminders, getReadReminderIds, useReminderClock } from "./eventReminders.js";
 import { calendarHorizon, occurrenceList, formatEventDate } from "./eventDates.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
-import { CONNECTED_PROFILE_ID } from "./api/familyConnectionsApi.js";
 import useConnectedFamilyMember from "./components/useConnectedFamilyMember.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyCalendar from "./FamilyCalendar.jsx";
@@ -132,15 +131,14 @@ function FamilyMemberItem({ member, onOpen }) {
           overflow: "hidden",
         }}
       >
-        {profileId === CONNECTED_PROFILE_ID
-          ? <span className="fk-dash-family-avatar-content" aria-hidden="true">{member.name.charAt(0).toUpperCase()}</span>
-          : <ProfileAvatar
+        <ProfileAvatar
           memberId={profileId}
+          connectedPhotoUrl={member.isConnected ? member.photoUrl || null : undefined}
           name={member.name}
           className="fk-dash-family-avatar-content"
         >
           {member.name?.charAt(0)?.toUpperCase() || "?"}
-        </ProfileAvatar>}
+        </ProfileAvatar>
       </button>
 
       <span

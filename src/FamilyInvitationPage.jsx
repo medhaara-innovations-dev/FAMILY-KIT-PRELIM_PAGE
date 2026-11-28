@@ -71,13 +71,13 @@ export default function FamilyInvitationPage() {
             <>
               <p>{invitation.inviterName} invited you to connect on FamilyKit.</p>
               <p>They will appear in My Family as your <strong>{invitation.relationship}</strong>.</p>
-              <p>Connecting keeps document access separate.</p>
+              <p>Accepting lets the inviter see your current profile details and photo. Documents stay private unless shared separately.</p>
               {signedIn ? (
                 <div className="fk-family-invitation-controls">
                   {reviewError ? <p role="alert">{reviewError}</p> : !review && <p role="status">Checking profile review...</p>}
                   {review?.reviewRequired && <>
                     <h2>Review your profile details</h2>
-                    <p>Choose which details to save to your profile and share with the inviter. You can edit or skip them here. Your verified sign-in details stay the same.</p>
+                    <p>Choose which suggested edits to save to your profile. You can also keep the details already in your account. Your verified sign-in details stay the same.</p>
                     {reviewFields.map(([field, label, type]) => <div key={field}>
                       <label>{label}
                         <input type={type || "text"} value={values[field] || ""}
@@ -86,7 +86,7 @@ export default function FamilyInvitationPage() {
                       <label>
                         <input type="checkbox" checked={Boolean(shared[field])}
                           onChange={(event) => setShared({ ...shared, [field]: event.target.checked })} />
-                        Save and share {label.toLowerCase()}
+                        Save {label.toLowerCase()}
                       </label>
                     </div>)}
                   </>}

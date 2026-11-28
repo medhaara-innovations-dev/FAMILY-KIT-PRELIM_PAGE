@@ -656,10 +656,10 @@ export default function FamilyMemberProfile() {
             <div className={editing ? "fk-profile-view-content" : "fk-profile-view-content fk-mobile-profile-card"}>
 
               <div className="fk-profile-avatar">
-                {memberId === CONNECTED_PROFILE_ID ? <UserRound size={48} aria-hidden="true" /> :
-                  <ProfileAvatar memberId={memberId} name={member.name} refreshKey={photoRefreshKey}>
-                    <UserRound size={48} />
-                  </ProfileAvatar>}
+                <ProfileAvatar memberId={memberId} name={member.name} refreshKey={photoRefreshKey}
+                  connectedPhotoUrl={isConnectedProfile ? member.photoUrl || null : undefined}>
+                  <UserRound size={48} />
+                </ProfileAvatar>
                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/svg+xml,.svg"
                   onChange={handlePhotoChange} disabled={photoBusy || saving} hidden />
                 {editing && (
