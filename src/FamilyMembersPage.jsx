@@ -206,8 +206,11 @@ export default function FamilyMembersPage() {
   // TOTAL MEMBERS
   // =====================================================
 
+  const visibleManagedMembers = members.filter(
+    (member) => member.memberId !== connectionState?.connection?.linkedMemberId
+  );
   const totalMembers =
-    members.length + (primaryUser ? 1 : 0) + (connectionState?.connection ? 1 : 0);
+    visibleManagedMembers.length + (primaryUser ? 1 : 0) + (connectionState?.connection ? 1 : 0);
 
   // =====================================================
   // UI
@@ -386,7 +389,7 @@ export default function FamilyMembersPage() {
 
                 {/* ADDITIONAL FAMILY MEMBERS */}
 
-                {members.filter((member) => member.memberId !== connectionState?.connection?.linkedMemberId).map((member) => (
+                {visibleManagedMembers.map((member) => (
                   <article className="fk-family-member-card" key={member.memberId}>
                     <button type="button" className="fk-family-member-details"
                       onClick={() => openMember(member.memberId)}>
