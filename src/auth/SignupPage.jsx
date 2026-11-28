@@ -1,4 +1,5 @@
 import { checkSignupAccess, pendingInvitation } from "../api/familyConnectionsApi.js";
+import IndianMobileField from "../components/IndianMobileField.jsx";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -39,6 +40,7 @@ export default function SignupPage() {
     useState(null);
 
   // Screen 3
+  const [mobileDigits, setMobileDigits] = useState("");
   const [familyName, setFamilyName] =
     useState("");
 
@@ -511,6 +513,11 @@ export default function SignupPage() {
         return;
       }
 
+      if (mobileDigits && !/^[0-9]{10}$/.test(mobileDigits)) {
+        setError("Enter a 10-digit mobile number.");
+        return;
+      }
+
       setFamilyName(
         cleanFamilyName
       );
@@ -614,7 +621,8 @@ export default function SignupPage() {
         // =================================================
 
         await checkSignupAccess();
-        await storeFamilyKitPin(accessToken, pin, yourName.trim(), familyName.trim(), pendingInvitation());
+        await storeFamilyKitPin(accessToken, pin, yourName.trim(), familyName.trim(), pendingInvitation(),
+          mobileDigits ? `+91${mobileDigits}` : undefined);
 
         // Cache the registered personal name for same-device welcome display.
         // The authenticated backend remains the source of truth for account data.
@@ -1002,6 +1010,12 @@ export default function SignupPage() {
                   value={yourName}
                   onChange={(event) => { setYourName(event.target.value); setError(""); }}
                 />
+              </div>
+
+              <div className="signup-field">
+                <label htmlFor="signup-mobile-number">Mobile number (optional)</label>
+                <IndianMobileField id="signup-mobile-number" value={mobileDigits}
+                  onChange={(value) => { setMobileDigits(value); setError(""); }} />
               </div>
 
               <fieldset className="signup-gender-fieldset">

@@ -63,9 +63,11 @@ def hash_pin(
     )
 
 
-def create_pin(user_id, pin, your_name=None, family_name=None, *, registration=False, invitation=None, claims=None):
+def create_pin(user_id, pin, your_name=None, family_name=None, *, registration=False, invitation=None, claims=None, mobile=None):
     validate_pin(pin)
 
+    if mobile is not None and (not isinstance(mobile, str) or not re.fullmatch(r"\+91[0-9]{10}", mobile)):
+        raise ValueError("Enter a 10-digit Indian mobile number.")
     if your_name is not None:
         if not isinstance(your_name, str) or not 1 <= len(your_name.strip()) <= 100:
             raise ValueError("Your Name must be between 1 and 100 characters.")
@@ -104,6 +106,8 @@ def create_pin(user_id, pin, your_name=None, family_name=None, *, registration=F
         item["yourName"] = your_name
     if family_name is not None:
         item["familyName"] = family_name
+    if mobile is not None:
+        item["mobile"] = mobile
 
     connections = os.environ.get("FAMILY_CONNECTIONS_TABLE") if registration else None
     if not connections:
@@ -527,7 +531,7 @@ def handle_create_pin_api(event):
 
     try:
         create_pin(user_id, pin, your_name, family_name,
-                   registration=True, invitation=body.get("invitation"),
+                   registration=True, invitation=body.get("invitation"), mobile=body.get("mobile"),
                    claims=event.get("requestContext", {}).get("authorizer", {}).get("jwt", {}).get("claims", {}))
     except RegistrationUnavailable as error:
         return api_response(409, {"success": False, "message": str(error)})

@@ -1138,7 +1138,9 @@ export async function storeFamilyKitPin(
 
   familyName,
 
-  invitation
+  invitation,
+
+  mobile
 
 ) {
 
@@ -1259,6 +1261,7 @@ export async function storeFamilyKitPin(
             yourName: cleanYourName,
 
             familyName: cleanFamilyName,
+            ...(mobile && { mobile }),
 
             ...(invitation && { invitation }),
 

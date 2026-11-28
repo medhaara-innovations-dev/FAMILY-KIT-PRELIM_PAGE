@@ -9,6 +9,7 @@ import {
   uploadProfilePicture,
   deleteProfilePicture,
 } from "./api/profilePicturesApi.js";
+import IndianMobileField from "./components/IndianMobileField.jsx";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 import MobileProfileDetails, { MobileConnectedDocuments, MobileProfileActions } from "./components/MobileProfileDetails.jsx";
@@ -185,7 +186,9 @@ export default function MyProfile() {
         throw new Error("Authentication session changed.");
       }
       const { yourName, ...details } = profile;
-      setProfileForm({ ...details, name: yourName || "", ...readProfileAddress(details.address) });
+      const storedMobile = details.mobile || "";
+      const mobileDigits = /^(?:[+]91)?[0-9]{10}$/.test(storedMobile) ? storedMobile.slice(-10) : "";
+      setProfileForm({ ...details, mobileDigits, name: yourName || "", ...readProfileAddress(details.address) });
       setConfirmingPin(false);
       pinDialog.current?.close();
     } catch {
@@ -208,6 +211,11 @@ export default function MyProfile() {
     const details = Object.fromEntries(ownerProfileFields.filter((field) => !["name", "mobile", "email"].includes(field))
       .map((field) => [field, profileForm[field] || ""]));
     details.address = formatProfileAddress(profileForm);
+    if (!contacts.mobile && profileForm.mobileDigits && !/^[0-9]{10}$/.test(profileForm.mobileDigits)) {
+      setProfileError("Enter a 10-digit mobile number.");
+      return;
+    }
+    if (!contacts.mobile && profileForm.mobileDigits) details.mobile = `+91${profileForm.mobileDigits}`;
     if (!yourName || !details.familyName?.trim()) {
       setProfileError("Full name and family name are required.");
       return;
@@ -277,7 +285,8 @@ export default function MyProfile() {
               </div>
               {!loading && <div className="fk-settings-details">
                 <SettingsRow icon={Mail} label="Email" value={contacts.email || "Verified email unavailable"} verified={Boolean(contacts.email)} />
-                <SettingsRow icon={Phone} label="Mobile Number" value={contacts.mobile || "No verified mobile number"} verified={Boolean(contacts.mobile)} />
+                <SettingsRow icon={Phone} label="Mobile Number" value={contacts.mobile || (profile.mobile ? `${profile.mobile} (unverified)` : "Add mobile number")}
+                  verified={Boolean(contacts.mobile)} onClick={!contacts.mobile && !error && contacts.email ? openProfileEditor : undefined} />
                 <SettingsRow icon={MapPin} label="Current Address" value={profile.address || "Not added"}
                   onClick={!error && contacts.email ? openProfileEditor : undefined} />
               </div>}
@@ -326,7 +335,10 @@ export default function MyProfile() {
               <ProfileFields fields={profile.familyName ? ["name"] : ["name", "familyName"]} requiredFields={["name", "familyName"]}
                 values={profileForm} onChange={updateProfileField} />
               <label className="fk-profile-field"><span>Mobile number</span>
-                <input type="tel" value={contacts.mobile || ""} placeholder="No verified mobile number" readOnly />
+                {contacts.mobile ? <input type="tel" value={contacts.mobile} readOnly /> :
+                  <IndianMobileField id="profile-mobile-number" value={profileForm.mobileDigits}
+                    onChange={(mobileDigits) => setProfileForm((current) => ({ ...current, mobileDigits }))}
+                    disabled={savingProfile} />}
               </label>
               <label className="fk-profile-field"><span>Email</span>
                 <input type="email" value={contacts.email || ""} placeholder="Verified email unavailable" readOnly />

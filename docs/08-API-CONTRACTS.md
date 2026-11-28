@@ -14,10 +14,10 @@ Gateway CORS allows the Amplify development origin, the authorization and conten
 
 | Method and path | Auth | Request | Success |
 |---|---|---|---|
-| POST /pin | JWT | `pin` string, `yourName`, `familyName` | 200, confirmation |
+| POST /pin | JWT | `pin` string, `yourName`, `familyName`, optional `mobile` in +91 followed by 10 digits | 200, confirmation |
 | GET /registration-status | JWT | No body | 200, `registrationComplete` boolean |
 | GET /profile | JWT | No body | 200, `yourName`, `familyName` |
-| PUT /profile | JWT | `yourName` and `familyName` are required. Optional profile fields are `mobile`, `email`, `bloodGroup`, `dateOfBirth`, `height`, `weight` and `address`. Email and mobile are profile contact details. | 200, owner profile fields. The updated GET handler returns the same fields. |
+| PUT /profile | JWT | `yourName` and `familyName` are required. Optional profile fields are `mobile`, `email`, `bloodGroup`, `dateOfBirth`, `height`, `weight` and `address`. Email and mobile are profile contact details. The optional registration mobile is stored as a profile contact and does not change Cognito verification. | 200, owner profile fields. The updated GET handler returns the same fields. |
 | POST /resolve-login | Public | `email` | 200, `username` |
 | POST /pin-reset/request | Public | `email` | 200, generic acknowledgement |
 | POST /pin-reset/verify | Public | `email`, `otp` string | 200, `resetToken` |
