@@ -163,6 +163,14 @@ def auto_link_profile(user, other, family, relationship, is_inviter):
     return matches[0]
 
 
+def connection_share_fields(family, is_inviter):
+    if is_inviter:
+        return family.get("firstSharedProfileFields", sorted(SHARE_FIELDS))
+    if family.get("recipientSharingCustomized"):
+        return family.get("sharedProfileFields", [])
+    return sorted(SHARE_FIELDS)
+
+
 def shared_details(user, fields):
     allowed = sorted(SHARE_FIELDS.intersection(fields))
     if not allowed:
@@ -347,18 +355,14 @@ def lambda_handler(event, _context):
                         print("Automatic profile link unavailable")
                 if linked:
                     connection["linkedMemberId"] = linked
-                sharing_field = "sharedProfileFields" if is_inviter else "firstSharedProfileFields"
-                fields = family.get(sharing_field, []) if not is_inviter or family.get("recipientSharingCustomized") else SHARE_FIELDS
-                connection.update(shared_details(other, fields))
+                connection.update(shared_details(other, connection_share_fields(family, not is_inviter)))
                 try:
                     connection["photoUrl"] = connected_photo(other)
                 except ClientError as error:
                     print("Connected profile photo unavailable:", error.response["Error"]["Code"])
             return reply(200, {
                 "connection": connection,
-                "mySharedProfileFields": family.get(
-                    "firstSharedProfileFields" if user == family["firstUser"] else "sharedProfileFields", [])
-                    if user == family["firstUser"] or family.get("recipientSharingCustomized") else sorted(SHARE_FIELDS),
+                "mySharedProfileFields": connection_share_fields(family, user == family["firstUser"]),
                 "invitation": {"relationship": invitation["relationship"],
                                "shared": bool(invitation.get("sharedAt"))}
                 if active_invite(invitation, now) and user == family["firstUser"] else None,

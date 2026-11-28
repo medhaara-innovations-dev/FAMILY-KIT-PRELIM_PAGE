@@ -209,6 +209,19 @@ export default function FamilyMembersPage() {
   const visibleManagedMembers = members.filter(
     (member) => member.memberId !== connectionState?.connection?.linkedMemberId
   );
+  const connectedMember = connectionState?.connection;
+
+  function renderContactActions({ mobile, name }) {
+    if (!mobile) return null;
+    return <div className="fk-family-contact-actions">
+      <button type="button" onClick={(event) => openPhone(event, mobile)} aria-label={`Call ${name}`}>
+        <Phone size={18} aria-hidden="true" />
+      </button>
+      <button type="button" className="fk-family-whatsapp" onClick={(event) => openWhatsApp(event, mobile)}
+        aria-label={`WhatsApp ${name}`}><WhatsAppLogo size={18} aria-hidden="true" /></button>
+    </div>;
+  }
+
   const totalMembers =
     visibleManagedMembers.length + (primaryUser ? 1 : 0) + (connectionState?.connection ? 1 : 0);
 
@@ -356,7 +369,7 @@ export default function FamilyMembersPage() {
                   </article>
                 )}
 
-                {connectionState?.connection && (
+                {connectedMember && (
                   <article className="fk-family-member-card">
                     <button type="button" className="fk-family-member-details"
                       onClick={() => openMember(connectionState.connection.linkedMemberId || CONNECTED_PROFILE_ID)} aria-label={`Open ${connectionState.connection.name} profile`}>
@@ -369,8 +382,15 @@ export default function FamilyMembersPage() {
                           <CircleCheck size={14} aria-hidden="true" /> Securely connected
                         </small>
                       </span>
-                      <ChevronRight className="fk-family-chevron" size={20} aria-hidden="true" />
                     </button>
+                    <div className="fk-family-member-trailing">
+                      {renderContactActions(connectedMember)}
+                      <button type="button" className="fk-family-chevron-button"
+                        onClick={() => openMember(connectedMember.linkedMemberId || CONNECTED_PROFILE_ID)}
+                        aria-label={`Open ${connectedMember.name} profile`}>
+                        <ChevronRight size={20} aria-hidden="true" />
+                      </button>
+                    </div>
                   </article>
                 )}
                 {connectionState?.invitation?.shared && (
@@ -403,15 +423,7 @@ export default function FamilyMembersPage() {
                       </span>
                     </button>
                     <div className="fk-family-member-trailing">
-                      {member.mobile && (
-                        <div className="fk-family-contact-actions">
-                          <button type="button" onClick={(event) => openPhone(event, member.mobile)}
-                            aria-label={`Call ${member.name}`}><Phone size={18} /></button>
-                          <button type="button" className="fk-family-whatsapp"
-                            onClick={(event) => openWhatsApp(event, member.mobile)}
-                            aria-label={`WhatsApp ${member.name}`}><WhatsAppLogo size={18} aria-hidden="true" /></button>
-                        </div>
-                      )}
+                      {renderContactActions(member)}
                       <button type="button" className="fk-family-chevron-button"
                         onClick={() => openMember(member.memberId)} aria-label={`Open ${member.name} profile`}>
                         <ChevronRight size={20} />

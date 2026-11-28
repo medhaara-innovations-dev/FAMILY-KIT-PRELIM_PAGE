@@ -681,9 +681,6 @@ export default function FamilyMemberProfile() {
             </div>
             {!editing && <>
               <MobileProfileDetails member={member} />
-              {isConnectedProfile && member.address && <dl className="fk-profile-contact-info">
-                <dt>Address</dt><dd>{member.address}</dd>
-              </dl>}
               <MobileProfileActions key={memberId} mobile={member.mobile} profile={member} canShare={!isConnectedProfile} />
             </>}
             </div>

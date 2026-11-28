@@ -50,6 +50,7 @@ export default function FamilyInvitationForm({ canInvite, existingInvitation, in
             <small>Used to verify who can review this profile. Share the link yourself.</small>
           </label>}
           <button type="submit" disabled={busy}>Create invitation link</button>
+          <p>Once accepted, both accounts can see each other&apos;s profile details and photo. Documents stay private.</p>
           <p>Creating a new link replaces any previous unused link.</p>
         </form>
       ) : <p>There is no available invitation slot for this account.</p> : (

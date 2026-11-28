@@ -71,7 +71,7 @@ export default function FamilyInvitationPage() {
             <>
               <p>{invitation.inviterName} invited you to connect on FamilyKit.</p>
               <p>They will appear in My Family as your <strong>{invitation.relationship}</strong>.</p>
-              <p>Accepting lets the inviter see your current profile details and photo. Documents stay private unless shared separately.</p>
+              <p>Accepting lets both of you see each other's profile details and photo. Documents stay private unless shared separately.</p>
               {signedIn ? (
                 <div className="fk-family-invitation-controls">
                   {reviewError ? <p role="alert">{reviewError}</p> : !review && <p role="status">Checking profile review...</p>}
