@@ -13,6 +13,7 @@ import InactivityLock from "./auth/InactivityLock.jsx";
 import MyFamilyPage from "./MyFamilyPage.jsx";
 import FamilyMembersPage from "./FamilyMembersPage.jsx";
 import AddFamilyMemberPage from "./AddFamilyMemberPage.jsx";
+import SharedDependentProfile from "./SharedDependentProfile.jsx";
 import FamilyMemberProfile from "./FamilyMemberProfile.jsx";
 import MyProfile from "./MyProfile.jsx";
 import CategoriesPage from "./CategoriesPage.jsx";
@@ -70,6 +71,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/invite" element={<FamilyInvitationPage />} />
         <Route path="/family" element={<FamilyMembersPage />} />
         <Route path="/family/add" element={<AddFamilyMemberPage />} />
+        <Route path="/family/shared/:memberId" element={<SharedDependentProfile />} />
         <Route path="/family/:memberId" element={<FamilyMemberProfile />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/categories" element={<CategoriesPage />} />

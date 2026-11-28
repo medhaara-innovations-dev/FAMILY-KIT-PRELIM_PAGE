@@ -47,6 +47,7 @@ import { SELF_PROFILE_ID, uploadProfilePicture } from "./api/profilePicturesApi.
 
 
 
+import DependentPermissions from "./components/DependentPermissions.jsx";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import MobileProfileDetails, { MobileConnectedDocuments, MobileProfileActions } from "./components/MobileProfileDetails.jsx";
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
@@ -541,7 +542,7 @@ export default function FamilyMemberProfile() {
 
 
 
-        {member && !loading && !editing && !isConnectedProfile && memberId !== SELF_PROFILE_ID ? (
+        {member && !loading && !editing && memberId !== SELF_PROFILE_ID ? (
           <button type="button" className="fk-profile-header-actions" aria-label="Profile actions" aria-haspopup="dialog" disabled={removing || photoBusy}
             onClick={() => { setActionInfo(""); profileActions.current?.showModal(); }}>
             <EllipsisVertical size={22} aria-hidden="true" />
@@ -554,22 +555,27 @@ export default function FamilyMemberProfile() {
           <h2 id="fk-profile-actions-title">Profile actions</h2>
           <button type="button" onClick={() => profileActions.current?.close()} aria-label="Close"><X size={20} /></button>
         </header>
-        <button type="button" className="fk-family-action-choice" onClick={() => {
+        {!isConnectedProfile && <button type="button" className="fk-family-action-choice" onClick={() => {
           profileActions.current?.close();
           startEditing();
         }}>
           <Pencil size={20} aria-hidden="true" /><strong>Edit profile</strong>
-        </button>
+        </button>}
         <button type="button" className="fk-family-action-choice" onClick={() => setActionInfo("details")}
           aria-expanded={actionInfo === "details"} aria-controls="fk-profile-contact-info">
           <Mail size={20} aria-hidden="true" /><strong>Contact details</strong>
         </button>
         <div id="fk-profile-contact-info" className="fk-profile-contact-info" hidden={actionInfo !== "details"}>
           <dl>
-            <dt>Email</dt>
-            <dd>{member?.email || "Not provided"}</dd>
-            <dt>Address</dt>
-            <dd>{member?.address || "Not provided"}</dd>
+            {isConnectedProfile ? <>
+              <dt>Mobile number</dt>
+              <dd>{member?.mobile || "Not shared"}</dd>
+            </> : <>
+              <dt>Email</dt>
+              <dd>{member?.email || "Not provided"}</dd>
+              <dt>Address</dt>
+              <dd>{member?.address || "Not provided"}</dd>
+            </>}
           </dl>
         </div>
         <button type="button" className="fk-family-action-choice" onClick={() => setActionInfo("access")}
@@ -577,8 +583,13 @@ export default function FamilyMemberProfile() {
           <ShieldCheck size={20} aria-hidden="true" /><strong>Access &amp; Permissions</strong>
         </button>
         <p id="fk-profile-access-info" hidden={actionInfo !== "access"}>
-          You manage this profile. It is separate from a signed-in FamilyKit account.
+          {isConnectedProfile
+            ? "This member manages their own profile. You can view their shared details. Document access is managed separately."
+            : "You manage this profile. It is separate from a signed-in FamilyKit account."}
         </p>
+        {actionInfo === "access" && !isConnectedProfile && connectionsEnabled &&
+          <DependentPermissions key={memberId} memberId={memberId} />}
+        {!isConnectedProfile && <>
         <button type="button" className="fk-family-action-choice" onClick={() => setActionInfo("invite")}
           aria-expanded={actionInfo === "invite"} aria-controls="fk-profile-invite-info">
           <Link2 size={20} aria-hidden="true" /><strong>Invite to FamilyKit</strong>
@@ -603,6 +614,7 @@ export default function FamilyMemberProfile() {
         }}>
           <Trash2 size={20} aria-hidden="true" /><strong>Remove profile</strong>
         </button>
+        </>}
       </dialog>
       {photoToCrop && (
         <ProfilePhotoCropper

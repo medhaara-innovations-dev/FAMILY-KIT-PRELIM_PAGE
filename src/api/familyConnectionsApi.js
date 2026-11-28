@@ -53,3 +53,6 @@ export async function checkSignupAccess() {
 export function invitationReturnPath() {
   return connectionsEnabled && pendingInvitation() ? "/?invite=1" : "/my-family";
 }
+
+export const listDependentProfiles = (signal) => request("/dependent-profiles", { signal });
+export const dependentProfileAction = (action, data, signal) => request(`/dependent-profiles/${action}`, { data, signal });

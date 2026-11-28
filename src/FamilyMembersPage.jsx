@@ -1,5 +1,5 @@
 import FamilyInvitationForm from "./components/FamilyInvitationForm.jsx";
-import { CONNECTED_PROFILE_ID, connectionsEnabled, familyConnection, linkConnectionProfile } from "./api/familyConnectionsApi.js";
+import { CONNECTED_PROFILE_ID, connectionsEnabled, familyConnection, linkConnectionProfile, listDependentProfiles } from "./api/familyConnectionsApi.js";
 import { CircleCheck, Send } from "lucide-react";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -45,9 +45,12 @@ export default function FamilyMembersPage() {
   const [showInviteInfo, setShowInviteInfo] = useState(false);
   const [linkError, setLinkError] = useState("");
   const [linkBusy, setLinkBusy] = useState(false);
+  const [dependentProfiles, setDependentProfiles] = useState([]);
   const [connectionState, setConnectionState] = useState(null);
   const refreshConnection = useCallback(() => {
-    if (connectionsEnabled) familyConnection().then(setConnectionState).catch(() => setConnectionState(null));
+    if (!connectionsEnabled) return;
+    familyConnection().then(setConnectionState).catch(() => setConnectionState(null));
+    listDependentProfiles().then(({ members }) => setDependentProfiles(members)).catch(() => setDependentProfiles([]));
   }, []);
   useEffect(() => {
     if (!connectionsEnabled) return;
@@ -223,7 +226,7 @@ export default function FamilyMembersPage() {
   }
 
   const totalMembers =
-    visibleManagedMembers.length + (primaryUser ? 1 : 0) + (connectionState?.connection ? 1 : 0);
+    visibleManagedMembers.length + dependentProfiles.length + (primaryUser ? 1 : 0) + (connectionState?.connection ? 1 : 0);
 
   // =====================================================
   // UI
@@ -407,6 +410,21 @@ export default function FamilyMembersPage() {
                   </article>
                 )}
 
+                {dependentProfiles.map((dependent) => (
+                  <article className="fk-family-member-card" key={`shared-${dependent.memberId}`}>
+                    <button type="button" className="fk-family-member-details"
+                      onClick={() => navigate(`/family/shared/${encodeURIComponent(dependent.memberId)}`)}
+                      aria-label={`Open shared profile for ${dependent.name}`}>
+                      <span className="fk-family-avatar" aria-hidden="true">{dependent.name.charAt(0).toUpperCase()}</span>
+                      <span className="fk-family-member-info">
+                        <strong>{dependent.name}</strong>
+                        <small>{dependent.relationship}</small>
+                      </span>
+                      <ChevronRight className="fk-family-chevron" size={20} aria-hidden="true" />
+                    </button>
+                  </article>
+                ))}
+
                 {/* ADDITIONAL FAMILY MEMBERS */}
 
                 {visibleManagedMembers.map((member) => (
@@ -464,7 +482,7 @@ export default function FamilyMembersPage() {
 
               {/* NO ADDITIONAL MEMBERS */}
 
-              {members.length === 0 && !connectionState?.connection && !connectionState?.invitation?.shared && (
+              {members.length === 0 && dependentProfiles.length === 0 && !connectionState?.connection && !connectionState?.invitation?.shared && (
                 <section className="fk-family-empty">
                   <h3>
                     Bring your family together

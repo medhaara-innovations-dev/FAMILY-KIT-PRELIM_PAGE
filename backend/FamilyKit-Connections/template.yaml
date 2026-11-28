@@ -74,7 +74,7 @@ Resources:
               Action: [cognito-idp:ListUsers, cognito-idp:AdminGetUser]
               Resource: !Sub "arn:${AWS::Partition}:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}"
             - Effect: Allow
-              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:ConditionCheckItem]
               Resource: !GetAtt Connections.Arn
             - Effect: Allow
               Action: dynamodb:Scan
@@ -115,6 +115,41 @@ Resources:
             - Effect: Allow
               Action: s3:GetObject
               Resource: !Sub "arn:${AWS::Partition}:s3:::${ProfilePicturesBucketName}/profile-pictures/*/PROFILE#SELF/*"
+            - Effect: Allow
+              Action: dynamodb:GetItem
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${MembersTableName}"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, memberId, name, relationship, dateOfBirth, bloodGroup, height, weight, mobile, email, address, profilePictureKey, updatedAt]
+                Null:
+                  dynamodb:Attributes: "false"
+            - Effect: Allow
+              Action: dynamodb:UpdateItem
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${MembersTableName}"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, memberId, name, dateOfBirth, bloodGroup, height, weight, mobile, email, address, updatedAt, profilePictureKey]
+                Null:
+                  dynamodb:Attributes: "false"
+            - Effect: Allow
+              Action: dynamodb:Query
+              Resource:
+                - !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/FamilyKit-DocumentScanner"
+                - !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Fkdocuments"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, memberId, documentId, documentid, fileName, createdAt, objectKey, s3Key, deleted]
+                Null:
+                  dynamodb:Attributes: "false"
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource:
+                - !Sub "arn:${AWS::Partition}:s3:::${ProfilePicturesBucketName}/profile-pictures/*"
+                - !Sub "arn:${AWS::Partition}:s3:::familykit-document-scanner-${AWS::AccountId}/documents/*"
+                - !Sub "arn:${AWS::Partition}:s3:::fk-documents-storage/documents/*"
+            - Effect: Allow
+              Action: [s3:PutObject, s3:DeleteObject]
+              Resource: !Sub "arn:${AWS::Partition}:s3:::${ProfilePicturesBucketName}/profile-pictures/*/*/dependent-*"
       Events:
         Status:
           Type: HttpApi
@@ -157,6 +192,27 @@ Resources:
         LinkProfile:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection/link-profile, Method: POST }
+        DependentList:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /dependent-profiles, Method: GET }
+        DependentPermissions:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /dependent-profiles/permissions, Method: POST }
+        DependentGrant:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /dependent-profiles/grant, Method: POST }
+        DependentOpen:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /dependent-profiles/open, Method: POST }
+        DependentEdit:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /dependent-profiles/edit, Method: POST }
+        DependentPhoto:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /dependent-profiles/photo, Method: POST }
+        DependentDocument:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /dependent-profiles/document, Method: POST }
         Accept:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/accept, Method: POST }

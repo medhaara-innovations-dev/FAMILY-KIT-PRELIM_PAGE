@@ -16,6 +16,7 @@ from uuid import UUID, uuid4
 
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
+from dependent_sharing import route_request as dependent_sharing
 from botocore.exceptions import ClientError
 
 db = boto3.resource("dynamodb")
@@ -379,6 +380,10 @@ def lambda_handler(event, _context):
         account = profile(user)
         if not account:
             return reply(403, {"message": "Complete FamilyKit registration first."})
+        if route and route.split(" ", 1)[-1].startswith("/dependent-profiles"):
+            return dependent_sharing(route, body, user, db=db, table=table, members=members, s3=s3,
+                                     photo_bucket=photo_bucket, family_record=family_record, profile=profile,
+                                     get=get, transact=transact, reply=reply)
         if route == "POST /family-connection/profile-sharing":
             family = family_record(user)
             if not family or not family.get("secondUser") or user not in (family["firstUser"], family["secondUser"]):
