@@ -9,6 +9,9 @@ Parameters:
   ActivationTableName:
     Type: String
     Default: FamilyKitPinCredentials
+  MembersTableName:
+    Type: String
+    Default: FamilyKitFamilyMembers
   WebOrigin:
     Type: String
 Resources:
@@ -59,11 +62,12 @@ Resources:
         Variables:
           TABLE_NAME: !Ref Connections
           ACTIVATION_TABLE: !Ref ActivationTableName
+          MEMBERS_TABLE: !Ref MembersTableName
           USER_POOL_ID: !Ref UserPoolId
       Policies:
         - Statement:
             - Effect: Allow
-              Action: cognito-idp:ListUsers
+              Action: [cognito-idp:ListUsers, cognito-idp:AdminGetUser]
               Resource: !Sub "arn:${AWS::Partition}:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}"
             - Effect: Allow
               Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
@@ -73,9 +77,21 @@ Resources:
               Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ActivationTableName}"
               Condition:
                 "ForAllValues:StringEquals":
-                  dynamodb:Attributes: [userId, yourName, familyName]
+                  dynamodb:Attributes: [userId, yourName, familyName, dateOfBirth, height, weight, bloodGroup, address]
                 StringEqualsIfExists:
                   dynamodb:Select: SPECIFIC_ATTRIBUTES
+            - Effect: Allow
+              Action: dynamodb:UpdateItem
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ActivationTableName}"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, yourName, dateOfBirth, height, weight, bloodGroup, address]
+            - Effect: Allow
+              Action: dynamodb:GetItem
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${MembersTableName}"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, memberId, name, dateOfBirth, height, weight, bloodGroup, address]
       Events:
         Status:
           Type: HttpApi
@@ -109,6 +125,12 @@ Resources:
         Decline:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/decline, Method: POST }
+        Review:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/review, Method: POST }
+        LinkProfile:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection/link-profile, Method: POST }
         Accept:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/accept, Method: POST }

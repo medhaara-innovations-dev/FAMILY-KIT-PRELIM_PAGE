@@ -1,5 +1,5 @@
 import FamilyInvitationForm from "./components/FamilyInvitationForm.jsx";
-import { connectionsEnabled, familyConnection } from "./api/familyConnectionsApi.js";
+import { CONNECTED_PROFILE_ID, connectionsEnabled, familyConnection } from "./api/familyConnectionsApi.js";
 
 
 import { useEffect, useRef, useState } from "react";
@@ -97,6 +97,8 @@ export default function FamilyMemberProfile() {
   const backLabel = fromHome ? "Back to Home" : "Back to My Family";
 
   const { memberId } = useParams();
+  const [linkedProfile, setLinkedProfile] = useState(null);
+  const isConnectedProfile = memberId === CONNECTED_PROFILE_ID || linkedProfile?.linkedMemberId === memberId;
 
 
 
@@ -179,7 +181,14 @@ export default function FamilyMemberProfile() {
 
       try {
 
-        const result = await getFamilyMember(memberId);
+        const connection = connectionsEnabled ? (await familyConnection().catch((error) => {
+          if (memberId === CONNECTED_PROFILE_ID) throw error;
+          return null;
+        }))?.connection : null;
+        const connected = memberId === CONNECTED_PROFILE_ID || connection?.linkedMemberId === memberId;
+        const result = connected ? connection : await getFamilyMember(memberId);
+        if (active) setLinkedProfile(connected ? connection : null);
+        if (!result) throw new Error("This connected profile is unavailable.");
 
 
 
@@ -532,7 +541,7 @@ export default function FamilyMemberProfile() {
 
 
 
-        {member && !loading && !editing && memberId !== SELF_PROFILE_ID ? (
+        {member && !loading && !editing && !isConnectedProfile && memberId !== SELF_PROFILE_ID ? (
           <button type="button" className="fk-profile-header-actions" aria-label="Profile actions" aria-haspopup="dialog" disabled={removing || photoBusy}
             onClick={() => { setActionInfo(""); profileActions.current?.showModal(); }}>
             <EllipsisVertical size={22} aria-hidden="true" />
@@ -583,6 +592,7 @@ export default function FamilyMemberProfile() {
                   canInvite={invitationState.canInvite}
                   existingInvitation={invitationState.invitation}
                   initialRelationship={member?.relationship}
+                  memberId={memberId}
                   onChange={() => setInvitationRevision((value) => value + 1)}
                 />}
           </div>
@@ -646,9 +656,10 @@ export default function FamilyMemberProfile() {
             <div className={editing ? "fk-profile-view-content" : "fk-profile-view-content fk-mobile-profile-card"}>
 
               <div className="fk-profile-avatar">
-                <ProfileAvatar memberId={memberId} name={member.name} refreshKey={photoRefreshKey}>
-                  <UserRound size={48} />
-                </ProfileAvatar>
+                {memberId === CONNECTED_PROFILE_ID ? <UserRound size={48} aria-hidden="true" /> :
+                  <ProfileAvatar memberId={memberId} name={member.name} refreshKey={photoRefreshKey}>
+                    <UserRound size={48} />
+                  </ProfileAvatar>}
                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/svg+xml,.svg"
                   onChange={handlePhotoChange} disabled={photoBusy || saving} hidden />
                 {editing && (
@@ -668,8 +679,13 @@ export default function FamilyMemberProfile() {
                 <p>{familyRelationshipLabel(member)}</p>
               </div>
             </div>
-            {!editing && <MobileProfileDetails member={member} />}
-              {!editing && <MobileProfileActions key={memberId} mobile={member.mobile} profile={member} />}
+            {!editing && <>
+              <MobileProfileDetails member={member} />
+              {isConnectedProfile && member.address && <dl className="fk-profile-contact-info">
+                <dt>Address</dt><dd>{member.address}</dd>
+              </dl>}
+              <MobileProfileActions key={memberId} mobile={member.mobile} profile={member} canShare={!isConnectedProfile} />
+            </>}
             </div>
 
 
@@ -753,7 +769,7 @@ export default function FamilyMemberProfile() {
             </form>
 
           ) : (
-            <MobileConnectedDocuments key={memberId} memberId={memberId} />
+            <MobileConnectedDocuments key={memberId} memberId={memberId} accessEnabled={memberId !== CONNECTED_PROFILE_ID} />
           )}
 
         </main>

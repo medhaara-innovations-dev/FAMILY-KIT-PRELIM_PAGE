@@ -35,3 +35,5 @@ In the local mobile frontend, the registered owner and additional family members
 - **Current filters:** [CategoriesPage.jsx](../src/CategoriesPage.jsx#L132) starts with **All Family** and **Me**, excludes the self profile from additional options, keys each additional option by `memberId`, and can append names to duplicate relationship labels. The selection changes UI state. Category search filters card names, and family selection currently leaves stored records unfiltered.
 
 Needs verification: release scope, international contact requirements, household sharing, and which statuses can be promoted after [Step 6 testing](12-TESTING-CHECKLIST.md).
+
+Accepted connections also appear in the Home family row and Categories and Documents family filters. Securely connected cards open the standard Family Member Profile in read-only mode with the name and relationship returned by the authenticated connection API. Connected profiles use the shared profile details, action row and Connected Documents section. Unavailable fields display placeholders, and connecting does not grant document access.

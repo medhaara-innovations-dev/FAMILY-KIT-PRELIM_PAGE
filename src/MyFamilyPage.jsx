@@ -27,6 +27,8 @@ import { listEvents } from "./api/eventsApi.js";
 import { getDueEventReminders, getReadReminderIds, useReminderClock } from "./eventReminders.js";
 import { calendarHorizon, occurrenceList, formatEventDate } from "./eventDates.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
+import { CONNECTED_PROFILE_ID } from "./api/familyConnectionsApi.js";
+import useConnectedFamilyMember from "./components/useConnectedFamilyMember.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyCalendar from "./FamilyCalendar.jsx";
 
@@ -130,13 +132,15 @@ function FamilyMemberItem({ member, onOpen }) {
           overflow: "hidden",
         }}
       >
-        <ProfileAvatar
+        {profileId === CONNECTED_PROFILE_ID
+          ? <span className="fk-dash-family-avatar-content" aria-hidden="true">{member.name.charAt(0).toUpperCase()}</span>
+          : <ProfileAvatar
           memberId={profileId}
           name={member.name}
           className="fk-dash-family-avatar-content"
         >
           {member.name?.charAt(0)?.toUpperCase() || "?"}
-        </ProfileAvatar>
+        </ProfileAvatar>}
       </button>
 
       <span
@@ -208,6 +212,7 @@ export default function MyFamilyPage() {
     return () => controller.abort();
   }, [hasSession]);
 
+  const connectedMember = useConnectedFamilyMember(hasSession);
   const [savedMembers, setSavedMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
   const [membersError, setMembersError] = useState("");
@@ -221,7 +226,8 @@ export default function MyFamilyPage() {
       name: yourName || "Me",
       relationship: "Me",
     },
-    ...savedMembers.map((member) => ({
+    ...(connectedMember ? [{ ...connectedMember, id: connectedMember.memberId }] : []),
+    ...savedMembers.filter((member) => member.memberId !== connectedMember?.linkedMemberId).map((member) => ({
       ...member,
       id: member.memberId,
     })),

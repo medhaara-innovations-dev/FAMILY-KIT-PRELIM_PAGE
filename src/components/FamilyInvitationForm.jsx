@@ -4,7 +4,7 @@ import { createInvitation, updateInvitation } from "../api/familyConnectionsApi.
 
 const relationships = [...RELATIONSHIPS, "Parent", "Child", "Sibling", "Grandchild"];
 
-export default function FamilyInvitationForm({ canInvite, existingInvitation, initialRelationship = "", onChange }) {
+export default function FamilyInvitationForm({ canInvite, existingInvitation, initialRelationship = "", memberId, onChange }) {
   const [token, setToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -31,7 +31,7 @@ export default function FamilyInvitationForm({ canInvite, existingInvitation, in
           event.preventDefault();
           const fields = Object.fromEntries(new FormData(event.currentTarget));
           run(async () => {
-            setToken((await createInvitation(fields)).token);
+            setToken((await createInvitation({ ...fields, ...(memberId && { memberId }) })).token);
             setMessage("");
           });
         }}>
@@ -45,6 +45,10 @@ export default function FamilyInvitationForm({ canInvite, existingInvitation, in
               {relationships.map((value) => <option key={value}>{value}</option>)}
             </select>
           </label>
+          {memberId && <label>Recipient's FamilyKit sign-in email
+            <input type="email" name="verifiedAccountEmail" required maxLength={254} />
+            <small>Used to verify who can review this profile. Share the link yourself.</small>
+          </label>}
           <button type="submit" disabled={busy}>Create invitation link</button>
           <p>Creating a new link replaces any previous unused link.</p>
         </form>

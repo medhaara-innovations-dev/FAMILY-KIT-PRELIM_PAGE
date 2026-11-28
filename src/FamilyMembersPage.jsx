@@ -1,5 +1,5 @@
 import FamilyInvitationForm from "./components/FamilyInvitationForm.jsx";
-import { connectionsEnabled, familyConnection } from "./api/familyConnectionsApi.js";
+import { CONNECTED_PROFILE_ID, connectionsEnabled, familyConnection, linkConnectionProfile } from "./api/familyConnectionsApi.js";
 import { CircleCheck, Send } from "lucide-react";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -43,6 +43,8 @@ export default function FamilyMembersPage() {
   const [error, setError] = useState("");
   const actionsDialog = useRef(null);
   const [showInviteInfo, setShowInviteInfo] = useState(false);
+  const [linkError, setLinkError] = useState("");
+  const [linkBusy, setLinkBusy] = useState(false);
   const [connectionState, setConnectionState] = useState(null);
   const refreshConnection = useCallback(() => {
     if (connectionsEnabled) familyConnection().then(setConnectionState).catch(() => setConnectionState(null));
@@ -353,8 +355,11 @@ export default function FamilyMembersPage() {
 
                 {connectionState?.connection && (
                   <article className="fk-family-member-card">
-                    <div className="fk-family-member-details">
-                      <span className="fk-family-avatar">{connectionState.connection.name.charAt(0).toUpperCase()}</span>
+                    <button type="button" className="fk-family-member-details"
+                      onClick={() => openMember(connectionState.connection.linkedMemberId || CONNECTED_PROFILE_ID)} aria-label={`Open ${connectionState.connection.name} profile`}>
+                      {connectionState.connection.linkedMemberId
+                        ? <ProfileAvatar memberId={connectionState.connection.linkedMemberId} name={connectionState.connection.name} className="fk-family-avatar" />
+                        : <span className="fk-family-avatar">{connectionState.connection.name.charAt(0).toUpperCase()}</span>}
                       <span className="fk-family-member-info">
                         <strong>{connectionState.connection.name}</strong>
                         <small>{connectionState.connection.relationship}</small>
@@ -362,7 +367,8 @@ export default function FamilyMembersPage() {
                           <CircleCheck size={14} aria-hidden="true" /> Securely connected
                         </small>
                       </span>
-                    </div>
+                      <ChevronRight className="fk-family-chevron" size={20} aria-hidden="true" />
+                    </button>
                   </article>
                 )}
                 {connectionState?.invitation?.shared && (
@@ -381,7 +387,7 @@ export default function FamilyMembersPage() {
 
                 {/* ADDITIONAL FAMILY MEMBERS */}
 
-                {members.map((member) => (
+                {members.filter((member) => member.memberId !== connectionState?.connection?.linkedMemberId).map((member) => (
                   <article className="fk-family-member-card" key={member.memberId}>
                     <button type="button" className="fk-family-member-details"
                       onClick={() => openMember(member.memberId)}>
@@ -412,6 +418,35 @@ export default function FamilyMembersPage() {
                   </article>
                 ))}
               </div>
+
+              {connectionState?.connection && !connectionState.connection.linkedMemberId && members.length > 0 && (
+                <form className="fk-family-invitation-controls" onSubmit={async (event) => {
+                  event.preventDefault();
+                  const memberId = new FormData(event.currentTarget).get("memberId");
+                  if (!memberId || linkBusy || !window.confirm("Link this profile to the connected account?")) return;
+                  setLinkBusy(true);
+                  setLinkError("");
+                  try {
+                    await linkConnectionProfile(memberId);
+                    refreshConnection();
+                  } catch (failure) {
+                    setLinkError(failure.message);
+                  } finally {
+                    setLinkBusy(false);
+                  }
+                }}>
+                  <label>Link existing profile to {connectionState.connection.name}
+                    <select name="memberId" defaultValue="" required>
+                      <option value="">Choose a profile</option>
+                      {members.map((member) => <option key={member.memberId} value={member.memberId}>
+                        {member.name} ({familyRelationshipLabel(member)})
+                      </option>)}
+                    </select>
+                  </label>
+                  <button type="submit" disabled={linkBusy}>Link existing profile</button>
+                  {linkError && <p role="alert">{linkError}</p>}
+                </form>
+              )}
 
               {/* NO ADDITIONAL MEMBERS */}
 

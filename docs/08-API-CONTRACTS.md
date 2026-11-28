@@ -117,7 +117,7 @@ The PIN registration code supports an optional server-side capacity guard. When 
 
 The live PIN registration guard is enabled against `FamilyKit-Connections`. The control record is in founding mode. Localhost reads the live status. The hosted landing page has not been updated as part of this rollout.
 
-New invitations use a manually shared link. Previously emailed invitations retain their verified-recipient checks.
+New invitations use a manually shared link. Previously emailed invitations retain their verified-recipient checks. Invitations created from an existing managed profile carry its memberId and require the recipient to sign in with the specified verified email. POST /invitations/review returns permitted suggestions to that recipient. Acceptance saves only explicitly selected fields and links the original memberId in the same transaction. POST /family-connection/link-profile lets either connected account explicitly link one of its own existing profile cards to the connection. Linking preserves document ownership.
 
 During founding mode, the public status endpoint exposes displayRemainingFamilies (100 minus enabled Cognito accounts with verified email) and remainingMemberSpots (200 minus the same eligible account count). Verified Google accounts are included. The Lambda caches the aggregate for up to 60 seconds per execution environment and omits the landing count when unavailable. The DynamoDB family count remains the source of truth for registration availability.
 

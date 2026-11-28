@@ -129,11 +129,11 @@ const documentCategories = [
   ["Finance", Landmark],
 ];
 
-export function MobileConnectedDocuments({ memberId = SELF_PROFILE_ID }) {
+export function MobileConnectedDocuments({ memberId = SELF_PROFILE_ID, accessEnabled = true }) {
   const [category, setCategory] = useState("Documents");
   const [downloadError, setDownloadError] = useState("");
-  const { documents, error } = useDocuments(true, true, true);
-  const visible = category === "Documents" ? documents?.filter((document) => document.memberId === memberId) : [];
+  const { documents, error } = useDocuments(accessEnabled, true, true);
+  const visible = accessEnabled && category === "Documents" ? documents?.filter((document) => document.memberId === memberId) : [];
   async function openDocument(document) {
     setDownloadError("");
     try {

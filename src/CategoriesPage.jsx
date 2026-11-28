@@ -31,6 +31,8 @@ import useDocuments from "./components/useDocuments.js";
 import { scannerAvailable } from "./api/documentScannerApi.js";
 import ScannedDocumentCard from "./components/ScannedDocumentCard.jsx";
 import { deleteDocument, downloadDocument, OPEN_DOCUMENT_UPLOAD } from "./api/documentsApi.js";
+import { CONNECTED_PROFILE_ID } from "./api/familyConnectionsApi.js";
+import useConnectedFamilyMember from "./components/useConnectedFamilyMember.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
 import { getFamilyMembers } from "./api/familyMembersApi.js";
@@ -199,7 +201,7 @@ function buildFamilyFilters(members) {
     return {
       id: member.memberId,
       name: member.name,
-      label: counts.get(relationship.toLowerCase()) > 1 && member.name
+      label: (member.linkedMemberId || member.memberId === CONNECTED_PROFILE_ID || counts.get(relationship.toLowerCase()) > 1) && member.name
         ? `${relationship} (${member.name})`
         : relationship,
     };
@@ -224,9 +226,11 @@ export default function CategoriesPage() {
 
   const [selectedFamily, setSelectedFamily] =
     useState(state?.selectedFamily || "all-family");
-  const [familyFilters, setFamilyFilters] = useState(DEFAULT_FAMILY_FILTERS);
+  const [managedMembers, setManagedMembers] = useState([]);
   const [familyError, setFamilyError] = useState("");
   const [familyRetry, setFamilyRetry] = useState(0);
+  const connectedMember = useConnectedFamilyMember(true, familyRetry);
+  const familyFilters = buildFamilyFilters(connectedMember ? [connectedMember, ...managedMembers.filter(({ memberId }) => memberId !== connectedMember.linkedMemberId)] : managedMembers);
   const [recordCounts, setRecordCounts] = useState({});
 
   useEffect(() => {
@@ -256,9 +260,9 @@ export default function CategoriesPage() {
     getFamilyMembers().then((members) => {
       if (cancelled) return;
       const filters = buildFamilyFilters(members);
-      setFamilyFilters(filters);
+      setManagedMembers(members);
       setSelectedFamily((previous) =>
-        filters.some((filter) => filter.id === previous) ? previous : "all-family"
+        previous === CONNECTED_PROFILE_ID || filters.some((filter) => filter.id === previous) ? previous : "all-family"
       );
     }).catch(() => {
       if (!cancelled) setFamilyError("Unable to load family members.");
@@ -291,7 +295,7 @@ export default function CategoriesPage() {
   // ==========================================
 
   const selectedDocuments = documents?.filter(
-    ({ memberId }) => selectedFamily === "all-family" || memberId === selectedFamily
+    ({ memberId }) => selectedFamily === "all-family" || (selectedFamily !== CONNECTED_PROFILE_ID && memberId === selectedFamily)
   );
   const documentCount = documentsError ? null : selectedDocuments?.length;
   const query = searchText.trim().toLowerCase();
@@ -473,9 +477,11 @@ export default function CategoriesPage() {
 
                   {filter.id !== "all-family" && (
                     <span className="fk-cat-radio" aria-hidden="true">
-                      <ProfileAvatar memberId={filter.id} className="fk-cat-filter-avatar">
-                        <span />
-                      </ProfileAvatar>
+                      {filter.id === CONNECTED_PROFILE_ID
+                        ? <span className="fk-cat-filter-avatar">{filter.name?.charAt(0).toUpperCase()}</span>
+                        : <ProfileAvatar memberId={filter.id} className="fk-cat-filter-avatar">
+                          <span />
+                        </ProfileAvatar>}
                     </span>
                   )}
 
