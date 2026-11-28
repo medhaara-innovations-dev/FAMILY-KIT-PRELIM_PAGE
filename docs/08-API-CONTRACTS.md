@@ -143,7 +143,7 @@ The regular Documents page files scanner records under Other Documents using the
 
 ### Managed dependent sharing
 
-The local Connections API adds JWT-protected /dependent-profiles routes. Grants are scoped to the current connection, owner and managed member ID. Owners can enable view or edit access and separately share selected documents, a snapshot of current documents, or current and future documents. Recipients can open originals through short-lived signed URLs. Upload, delete and account-document rights remain owner-only. Delegated edits use the original record and atomically record a bounded activity history. Linking a managed profile to its own account disables delegated edits. The current family model exposes one connected recipient.
+The local Connections API adds JWT-protected /dependent-profiles routes. Grants are scoped to the current connection, owner and managed member ID. Owners can enable view or edit access and separately share selected documents, a snapshot of current documents, or current and future documents. Recipients can open originals through short-lived signed URLs. Upload, delete and account-document rights remain owner-only. Delegated edits use the original record and atomically record a bounded activity history. Linking a managed profile to its own account disables delegated edits. The current family model exposes one connected recipient. Shared-profile list and detail responses include short-lived photo URLs after validating the grant.
 
 ### Connected family events and contacts
 

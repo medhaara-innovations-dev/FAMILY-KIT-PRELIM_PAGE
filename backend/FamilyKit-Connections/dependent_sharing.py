@@ -40,6 +40,13 @@ def route_request(route, body, user, *, db, table, members, s3, photo_bucket, fa
         return members.get_item(Key={"userId": owner, "memberId": member_id}, ProjectionExpression="memberId, #name, relationship, dateOfBirth, bloodGroup, height, weight, mobile, email, address, profilePictureKey, updatedAt",
                                 ExpressionAttributeNames={"#name": "name"}, ConsistentRead=True).get("Item")
 
+    def profile_photo(owner, member_id, item):
+        key = item.get("profilePictureKey")
+        prefix = f"profile-pictures/{owner}/{member_id}/"
+        if not isinstance(key, str) or not key.startswith(prefix):
+            return None
+        return s3.generate_presigned_url("get_object", Params={"Bucket": photo_bucket, "Key": key}, ExpiresIn=60)
+
     def linked(family, owner, member_id):
         return family.get("linkedMemberId" if owner == family["firstUser"] else "secondLinkedMemberId") == member_id
 
@@ -91,7 +98,8 @@ def route_request(route, body, user, *, db, table, members, s3, photo_bucket, fa
             grant = get(grant_key(user, peer, member_id))
             if item and grant and grant.get("familyKey") == family["pk"] and grant.get("profileAccess") in {"view", "edit"}:
                 result.append({"memberId": member_id, "name": item.get("name", "Family member"),
-                               "relationship": grant["relationship"]})
+                               "relationship": grant["relationship"],
+                               "photoUrl": profile_photo(peer, member_id, item)})
         return reply(200, {"members": result})
     if not peer:
         return reply(404, {"message": "No connected family account is available."})
@@ -157,13 +165,9 @@ def route_request(route, body, user, *, db, table, members, s3, photo_bucket, fa
     if not item or grant.get("profileAccess") not in ("view", "edit"):
         return reply(404, {"message": "This shared profile is unavailable."})
     if route == "POST /dependent-profiles/open":
-        key = item.get("profilePictureKey")
-        prefix = f"profile-pictures/{peer}/{member_id}/"
-        photo = s3.generate_presigned_url("get_object", Params={"Bucket": photo_bucket, "Key": key},
-                                         ExpiresIn=60) if isinstance(key, str) and key.startswith(prefix) else None
         return reply(200, {"member": {**json_profile(item), "memberId": member_id, "relationship": grant["relationship"],
                                        "profileAccess": "view" if linked(family, peer, member_id) else grant["profileAccess"],
-                                       "photoUrl": photo, "updatedAt": item.get("updatedAt", "")},
+                                       "photoUrl": profile_photo(peer, member_id, item), "updatedAt": item.get("updatedAt", "")},
                            "documents": [{k: doc[k] for k in ("id", "fileName")} for doc in document_list(peer, member_id, grant)],
                            "activity": activity(peer, member_id)})
     if route == "POST /dependent-profiles/document":

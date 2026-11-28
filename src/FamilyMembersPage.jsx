@@ -420,7 +420,8 @@ export default function FamilyMembersPage() {
                     <button type="button" className="fk-family-member-details"
                       onClick={() => navigate(`/family/shared/${encodeURIComponent(dependent.memberId)}`)}
                       aria-label={`Open shared profile for ${dependent.name}`}>
-                      <span className="fk-family-avatar" aria-hidden="true">{dependent.name.charAt(0).toUpperCase()}</span>
+                      <ProfileAvatar connectedPhotoUrl={dependent.photoUrl || null}
+                        name={dependent.name} className="fk-family-avatar" />
                       <span className="fk-family-member-info">
                         <strong>{dependent.name}</strong>
                         <small>{dependent.relationship}</small>
