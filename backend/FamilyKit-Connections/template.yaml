@@ -150,6 +150,22 @@ Resources:
             - Effect: Allow
               Action: [s3:PutObject, s3:DeleteObject]
               Resource: !Sub "arn:${AWS::Partition}:s3:::${ProfilePicturesBucketName}/profile-pictures/*/*/dependent-*"
+            - Effect: Allow
+              Action: dynamodb:Query
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/FamilyKit-Events"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, eventId, title, startDate, endDate, startTime, endTime, allDay, recurrence, kind, category, familyEvent, completed, completedOccurrences, exceptions]
+                Null:
+                  dynamodb:Attributes: "false"
+            - Effect: Allow
+              Action: dynamodb:Query
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/FamilyKit-ImportantContacts"
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [userId, contactId, name, category, role, customRole, relation, mobileNumber, email, photo]
+                Null:
+                  dynamodb:Attributes: "false"
       Events:
         Status:
           Type: HttpApi
@@ -186,6 +202,12 @@ Resources:
         Review:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/review, Method: POST }
+        FamilyEvents:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection/events, Method: GET }
+        FamilyContacts:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection/contacts, Method: GET }
         ProfileSharing:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection/profile-sharing, Method: POST }

@@ -60,10 +60,12 @@ export function EventForm({ initial, onSave, onClose, busy, error, singleOccurre
         <div>
           <label className="fk-events-toggle">
             <span>Family event</span>
-            <input type="checkbox" role="switch" checked={false} disabled aria-describedby="fk-family-event-help" />
+            <input type="checkbox" role="switch" checked={Boolean(form.familyEvent)} disabled={singleOccurrence || busy}
+              onChange={(event) => update("familyEvent", event.target.checked)} aria-describedby="fk-family-event-help" />
           </label>
           <small id="fk-family-event-help" className="fk-events-sharing-help">
-            Only you can see this event. Sharing requires connected family accounts.
+            {singleOccurrence ? "Change sharing on the full event series."
+              : "Turn on to show this event to securely connected family members."}
           </small>
         </div>
         <button type="button" className="fk-events-secondary" aria-expanded={more} onClick={() => setMore(!more)}>

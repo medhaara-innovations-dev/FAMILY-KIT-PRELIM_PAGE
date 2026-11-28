@@ -1,3 +1,4 @@
+import { connectionsEnabled, listConnectedEvents } from "./familyConnectionsApi.js";
 import { authenticatedFetch } from "../auth/sessionManager.js";
 
 const base = import.meta.env.DEV ? "/events-api" : "https://kvi1br0fnl.execute-api.ap-southeast-2.amazonaws.com";
@@ -20,7 +21,11 @@ function eventPath(id, occurrence) {
 
 export async function listEvents(signal) {
   const data = await request("", "GET", undefined, signal);
-  return data.events;
+  if (!connectionsEnabled) return data.events;
+  const shared = await listConnectedEvents(signal).catch(() => ({ events: [] }));
+  return [...data.events, ...shared.events.map((event) => ({
+    ...event, eventId: `shared-${event.eventId}`,
+  }))];
 }
 
 export function saveEvent(event, id, occurrence) {

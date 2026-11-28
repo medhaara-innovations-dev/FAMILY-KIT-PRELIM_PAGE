@@ -196,6 +196,52 @@ def family_record(user):
     return get("FAMILY#" + membership["familyId"]) if membership else None
 
 
+SHARED_EVENT_FIELDS = (
+    "eventId", "title", "startDate", "endDate", "startTime", "endTime", "allDay", "recurrence",
+    "kind", "category", "familyEvent", "completed", "completedOccurrences", "exceptions",
+)
+SHARED_CONTACT_FIELDS = ("contactId", "name", "category", "role", "customRole", "relation", "mobileNumber", "email", "photo")
+
+
+def family_records(route, user):
+    family = family_record(user)
+    events = route.endswith("/events")
+    key = "events" if events else "contacts"
+    if not family or family.get("supersededBy") or not family.get("secondUser"):
+        return {key: []}
+    first, second = family["firstUser"], family["secondUser"]
+    if user not in (first, second):
+        return {key: []}
+    other = second if user == first else first
+    fields = SHARED_EVENT_FIELDS if events else SHARED_CONTACT_FIELDS
+    aliases = {f"#field{i}": field for i, field in enumerate(fields)}
+    params = {"KeyConditionExpression": Key("userId").eq(other),
+              "ProjectionExpression": ", ".join(aliases), "ExpressionAttributeNames": aliases,
+              "ConsistentRead": True}
+    if events:
+        params["FilterExpression"] = Attr("familyEvent").eq(True)
+    source = db.Table("FamilyKit-Events" if events else "FamilyKit-ImportantContacts")
+    records = []
+    while True:
+        page = source.query(**params)
+        for item in page["Items"]:
+            if events and item.get("familyEvent") is not True or not events and not item.get("name"):
+                continue
+            result = {field: item[field] for field in fields if field in item}
+            if events and isinstance(result.get("exceptions"), dict):
+                occurrence_fields = {"title", "startDate", "endDate", "startTime", "endTime", "allDay",
+                                     "kind", "category", "cancelled"}
+                result["exceptions"] = {
+                    date: {field: value for field, value in occurrence.items() if field in occurrence_fields}
+                    for date, occurrence in result["exceptions"].items() if isinstance(occurrence, dict)
+                }
+            result["shared"] = True
+            records.append(result)
+        if not page.get("LastEvaluatedKey"):
+            return {key: records}
+        params["ExclusiveStartKey"] = page["LastEvaluatedKey"]
+
+
 def verified_recipient(claims):
     username = claims.get("username") or claims.get("cognito:username")
     pool = os.environ.get("USER_POOL_ID")
@@ -336,6 +382,8 @@ def lambda_handler(event, _context):
         if not user or claims.get("token_use") != "access":
             return reply(401, {"message": "Sign in to continue."})
         user_key = "USER#" + user
+        if route in {"GET /family-connection/events", "GET /family-connection/contacts"}:
+            return reply(200, family_records(route, user))
         if route == "GET /family-connection":
             family = family_record(user)
             if not family:

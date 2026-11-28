@@ -46,6 +46,9 @@ def clean(body):
     end = text(body, "endDate", 10, start) or start
     iso_date(start)
     iso_date(end)
+    family_event = body.get("familyEvent", False)
+    if type(family_event) is not bool:
+        raise ValueError("Invalid Family event setting.")
     all_day = body.get("allDay", False)
     if type(all_day) is not bool:
         raise ValueError("Invalid all-day setting.")
@@ -66,6 +69,7 @@ def clean(body):
         "endTime": end_time, "allDay": all_day, "reminderTime": reminder,
         "recurrence": recurrence, "kind": kind, "category": category,
         "notes": text(body, "notes", 2000),
+        "familyEvent": family_event,
     }
 
 
@@ -142,6 +146,7 @@ def lambda_handler(event, context):
             changed = clean(body) if method == "PUT" else {"cancelled": True}
             if method == "PUT":
                 changed["recurrence"] = "none"
+                changed.pop("familyEvent", None)
             result = table.update_item(
                 Key=key, UpdateExpression="SET #exceptions.#occurrence = :value",
                 ConditionExpression=exists + " AND #recurrence = :repeat AND #start = :start",
@@ -163,6 +168,8 @@ def lambda_handler(event, context):
                     ExpressionAttributeValues={":done": body["completed"], ":none": "none"}, ReturnValues="ALL_NEW")
                 return respond(200, {"event": public(result["Attributes"])})
             fields = clean(body)
+            if "familyEvent" not in body:
+                fields.pop("familyEvent")
             current = table.get_item(Key=key, ConsistentRead=True).get("Item")
             if not current:
                 return respond(404, {"message": "Event not found."})

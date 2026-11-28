@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, UserRound } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { dependentProfileAction } from "./api/familyConnectionsApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import MobileProfileDetails, { MobileProfileActions } from "./components/MobileProfileDetails.jsx";
@@ -16,6 +16,7 @@ const editFields = [
 
 export default function SharedDependentProfile() {
   const { memberId } = useParams();
+  const fromHome = useLocation().state?.fromHome === true;
   const [data, setData] = useState(null);
   const [form, setForm] = useState(null);
   const [error, setError] = useState("");
@@ -87,7 +88,7 @@ export default function SharedDependentProfile() {
   const member = data?.member;
   return <div className="fk-profile-page">
     <header className="fk-profile-header fk-glass-header">
-      <Link to="/family" aria-label="Back to My Family"><ChevronLeft /></Link>
+      <Link to={fromHome ? "/my-family" : "/family"} aria-label={fromHome ? "Back to Home" : "Back to My Family"}><ChevronLeft /></Link>
       <h1>Family Member Profile</h1><span className="fk-profile-header-space" />
     </header>
     <main className="fk-profile-main">
@@ -130,6 +131,6 @@ export default function SharedDependentProfile() {
         <section className="fk-profile-card"><DependentActivity entries={data.activity} /></section>
       </>}
     </main>
-    <FamilyBottomNav active="family" />
+    <FamilyBottomNav active={fromHome ? "home" : "family"} />
   </div>;
 }

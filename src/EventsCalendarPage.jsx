@@ -32,7 +32,10 @@ export default function EventsCalendarPage(){
   const [followingToday,setFollowingToday]=useState(!openedDate);
   const [filter,setFilter]=useState("All");
   const [selectedDate, setSelectedDate] = useState(openedDate);
-  const [events, setEvents] = useState([]);
+  const [loadedEvents, setEvents] = useState([]);
+  const events = location.state?.familyEventsOnly
+    ? loadedEvents.filter(({ familyEvent }) => familyEvent === true)
+    : location.state?.selectedFamily === "PROFILE#SELF" ? loadedEvents.filter(({ shared }) => !shared) : loadedEvents;
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [status, setStatus] = useState("");
@@ -249,22 +252,25 @@ export default function EventsCalendarPage(){
     {dialog?.mode === "view" && <EventDialog title={dialog.event.title} busy={busy} onClose={() => openDialog(null)}>
       <p>{formatEventDate(dialog.event.startDate)} {dialog.event.allDay ? "· All day" : `· ${dialog.event.startTime} IST`}</p>
       <p>Ends {formatEventDate(dialog.event.endDate)} {dialog.event.allDay ? "" : `· ${dialog.event.endTime} IST`}</p>
-      <p>{dialog.event.category} · Private{dialog.event.occurrenceDate ? (dialog.event.recurrence === "monthly" ? " · Monthly series" : " · Yearly series") : ""}</p>
+      <p>{dialog.event.category} · {dialog.event.familyEvent ? "Family event" : "Private"}{dialog.event.occurrenceDate ? (dialog.event.recurrence === "monthly" ? " · Monthly series" : " · Yearly series") : ""}</p>
+      {dialog.event.shared && <p>Shared family event</p>}
       {dialog.event.completed && <p role="status">Completed</p>}
       {dialog.event.reminderTime && <p>Reminder at {dialog.event.reminderTime} IST</p>}
       {dialog.event.notes && <p className="fk-events-notes">{dialog.event.notes}</p>}
       {error && <p role="alert" className="fk-events-error">{error}</p>}
       <div className="fk-events-dialog-actions">
-        <button type="button" className="fk-events-secondary" disabled={busy} onClick={changeCompletion}>
+        {!dialog.event.shared && <button type="button" className="fk-events-secondary" disabled={busy} onClick={changeCompletion}>
           {busy ? "Updating…" : dialog.event.completed ? "Undo completion" : "Mark as done"}
-        </button>
+        </button>}
         <button type="button" disabled={busy} className="fk-events-secondary" onClick={() => openDialog(null)}>Close</button>
+        {!dialog.event.shared && <>
         <button type="button" disabled={busy} className="fk-events-secondary" onClick={() => openDialog({ ...dialog, mode: "delete" })}>Delete</button>
         {dialog.event.occurrenceDate && <button type="button" disabled={busy} className="fk-events-secondary"
           onClick={() => openDialog({ ...dialog, mode: "edit", single: true })}>Edit this occurrence</button>}
         <button type="button" disabled={busy} className="fk-events-primary" onClick={() => openDialog({
           mode: "edit", event: events.find((event) => event.eventId === dialog.event.eventId),
         })}>{dialog.event.occurrenceDate ? "Edit series" : "Edit"}</button>
+        </>}
       </div>
     </EventDialog>}
     {dialog?.mode === "delete" && <EventDialog title="Delete event?" busy={busy} onClose={() => openDialog(null)}>

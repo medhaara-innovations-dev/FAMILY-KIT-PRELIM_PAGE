@@ -45,12 +45,16 @@ export default function FamilyMembersPage() {
   const [showInviteInfo, setShowInviteInfo] = useState(false);
   const [linkError, setLinkError] = useState("");
   const [linkBusy, setLinkBusy] = useState(false);
+  const [dependentError, setDependentError] = useState("");
   const [dependentProfiles, setDependentProfiles] = useState([]);
   const [connectionState, setConnectionState] = useState(null);
   const refreshConnection = useCallback(() => {
     if (!connectionsEnabled) return;
     familyConnection().then(setConnectionState).catch(() => setConnectionState(null));
-    listDependentProfiles().then(({ members }) => setDependentProfiles(members)).catch(() => setDependentProfiles([]));
+    listDependentProfiles().then(({ members }) => {
+      setDependentProfiles(members);
+      setDependentError("");
+    }).catch(() => setDependentError("Unable to load shared family profiles. Try refreshing."));
   }, []);
   useEffect(() => {
     if (!connectionsEnabled) return;
@@ -245,7 +249,7 @@ export default function FamilyMembersPage() {
         </div>
         <div className="fk-family-header-right">
           <button type="button" className="fk-family-icon-button fk-family-refresh"
-            onClick={loadMembers} aria-label="Refresh family members">
+            onClick={() => { loadMembers(); refreshConnection(); }} aria-label="Refresh family members">
             <RefreshCw size={19} />
           </button>
           <button type="button" className="fk-family-icon-button fk-family-header-add"
@@ -352,6 +356,7 @@ export default function FamilyMembersPage() {
                 } className="fk-family-view-all">View all</button>
               </div>
 
+              {dependentError && <p role="alert">{dependentError}</p>}
               <div className="fk-family-list" id="fk-family-member-list">
                 {/* PRIMARY REGISTERED USER */}
 

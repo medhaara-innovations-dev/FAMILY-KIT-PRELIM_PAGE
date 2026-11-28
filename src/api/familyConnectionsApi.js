@@ -31,6 +31,8 @@ async function request(path, { data, publicRoute, token, signal } = {}) {
 }
 
 export const foundingStatus = () => request("/founding", { publicRoute: true });
+export const listConnectedEvents = (signal) => request("/family-connection/events", { signal });
+export const listConnectedContacts = (signal) => request("/family-connection/contacts", { signal });
 export const familyConnection = (signal) => request("/family-connection", { signal });
 export const createInvitation = (data) => request("/invitations", { data });
 export const previewInvitation = (token) => request("/invitations/preview", { data: { token }, publicRoute: true });

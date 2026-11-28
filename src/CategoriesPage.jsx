@@ -39,7 +39,7 @@ import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { getDiaryEntries } from "./api/diaryApi.js";
 import { listEvents } from "./api/eventsApi.js";
 import { countEventEntries } from "./eventDates.js";
-import { getImportantContacts } from "./api/importantContactsApi.js";
+import { getFamilyImportantContacts } from "./api/importantContactsApi.js";
 import { getNotes } from "./api/notesApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import "./CategoriesPage.css";
@@ -103,7 +103,7 @@ const categories = [
     name: "Important Contacts",
     Icon: ImportantContactsIcon,
     route: "/important-contacts",
-    loadRecords: () => getImportantContacts(),
+    loadRecords: (signal) => getFamilyImportantContacts(signal),
     background: "#FAEFF0",
     color: "#C62828",
   },
@@ -299,11 +299,16 @@ export default function CategoriesPage() {
     ({ memberId }) => selectedFamily === "all-family" || (selectedFamily !== CONNECTED_PROFILE_ID && memberId === selectedFamily)
   );
   const documentCount = documentsError ? null : selectedDocuments?.length;
+  const otherFamilySelected = !["all-family", SELF_PROFILE_ID].includes(selectedFamily);
+  const isPersonalCategory = (category) => category.route === "/diary" || category.route === "/notes";
+
   function countForCategory(category) {
     if (category.route === "/documents") return documentCount;
     const records = categoryRecords[category.route];
     if (!records) return records;
-    const matchingRecords = selectedFamily === "all-family" ? records : records.filter(
+    if (category.route === "/important-contacts") return records.length;
+    const matchingRecords = category.route === "/events" && otherFamilySelected ? records.filter(({ familyEvent }) => familyEvent === true)
+      : selectedFamily === "all-family" ? records : records.filter(
       ({ memberId }) => (memberId || SELF_PROFILE_ID) === selectedFamily
     );
     return category.countRecords ? category.countRecords(matchingRecords) : matchingRecords.length;
@@ -369,6 +374,7 @@ export default function CategoriesPage() {
   }
 
   const handleCategoryClick = (category) => {
+    if (otherFamilySelected && isPersonalCategory(category)) return;
     if (category.route === "/documents") {
       setSearchOpen(false);
       setSearchText("");
@@ -377,7 +383,7 @@ export default function CategoriesPage() {
     }
     if (category.route) {
       const state = ["/important-contacts", "/diary", "/notes", "/events"].includes(category.route)
-        ? { fromCategories: true } : undefined;
+        ? { fromCategories: true, selectedFamily, familyEventsOnly: otherFamilySelected && category.route === "/events" } : undefined;
       navigate(category.route, { state });
     }
 
@@ -598,6 +604,7 @@ export default function CategoriesPage() {
                   key={category.name}
                   type="button"
                   className="fk-cat-card"
+                  disabled={otherFamilySelected && isPersonalCategory(category)}
                   onClick={() =>
                     handleCategoryClick(category)
                   }
@@ -617,7 +624,7 @@ export default function CategoriesPage() {
                   </span>
 
                   <span className="fk-cat-card-count">
-                    {categoryCountLabel(category, countForCategory(category))}
+                    {otherFamilySelected && isPersonalCategory(category) ? "Personal" : categoryCountLabel(category, countForCategory(category))}
                   </span>
                 </button>
               );

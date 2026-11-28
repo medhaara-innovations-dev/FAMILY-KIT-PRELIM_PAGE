@@ -9,7 +9,7 @@ import {
 import { CameraIcon, ImportantContactsIcon, WhatsAppLogo } from "./components/ReferenceIcons.jsx";
 import { contactThumbnail } from "./contactPhoto.js";
 import {
-  getImportantContacts, getContactCategories, addImportantContact,
+  getFamilyImportantContacts, getContactCategories, addImportantContact,
   updateImportantContact, deleteImportantContact,
 } from "./api/importantContactsApi";
 import "./ImportantContactsPage.css";
@@ -66,7 +66,7 @@ export default function ImportantContactsPage() {
     setLoading(true);
     setError("");
     try {
-      const [items, available] = await Promise.all([getImportantContacts(), getContactCategories()]);
+      const [items, available] = await Promise.all([getFamilyImportantContacts(), getContactCategories()]);
       setContacts(Array.isArray(items) ? items : []);
       setCategories(Array.isArray(available) ? available : []);
     } catch (err) {
@@ -84,7 +84,7 @@ export default function ImportantContactsPage() {
   const filterCategories = categoryNames.filter((name) => populatedCategories.has(name));
   const activeCategory = filterCategories.includes(selectedCategory) ? selectedCategory : "All";
   const availableRoles = categories.find((c) => c.name === form.category)?.roles || [];
-  const emergencyCount = contacts.filter((c) => emergency(c.category)).length;
+  const emergencyCount = contacts.filter((c) => !c.shared && emergency(c.category)).length;
   const visibleContacts = contacts.filter((c) => {
     const categoryMatch = activeCategory === "All" || displayCategory(c.category) === activeCategory;
     const q = search.trim().toLowerCase();
@@ -256,8 +256,8 @@ export default function ImportantContactsPage() {
                           setViewedContact(contact);
                           contactDetails.current?.showModal();
                         }}><Eye size={15} aria-hidden="true" /> View Details</button>
-                        <button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; openEdit(contact); }}><Pencil size={15} /> Edit</button>
-                        <button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; handleDelete(contact); }}><Trash2 size={15} /> Delete</button>
+                        {!contact.shared && <><button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; openEdit(contact); }}><Pencil size={15} /> Edit</button>
+                        <button type="button" onClick={(event) => { event.currentTarget.closest("details").open = false; handleDelete(contact); }}><Trash2 size={15} /> Delete</button></>}
                       </div>
                     </details>
                   </div>

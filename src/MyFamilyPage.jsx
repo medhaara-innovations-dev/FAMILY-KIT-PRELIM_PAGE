@@ -22,6 +22,7 @@ import {
 
 import { getFamilyKitProfile } from "./auth/authService.js";
 import { getValidAccessToken } from "./auth/sessionManager.js";
+import { connectionsEnabled, listDependentProfiles } from "./api/familyConnectionsApi.js";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { listEvents } from "./api/eventsApi.js";
 import { getDueEventReminders, getReadReminderIds, useReminderClock } from "./eventReminders.js";
@@ -133,7 +134,7 @@ function FamilyMemberItem({ member, onOpen }) {
       >
         <ProfileAvatar
           memberId={profileId}
-          connectedPhotoUrl={member.isConnected ? member.photoUrl || null : undefined}
+          connectedPhotoUrl={member.isConnected || member.isShared ? member.photoUrl || null : undefined}
           name={member.name}
           className="fk-dash-family-avatar-content"
         >
@@ -211,6 +212,25 @@ export default function MyFamilyPage() {
   }, [hasSession]);
 
   const connectedMember = useConnectedFamilyMember(hasSession);
+  const [sharedMembers, setSharedMembers] = useState([]);
+  useEffect(() => {
+    if (!hasSession || !connectionsEnabled) return;
+    const controller = new AbortController();
+    async function refreshSharedProfiles() {
+      try {
+        const { members } = await listDependentProfiles(controller.signal);
+        if (!controller.signal.aborted) setSharedMembers(members);
+      } catch {
+        if (!controller.signal.aborted) setSharedMembers([]);
+      }
+    }
+    refreshSharedProfiles();
+    window.addEventListener("focus", refreshSharedProfiles);
+    return () => {
+      controller.abort();
+      window.removeEventListener("focus", refreshSharedProfiles);
+    };
+  }, [hasSession]);
   const [savedMembers, setSavedMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
   const [membersError, setMembersError] = useState("");
@@ -225,6 +245,7 @@ export default function MyFamilyPage() {
       relationship: "Me",
     },
     ...(connectedMember ? [{ ...connectedMember, id: connectedMember.memberId }] : []),
+    ...sharedMembers.map((member) => ({ ...member, id: `shared-${member.memberId}`, isShared: true })),
     ...savedMembers.filter((member) => member.memberId !== connectedMember?.linkedMemberId).map((member) => ({
       ...member,
       id: member.memberId,
@@ -580,7 +601,8 @@ export default function MyFamilyPage() {
                   member={member}
                   onOpen={() => member.id === "me"
                     ? navigate("/my-profile", { state: { readOnly: true } })
-                    : navigate(`/family/${encodeURIComponent(member.id)}`, { state: { fromHome: true } })}
+                    : navigate(member.isShared ? `/family/shared/${encodeURIComponent(member.memberId)}`
+                      : `/family/${encodeURIComponent(member.id)}`, { state: { fromHome: true } })}
                 />
               ))}
 

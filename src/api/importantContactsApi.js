@@ -5,6 +5,7 @@
  * through the centralized session manager.
  */
 
+import { connectionsEnabled, listConnectedContacts } from "./familyConnectionsApi.js";
 import { authenticatedFetch } from "../auth/sessionManager.js";
 
 // ======================================================
@@ -76,6 +77,13 @@ export async function getImportantContacts(
 // ======================================================
 // GET: CATEGORIES AND THEIR AVAILABLE ROLES
 // ======================================================
+
+export async function getFamilyImportantContacts(signal) {
+  const contacts = await getImportantContacts();
+  if (!connectionsEnabled) return contacts;
+  const shared = await listConnectedContacts(signal).catch(() => ({ contacts: [] }));
+  return [...contacts, ...shared.contacts.map((contact) => ({ ...contact, contactId: `shared-${contact.contactId}` }))];
+}
 
 export async function getContactCategories() {
   const data = await apiRequest(
