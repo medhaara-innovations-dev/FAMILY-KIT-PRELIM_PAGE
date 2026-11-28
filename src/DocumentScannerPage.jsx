@@ -5,6 +5,7 @@ import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import { DOCUMENT_SAVED } from "./api/documentsApi.js";
 import { completeScan, deleteScan, downloadScan, scannerAvailable, scannerRequest, scanFileMime, stageScan } from "./api/documentScannerApi.js";
+import DocumentPreview from "./components/DocumentPreview.jsx";
 import "./DocumentScannerPage.css";
 
 export const statusLabels = { QUEUED: "Waiting to scan", SCANNING: "Scanning", READY: "Ready",
@@ -96,7 +97,7 @@ export function ScanDetails({ document, onClose }) {
 }
 
 export default function DocumentScannerPage() {
-  const [file, setFile] = useState(null);
+  const [selection, setSelection] = useState(null);
   const [stagedId, setStagedId] = useState(null);
   const [profiles, setProfiles] = useState([]);
   const [profileError, setProfileError] = useState("");
@@ -141,12 +142,12 @@ export default function DocumentScannerPage() {
 
   async function submit(event) {
     event.preventDefault();
-    if (!file || !memberId || busy) return;
+    if (!selection || !memberId || busy) return;
     const form = event.currentTarget;
     setBusy(true);
     setError("");
     try {
-      const mime = scanFileMime(file);
+      const { file, mime } = selection;
       const id = stagedId || await stageScan(file, mime);
       setStagedId(id);
       await completeScan(id, file.name, mime, memberId);
@@ -154,12 +155,26 @@ export default function DocumentScannerPage() {
       setMemberId("");
       window.dispatchEvent(new Event(DOCUMENT_SAVED));
       setStagedId(null);
-      setFile(null);
+      setSelection(null);
       setRevision((value) => value + 1);
     } catch (failure) {
       setError(failure.message);
     } finally {
       setBusy(false);
+    }
+  }
+
+  function selectFile(event) {
+    const file = event.target.files?.[0];
+    setSelection(null);
+    setStagedId(null);
+    setError("");
+    if (!file) return;
+    try {
+      setSelection({ file, mime: scanFileMime(file) });
+    } catch (failure) {
+      event.target.value = "";
+      setError(failure.message);
     }
   }
 
@@ -201,8 +216,11 @@ export default function DocumentScannerPage() {
         </select></label>
         {profileError && <p role="status">{profileError}</p>}
         <label>Document<input type="file" accept=".pdf,.jpg,.jpeg,.png" required disabled={!memberId || busy}
-          onChange={(event) => { setFile(event.target.files?.[0] || null); setStagedId(null); }} /></label>
-        <button type="submit" disabled={!memberId || !file || busy}>{busy ? "Uploading..." : "Upload and scan"}</button>
+          onChange={selectFile} /></label>
+        {selection && <DocumentPreview file={selection.file} contentType={selection.mime} />}
+        <button type="submit" disabled={!memberId || !selection || busy}>
+          {busy ? "Uploading..." : "Confirm and scan"}
+        </button>
       </form>
       {error && <p role="alert">{error}</p>}
       <section aria-label="Uploaded scans">

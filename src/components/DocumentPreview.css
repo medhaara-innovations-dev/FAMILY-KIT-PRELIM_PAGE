@@ -1,0 +1,12 @@
+.fk-document-preview { min-width: 0; overflow-wrap: anywhere; }
+.fk-document-preview p { margin-block: 0 8px; }
+.fk-document-preview img,
+.fk-document-preview iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+}
+.fk-document-preview img { max-height: 40vh; object-fit: contain; }
+.fk-document-preview iframe { height: clamp(180px, 40vh, 420px); }
+.fk-document-preview a { display: inline-block; margin-block-start: 8px; }

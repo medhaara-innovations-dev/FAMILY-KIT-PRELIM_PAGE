@@ -4,6 +4,7 @@ import { getFamilyMembers } from "../api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "../api/profilePicturesApi.js";
 import { DOCUMENT_SAVED, saveDocument, uploadDocument } from "../api/documentsApi.js";
 import { completeScan, scannerAvailable, scanFileMime, stageScan } from "../api/documentScannerApi.js";
+import DocumentPreview from "./DocumentPreview.jsx";
 import "./DocumentUploadDialog.css";
 
 const types = { pdf: "application/pdf", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png" };
@@ -85,7 +86,12 @@ export default function DocumentUploadDialog({ onClose }) {
           </select>
           {!members && (error ? <button type="button" onClick={() => { setError(""); setRetry(retry + 1); }}>Retry loading profiles</button>
             : <p role="status">Loading family profiles...</p>)}
-          {pending ? <p>{pending.file.name}</p> : <>
+          {pending ? <>
+            <DocumentPreview file={pending.file} contentType={pending.contentType} />
+            <button type="button" disabled={busy} onClick={() => { setPending(null); setError(""); }}>
+              Choose another file
+            </button>
+          </> : <>
           <p>Scan a paper document or upload a file.</p>
           <label className="fk-document-file fk-document-primary">
             <Camera size={20} aria-hidden="true" /> Scan Document
@@ -101,7 +107,7 @@ export default function DocumentUploadDialog({ onClose }) {
           </div>
           </>}
           {pending && <button type="submit" className="fk-document-primary" disabled={!member || busy}>
-            {busy ? "Uploading..." : "Save document"}
+            {busy ? "Uploading..." : scannerAvailable ? "Confirm and scan" : "Confirm and save"}
           </button>}
       </form>
       {error && <p role="alert">{error}</p>}
