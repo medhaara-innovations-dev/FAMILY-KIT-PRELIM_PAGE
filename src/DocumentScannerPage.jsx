@@ -5,6 +5,7 @@ import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
 import { DOCUMENT_SAVED } from "./api/documentsApi.js";
 import { completeScan, deleteScan, downloadScan, scannerAvailable, scannerRequest, scanFileMime, stageScan } from "./api/documentScannerApi.js";
+import ScanProgress from "./components/ScanProgress.jsx";
 import DocumentPreview from "./components/DocumentPreview.jsx";
 import "./DocumentScannerPage.css";
 
@@ -97,6 +98,7 @@ export function ScanDetails({ document, onClose }) {
 }
 
 export default function DocumentScannerPage() {
+  const [scan, setScan] = useState(null);
   const [selection, setSelection] = useState(null);
   const [stagedId, setStagedId] = useState(null);
   const [profiles, setProfiles] = useState([]);
@@ -150,7 +152,7 @@ export default function DocumentScannerPage() {
       const { file, mime } = selection;
       const id = stagedId || await stageScan(file, mime);
       setStagedId(id);
-      await completeScan(id, file.name, mime, memberId);
+      setScan(await completeScan(id, file.name, mime, memberId));
       form.reset();
       setMemberId("");
       window.dispatchEvent(new Event(DOCUMENT_SAVED));
@@ -207,7 +209,10 @@ export default function DocumentScannerPage() {
   return <main className="fk-scanner-page">
     <header><Link to="/documents">Back to Documents</Link><h1>Document Scanner</h1></header>
     {!scannerAvailable ? <p>The scanner is unavailable in this environment.</p> : <>
-      <form className="fk-scanner-card" onSubmit={submit}>
+      {scan ? <section className="fk-scanner-card">
+        <h2>Review Details</h2>
+        <ScanProgress scan={scan} onDone={() => { setScan(null); setRevision((value) => value + 1); }} />
+      </section> : <form className="fk-scanner-card" onSubmit={submit}>
         <label>Who is this document for? (required)
           <select value={memberId} required disabled={busy || Boolean(stagedId)} onChange={(event) => setMemberId(event.target.value)}>
           <option value="">Select a profile</option>
@@ -221,7 +226,7 @@ export default function DocumentScannerPage() {
         <button type="submit" disabled={!memberId || !selection || busy}>
           {busy ? "Uploading..." : "Confirm and scan"}
         </button>
-      </form>
+      </form>}
       {error && <p role="alert">{error}</p>}
       <section aria-label="Uploaded scans">
         <h2>Saved documents</h2>

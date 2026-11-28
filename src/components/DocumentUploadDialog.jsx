@@ -4,6 +4,7 @@ import { getFamilyMembers } from "../api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "../api/profilePicturesApi.js";
 import { DOCUMENT_SAVED, saveDocument, uploadDocument } from "../api/documentsApi.js";
 import { completeScan, scannerAvailable, scanFileMime, stageScan } from "../api/documentScannerApi.js";
+import ScanProgress from "./ScanProgress.jsx";
 import DocumentPreview from "./DocumentPreview.jsx";
 import "./DocumentUploadDialog.css";
 
@@ -11,6 +12,7 @@ const types = { pdf: "application/pdf", jpg: "image/jpeg", jpeg: "image/jpeg", p
 
 export default function DocumentUploadDialog({ onClose }) {
   const dialog = useRef(null);
+  const [scan, setScan] = useState(null);
   const [pending, setPending] = useState(null);
   const [members, setMembers] = useState(null);
   const [member, setMember] = useState("");
@@ -59,10 +61,10 @@ export default function DocumentUploadDialog({ onClose }) {
       const { file, contentType } = pending;
       const id = pending.id ?? await (scannerAvailable ? stageScan(file, contentType) : uploadDocument(file, contentType));
       setPending({ file, contentType, id });
-      if (scannerAvailable) await completeScan(id, file.name, contentType, member);
+      if (scannerAvailable) setScan(await completeScan(id, file.name, contentType, member));
       else await saveDocument(id, file.name, member);
       window.dispatchEvent(new Event(DOCUMENT_SAVED));
-      onClose();
+      if (!scannerAvailable) onClose();
     } catch (cause) {
       setError(cause.message);
     } finally {
@@ -76,8 +78,8 @@ export default function DocumentUploadDialog({ onClose }) {
       <button className="fk-document-close" type="button" aria-label="Close document upload" disabled={busy} onClick={onClose}>
         <X size={20} aria-hidden="true" />
       </button>
-      <h2 id="fk-document-dialog-title">Add a document</h2>
-      <form onSubmit={save}>
+      <h2 id="fk-document-dialog-title">{scan ? "Review Details" : "Add a document"}</h2>
+      {scan ? <ScanProgress scan={scan} onDone={onClose} /> : <form onSubmit={save}>
           <label htmlFor="fk-document-member">Who is this document for? (required)</label>
           <select id="fk-document-member" required disabled={busy || Boolean(pending?.id)} value={member} onChange={(event) => setMember(event.target.value)}>
             <option value="">Select a profile</option>
@@ -109,7 +111,7 @@ export default function DocumentUploadDialog({ onClose }) {
           {pending && <button type="submit" className="fk-document-primary" disabled={!member || busy}>
             {busy ? "Uploading..." : scannerAvailable ? "Confirm and scan" : "Confirm and save"}
           </button>}
-      </form>
+      </form>}
       {error && <p role="alert">{error}</p>}
     </dialog>
   );

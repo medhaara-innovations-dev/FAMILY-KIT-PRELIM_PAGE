@@ -1,0 +1,53 @@
+.fk-scan-progress {
+  display: grid;
+  gap: 16px;
+  padding: 12px 0;
+  text-align: center;
+  color: #24173f;
+}
+.fk-scan-progress h3, .fk-scan-progress p { margin: 0; }
+.fk-scan-progress ol, .fk-scan-progress ul { list-style: none; margin: 0; }
+.fk-scan-progress-steps { display: flex; justify-content: space-around; padding: 0; font-size: 12px; }
+.fk-scan-progress-steps li { display: grid; justify-items: center; gap: 5px; }
+.fk-scan-progress-steps span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #edeaf3;
+}
+.fk-scan-progress-steps li:first-child span, .fk-scan-progress-steps [aria-current] span {
+  background: #2d0b84;
+  color: #fff;
+}
+.fk-scan-progress-ring {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 74px;
+  aspect-ratio: 1;
+  margin-top: 20px;
+  border-radius: 50%;
+  background: conic-gradient(#2d0b84 var(--fk-scan-percent), #e0d3fa 0);
+  font-weight: 700;
+}
+.fk-scan-progress-ring span {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff;
+}
+.fk-scan-progress-tasks {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f4effb;
+  text-align: start;
+}
+.fk-scan-progress-tasks li { display: flex; align-items: center; gap: 10px; }
+.fk-scan-progress-tasks small { display: block; }
+.fk-scan-task-dot { width: 18px; height: 18px; border: 2px solid #7953d2; border-radius: 50%; }
