@@ -1,0 +1,146 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Isolated FamilyKit document scanner
+Parameters:
+  UserPoolId:
+    Type: String
+  UserPoolClientId:
+    Type: String
+  WebOrigin:
+    Type: String
+  MembersTableName:
+    Type: String
+  FoundationModelId:
+    Type: String
+    Default: amazon.nova-2-lite-v1:0
+Resources:
+  Originals:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules: [{ ObjectOwnership: BucketOwnerEnforced }]
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins: [!Ref WebOrigin, "http://127.0.0.1:5173", "http://localhost:5173"]
+            AllowedMethods: [POST]
+            AllowedHeaders: [Content-Type]
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireStaging
+            Prefix: uploads/
+            Status: Enabled
+            ExpirationInDays: 1
+  Scans:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: userId, AttributeType: S }
+        - { AttributeName: documentId, AttributeType: S }
+      KeySchema:
+        - { AttributeName: userId, KeyType: HASH }
+        - { AttributeName: documentId, KeyType: RANGE }
+      SSESpecification: { SSEEnabled: true }
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true }
+      StreamSpecification: { StreamViewType: NEW_IMAGE }
+  ScannerApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: [!Ref WebOrigin, "http://127.0.0.1:5173", "http://localhost:5173"]
+        AllowHeaders: [Authorization, Content-Type]
+        AllowMethods: [GET, POST, OPTIONS]
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 20
+        ThrottlingRateLimit: 10
+      Auth:
+        DefaultAuthorizer: Cognito
+        Authorizers:
+          Cognito:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              issuer: !Sub "https://cognito-idp.${AWS::Region}.${AWS::URLSuffix}/${UserPoolId}"
+              audience: [!Ref UserPoolClientId]
+  Scanner:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.14
+      Handler: lambda_function.lambda_handler
+      CodeUri: src/
+      MemorySize: 512
+      Timeout: 120
+      Environment:
+        Variables:
+          SCAN_BUCKET: !Ref Originals
+          SCANS_TABLE: !Ref Scans
+          MEMBERS_TABLE: !Ref MembersTableName
+          BEDROCK_MODEL_ID: !Sub "global.${FoundationModelId}"
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query]
+              Resource: !GetAtt Scans.Arn
+            - Effect: Allow
+              Action: dynamodb:GetItem
+              Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${MembersTableName}"
+            - Effect: Allow
+              Action: [dynamodb:DescribeStream, dynamodb:GetRecords, dynamodb:GetShardIterator, dynamodb:ListStreams]
+              Resource: !GetAtt Scans.StreamArn
+            - Effect: Allow
+              Action: [s3:GetObject, s3:PutObject]
+              Resource:
+                - !Sub "${Originals.Arn}/uploads/*"
+                - !Sub "${Originals.Arn}/documents/*"
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource: !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/global.${FoundationModelId}"
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource:
+                - !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/${FoundationModelId}"
+                - !Sub "arn:${AWS::Partition}:bedrock:::foundation-model/${FoundationModelId}"
+              Condition:
+                StringEquals:
+                  "bedrock:InferenceProfileArn": !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/global.${FoundationModelId}"
+      Events:
+        QueuedScan:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt Scans.StreamArn
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 1
+            MaximumRetryAttempts: 2
+            MaximumRecordAgeInSeconds: 600
+            FilterCriteria:
+              Filters:
+                - Pattern: '{"eventName":["INSERT"],"dynamodb":{"NewImage":{"scanStatus":{"S":["QUEUED"]}}}}'
+        List:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ScannerApi, Path: /scans, Method: GET }
+        Upload:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ScannerApi, Path: /scans/upload, Method: POST }
+        Complete:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ScannerApi, Path: "/scans/{documentId}/complete", Method: POST }
+        View:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ScannerApi, Path: "/scans/{documentId}", Method: GET }
+        Original:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ScannerApi, Path: "/scans/{documentId}/original", Method: GET }
+Outputs:
+  ScannerApiUrl:
+    Value: !Sub "https://${ScannerApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"

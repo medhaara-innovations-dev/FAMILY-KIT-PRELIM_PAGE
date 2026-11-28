@@ -16,6 +16,7 @@ import AddFamilyMemberPage from "./AddFamilyMemberPage.jsx";
 import FamilyMemberProfile from "./FamilyMemberProfile.jsx";
 import MyProfile from "./MyProfile.jsx";
 import CategoriesPage from "./CategoriesPage.jsx";
+import DocumentScannerPage from "./DocumentScannerPage.jsx";
 import EventsCalendarPage from "./EventsCalendarPage.jsx";
 import DiaryPage from "./DiaryPage.jsx";
 import DiaryEditorPage from "./DiaryEditorPage.jsx";
@@ -73,6 +74,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/documents" element={<CategoriesPage />} />
+        <Route path="/documents/scanner" element={<DocumentScannerPage />} />
         <Route path="/events" element={<EventsCalendarPage />} />
         <Route path="/diary" element={<DiaryPage />} />
         <Route path="/diary/new" element={<DiaryEditorPage />} />

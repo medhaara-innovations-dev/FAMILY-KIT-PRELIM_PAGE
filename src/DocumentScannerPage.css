@@ -1,0 +1,33 @@
+.fk-scanner-page {
+  min-height: 100dvh;
+  padding: 24px max(16px, calc((100% - 760px) / 2)) 40px;
+  background: linear-gradient(#c4adff, #f0eef3 400px);
+  color: #24173f;
+}
+.fk-scanner-page header a { color: #2d0b84; }
+.fk-scanner-card {
+  display: grid;
+  gap: 10px;
+  margin-block: 12px;
+  padding: clamp(14px, 4vw, 22px);
+  border-radius: 16px;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+.fk-scanner-card :is(h2, h3, p, dl, dd) { margin: 0; }
+.fk-scanner-card label { display: grid; gap: 6px; min-width: 0; }
+.fk-scanner-card :is(input, select) { box-sizing: border-box; width: 100%; min-height: 40px; font: inherit; }
+.fk-scanner-card button {
+  width: fit-content;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  color: white;
+  background: #2d0b84;
+  cursor: pointer;
+}
+.fk-scanner-card button:disabled { opacity: .6; cursor: wait; }
+.fk-scanner-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.fk-scanner-card dl { display: grid; gap: 8px; }
+.fk-scanner-card dt { font-weight: 700; text-transform: capitalize; }

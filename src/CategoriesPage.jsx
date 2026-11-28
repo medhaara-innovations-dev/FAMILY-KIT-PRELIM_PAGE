@@ -28,6 +28,7 @@ import {
 
 import { ImportantContactsIcon, NotesIcon, VehiclesIcon } from "./components/ReferenceIcons.jsx";
 import useDocuments from "./components/useDocuments.js";
+import { scannerAvailable } from "./api/documentScannerApi.js";
 import { deleteDocument, downloadDocument, OPEN_DOCUMENT_UPLOAD } from "./api/documentsApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
@@ -493,6 +494,8 @@ export default function CategoriesPage() {
           aria-labelledby={recordId ? undefined : "all-categories-heading"} aria-label={recordId ? "Document details" : undefined}>
           {documentsOpen ? (
             <div className="fk-cat-document-groups">
+              {scannerAvailable && !section && !recordId && <button type="button" className="fk-cat-doc-scan"
+                onClick={() => navigate("/documents/scanner")}>Document Scanner</button>}
               {documentsError ? <p role="alert">{documentsError}</p>
                 : !matches ? <p role="status">Loading documents...</p>
                 : recordId ? (record ? (

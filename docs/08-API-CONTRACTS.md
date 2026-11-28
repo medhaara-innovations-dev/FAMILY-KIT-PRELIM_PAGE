@@ -120,3 +120,21 @@ The live PIN registration guard is enabled against `FamilyKit-Connections`. The 
 New invitations use a manually shared link. Previously emailed invitations retain their verified-recipient checks.
 
 During founding mode, the public status endpoint exposes displayRemainingFamilies (100 minus enabled Cognito accounts with verified email) and remainingMemberSpots (200 minus the same eligible account count). Verified Google accounts are included. The Lambda caches the aggregate for up to 60 seconds per execution environment and omits the landing count when unavailable. The DynamoDB family count remains the source of truth for registration availability.
+
+## Isolated document scanner
+
+The local SAM template in `backend/FamilyKit-DocumentScanner` defines a dedicated private S3 bucket, DynamoDB table, scanner Lambda and Cognito-protected HTTP API. The frontend enables `/documents/scanner` from Documents when `VITE_SCANNER_API_URL` is set to the new API output. Existing document uploads stay in their original system.
+
+| Route | Purpose |
+|---|---|
+| GET /scans | List the caller's scanner records and their current status |
+| POST /scans/upload | Issue a short-lived S3 upload form for PDF, JPEG or PNG |
+| POST /scans/{documentId}/complete | Verify the original and the selected profile, then queue the scan |
+| GET /scans/{documentId} | Read the existing scan result without invoking Bedrock |
+| GET /scans/{documentId}/original | Issue a short-lived download URL for the caller's file |
+
+The API uses the verified Cognito subject as the owner. The scanner table keys are `userId` and `documentId`. Only the ownership check reads the existing family members table. Originals and scan results remain private to the uploader, including when filed under a managed profile. Upload limits are 10 MiB for PDF and 3.75 MB for images.
+
+The DynamoDB stream starts the worker on a queued insert. A conditional transition from QUEUED to SCANNING prevents duplicate stream deliveries from issuing another model call. Nova 2 Lite runs via `global.amazon.nova-2-lite-v1:0` and may process outside Sydney. The worker validates and saves bounded extraction fields, including health policy details, covered people, Advisor Contact and Nominees. The scanner page shows the saved suggestions for review. Field editing and reminder creation are outside this implementation. Staging objects expire after one day. A failed or interrupted scan leaves the original available.
+
+The scanner was deployed directly in Sydney to API Gateway `2ig3ifyd46`. The Lambda and table are named `FamilyKit-DocumentScanner`. The private originals bucket is `familykit-document-scanner-748348796658`. The ignored local Vite development environment points to the API. The hosted frontend has not been released for this feature.
