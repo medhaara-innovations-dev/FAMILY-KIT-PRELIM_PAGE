@@ -61,7 +61,7 @@ Resources:
       CorsConfiguration:
         AllowOrigins: [!Ref WebOrigin, "http://127.0.0.1:5173", "http://localhost:5173"]
         AllowHeaders: [Authorization, Content-Type]
-        AllowMethods: [GET, POST, OPTIONS]
+        AllowMethods: [GET, POST, DELETE, OPTIONS]
       DefaultRouteSettings:
         ThrottlingBurstLimit: 20
         ThrottlingRateLimit: 10
@@ -89,8 +89,16 @@ Resources:
           BEDROCK_MODEL_ID: !Sub "global.${FoundationModelId}"
       Policies:
         - Statement:
+              - Effect: Allow
+                Action: [kms:Encrypt, kms:Decrypt]
+                Resource: !Ref AadhaarKeyArn
+                Condition:
+                  StringEquals:
+                    "kms:EncryptionContext:purpose": familykit-aadhaar-reveal
+          - !Ref AWS::NoValue
+        - Statement:
             - Effect: Allow
-              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query]
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query, dynamodb:DeleteItem]
               Resource: !GetAtt Scans.Arn
             - Effect: Allow
               Action: dynamodb:GetItem
@@ -99,7 +107,7 @@ Resources:
               Action: [dynamodb:DescribeStream, dynamodb:GetRecords, dynamodb:GetShardIterator, dynamodb:ListStreams]
               Resource: !GetAtt Scans.StreamArn
             - Effect: Allow
-              Action: [s3:GetObject, s3:PutObject]
+              Action: [s3:GetObject, s3:PutObject, s3:DeleteObject]
               Resource:
                 - !Sub "${Originals.Arn}/uploads/*"
                 - !Sub "${Originals.Arn}/documents/*"
@@ -138,6 +146,12 @@ Resources:
         View:
           Type: HttpApi
           Properties: { ApiId: !Ref ScannerApi, Path: "/scans/{documentId}", Method: GET }
+        Delete:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ScannerApi, Path: "/scans/{documentId}", Method: DELETE }
+        AadhaarReveal:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ScannerApi, Path: "/scans/{documentId}/aadhaar/reveal", Method: POST }
         Original:
           Type: HttpApi
           Properties: { ApiId: !Ref ScannerApi, Path: "/scans/{documentId}/original", Method: GET }

@@ -1,7 +1,7 @@
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
 
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   ChevronLeft,
@@ -29,6 +29,7 @@ import {
 import { ImportantContactsIcon, NotesIcon, VehiclesIcon } from "./components/ReferenceIcons.jsx";
 import useDocuments from "./components/useDocuments.js";
 import { scannerAvailable } from "./api/documentScannerApi.js";
+import ScannedDocumentCard from "./components/ScannedDocumentCard.jsx";
 import { deleteDocument, downloadDocument, OPEN_DOCUMENT_UPLOAD } from "./api/documentsApi.js";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 
@@ -163,6 +164,7 @@ const documentSections = [
 ];
 
 function documentSection(document) {
+  if (document.scanStatus) return "Other Documents";
   return documentSections.find(([name]) => name === document.category)?.[0] || "Other Documents";
 }
 
@@ -215,7 +217,8 @@ export default function CategoriesPage() {
   const [params, setParams] = useSearchParams();
   const section = documentSections.find(([name]) => name === params.get("section"));
   const recordId = documentsOpen ? params.get("record") : null;
-  const { documents, error: documentsError } = useDocuments();
+  const showRecordDetails = params.get("view") === "1";
+  const { documents, error: documentsError } = useDocuments(true, true, documentsOpen);
   const [downloadError, setDownloadError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
 
@@ -294,7 +297,7 @@ export default function CategoriesPage() {
   const query = searchText.trim().toLowerCase();
   const matches = selectedDocuments?.filter(({ fileName }) => fileName.toLowerCase().includes(query));
   const sectionDocuments = matches?.filter((document) => documentSection(document) === section?.[0]);
-  const record = selectedDocuments?.find(({ documentId }) => documentId === recordId);
+  const record = selectedDocuments?.find(({ documentId, scanStatus }) => !scanStatus && documentId === recordId);
   const selectedLabel = familyFilters.find(({ id }) => id === selectedFamily)?.label || "All Family";
   const openUpload = () => window.dispatchEvent(new Event(OPEN_DOCUMENT_UPLOAD));
 
@@ -304,6 +307,15 @@ export default function CategoriesPage() {
     if (id) next.record = id;
     setDownloadError("");
     setParams(next);
+  }
+
+  function toggleRecordDetails() {
+    setParams((current) => {
+      const next = new URLSearchParams(current);
+      if (showRecordDetails) next.delete("view");
+      else next.set("view", "1");
+      return next;
+    }, { replace: true });
   }
 
   function goBack() {
@@ -494,8 +506,6 @@ export default function CategoriesPage() {
           aria-labelledby={recordId ? undefined : "all-categories-heading"} aria-label={recordId ? "Document details" : undefined}>
           {documentsOpen ? (
             <div className="fk-cat-document-groups">
-              {scannerAvailable && !section && !recordId && <button type="button" className="fk-cat-doc-scan"
-                onClick={() => navigate("/documents/scanner")}>Document Scanner</button>}
               {documentsError ? <p role="alert">{documentsError}</p>
                 : !matches ? <p role="status">Loading documents...</p>
                 : recordId ? (record ? (
@@ -503,13 +513,30 @@ export default function CategoriesPage() {
                     <FileText size={32} aria-hidden="true" />
                     <h3>{record.fileName}</h3>
                     <p>{profileLabel(record.memberId)}</p>
-                    <div className="fk-cat-document-actions">
+                    <div className="fk-cat-document-actions fk-cat-document-actions--with-view">
+                      <button type="button" aria-expanded={showRecordDetails} aria-controls="fk-document-record-details"
+                        onClick={toggleRecordDetails}>
+                        <FileText size={18} aria-hidden="true" /> {showRecordDetails ? "Hide" : "View"}
+                      </button>
                       <button type="button" onClick={() => openDocument(record.documentId)}>
                         <Download size={18} aria-hidden="true" /> Download
                       </button>
                       <button type="button" disabled={Boolean(deletingId)} onClick={() => removeDocument(record)}>
                         <Trash2 size={18} aria-hidden="true" /> Delete
                       </button>
+                    </div>
+                    <div id="fk-document-record-details" className="fk-cat-record-details" hidden={!showRecordDetails}>
+                      <h4>Document details</h4>
+                      <dl>
+                        <div><dt>File name</dt><dd>{record.fileName}</dd></div>
+                        <div><dt>Family profile</dt><dd>{profileLabel(record.memberId)}</dd></div>
+                        {record.contentType && <div><dt>File type</dt><dd>{record.contentType}</dd></div>}
+                        {Number.isFinite(record.sizeBytes) && <div><dt>File size</dt><dd>{new Intl.NumberFormat().format(record.sizeBytes)} bytes</dd></div>}
+                        {record.createdAt && Number.isFinite(Date.parse(record.createdAt)) &&
+                          <div><dt>Uploaded</dt><dd>{new Date(record.createdAt).toLocaleDateString()}</dd></div>}
+                      </dl>
+                      <p>This upload has no saved scan results.</p>
+                      {scannerAvailable && <Link to="/documents/scanner">Open Document Scanner</Link>}
                     </div>
                   </section>
                 ) : <p role="status">This document is unavailable for the selected profile.</p>)
@@ -522,6 +549,10 @@ export default function CategoriesPage() {
                     </button>
                   </div>
                 ) : section ? sectionDocuments.map((document) => {
+                  if (document.scanStatus) {
+                    return <ScannedDocumentCard key={document.documentId} item={document}
+                      profileName={profileLabel(document.memberId)} />;
+                  }
                   const Icon = section[1];
                   return <button className="fk-cat-document-tile" type="button" key={document.documentId}
                     onClick={() => openSection(section[0], document.documentId)}>

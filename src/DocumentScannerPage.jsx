@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getFamilyMembers } from "./api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "./api/profilePicturesApi.js";
-import { scannerAvailable, scannerRequest, stageScan } from "./api/documentScannerApi.js";
+import { DOCUMENT_SAVED } from "./api/documentsApi.js";
+import { completeScan, deleteScan, downloadScan, scannerAvailable, scannerRequest, scanFileMime, stageScan } from "./api/documentScannerApi.js";
 import "./DocumentScannerPage.css";
 
-const formats = {
-  pdf: ["application/pdf", 10 * 1024 ** 2],
-  jpg: ["image/jpeg", 3_750_000],
-  jpeg: ["image/jpeg", 3_750_000],
-  png: ["image/png", 3_750_000],
-};
-
-const statusLabels = { QUEUED: "Waiting to scan", SCANNING: "Scanning", READY: "Ready",
+export const statusLabels = { QUEUED: "Waiting to scan", SCANNING: "Scanning", READY: "Ready",
   FAILED: "Scan failed", STALLED: "Scan did not finish" };
 
 function Fields({ fields }) {
@@ -23,19 +18,78 @@ function Fields({ fields }) {
   ))}</dl>;
 }
 
-function ScanDetails({ document, onClose }) {
+function AadhaarNumber({ documentId, lastFourDigits, canReveal }) {
+  const [number, setNumber] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  async function toggle() {
+    if (number) {
+      setNumber("");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const result = await scannerRequest(`/${encodeURIComponent(documentId)}/aadhaar/reveal`, { method: "POST" });
+      if (!/^[0-9]{12}$/.test(result.number)) throw new Error("The full Aadhaar number is unavailable.");
+      setNumber(result.number);
+    } catch (failure) {
+      setError(failure.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return <dl><div>
+    <dt>Aadhaar number</dt>
+    <dd>
+      {number ? number.replace(/([0-9]{4})(?=[0-9])/g, "$1 ") : `XXXX XXXX ${lastFourDigits}`}
+      {canReveal && <button type="button" disabled={busy}
+        aria-label={number ? "Hide Aadhaar number" : "Show Aadhaar number"} onClick={toggle}>
+        {number ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+      </button>}
+      {error && <span role="alert">{error}</span>}
+    </dd>
+  </div></dl>;
+}
+
+export function ScanDetails({ document, onClose }) {
   const data = document.extracted;
+  const isAadhaar = /aadhaar|aadhar/i.test(data?.documentType || "");
+  const hasInsuranceDetails = Object.values(data?.policy || {}).some(Boolean) ||
+    Object.values(data?.advisorContact || {}).some(Boolean) ||
+    data?.coveredMembers?.length || data?.nominees?.length;
   return <section className="fk-scanner-card" aria-label="Saved scan details">
     <h2>{data?.title || document.fileName}</h2>
     {data ? <>
       <p>Document type: {data.documentType}</p>
       <p>Check these extracted details against the original.</p>
+      {isAadhaar ? <>
+        <h3>Aadhaar details</h3>
+        {data.aadhaar ? <Fields fields={{
+          "Full name": data.aadhaar.fullName,
+          "Date of birth": data.aadhaar.dateOfBirth,
+          "Year of birth": data.aadhaar.yearOfBirth,
+          "Gender": data.aadhaar.gender,
+          "Address": data.aadhaar.address,
+        }} /> : <p>This earlier scan saved only the document type and title.</p>}
+        {data.aadhaar?.lastFourDigits && <AadhaarNumber key={document.documentId}
+          documentId={document.documentId} lastFourDigits={data.aadhaar.lastFourDigits}
+          canReveal={document.canRevealAadhaar} />}
+      </> : hasInsuranceDetails ? <>
       <h3>Policy details</h3><Fields fields={data.policy} />
       <h3>Covered members</h3><p>{data.coveredMembers.join(", ") || "None extracted."}</p>
       <h3>Advisor Contact</h3><Fields fields={data.advisorContact} />
       <h3>Nominees</h3>
       {data.nominees.length ? data.nominees.map((nominee, index) => <Fields key={index} fields={nominee} />)
         : <p>None extracted.</p>}
+      </> : data.details?.length ? <>
+        <h3>Document details</h3>
+        <dl>{data.details.map(({ label, value }, index) =>
+          <div key={index}><dt>{label}</dt><dd>{value}</dd></div>
+        )}</dl>
+      </> : <p>No additional details were saved for this document.</p>}
     </> : <p>{statusLabels[document.scanStatus]}</p>}
     <button type="button" onClick={onClose}>Close details</button>
   </section>;
@@ -46,8 +100,9 @@ export default function DocumentScannerPage() {
   const [stagedId, setStagedId] = useState(null);
   const [profiles, setProfiles] = useState([]);
   const [profileError, setProfileError] = useState("");
-  const [memberId, setMemberId] = useState(SELF_PROFILE_ID);
+  const [memberId, setMemberId] = useState("");
   const [documents, setDocuments] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [selected, setSelected] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -86,19 +141,18 @@ export default function DocumentScannerPage() {
 
   async function submit(event) {
     event.preventDefault();
-    if (!file || busy) return;
-    const format = formats[file.name.split(".").pop()?.toLowerCase()];
-    if (!format || file.size === 0 || file.size > format[1]) {
-      setError("Choose a PDF up to 10 MiB, or a JPG or PNG up to 3.75 MB.");
-      return;
-    }
+    if (!file || !memberId || busy) return;
+    const form = event.currentTarget;
     setBusy(true);
     setError("");
     try {
-      const id = stagedId || await stageScan(file, format[0]);
+      const mime = scanFileMime(file);
+      const id = stagedId || await stageScan(file, mime);
       setStagedId(id);
-      await scannerRequest(`/${id}/complete`, { data: { fileName: file.name, mime: format[0], memberId } });
+      await completeScan(id, file.name, mime, memberId);
       form.reset();
+      setMemberId("");
+      window.dispatchEvent(new Event(DOCUMENT_SAVED));
       setStagedId(null);
       setFile(null);
       setRevision((value) => value + 1);
@@ -109,12 +163,27 @@ export default function DocumentScannerPage() {
     }
   }
 
+  async function removeDocument({ documentId, fileName }) {
+    if (deleting || !window.confirm(`Permanently delete "${fileName}" and its scanned details?`)) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await deleteScan(documentId);
+      setSelected((current) => current?.documentId === documentId ? null : current);
+      setRevision((value) => value + 1);
+      window.dispatchEvent(new Event(DOCUMENT_SAVED));
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   async function openDocument(id, original = false) {
     setError("");
     try {
-      const data = await scannerRequest(`/${id}${original ? "/original" : ""}`);
-      if (original) window.location.assign(data.url);
-      else setSelected(data);
+      if (original) window.location.assign(await downloadScan(id));
+      else setSelected(await scannerRequest(`/${encodeURIComponent(id)}`));
     } catch (failure) {
       setError(failure.message);
     }
@@ -124,14 +193,16 @@ export default function DocumentScannerPage() {
     <header><Link to="/documents">Back to Documents</Link><h1>Document Scanner</h1></header>
     {!scannerAvailable ? <p>The scanner is unavailable in this environment.</p> : <>
       <form className="fk-scanner-card" onSubmit={submit}>
-        <label>Document<input type="file" accept=".pdf,.jpg,.jpeg,.png" required disabled={busy}
-          onChange={(event) => { setFile(event.target.files?.[0] || null); setStagedId(null); }} /></label>
-        <label>Family profile<select value={memberId} disabled={busy} onChange={(event) => setMemberId(event.target.value)}>
+        <label>Who is this document for? (required)
+          <select value={memberId} required disabled={busy || Boolean(stagedId)} onChange={(event) => setMemberId(event.target.value)}>
+          <option value="">Select a profile</option>
           <option value={SELF_PROFILE_ID}>Me</option>
           {profiles.map((profile) => <option key={profile.memberId} value={profile.memberId}>{profile.name}</option>)}
         </select></label>
         {profileError && <p role="status">{profileError}</p>}
-        <button type="submit" disabled={busy}>{busy ? "Uploading..." : "Upload and scan"}</button>
+        <label>Document<input type="file" accept=".pdf,.jpg,.jpeg,.png" required disabled={!memberId || busy}
+          onChange={(event) => { setFile(event.target.files?.[0] || null); setStagedId(null); }} /></label>
+        <button type="submit" disabled={!memberId || !file || busy}>{busy ? "Uploading..." : "Upload and scan"}</button>
       </form>
       {error && <p role="alert">{error}</p>}
       <section aria-label="Uploaded scans">
@@ -145,6 +216,7 @@ export default function DocumentScannerPage() {
           <div className="fk-scanner-actions">
             {document.scanStatus === "READY" && <button type="button" onClick={() => openDocument(document.documentId)}>View</button>}
             <button type="button" onClick={() => openDocument(document.documentId, true)}>Download original</button>
+            <button type="button" disabled={deleting} onClick={() => removeDocument(document)}>Delete</button>
           </div>
         </article>)}
       </section>

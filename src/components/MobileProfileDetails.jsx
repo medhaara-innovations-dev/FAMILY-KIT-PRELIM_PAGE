@@ -1,3 +1,4 @@
+import ScannedDocumentCard from "./ScannedDocumentCard.jsx";
 import useDocuments from "./useDocuments.js";
 import { downloadDocument } from "../api/documentsApi.js";
 import { SELF_PROFILE_ID } from "../api/profilePicturesApi.js";
@@ -131,12 +132,12 @@ const documentCategories = [
 export function MobileConnectedDocuments({ memberId = SELF_PROFILE_ID }) {
   const [category, setCategory] = useState("Documents");
   const [downloadError, setDownloadError] = useState("");
-  const { documents, error } = useDocuments();
+  const { documents, error } = useDocuments(true, true, true);
   const visible = category === "Documents" ? documents?.filter((document) => document.memberId === memberId) : [];
-  async function openDocument(id) {
+  async function openDocument(document) {
     setDownloadError("");
     try {
-      window.location.assign(await downloadDocument(id));
+      window.location.assign(await downloadDocument(document.documentId));
     } catch (cause) {
       setDownloadError(cause.message);
     }
@@ -154,11 +155,13 @@ export function MobileConnectedDocuments({ memberId = SELF_PROFILE_ID }) {
       </div>
       {error ? <p role="alert">{error}</p> : !visible ? <p role="status">Loading documents...</p>
         : visible.length ? (
-          <ul>
-            {visible.map((document) => (
-              <li key={document.documentId}><button type="button" onClick={() => openDocument(document.documentId)}>{document.fileName}</button></li>
+          <div className="fk-cat-document-groups">
+            {visible.map((document) => document.scanStatus ? (
+              <ScannedDocumentCard key={document.documentId} item={document} />
+            ) : (
+              <button key={document.documentId} type="button" onClick={() => openDocument(document)}>{document.fileName}</button>
             ))}
-          </ul>
+          </div>
         ) : <p role="status">No connected {category.toLowerCase()} available yet.</p>}
       {downloadError && <p role="alert">{downloadError}</p>}
     </section>

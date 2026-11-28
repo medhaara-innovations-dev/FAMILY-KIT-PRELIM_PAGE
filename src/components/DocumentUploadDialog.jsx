@@ -3,6 +3,7 @@ import { Camera, FileText, Image, X } from "lucide-react";
 import { getFamilyMembers } from "../api/familyMembersApi.js";
 import { SELF_PROFILE_ID } from "../api/profilePicturesApi.js";
 import { DOCUMENT_SAVED, saveDocument, uploadDocument } from "../api/documentsApi.js";
+import { completeScan, scannerAvailable, scanFileMime, stageScan } from "../api/documentScannerApi.js";
 import "./DocumentUploadDialog.css";
 
 const types = { pdf: "application/pdf", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png" };
@@ -23,7 +24,6 @@ export default function DocumentUploadDialog({ onClose }) {
   }, []);
 
   useEffect(() => {
-    if (!pending) return;
     const controller = new AbortController();
     getFamilyMembers(controller.signal).then((profiles) => {
       if (!controller.signal.aborted) setMembers(profiles);
@@ -31,36 +31,35 @@ export default function DocumentUploadDialog({ onClose }) {
       if (!controller.signal.aborted) setError("Could not load family profiles.");
     });
     return () => controller.abort();
-  }, [pending, retry]);
+  }, [retry]);
 
-  async function selectFile(event) {
+  function selectFile(event) {
     const file = event.target.files[0];
     event.target.value = "";
-    if (!file || busy) return;
-    const contentType = types[file.name.split(".").pop()?.toLowerCase()];
-    if (!contentType || !file.size || file.size > 10 * 1024 * 1024) {
-      setError("Choose a PDF, JPEG, JPG or PNG up to 10 MB.");
-      return;
-    }
-    setBusy(true);
+    if (!file || !member || busy) return;
     setError("");
     try {
-      const id = await uploadDocument(file, contentType);
-      setPending({ id, name: file.name });
+      const contentType = scannerAvailable ? scanFileMime(file) : types[file.name.split(".").pop()?.toLowerCase()];
+      if (!contentType || !file.size || file.size > 10 * 1024 * 1024) {
+        throw new Error("Choose a PDF, JPEG, JPG or PNG up to 10 MB.");
+      }
+      setPending({ file, contentType });
     } catch (cause) {
       setError(cause.message);
-    } finally {
-      setBusy(false);
     }
   }
 
   async function save(event) {
     event.preventDefault();
-    if (!member || busy) return;
+    if (!pending || !member || busy) return;
     setError("");
     setBusy(true);
     try {
-      await saveDocument(pending.id, pending.name, member);
+      const { file, contentType } = pending;
+      const id = pending.id ?? await (scannerAvailable ? stageScan(file, contentType) : uploadDocument(file, contentType));
+      setPending({ file, contentType, id });
+      if (scannerAvailable) await completeScan(id, file.name, contentType, member);
+      else await saveDocument(id, file.name, member);
       window.dispatchEvent(new Event(DOCUMENT_SAVED));
       onClose();
     } catch (cause) {
@@ -76,38 +75,35 @@ export default function DocumentUploadDialog({ onClose }) {
       <button className="fk-document-close" type="button" aria-label="Close document upload" disabled={busy} onClick={onClose}>
         <X size={20} aria-hidden="true" />
       </button>
-      <h2 id="fk-document-dialog-title">{pending ? "Who is this document for?" : "Add a document"}</h2>
-      {pending ? (
-        <form onSubmit={save}>
-          <p>{pending.name}</p>
-          <label htmlFor="fk-document-member">Family profile</label>
-          <select id="fk-document-member" required value={member} onChange={(event) => setMember(event.target.value)}>
+      <h2 id="fk-document-dialog-title">Add a document</h2>
+      <form onSubmit={save}>
+          <label htmlFor="fk-document-member">Who is this document for? (required)</label>
+          <select id="fk-document-member" required disabled={busy || Boolean(pending?.id)} value={member} onChange={(event) => setMember(event.target.value)}>
             <option value="">Select a profile</option>
             <option value={SELF_PROFILE_ID}>Me</option>
             {members?.map((profile) => <option key={profile.memberId} value={profile.memberId}>{profile.name}</option>)}
           </select>
           {!members && (error ? <button type="button" onClick={() => { setError(""); setRetry(retry + 1); }}>Retry loading profiles</button>
             : <p role="status">Loading family profiles...</p>)}
-          <button className="fk-document-primary" disabled={!member || busy}>{busy ? "Saving..." : "Save document"}</button>
-        </form>
-      ) : (
-        <>
+          {pending ? <p>{pending.file.name}</p> : <>
           <p>Scan a paper document or upload a file.</p>
           <label className="fk-document-file fk-document-primary">
             <Camera size={20} aria-hidden="true" /> Scan Document
-            <input type="file" accept="image/jpeg,image/png" capture="environment" disabled={busy} onChange={selectFile} />
+            <input type="file" accept="image/jpeg,image/png" capture="environment" disabled={!member || busy} onChange={selectFile} />
           </label>
           <div className="fk-document-options">
             <label className="fk-document-file"><FileText size={20} aria-hidden="true" /> Upload PDF
-              <input type="file" accept=".pdf,application/pdf" disabled={busy} onChange={selectFile} />
+              <input type="file" accept=".pdf,application/pdf" disabled={!member || busy} onChange={selectFile} />
             </label>
             <label className="fk-document-file"><Image size={20} aria-hidden="true" /> Upload Image
-              <input type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" disabled={busy} onChange={selectFile} />
+              <input type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" disabled={!member || busy} onChange={selectFile} />
             </label>
           </div>
-          {busy && <p role="status">Uploading...</p>}
-        </>
-      )}
+          </>}
+          {pending && <button type="submit" className="fk-document-primary" disabled={!member || busy}>
+            {busy ? "Uploading..." : "Save document"}
+          </button>}
+      </form>
       {error && <p role="alert">{error}</p>}
     </dialog>
   );

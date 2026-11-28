@@ -161,7 +161,7 @@ export default function MyFamilyPage() {
     sessionStorage.getItem("familykit_refresh_token")
   );
 
-  const { documents } = useDocuments(hasSession);
+  const { documents } = useDocuments(hasSession, true);
   const firstDocument = documents?.length === 0;
   const openUpload = () => window.dispatchEvent(new Event(OPEN_DOCUMENT_UPLOAD));
 
