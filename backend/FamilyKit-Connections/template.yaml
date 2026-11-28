@@ -73,11 +73,19 @@ Resources:
               Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
               Resource: !GetAtt Connections.Arn
             - Effect: Allow
+              Action: dynamodb:Scan
+              Resource: !GetAtt Connections.Arn
+              Condition:
+                "ForAllValues:StringEquals":
+                  dynamodb:Attributes: [pk, firstUser, secondUser, supersededBy]
+                Null:
+                  dynamodb:Attributes: "false"
+            - Effect: Allow
               Action: dynamodb:GetItem
               Resource: !Sub "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ActivationTableName}"
               Condition:
                 "ForAllValues:StringEquals":
-                  dynamodb:Attributes: [userId, yourName, familyName, dateOfBirth, height, weight, bloodGroup, address]
+                  dynamodb:Attributes: [userId, yourName, familyName, dateOfBirth, height, weight, bloodGroup, address, mobile, instagramUrl, facebookUrl, linkedinUrl]
                 StringEqualsIfExists:
                   dynamodb:Select: SPECIFIC_ATTRIBUTES
             - Effect: Allow
@@ -128,6 +136,9 @@ Resources:
         Review:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /invitations/review, Method: POST }
+        ProfileSharing:
+          Type: HttpApi
+          Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection/profile-sharing, Method: POST }
         LinkProfile:
           Type: HttpApi
           Properties: { ApiId: !Ref ConnectionsApi, Path: /family-connection/link-profile, Method: POST }

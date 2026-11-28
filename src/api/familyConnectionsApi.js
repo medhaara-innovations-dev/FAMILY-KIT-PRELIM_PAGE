@@ -35,6 +35,7 @@ export const familyConnection = (signal) => request("/family-connection", { sign
 export const createInvitation = (data) => request("/invitations", { data });
 export const previewInvitation = (token) => request("/invitations/preview", { data: { token }, publicRoute: true });
 export const updateInvitation = (action, token, details) => request(`/invitations/${action}`, { data: { token, ...details } });
+export const updateConnectionProfileSharing = (fields) => request("/family-connection/profile-sharing", { data: { fields } });
 export const linkConnectionProfile = (memberId) => request("/family-connection/link-profile", { data: { memberId } });
 
 export async function checkSignupAccess() {

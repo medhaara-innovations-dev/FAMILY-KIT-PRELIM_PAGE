@@ -15,6 +15,7 @@ from urllib.request import Request, urlopen
 from uuid import UUID, uuid4
 
 import boto3
+from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 
 db = boto3.resource("dynamodb")
@@ -23,6 +24,7 @@ table = db.Table(os.environ["TABLE_NAME"])
 profiles = db.Table(os.environ["ACTIVATION_TABLE"])
 members = db.Table(os.environ.get("MEMBERS_TABLE", "FamilyKitFamilyMembers"))
 REVIEW_FIELDS = {"yourName": 100, "dateOfBirth": 10, "height": 16, "weight": 16, "bloodGroup": 16, "address": 1000}
+SHARE_FIELDS = set(REVIEW_FIELDS) - {"yourName"} | {"mobile", "instagramUrl", "facebookUrl", "linkedinUrl"}
 CAP = 100
 MEMBERS_PER_FAMILY = 2
 family_count_cache = (0, None)
@@ -104,7 +106,7 @@ def profile_update(user, values):
 
 
 def shared_details(user, fields):
-    allowed = [field for field in REVIEW_FIELDS if field in fields and field != "yourName"]
+    allowed = sorted(SHARE_FIELDS.intersection(fields))
     if not allowed:
         return {}
     item = profiles.get_item(Key={"userId": user}, ProjectionExpression=", ".join(allowed),
@@ -190,27 +192,49 @@ def invitation_email_enabled():
                 and os.environ.get("GMAIL_SECRET_NAME") and os.environ.get("USER_POOL_ID"))
 
 
-def remaining_families_from_cognito():
+def founding_display_counts():
     global family_count_cache
     pool = os.environ.get("USER_POOL_ID")
     if not pool:
-        return None
+        return None, None
     now = time.monotonic()
     if now < family_count_cache[0]:
         return family_count_cache[1]
-    count = 0
+
+    current_accounts = set()
+    verified_accounts = set()
     for page in cognito.get_paginator("list_users").paginate(UserPoolId=pool):
-        count += sum(
-            1 for user in page.get("Users", [])
-            if user.get("Enabled") and user.get("UserStatus") in {"CONFIRMED", "EXTERNAL_PROVIDER"}
-            and any(attr["Name"] == "email_verified" and attr["Value"] == "true"
-                    for attr in user.get("Attributes", []))
+        for user in page.get("Users", []):
+            attrs = {attribute["Name"]: attribute["Value"] for attribute in user.get("Attributes", [])}
+            subject = attrs.get("sub")
+            if not subject or not user.get("Enabled"):
+                continue
+            current_accounts.add(subject)
+            if user.get("UserStatus") in {"CONFIRMED", "EXTERNAL_PROVIDER"} and attrs.get("email_verified") == "true":
+                verified_accounts.add(subject)
+
+    connected = 0
+    request = {
+        "ProjectionExpression": "pk, firstUser, secondUser, supersededBy",
+        "FilterExpression": Attr("pk").begins_with("FAMILY#") & Attr("secondUser").exists()
+                            & Attr("supersededBy").not_exists(),
+        "ConsistentRead": True,
+    }
+    while True:
+        page = table.scan(**request)
+        connected += sum(
+            item.get("firstUser") in current_accounts
+            and item.get("secondUser") in current_accounts
+            and item["firstUser"] != item["secondUser"]
+            for item in page["Items"]
         )
-        if count >= CAP:
+        if "LastEvaluatedKey" not in page:
             break
-    remaining = max(0, CAP - count)
-    family_count_cache = (now + 60, remaining)
-    return remaining
+        request["ExclusiveStartKey"] = page["LastEvaluatedKey"]
+
+    counts = max(0, CAP - connected), max(0, CAP * MEMBERS_PER_FAMILY - len(verified_accounts))
+    family_count_cache = (now + 60, counts)
+    return counts
 
 
 def lambda_handler(event, _context):
@@ -219,14 +243,14 @@ def lambda_handler(event, _context):
         control = get(CONTROL) or {}
         mode = control.get("mode", "closed")
         remaining = max(0, CAP - int(control.get("families", 0)))
-        display_families = None
+        display_families = member_spots = None
         if mode == "founding":
             try:
-                display_families = remaining_families_from_cognito()
+                display_families, member_spots = founding_display_counts()
             except ClientError as error:
                 print("Founding Cognito count unavailable:", error.response["Error"]["Code"])
         return reply(200, {"mode": mode, "remainingFamilies": remaining, "displayRemainingFamilies": display_families,
-                           "remainingMemberSpots": display_families * MEMBERS_PER_FAMILY if display_families is not None else None,
+                           "remainingMemberSpots": member_spots,
                            "newFamiliesOpen": mode == "public" or (mode == "founding" and remaining > 0)})
     try:
         body = json.loads(event.get("body") or "{}")
@@ -260,10 +284,12 @@ def lambda_handler(event, _context):
                 linked = family.get("linkedMemberId" if is_inviter else "secondLinkedMemberId")
                 if linked:
                     connection["linkedMemberId"] = linked
-                if is_inviter:
-                    connection.update(shared_details(other, family.get("sharedProfileFields", [])))
+                sharing_field = "sharedProfileFields" if is_inviter else "firstSharedProfileFields"
+                connection.update(shared_details(other, family.get(sharing_field, [])))
             return reply(200, {
                 "connection": connection,
+                "mySharedProfileFields": family.get(
+                    "firstSharedProfileFields" if user == family["firstUser"] else "sharedProfileFields", []),
                 "invitation": {"relationship": invitation["relationship"],
                                "shared": bool(invitation.get("sharedAt"))}
                 if active_invite(invitation, now) and user == family["firstUser"] else None,
@@ -280,6 +306,21 @@ def lambda_handler(event, _context):
         account = profile(user)
         if not account:
             return reply(403, {"message": "Complete FamilyKit registration first."})
+        if route == "POST /family-connection/profile-sharing":
+            family = family_record(user)
+            if not family or not family.get("secondUser") or user not in (family["firstUser"], family["secondUser"]):
+                return reply(409, {"message": "Connect an account before sharing profile details."})
+            fields = body.get("fields")
+            if not isinstance(fields, list) or len(fields) > len(SHARE_FIELDS) or any(
+                not isinstance(field, str) or field not in SHARE_FIELDS for field in fields
+            ):
+                raise ValueError("Select valid profile fields.")
+            unique_fields = sorted(set(fields))
+            field = "firstSharedProfileFields" if user == family["firstUser"] else "sharedProfileFields"
+            transact(update(family["pk"], f"SET {field} = :fields",
+                            "firstUser = :first AND secondUser = :second AND attribute_not_exists(supersededBy)",
+                            {":fields": unique_fields, ":first": family["firstUser"], ":second": family["secondUser"]}))
+            return reply(200, {"mySharedProfileFields": unique_fields})
         if route == "POST /family-connection/link-profile":
             family = family_record(user)
             if not family or not family.get("secondUser"):

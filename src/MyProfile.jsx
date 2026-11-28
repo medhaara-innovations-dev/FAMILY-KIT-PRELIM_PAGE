@@ -9,6 +9,8 @@ import {
   uploadProfilePicture,
   deleteProfilePicture,
 } from "./api/profilePicturesApi.js";
+import ConnectedProfileSharing from "./components/ConnectedProfileSharing.jsx";
+import { connectionsEnabled } from "./api/familyConnectionsApi.js";
 import IndianMobileField from "./components/IndianMobileField.jsx";
 import ProfileAvatar from "./components/ProfileAvatar.jsx";
 import FamilyBottomNav from "./components/FamilyBottomNav.jsx";
@@ -71,6 +73,7 @@ export default function MyProfile() {
   const [checkingPin, setCheckingPin] = useState(false);
   const pinDialog = useRef(null);
   const name = profile.yourName || "Me";
+  const [showProfileSharing, setShowProfileSharing] = useState(false);
   const contacts = getVerifiedAccountContacts();
 
   useEffect(() => {
@@ -301,7 +304,9 @@ export default function MyProfile() {
             </section>
             <section className="fk-settings-card" aria-label="Settings">
               <SettingsRow icon={Shield} label="Account & Security" />
-              <SettingsRow icon={LockKeyhole} label="Access & Permissions" />
+              <SettingsRow icon={LockKeyhole} label="Access & Permissions"
+                onClick={connectionsEnabled ? () => setShowProfileSharing((shown) => !shown) : undefined} />
+              {showProfileSharing && <ConnectedProfileSharing onClose={() => setShowProfileSharing(false)} />}
               <SettingsRow icon={Bell} label="Manage Notifications" />
               <SettingsRow icon={Settings} label="App Preferences" />
               <SettingsRow icon={CircleHelp} label="Help & Support" />
