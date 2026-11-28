@@ -233,22 +233,21 @@ export default function CategoriesPage() {
   const [familyRetry, setFamilyRetry] = useState(0);
   const connectedMember = useConnectedFamilyMember(true, familyRetry);
   const familyFilters = buildFamilyFilters(connectedMember ? [connectedMember, ...managedMembers.filter(({ memberId }) => memberId !== connectedMember.linkedMemberId)] : managedMembers);
-  const [recordCounts, setRecordCounts] = useState({});
+  const [categoryRecords, setCategoryRecords] = useState({});
 
   useEffect(() => {
     if (documentsOpen) return;
     const controller = new AbortController();
 
-    categories.forEach(({ route, loadRecords, countRecords }) => {
+    categories.forEach(({ route, loadRecords }) => {
       if (!loadRecords) return;
       loadRecords(controller.signal).then((records) => {
         if (!controller.signal.aborted) {
-          const count = countRecords ? countRecords(records) : records.length;
-          setRecordCounts((previous) => ({ ...previous, [route]: count }));
+          setCategoryRecords((previous) => ({ ...previous, [route]: records }));
         }
       }).catch(() => {
         if (!controller.signal.aborted) {
-          setRecordCounts((previous) => ({ ...previous, [route]: null }));
+          setCategoryRecords((previous) => ({ ...previous, [route]: null }));
         }
       });
     });
@@ -300,6 +299,15 @@ export default function CategoriesPage() {
     ({ memberId }) => selectedFamily === "all-family" || (selectedFamily !== CONNECTED_PROFILE_ID && memberId === selectedFamily)
   );
   const documentCount = documentsError ? null : selectedDocuments?.length;
+  function countForCategory(category) {
+    if (category.route === "/documents") return documentCount;
+    const records = categoryRecords[category.route];
+    if (!records) return records;
+    const matchingRecords = selectedFamily === "all-family" ? records : records.filter(
+      ({ memberId }) => (memberId || SELF_PROFILE_ID) === selectedFamily
+    );
+    return category.countRecords ? category.countRecords(matchingRecords) : matchingRecords.length;
+  }
   const query = searchText.trim().toLowerCase();
   const matches = selectedDocuments?.filter(({ fileName }) => fileName.toLowerCase().includes(query));
   const sectionDocuments = matches?.filter((document) => documentSection(document) === section?.[0]);
@@ -609,7 +617,7 @@ export default function CategoriesPage() {
                   </span>
 
                   <span className="fk-cat-card-count">
-                    {categoryCountLabel(category, category.route === "/documents" ? documentCount : recordCounts[category.route])}
+                    {categoryCountLabel(category, countForCategory(category))}
                   </span>
                 </button>
               );
